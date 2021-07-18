@@ -2,7 +2,7 @@
 <project version="4">
   <component name="CompilerConfiguration">
     <annotationProcessing>
-      <profile name="Annotation profile for Financial Document System" enabled="true">
+      <profile name="Annotation profile for Financial Account System" enabled="true">
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
@@ -23,8 +23,8 @@
           <entry name="D:/fin/NexusRepo/org/springframework/boot/spring-boot-configuration-processor/2.1.6.RELEASE/spring-boot-configuration-processor-2.1.6.RELEASE.jar" />
         </processorPath>
         <module name="model" />
-        <module name="service" />
         <module name="app" />
+        <module name="service" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
