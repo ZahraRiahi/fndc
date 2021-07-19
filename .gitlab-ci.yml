@@ -4,12 +4,12 @@ variables:
   MAVEN_OPTS: "-Dmaven.repo.local=.m2/repository"
   DOCKER_TLS_CERTDIR: ""
   GIT_SSL_NO_VERIFY: "true"
-  CONTAINER_JOBID_IMAGE:  gitlab.demisco.com:5050/cfs/fnac:$CI_PIPELINE_ID
-  CONTAINER_JOBID_IMAGE_DEV:  gitlab.demisco.com:5050/cfs/fnac:dev-$CI_PIPELINE_ID
+  CONTAINER_JOBID_IMAGE:  gitlab.demisco.com:5050/cfs/fndc:$CI_PIPELINE_ID
+  CONTAINER_JOBID_IMAGE_DEV:  gitlab.demisco.com:5050/cfs/fndc:dev-$CI_PIPELINE_ID
 
   REGISTRY_ADDRESS: $CI_REGISTRY
-  app_name: "fnac-service"
-  nodePort: "30452"
+  app_name: "fndc-service"
+  nodePort: "30453"
   clusterPort: "8080"
   containerPort: "8080"
   name_space: "cfs"
