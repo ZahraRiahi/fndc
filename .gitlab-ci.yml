@@ -9,7 +9,7 @@ variables:
 
   REGISTRY_ADDRESS: $CI_REGISTRY
   app_name: "fndc-service"
-  nodePort: "30453"
+  nodePort: "30454"
   clusterPort: "8080"
   containerPort: "8080"
   name_space: "cfs"
