@@ -1,9 +1,10 @@
 package ir.demisco.cfs.app.web.controller;
 
+
+import ir.demisco.cfs.model.dto.response.FinancialDocumentDescriptionOrganizationDto;
 import ir.demisco.cfs.service.api.FinancialDocumentDescriptionService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
-import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -27,5 +28,15 @@ public class FinancialDocumentDescriptionController {
         Long organizationId = 100L;
         return ResponseEntity.ok(financialDocumentDescriptionService.getFinancialDocumentByOrganizationId(organizationId,dataSourceRequest));
 
+    }
+    @PostMapping("/save")
+    public ResponseEntity<FinancialDocumentDescriptionOrganizationDto> documentDescription(@RequestBody FinancialDocumentDescriptionOrganizationDto documentDescriptionDto){
+        if (documentDescriptionDto.getId() == null) {
+            Long aLong = financialDocumentDescriptionService.save(documentDescriptionDto);
+            documentDescriptionDto.setId(aLong);
+            return ResponseEntity.ok(documentDescriptionDto);
+        } else {
+            return ResponseEntity.ok(financialDocumentDescriptionService.update(documentDescriptionDto));
+        }
     }
 }
