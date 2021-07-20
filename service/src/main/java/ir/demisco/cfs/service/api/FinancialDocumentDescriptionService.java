@@ -12,4 +12,6 @@ public interface FinancialDocumentDescriptionService {
     Long save(FinancialDocumentDescriptionOrganizationDto documentDescriptionDto);
 
     FinancialDocumentDescriptionOrganizationDto update(FinancialDocumentDescriptionOrganizationDto documentDescriptionDto);
+
+    boolean deleteDocumentDescriptionById(Long documentDescriptionId);
 }

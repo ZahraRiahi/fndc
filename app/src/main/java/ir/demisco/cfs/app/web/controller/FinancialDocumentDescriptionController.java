@@ -6,10 +6,7 @@ import ir.demisco.cfs.service.api.FinancialDocumentDescriptionService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api-financialDocumentDescription")
@@ -38,5 +35,13 @@ public class FinancialDocumentDescriptionController {
         } else {
             return ResponseEntity.ok(financialDocumentDescriptionService.update(documentDescriptionDto));
         }
+    }
+
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<Boolean> delete(@PathVariable("id") Long  documentDescriptionId) {
+        boolean result;
+        result = financialDocumentDescriptionService.deleteDocumentDescriptionById(documentDescriptionId);
+        return ResponseEntity.ok(result);
+
     }
 }

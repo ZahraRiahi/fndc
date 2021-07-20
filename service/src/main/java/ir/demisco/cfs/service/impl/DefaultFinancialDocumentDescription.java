@@ -14,6 +14,7 @@ import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 
 
 @Service
@@ -81,5 +82,13 @@ public class DefaultFinancialDocumentDescription implements FinancialDocumentDes
                     .build();
     }
 
-
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public boolean deleteDocumentDescriptionById(Long documentDescriptionId) {
+        FinancialDocumentDescription financialDocumentDescription=
+                financialDocumentDescriptionRepository.findById(documentDescriptionId).orElseThrow(() -> new RuleException("سند یافت نشد"));
+        financialDocumentDescription.setDeletedDate(LocalDateTime.now());
+        financialDocumentDescriptionRepository.save(financialDocumentDescription);
+        return true;
+    }
 }
