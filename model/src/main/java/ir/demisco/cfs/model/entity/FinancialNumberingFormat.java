@@ -10,23 +10,31 @@ import java.time.LocalDateTime;
 @Table(name="FINANCIAL_NUMBERING_FORMAT" , schema = "fndc")
 public class FinancialNumberingFormat extends AuditModel<Long> {
 
-    private Long id;
     private Organization organization;
     private FinancialNumberingFormatType  financialNumberingFormatType;
     private FinancialNumberingType        financialNumberingType;
-    private String    description;
+    private String   description;
     private LocalDateTime deletedDate;
 
+//    @Id
+//    @SequenceGenerator(schema = "fndc", name = "financial_numbering_format_generator", sequenceName = "sq_financial_numbering_format")
+//    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_numbering_format_generator")
+//    public Long getId() {
+//        return id;
+//    }
+//
+//
+//    public void setId(Long id) {
+//        this.id = id;
+//    }
+
+
+    @Override
     @Id
     @SequenceGenerator(schema = "fndc", name = "financial_numbering_format_generator", sequenceName = "sq_financial_numbering_format")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_numbering_format_generator")
     public Long getId() {
-        return id;
-    }
-
-
-    public void setId(Long id) {
-        this.id = id;
+        return super.getId();
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
