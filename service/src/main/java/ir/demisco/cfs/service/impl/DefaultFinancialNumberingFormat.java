@@ -16,6 +16,7 @@ import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 
 @Service
 public class DefaultFinancialNumberingFormat implements FinancialNumberingFormatService {
@@ -104,5 +105,13 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
                 .build();
     }
 
-
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public boolean deleteNumberingFormatById(Long numberingFormatId) {
+        FinancialNumberingFormat deleteNumberingFormat = financialNumberingFormatRepository.findById(numberingFormatId)
+                .orElseThrow(() -> new RuleException("سند یافت نشد"));
+        deleteNumberingFormat.setDeletedDate(LocalDateTime.now());
+        financialNumberingFormatRepository.save(deleteNumberingFormat);
+        return true;
+    }
 }
