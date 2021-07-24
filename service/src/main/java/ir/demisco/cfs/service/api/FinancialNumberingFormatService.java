@@ -12,4 +12,6 @@ public interface FinancialNumberingFormatService {
     ResponseFinancialNumberingFormatDto save(FinancialNumberingFormatDto financialNumberingFormatDto);
 
     ResponseFinancialNumberingFormatDto upDate(FinancialNumberingFormatDto financialNumberingFormatDto);
+
+    boolean deleteNumberingFormatById(Long numberingFormatId);
 }

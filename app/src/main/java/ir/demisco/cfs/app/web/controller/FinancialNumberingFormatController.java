@@ -8,10 +8,7 @@ import ir.demisco.cfs.service.api.FinancialNumberingFormatService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api-financialNumberingFormat")
@@ -38,6 +35,14 @@ public class FinancialNumberingFormatController {
        }else{
             return ResponseEntity.ok(financialNumberingFormatService.upDate(financialNumberingFormatDto));
        }
+    }
+
+    @PostMapping("/delete/{id}")
+    public ResponseEntity<Boolean> delete(@PathVariable("id") Long  numberingFormatId) {
+        boolean result;
+        result = financialNumberingFormatService.deleteNumberingFormatById(numberingFormatId);
+        return ResponseEntity.ok(result);
+
     }
 }
 
