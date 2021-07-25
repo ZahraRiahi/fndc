@@ -1,6 +1,6 @@
 package ir.demisco.cfs.model.dto.response;
 
-import java.time.LocalDateTime;
+
 
 public class ResponseFinancialNumberingFormatDto {
 
@@ -9,6 +9,7 @@ public class ResponseFinancialNumberingFormatDto {
     private String financialNumberingFormatTypeDescription;
     private Long financialNumberingTypeId;
     private String    description;
+    private String message;
 
     public Long getId() {
         return id;
@@ -50,6 +51,13 @@ public class ResponseFinancialNumberingFormatDto {
         this.description = description;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
 
     public static Builder builder(){ return new Builder();}
 
@@ -86,6 +94,11 @@ public class ResponseFinancialNumberingFormatDto {
 
         public Builder description(String description) {
             responseFinancialNumberingFormatDto.setDescription(description);
+            return this;
+        }
+
+        public Builder message(String message) {
+            responseFinancialNumberingFormatDto.setMessage(message);
             return this;
         }
 

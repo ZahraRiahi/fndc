@@ -5,6 +5,7 @@ import ir.demisco.cfs.model.dto.response.FinancialDocumentDescriptionOrganizatio
 import ir.demisco.cfs.service.api.FinancialDocumentDescriptionService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -21,17 +22,14 @@ public class FinancialDocumentDescriptionController {
 
     @PostMapping("/list")
     public ResponseEntity<DataSourceResult> responseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
-//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         return ResponseEntity.ok(financialDocumentDescriptionService.getFinancialDocumentByOrganizationId(organizationId,dataSourceRequest));
 
     }
     @PostMapping("/save")
     public ResponseEntity<FinancialDocumentDescriptionOrganizationDto> documentDescription(@RequestBody FinancialDocumentDescriptionOrganizationDto documentDescriptionDto){
         if (documentDescriptionDto.getId() == null) {
-            Long aLong = financialDocumentDescriptionService.save(documentDescriptionDto);
-            documentDescriptionDto.setId(aLong);
-            return ResponseEntity.ok(documentDescriptionDto);
+            return ResponseEntity.ok(financialDocumentDescriptionService.save(documentDescriptionDto));
         } else {
             return ResponseEntity.ok(financialDocumentDescriptionService.update(documentDescriptionDto));
         }

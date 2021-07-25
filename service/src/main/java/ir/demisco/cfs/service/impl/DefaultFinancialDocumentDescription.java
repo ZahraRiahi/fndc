@@ -10,6 +10,7 @@ import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;
 
@@ -45,20 +46,14 @@ public class DefaultFinancialDocumentDescription implements FinancialDocumentDes
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
-    public Long save(FinancialDocumentDescriptionOrganizationDto documentDescriptionDto) {
-        //        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Long organizationId = 100L;
-        FinancialDocumentDescription financialDocumentDescription =
-                financialDocumentDescriptionRepository.getByParam(organizationId, documentDescriptionDto.getDescription());
-        if (financialDocumentDescription != null) {
-            throw new RuleException("سند با این شرح درج شده.");
-        } else {
-            FinancialDocumentDescription documentDescription =
-                    financialDocumentDescriptionRepository.findById(documentDescriptionDto.getId() == null ? 0L : documentDescriptionDto.getId()).orElse(new FinancialDocumentDescription());
-            documentDescription.setDescription(documentDescriptionDto.getDescription());
-            documentDescription.setOrganization(organizationRepository.getOne(organizationId));
-            return financialDocumentDescriptionRepository.save(documentDescription).getId();
-        }
+    public FinancialDocumentDescriptionOrganizationDto save(FinancialDocumentDescriptionOrganizationDto documentDescriptionDto) {
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        FinancialDocumentDescription documentDescription =
+                financialDocumentDescriptionRepository.findById(documentDescriptionDto.getId() == null ? 0L : documentDescriptionDto.getId()).orElse(new FinancialDocumentDescription());
+        documentDescription.setDescription(documentDescriptionDto.getDescription());
+        documentDescription.setOrganization(organizationRepository.getOne(organizationId));
+        financialDocumentDescriptionRepository.save(documentDescription);
+        return convertDocumentDescription(documentDescription);
     }
 
     @Override
@@ -66,8 +61,7 @@ public class DefaultFinancialDocumentDescription implements FinancialDocumentDes
     public FinancialDocumentDescriptionOrganizationDto update(FinancialDocumentDescriptionOrganizationDto documentDescriptionDto) {
         FinancialDocumentDescription documentDescription =
                 financialDocumentDescriptionRepository.findById(documentDescriptionDto.getId()).orElseThrow(() -> new RuleException("سند یافت نشد"));
-        //        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         documentDescription.setOrganization(organizationRepository.getOne(organizationId));
         documentDescription.setDescription(documentDescriptionDto.getDescription());
         return convertDocumentDescription(documentDescription);
@@ -75,17 +69,18 @@ public class DefaultFinancialDocumentDescription implements FinancialDocumentDes
 
     private FinancialDocumentDescriptionOrganizationDto convertDocumentDescription(FinancialDocumentDescription documentDescription) {
 
-            return FinancialDocumentDescriptionOrganizationDto.builder()
-                    .id(documentDescription.getId())
-                    .organizationId(documentDescription.getOrganization().getId())
-                    .description(documentDescription.getDescription())
-                    .build();
+        return FinancialDocumentDescriptionOrganizationDto.builder()
+                .id(documentDescription.getId())
+                .organizationId(documentDescription.getOrganization().getId())
+                .description(documentDescription.getDescription())
+                .message("عملیات موفقیت آمیز بود")
+                .build();
     }
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public boolean deleteDocumentDescriptionById(Long documentDescriptionId) {
-        FinancialDocumentDescription financialDocumentDescription=
+        FinancialDocumentDescription financialDocumentDescription =
                 financialDocumentDescriptionRepository.findById(documentDescriptionId).orElseThrow(() -> new RuleException("سند یافت نشد"));
         financialDocumentDescription.setDeletedDate(LocalDateTime.now());
         financialDocumentDescriptionRepository.save(financialDocumentDescription);
