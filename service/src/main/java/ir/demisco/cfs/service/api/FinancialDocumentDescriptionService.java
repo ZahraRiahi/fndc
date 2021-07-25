@@ -9,7 +9,7 @@ public interface FinancialDocumentDescriptionService {
 
     DataSourceResult getFinancialDocumentByOrganizationId(Long organizationId, DataSourceRequest dataSourceRequest);
 
-    Long save(FinancialDocumentDescriptionOrganizationDto documentDescriptionDto);
+    FinancialDocumentDescriptionOrganizationDto save(FinancialDocumentDescriptionOrganizationDto documentDescriptionDto);
 
     FinancialDocumentDescriptionOrganizationDto update(FinancialDocumentDescriptionOrganizationDto documentDescriptionDto);
 

@@ -5,6 +5,7 @@ public class FinancialDocumentDescriptionOrganizationDto {
     private Long id;
     private Long organizationId;
     private String    description;
+    private String  message;
 
     public Long getId() {
         return id;
@@ -30,9 +31,18 @@ public class FinancialDocumentDescriptionOrganizationDto {
         this.description = description;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
+
     public static final class Builder {
         private FinancialDocumentDescriptionOrganizationDto financialDocumentDescriptionOrganizationDto;
 
@@ -56,6 +66,10 @@ public class FinancialDocumentDescriptionOrganizationDto {
 
         public Builder description(String description) {
             financialDocumentDescriptionOrganizationDto.setDescription(description);
+            return this;
+        }
+        public Builder message(String message) {
+            financialDocumentDescriptionOrganizationDto.setMessage(message);
             return this;
         }
 
