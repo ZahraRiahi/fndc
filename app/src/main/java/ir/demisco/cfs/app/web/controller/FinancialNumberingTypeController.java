@@ -1,7 +1,6 @@
 package ir.demisco.cfs.app.web.controller;
 
-
-import ir.demisco.cfs.service.api.FinancialNumberingFormatTypeService;
+import ir.demisco.cfs.service.api.FinancialNumberingTypeService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import org.springframework.http.ResponseEntity;
@@ -11,17 +10,18 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api-financialNumberingFormatType")
-public class FinancialNumberingFormatTypeController {
+@RequestMapping("/api-financialNumberingType")
+public class FinancialNumberingTypeController {
 
-    private final  FinancialNumberingFormatTypeService financialNumberingFormatTypeService;
+    private final FinancialNumberingTypeService  financialNumberingTypeService;
 
-    public FinancialNumberingFormatTypeController(FinancialNumberingFormatTypeService financialNumberingFormatTypeService) {
-        this.financialNumberingFormatTypeService = financialNumberingFormatTypeService;
+    public FinancialNumberingTypeController(FinancialNumberingTypeService financialNumberingTypeService) {
+        this.financialNumberingTypeService = financialNumberingTypeService;
     }
 
     @PostMapping("/list")
     public ResponseEntity<DataSourceResult> responseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
-        return ResponseEntity.ok(financialNumberingFormatTypeService.getNumberingFormatType(dataSourceRequest));
+        return ResponseEntity.ok(financialNumberingTypeService.getNumberingType(dataSourceRequest));
+
     }
 }
