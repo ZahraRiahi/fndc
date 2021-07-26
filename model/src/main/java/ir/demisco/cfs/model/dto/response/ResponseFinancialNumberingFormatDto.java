@@ -68,7 +68,7 @@ public class ResponseFinancialNumberingFormatDto {
             responseFinancialNumberingFormatDto = new ResponseFinancialNumberingFormatDto();
         }
 
-        public static Builder aResponseFinancialNumberingFormatDto() {
+        public static Builder responseFinancialNumberingFormatDto() {
             return new Builder();
         }
 
