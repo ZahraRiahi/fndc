@@ -41,6 +41,7 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     }
 
     @Override
+    @Transactional
     public DataSourceResult getNumberingFormatByOrganizationId(Long organizationId, DataSourceRequest dataSourceRequest) {
 
         Asserts.notNull(organizationId, "organizationId is null");
