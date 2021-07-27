@@ -22,10 +22,11 @@ public class FinancialDocumentDescriptionController {
 
     @PostMapping("/list")
     public ResponseEntity<DataSourceResult> responseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId = 100L;
         return ResponseEntity.ok(financialDocumentDescriptionService.getFinancialDocumentByOrganizationId(organizationId,dataSourceRequest));
-
     }
+
     @PostMapping("/save")
     public ResponseEntity<FinancialDocumentDescriptionOrganizationDto> documentDescription(@RequestBody FinancialDocumentDescriptionOrganizationDto documentDescriptionDto){
         if (documentDescriptionDto.getId() == null) {
