@@ -22,8 +22,7 @@ public class FinancialDocumentDescriptionController {
 
     @PostMapping("/list")
     public ResponseEntity<DataSourceResult> responseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
-//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         return ResponseEntity.ok(financialDocumentDescriptionService.getFinancialDocumentByOrganizationId(organizationId,dataSourceRequest));
     }
 

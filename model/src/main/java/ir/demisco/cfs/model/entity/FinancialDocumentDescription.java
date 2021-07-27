@@ -10,22 +10,20 @@ import java.time.LocalDateTime;
 @Table(name = "FINANCIAL_DOCUMENT_DESCRIPTION", schema = "fndc")
 public class FinancialDocumentDescription extends AuditModel<Long> {
 
-    private Long id;
+
     private Organization organization;
     private String    description;
     private LocalDateTime deletedDate;
 
+    @Override
     @Id
     @SequenceGenerator(schema = "fndc", name = "financial_document_description_generator", sequenceName = "sq_financial_document_description")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_document_description_generator")
     public Long getId() {
-        return id;
+        return super.getId();
     }
 
 
-    public void setId(Long id) {
-        this.id = id;
-    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "ORGANIZATION_ID")
