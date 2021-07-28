@@ -5,10 +5,7 @@ import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentTypeDto;
 import ir.demisco.cfs.service.api.FinancialDocumentTypeService;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -29,5 +26,12 @@ public class FinancialDocumentTypeController {
         Long organizationId = 100L;
         return ResponseEntity.ok(financialDocumentTypeService.getNumberingFormatByOrganizationId(organizationId, responseFinancialDocumentTypeDto));
 
+    }
+
+    @PostMapping("/Delete/{id}")
+    public ResponseEntity<Boolean> delete(@PathVariable("id") Long financialDocumentTypeId) {
+        boolean result;
+        result = financialDocumentTypeService.deleteFinancialDocumentTypeById(financialDocumentTypeId);
+        return ResponseEntity.ok(result);
     }
 }

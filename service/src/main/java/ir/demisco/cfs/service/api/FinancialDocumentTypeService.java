@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface FinancialDocumentTypeService {
     List<FinancialDocumentTypeGetDto> getNumberingFormatByOrganizationId(Long organizationId, ResponseFinancialDocumentTypeDto responseFinancialDocumentTypeDto);
+
+    Boolean deleteFinancialDocumentTypeById(Long financialDocumentTypeId);
 }

@@ -14,4 +14,6 @@ public interface FinancialDocumentTypeRepository extends JpaRepository<Financial
             " where fd.organization.id=:organizationId" +
             " and :isFlag is null or ((:searchStatusFlag=false and fd.activeFlag=true) or (:searchStatusFlag=true))")
     List<FinancialDocumentType> findByOrganizationId(Long organizationId, Boolean searchStatusFlag, String isFlag);
+
+
 }
