@@ -3,6 +3,8 @@ package ir.demisco.cfs.app.web.controller;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeGetDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentTypeDto;
 import ir.demisco.cfs.service.api.FinancialDocumentTypeService;
+import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
+import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -33,5 +35,10 @@ public class FinancialDocumentTypeController {
         boolean result;
         result = financialDocumentTypeService.deleteFinancialDocumentTypeById(financialDocumentTypeId);
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/List")
+    public ResponseEntity<DataSourceResult> responseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
+        return ResponseEntity.ok(financialDocumentTypeService.getFinancialDocumentTypeOrganizationIdAndFinancialSystemId(dataSourceRequest));
     }
 }
