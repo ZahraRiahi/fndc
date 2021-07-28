@@ -18,7 +18,7 @@ public class FinancialSystemController {
         this.financialSystemService = financialSystemService;
     }
 
-    @PostMapping("/list")
+    @GetMapping("/list")
     public ResponseEntity<List<FinancialSystemDto>> responseEntity() {
         return ResponseEntity.ok(financialSystemService.getFinancialSystem());
     }
