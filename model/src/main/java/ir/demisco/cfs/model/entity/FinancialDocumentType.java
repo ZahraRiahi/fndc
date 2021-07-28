@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "FINANCIAL_DOCUMENT_TYPE", schema = "fndc")
 public class FinancialDocumentType extends AuditModel<Long> {
-
+    private Long id;
     private Organization organization;
     private String description;
     private Boolean activeFlag;
@@ -17,13 +17,17 @@ public class FinancialDocumentType extends AuditModel<Long> {
     private FinancialSystem financialSystem;
     private LocalDateTime DeletedDate;
 
-
-    @Override
     @Id
+    @Override
     @SequenceGenerator(schema = "fndc", name = "financial_document_type_generator", sequenceName = "sq_financial_document_type")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_document_type_generator")
+
     public Long getId() {
         return super.getId();
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
