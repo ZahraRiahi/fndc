@@ -18,12 +18,10 @@ public class FinancialDocumentType extends AuditModel<Long> {
     private LocalDateTime DeletedDate;
 
     @Id
-    @Override
     @SequenceGenerator(schema = "fndc", name = "financial_document_type_generator", sequenceName = "sq_financial_document_type")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_document_type_generator")
-
     public Long getId() {
-        return super.getId();
+        return id;
     }
 
     public void setId(Long id) {
