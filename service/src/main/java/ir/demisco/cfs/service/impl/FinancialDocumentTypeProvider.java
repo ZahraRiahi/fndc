@@ -27,8 +27,8 @@ public class FinancialDocumentTypeProvider implements GridDataProvider {
                 filterContext.getPath("description"),
                 filterContext.getPath("activeFlag"),
                 filterContext.getPath("automaticFlag"),
-                filterContext.getPath("financialSystem.id")
-//                filterContext.getPath("organization.id")
+                filterContext.getPath("financialSystem.id"),
+                filterContext.getPath("organization.id")
         );
     }
 
@@ -44,7 +44,7 @@ public class FinancialDocumentTypeProvider implements GridDataProvider {
                     .activeFlag((Boolean) array[2])
                     .automaticFlag((Boolean) array[3])
                     .financialSystemId((Long) array[4])
-//                    .organizationId((Long) array[5])
+                    .organizationId((Long) array[5])
                     .build();
         }).collect(Collectors.toList());
     }
