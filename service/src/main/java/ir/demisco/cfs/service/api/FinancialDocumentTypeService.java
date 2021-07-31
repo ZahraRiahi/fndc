@@ -1,6 +1,7 @@
 package ir.demisco.cfs.service.api;
 
 
+import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeGetDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentTypeDto;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
@@ -15,4 +16,7 @@ public interface FinancialDocumentTypeService {
 
     DataSourceResult getFinancialDocumentTypeOrganizationIdAndFinancialSystemId(DataSourceRequest dataSourceRequest);
 
+    ResponseFinancialDocumentTypeDto save(FinancialDocumentTypeDto financialDocumentTypeDto);
+
+    ResponseFinancialDocumentTypeDto update(FinancialDocumentTypeDto financialDocumentTypeDto);
 }
