@@ -46,7 +46,7 @@ public class FinancialDocumentTypeProvider implements GridDataProvider {
                     .automaticFlag((Boolean) array[3])
                     .financialSystemId((Long) array[4])
                     .organizationId((Long) array[5])
-                    .FinancialSystemDescription((String) array[5])
+                    .FinancialSystemDescription((String) array[6])
                     .build();
         }).collect(Collectors.toList());
     }
