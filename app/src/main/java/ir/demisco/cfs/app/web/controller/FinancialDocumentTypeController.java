@@ -1,5 +1,6 @@
 package ir.demisco.cfs.app.web.controller;
 
+import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeGetDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentTypeDto;
 import ir.demisco.cfs.service.api.FinancialDocumentTypeService;
@@ -39,5 +40,14 @@ public class FinancialDocumentTypeController {
     @PostMapping("/List")
     public ResponseEntity<DataSourceResult> responseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
         return ResponseEntity.ok(financialDocumentTypeService.getFinancialDocumentTypeOrganizationIdAndFinancialSystemId(dataSourceRequest));
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<ResponseFinancialDocumentTypeDto> financialDocumentTypeSave(@RequestBody FinancialDocumentTypeDto financialDocumentTypeDto)  {
+        if(financialDocumentTypeDto.getId()==null){
+            return ResponseEntity.ok(financialDocumentTypeService.save(financialDocumentTypeDto));
+        }else{
+            return ResponseEntity.ok(financialDocumentTypeService.update(financialDocumentTypeDto));
+        }
     }
 }

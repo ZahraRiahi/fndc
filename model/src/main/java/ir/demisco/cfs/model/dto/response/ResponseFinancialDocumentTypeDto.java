@@ -10,6 +10,7 @@ public class ResponseFinancialDocumentTypeDto {
     private Long financialSystemId;
     private String financialSystemDescription;
     private Boolean searchStatusFlag;
+    private String message;
 
     public Long getId() {
         return id;
@@ -75,6 +76,14 @@ public class ResponseFinancialDocumentTypeDto {
         this.searchStatusFlag = searchStatusFlag;
     }
 
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     public static Builder builder(){
         return new Builder();
      }
@@ -101,6 +110,11 @@ public class ResponseFinancialDocumentTypeDto {
 
         public Builder description(String description) {
             responseFinancialDocumentTypeDto.setDescription(description);
+            return this;
+        }
+
+        public Builder message(String message) {
+            responseFinancialDocumentTypeDto.setMessage(message);
             return this;
         }
 
