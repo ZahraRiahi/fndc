@@ -8,6 +8,7 @@ public class FinancialDocumentTypeDto {
     private Boolean activeFlag;
     private Boolean automaticFlag;
     private Long financialSystemId;
+    private Long organizationId;
     private LocalDateTime DeletedDate;
 
     public Long getId() {
@@ -48,6 +49,14 @@ public class FinancialDocumentTypeDto {
 
     public void setFinancialSystemId(Long financialSystemId) {
         this.financialSystemId = financialSystemId;
+    }
+
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 
     public LocalDateTime getDeletedDate() {
@@ -95,6 +104,11 @@ public class FinancialDocumentTypeDto {
 
         public Builder financialSystemId(Long financialSystemId) {
             financialDocumentTypeDto.setFinancialSystemId(financialSystemId);
+            return this;
+        }
+
+        public Builder organizationId(Long organizationId) {
+            financialDocumentTypeDto.setOrganizationId(organizationId);
             return this;
         }
 
