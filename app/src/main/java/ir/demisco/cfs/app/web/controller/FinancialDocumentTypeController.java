@@ -24,8 +24,7 @@ public class FinancialDocumentTypeController {
     @PostMapping("/get")
     public ResponseEntity<List<FinancialDocumentTypeGetDto>> responseEntity(@RequestBody ResponseFinancialDocumentTypeDto responseFinancialDocumentTypeDto) {
 
-//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         return ResponseEntity.ok(financialDocumentTypeService.getNumberingFormatByOrganizationId(organizationId, responseFinancialDocumentTypeDto));
 
     }
