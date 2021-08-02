@@ -23,8 +23,8 @@ public class FinancialLedgerTypeController {
     @PostMapping("/Get")
     public ResponseEntity<List<FinancialLedgerTypeDto>> responseEntity() {
 
-//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        return ResponseEntity.ok(financialLedgerTypeService.getFinancialLedgerType(100L));
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        return ResponseEntity.ok(financialLedgerTypeService.getFinancialLedgerType(organizationId));
 
     }
 }
