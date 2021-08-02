@@ -4,25 +4,28 @@ import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
 import ir.demisco.cloud.basic.model.entity.org.Organization;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
-@Table(name="FINANCIAL_DOCUMENT_TYPE" , schema = "fndc")
-public class FinancialDocumentType  extends AuditModel<Long> {
-
+@Table(name = "FINANCIAL_DOCUMENT_TYPE", schema = "fndc")
+public class FinancialDocumentType extends AuditModel<Long> {
+    private Long id;
     private Organization organization;
-    private String   description;
-    private Boolean   activeFlag;
+    private String description;
+    private Boolean activeFlag;
     private Boolean automaticFlag;
-    private FinancialSystem  financialSystem;
+    private FinancialSystem financialSystem;
+    private LocalDateTime DeletedDate;
 
-
-
-    @Override
     @Id
     @SequenceGenerator(schema = "fndc", name = "financial_document_type_generator", sequenceName = "sq_financial_document_type")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_document_type_generator")
     public Long getId() {
-        return super.getId();
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -67,5 +70,14 @@ public class FinancialDocumentType  extends AuditModel<Long> {
 
     public void setFinancialSystem(FinancialSystem financialSystem) {
         this.financialSystem = financialSystem;
+    }
+
+    @Column(name = "DELETED_DATE")
+    public LocalDateTime getDeletedDate() {
+        return DeletedDate;
+    }
+
+    public void setDeletedDate(LocalDateTime deletedDate) {
+        DeletedDate = deletedDate;
     }
 }
