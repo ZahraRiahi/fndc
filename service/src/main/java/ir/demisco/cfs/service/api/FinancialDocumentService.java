@@ -5,5 +5,6 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 
 public interface FinancialDocumentService {
 
+
     DataSourceResult getFinancialDocumentList(DataSourceRequest dataSourceRequest);
 }
