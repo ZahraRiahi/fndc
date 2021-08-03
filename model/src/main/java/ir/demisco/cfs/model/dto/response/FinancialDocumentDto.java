@@ -1,28 +1,22 @@
 package ir.demisco.cfs.model.dto.response;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 
 public class FinancialDocumentDto {
 
     private Long id;
-    private LocalDateTime documentDate;
+    private Date documentDate;
     private String    description;
-    private Long  financialDocumentStatusId;
-    private String financialDocumentStatusCode;
-    private String financialDocumentStatusName;
-    private Long permanentDocumentNumber;
-    private Boolean automaticFlag;
-    private Long organizationId;
     private Long financialDocumentTypeId;
     private String financialDocumentTypeDescription;
-    private Long financialPeriodId;
-    private Long financialLedgerTypeId;
-    private String financialLedgerTypeDescription;
-    private Long financialDepartmentId;
-    private String financialDepartmentCode;
-    private String financialDepartmentName;
     private Long documentNumber;
     private LocalDateTime deletedDate;
+    private Long userId;
+    private String userName;
+    private Long  debitAmount;
+    private Long  creditAmount;
+    private String fullDescription;
 
     public Long getId() {
         return id;
@@ -32,11 +26,11 @@ public class FinancialDocumentDto {
         this.id = id;
     }
 
-    public LocalDateTime getDocumentDate() {
+    public Date getDocumentDate() {
         return documentDate;
     }
 
-    public void setDocumentDate(LocalDateTime documentDate) {
+    public void setDocumentDate(Date documentDate) {
         this.documentDate = documentDate;
     }
 
@@ -48,53 +42,6 @@ public class FinancialDocumentDto {
         this.description = description;
     }
 
-    public Long getFinancialDocumentStatusId() {
-        return financialDocumentStatusId;
-    }
-
-    public void setFinancialDocumentStatusId(Long financialDocumentStatusId) {
-        this.financialDocumentStatusId = financialDocumentStatusId;
-    }
-
-    public String getFinancialDocumentStatusCode() {
-        return financialDocumentStatusCode;
-    }
-
-    public void setFinancialDocumentStatusCode(String financialDocumentStatusCode) {
-        this.financialDocumentStatusCode = financialDocumentStatusCode;
-    }
-
-    public String getFinancialDocumentStatusName() {
-        return financialDocumentStatusName;
-    }
-
-    public void setFinancialDocumentStatusName(String financialDocumentStatusName) {
-        this.financialDocumentStatusName = financialDocumentStatusName;
-    }
-
-    public Long getPermanentDocumentNumber() {
-        return permanentDocumentNumber;
-    }
-
-    public void setPermanentDocumentNumber(Long permanentDocumentNumber) {
-        this.permanentDocumentNumber = permanentDocumentNumber;
-    }
-
-    public Boolean getAutomaticFlag() {
-        return automaticFlag;
-    }
-
-    public void setAutomaticFlag(Boolean automaticFlag) {
-        this.automaticFlag = automaticFlag;
-    }
-
-    public Long getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
-    }
 
     public Long getFinancialDocumentTypeId() {
         return financialDocumentTypeId;
@@ -110,54 +57,6 @@ public class FinancialDocumentDto {
 
     public void setFinancialDocumentTypeDescription(String financialDocumentTypeDescription) {
         this.financialDocumentTypeDescription = financialDocumentTypeDescription;
-    }
-
-    public Long getFinancialPeriodId() {
-        return financialPeriodId;
-    }
-
-    public void setFinancialPeriodId(Long financialPeriodId) {
-        this.financialPeriodId = financialPeriodId;
-    }
-
-    public Long getFinancialLedgerTypeId() {
-        return financialLedgerTypeId;
-    }
-
-    public void setFinancialLedgerTypeId(Long financialLedgerTypeId) {
-        this.financialLedgerTypeId = financialLedgerTypeId;
-    }
-
-    public String getFinancialLedgerTypeDescription() {
-        return financialLedgerTypeDescription;
-    }
-
-    public void setFinancialLedgerTypeDescription(String financialLedgerTypeDescription) {
-        this.financialLedgerTypeDescription = financialLedgerTypeDescription;
-    }
-
-    public Long getFinancialDepartmentId() {
-        return financialDepartmentId;
-    }
-
-    public void setFinancialDepartmentId(Long financialDepartmentId) {
-        this.financialDepartmentId = financialDepartmentId;
-    }
-
-    public String getFinancialDepartmentCode() {
-        return financialDepartmentCode;
-    }
-
-    public void setFinancialDepartmentCode(String financialDepartmentCode) {
-        this.financialDepartmentCode = financialDepartmentCode;
-    }
-
-    public String getFinancialDepartmentName() {
-        return financialDepartmentName;
-    }
-
-    public void setFinancialDepartmentName(String financialDepartmentName) {
-        this.financialDepartmentName = financialDepartmentName;
     }
 
     public Long getDocumentNumber() {
@@ -176,11 +75,50 @@ public class FinancialDocumentDto {
         this.deletedDate = deletedDate;
     }
 
+    public Long getUserId() {
+        return userId;
+    }
 
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public String getUserName() {
+        return userName;
+    }
+
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    public Long getDebitAmount() {
+        return debitAmount;
+    }
+
+    public void setDebitAmount(Long debitAmount) {
+        this.debitAmount = debitAmount;
+    }
+
+    public Long getCreditAmount() {
+        return creditAmount;
+    }
+
+    public void setCreditAmount(Long creditAmount) {
+        this.creditAmount = creditAmount;
+    }
+
+    public String getFullDescription() {
+        return fullDescription;
+    }
+
+    public void setFullDescription(String fullDescription) {
+        this.fullDescription = fullDescription;
+    }
 
     public static Builder builder(){
       return new Builder();
     }
+
 
     public static final class Builder {
         private FinancialDocumentDto financialDocumentDto;
@@ -198,43 +136,13 @@ public class FinancialDocumentDto {
             return this;
         }
 
-        public Builder documentDate(LocalDateTime documentDate) {
+        public Builder documentDate(Date documentDate) {
             financialDocumentDto.setDocumentDate(documentDate);
             return this;
         }
 
         public Builder description(String description) {
             financialDocumentDto.setDescription(description);
-            return this;
-        }
-
-        public Builder financialDocumentStatusId(Long financialDocumentStatusId) {
-            financialDocumentDto.setFinancialDocumentStatusId(financialDocumentStatusId);
-            return this;
-        }
-
-        public Builder financialDocumentStatusCode(String financialDocumentStatusCode) {
-            financialDocumentDto.setFinancialDocumentStatusCode(financialDocumentStatusCode);
-            return this;
-        }
-
-        public Builder financialDocumentStatusName(String financialDocumentStatusName) {
-            financialDocumentDto.setFinancialDocumentStatusName(financialDocumentStatusName);
-            return this;
-        }
-
-        public Builder permanentDocumentNumber(Long permanentDocumentNumber) {
-            financialDocumentDto.setPermanentDocumentNumber(permanentDocumentNumber);
-            return this;
-        }
-
-        public Builder automaticFlag(Boolean automaticFlag) {
-            financialDocumentDto.setAutomaticFlag(automaticFlag);
-            return this;
-        }
-
-        public Builder organizationId(Long organizationId) {
-            financialDocumentDto.setOrganizationId(organizationId);
             return this;
         }
 
@@ -248,36 +156,6 @@ public class FinancialDocumentDto {
             return this;
         }
 
-        public Builder financialPeriodId(Long financialPeriodId) {
-            financialDocumentDto.setFinancialPeriodId(financialPeriodId);
-            return this;
-        }
-
-        public Builder financialLedgerTypeId(Long financialLedgerTypeId) {
-            financialDocumentDto.setFinancialLedgerTypeId(financialLedgerTypeId);
-            return this;
-        }
-
-        public Builder financialLedgerTypeDescription(String financialLedgerTypeDescription) {
-            financialDocumentDto.setFinancialLedgerTypeDescription(financialLedgerTypeDescription);
-            return this;
-        }
-
-        public Builder financialDepartmentId(Long financialDepartmentId) {
-            financialDocumentDto.setFinancialDepartmentId(financialDepartmentId);
-            return this;
-        }
-
-        public Builder financialDepartmentCode(String financialDepartmentCode) {
-            financialDocumentDto.setFinancialDepartmentCode(financialDepartmentCode);
-            return this;
-        }
-
-        public Builder financialDepartmentName(String financialDepartmentName) {
-            financialDocumentDto.setFinancialDepartmentName(financialDepartmentName);
-            return this;
-        }
-
         public Builder documentNumber(Long documentNumber) {
             financialDocumentDto.setDocumentNumber(documentNumber);
             return this;
@@ -285,6 +163,31 @@ public class FinancialDocumentDto {
 
         public Builder deletedDate(LocalDateTime deletedDate) {
             financialDocumentDto.setDeletedDate(deletedDate);
+            return this;
+        }
+
+        public Builder userId(Long userId) {
+            financialDocumentDto.setUserId(userId);
+            return this;
+        }
+
+        public Builder userName(String userName) {
+            financialDocumentDto.setUserName(userName);
+            return this;
+        }
+
+        public Builder debitAmount(Long debitAmount) {
+            financialDocumentDto.setDebitAmount(debitAmount);
+            return this;
+        }
+
+        public Builder creditAmount(Long creditAmount) {
+            financialDocumentDto.setCreditAmount(creditAmount);
+            return this;
+        }
+
+        public Builder fullDescription(String fullDescription) {
+            financialDocumentDto.setFullDescription(fullDescription);
             return this;
         }
 
