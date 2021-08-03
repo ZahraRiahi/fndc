@@ -1,9 +1,8 @@
 package ir.demisco.cfs.model.dto.response;
 
-import ir.demisco.cfs.model.entity.FinancialDocumentStatus;
-
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 public class ResponseFinancialDocumentDto {
 
@@ -12,11 +11,20 @@ public class ResponseFinancialDocumentDto {
     private Long financialNumberingTypeId;
     private Long fromNumber;
     private Long toNumber;
-    private List<FinancialDocumentStatusDto> financialDocumentStatusDtoList;
+    private List<Long> financialDocumentStatusDtoListId;
     private String description;
     private Long FromAccountId;
     private Long toAccountId;
-    private Long CentricAccountId;
+    private String FromAccountCode;
+    private String toAccountCode;
+    private Long centricAccountId;
+    private Long centricAccountTypeId;
+    private Long userId;
+    private Long priceTypeId;
+    private Long fromPrice;
+    private Long toPrice;
+    private Double tolerance;
+    Map<String, Object> paramMap;
 
     public LocalDateTime getStartDate() {
         return startDate;
@@ -58,14 +66,6 @@ public class ResponseFinancialDocumentDto {
         this.toNumber = toNumber;
     }
 
-    public List<FinancialDocumentStatusDto> getFinancialDocumentStatusDtoList() {
-        return financialDocumentStatusDtoList;
-    }
-
-    public void setFinancialDocumentStatusDtoList(List<FinancialDocumentStatusDto> financialDocumentStatusDtoList) {
-        this.financialDocumentStatusDtoList = financialDocumentStatusDtoList;
-    }
-
     public String getDescription() {
         return description;
     }
@@ -90,17 +90,98 @@ public class ResponseFinancialDocumentDto {
         this.toAccountId = toAccountId;
     }
 
+    public String getFromAccountCode() {
+        return FromAccountCode;
+    }
+
+    public void setFromAccountCode(String fromAccountCode) {
+        FromAccountCode = fromAccountCode;
+    }
+
+    public String getToAccountCode() {
+        return toAccountCode;
+    }
+
+    public void setToAccountCode(String toAccountCode) {
+        this.toAccountCode = toAccountCode;
+    }
+
     public Long getCentricAccountId() {
-        return CentricAccountId;
+        return centricAccountId;
     }
 
     public void setCentricAccountId(Long centricAccountId) {
-        CentricAccountId = centricAccountId;
+        this.centricAccountId = centricAccountId;
+    }
+
+    public Long getCentricAccountTypeId() {
+        return centricAccountTypeId;
+    }
+
+    public void setCentricAccountTypeId(Long centricAccountTypeId) {
+        this.centricAccountTypeId = centricAccountTypeId;
+    }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
+    public Long getPriceTypeId() {
+        return priceTypeId;
+    }
+
+    public void setPriceTypeId(Long priceTypeId) {
+        this.priceTypeId = priceTypeId;
+    }
+
+    public Long getFromPrice() {
+        return fromPrice;
+    }
+
+    public void setFromPrice(Long fromPrice) {
+        this.fromPrice = fromPrice;
+    }
+
+    public Long getToPrice() {
+        return toPrice;
+    }
+
+    public void setToPrice(Long toPrice) {
+        this.toPrice = toPrice;
+    }
+
+    public Double getTolerance() {
+        return tolerance;
+    }
+
+    public void setTolerance(Double tolerance) {
+        this.tolerance = tolerance;
+    }
+
+    public Map<String, Object> getParamMap() {
+        return paramMap;
+    }
+
+    public void setParamMap(Map<String, Object> paramMap) {
+        this.paramMap = paramMap;
     }
 
     public static Builder  builder(){
         return new Builder();
     }
+
+    public List<Long> getFinancialDocumentStatusDtoListId() {
+        return financialDocumentStatusDtoListId;
+    }
+
+    public void setFinancialDocumentStatusDtoListId(List<Long> financialDocumentStatusDtoListId) {
+        this.financialDocumentStatusDtoListId = financialDocumentStatusDtoListId;
+    }
+
 
     public static final class Builder {
         private ResponseFinancialDocumentDto responseFinancialDocumentDto;
@@ -109,7 +190,7 @@ public class ResponseFinancialDocumentDto {
             responseFinancialDocumentDto = new ResponseFinancialDocumentDto();
         }
 
-        public static Builder aResponseFinancialDocumentDto() {
+        public static Builder responseFinancialDocumentDto() {
             return new Builder();
         }
 
@@ -138,11 +219,6 @@ public class ResponseFinancialDocumentDto {
             return this;
         }
 
-        public Builder financialDocumentStatusDtoList(List<FinancialDocumentStatusDto> financialDocumentStatusDtoList) {
-            responseFinancialDocumentDto.setFinancialDocumentStatusDtoList(financialDocumentStatusDtoList);
-            return this;
-        }
-
         public Builder description(String description) {
             responseFinancialDocumentDto.setDescription(description);
             return this;
@@ -158,8 +234,53 @@ public class ResponseFinancialDocumentDto {
             return this;
         }
 
-        public Builder CentricAccountId(Long CentricAccountId) {
-            responseFinancialDocumentDto.setCentricAccountId(CentricAccountId);
+        public Builder FromAccountCode(String FromAccountCode) {
+            responseFinancialDocumentDto.setFromAccountCode(FromAccountCode);
+            return this;
+        }
+
+        public Builder toAccountCode(String toAccountCode) {
+            responseFinancialDocumentDto.setToAccountCode(toAccountCode);
+            return this;
+        }
+
+        public Builder centricAccountId(Long centricAccountId) {
+            responseFinancialDocumentDto.setCentricAccountId(centricAccountId);
+            return this;
+        }
+
+        public Builder centricAccountTypeId(Long centricAccountTypeId) {
+            responseFinancialDocumentDto.setCentricAccountTypeId(centricAccountTypeId);
+            return this;
+        }
+
+        public Builder userId(Long userId) {
+            responseFinancialDocumentDto.setUserId(userId);
+            return this;
+        }
+
+        public Builder priceTypeId(Long priceTypeId) {
+            responseFinancialDocumentDto.setPriceTypeId(priceTypeId);
+            return this;
+        }
+
+        public Builder fromPrice(Long fromPrice) {
+            responseFinancialDocumentDto.setFromPrice(fromPrice);
+            return this;
+        }
+
+        public Builder toPrice(Long toPrice) {
+            responseFinancialDocumentDto.setToPrice(toPrice);
+            return this;
+        }
+
+        public Builder tolerance(Double tolerance) {
+            responseFinancialDocumentDto.setTolerance(tolerance);
+            return this;
+        }
+
+        public Builder paramMap(Map<String, Object> paramMap) {
+            responseFinancialDocumentDto.setParamMap(paramMap);
             return this;
         }
 

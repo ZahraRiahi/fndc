@@ -7,11 +7,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "FINANCIAL_DOCUMENT_NUMBER" , schema = "fndc")
-public class financialDocumentNumber extends AuditModel<Long> {
+public class FinancialDocumentNumber extends AuditModel<Long> {
 
     private FinancialNumberingType financialNumberingType;
     private FinancialDocument financialDocument;
-    private String  documentNumber;
+    private Long  documentNumber;
     private LocalDateTime deletedDate;
 
     @Override
@@ -42,11 +42,11 @@ public class financialDocumentNumber extends AuditModel<Long> {
         this.financialDocument = financialDocument;
     }
 
-    public String getDocumentNumber() {
+    public Long getDocumentNumber() {
         return documentNumber;
     }
 
-    public void setDocumentNumber(String documentNumber) {
+    public void setDocumentNumber(Long documentNumber) {
         this.documentNumber = documentNumber;
     }
 

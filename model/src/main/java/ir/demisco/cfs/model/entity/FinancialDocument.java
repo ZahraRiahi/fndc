@@ -10,6 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "FINANCIAL_DOCUMENT" , schema = "fndc")
 public class FinancialDocument  extends AuditModel<Long> {
 
+    private Long id;
     private LocalDateTime documentDate;
     private String    description;
     private FinancialDocumentStatus  financialDocumentStatus;
@@ -24,12 +25,16 @@ public class FinancialDocument  extends AuditModel<Long> {
     private LocalDateTime DeletedDate;
 
 
-    @Override
+//    @Override
     @Id
     @SequenceGenerator(schema = "fndc", name = "financial_document_generator", sequenceName = "sq_financial_document")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_document_generator")
     public Long getId() {
-        return super.getId();
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public LocalDateTime getDocumentDate() {
