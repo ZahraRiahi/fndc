@@ -23,11 +23,9 @@ import java.util.stream.Collectors;
 public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
 
     private final FinancialLedgerTypeRepository financialDocumentTypeRepository;
-    private final GridFilterService gridFilterService;
 
-    public DefaultFinancialLedgerType(FinancialLedgerTypeRepository financialDocumentTypeRepository, GridFilterService gridFilterService) {
+    public DefaultFinancialLedgerType(FinancialLedgerTypeRepository financialDocumentTypeRepository) {
         this.financialDocumentTypeRepository = financialDocumentTypeRepository;
-        this.gridFilterService = gridFilterService;
     }
 
     @Override
@@ -54,7 +52,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                         .financialCodingTypeId(Long.parseLong(item[2].toString()))
                         .activeFlag(Integer.parseInt(item[3].toString()) == 1)
                         .financialCodingTypeDescription(item[4].toString())
-                        .financialNumberingTypeDescription(item[5] == null ? "" :item[5].toString() )
+                        .financialNumberingTypeDescription(item[5] == null ? "" : item[5].toString())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialLedgerTypeResponses);

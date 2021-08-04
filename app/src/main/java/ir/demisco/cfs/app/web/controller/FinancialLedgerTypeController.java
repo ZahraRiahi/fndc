@@ -4,6 +4,7 @@ import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeDto;
 import ir.demisco.cfs.service.api.FinancialLedgerTypeService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,7 +26,6 @@ public class FinancialLedgerTypeController {
 
     @GetMapping("/Get")
     public ResponseEntity<List<FinancialLedgerTypeDto>> responseEntity() {
-
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         return ResponseEntity.ok(financialLedgerTypeService.getFinancialLedgerType(organizationId));
 
