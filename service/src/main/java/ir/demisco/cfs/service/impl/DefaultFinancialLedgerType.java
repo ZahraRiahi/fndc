@@ -23,11 +23,9 @@ import java.util.stream.Collectors;
 public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
 
     private final FinancialLedgerTypeRepository financialDocumentTypeRepository;
-    private final GridFilterService gridFilterService;
 
-    public DefaultFinancialLedgerType(FinancialLedgerTypeRepository financialDocumentTypeRepository, GridFilterService gridFilterService) {
+    public DefaultFinancialLedgerType(FinancialLedgerTypeRepository financialDocumentTypeRepository) {
         this.financialDocumentTypeRepository = financialDocumentTypeRepository;
-        this.gridFilterService = gridFilterService;
     }
 
     @Override
