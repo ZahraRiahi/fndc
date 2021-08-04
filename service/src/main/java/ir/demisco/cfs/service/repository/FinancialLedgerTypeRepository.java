@@ -30,8 +30,7 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             " left outer join fndc.financial_numbering_type fnnt on fnnt.id=lgnt.financial_numbering_type_id" +
             "  where fnlt.deleted_date is null" +
             "   and  fnlt.organization_id = :organizationId" +
-            "   and  (fnlt.financial_coding_type_id = :financialCodingTypeId or" +
-            "        :financialCodingType is null)" +
+            "   and  (:financialCodingType is null or fnlt.financial_coding_type_id =:financialCodingTypeId)" +
             "   and  (:financialLedgerType is null or fnlt.id = :financialLedgerTypeId)" +
             "   group by fnlt.id," +
             "       fnlt.description," +

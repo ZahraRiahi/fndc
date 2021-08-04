@@ -13,7 +13,6 @@ public class FinancialNumberingType  extends AuditModel<Long> {
 
     private String   description;
     private LocalDateTime deletedDate;
-   // private List<LedgerNumberingType> ledgerNumberingTypeList;
 
     @Override
     @Id
@@ -40,10 +39,4 @@ public class FinancialNumberingType  extends AuditModel<Long> {
         this.deletedDate = deletedDate;
     }
 
-//    @OneToMany(mappedBy = "financialNumberingType")
-//    public List<LedgerNumberingType> getLedgerNumberingTypeList() { return ledgerNumberingTypeList; }
-//
-//    public void setLedgerNumberingTypeList(List<LedgerNumberingType> ledgerNumberingTypeList) {
-//        this.ledgerNumberingTypeList = ledgerNumberingTypeList;
-//    }
 }

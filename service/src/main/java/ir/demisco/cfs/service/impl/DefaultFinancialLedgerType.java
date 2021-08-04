@@ -51,10 +51,10 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                 FinancialLedgerTypeResponse.builder()
                         .id(Long.parseLong(item[0].toString()))
                         .description(item[1].toString())
-                        .activeFlag(Integer.parseInt(item[2].toString()) == 1)
-                        .financialCodingTypeId(Long.parseLong(item[3].toString()))
+                        .financialCodingTypeId(Long.parseLong(item[2].toString()))
+                        .activeFlag(Integer.parseInt(item[3].toString()) == 1)
                         .financialCodingTypeDescription(item[4].toString())
-                        .financialNumberingTypeDescription(item[5].toString())
+                        .financialNumberingTypeDescription(item[5] == null ? "" :item[5].toString() )
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialLedgerTypeResponses);
@@ -78,7 +78,6 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                         financialLedgerTypeParameterDto.setFinancialCodingType(null);
                         financialLedgerTypeParameterDto.setFinancialCodingTypeId(0L);
                     }
-
                     break;
                 case "id":
                     if (item.getValue() != null) {
@@ -93,6 +92,4 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         }
         return financialLedgerTypeParameterDto;
     }
-
-
 }
