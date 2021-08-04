@@ -4,13 +4,14 @@ import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Entity
 @Table(name="FINANCIAL_NUMBERING_TYPE" , schema = "fndc")
 public class FinancialNumberingType  extends AuditModel<Long> {
 
 
-    private String    description;
+    private String   description;
     private LocalDateTime deletedDate;
 
     @Override
@@ -37,4 +38,5 @@ public class FinancialNumberingType  extends AuditModel<Long> {
     public void setDeletedDate(LocalDateTime deletedDate) {
         this.deletedDate = deletedDate;
     }
+
 }
