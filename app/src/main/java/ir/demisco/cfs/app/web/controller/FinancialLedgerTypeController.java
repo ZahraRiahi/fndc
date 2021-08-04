@@ -26,8 +26,8 @@ public class FinancialLedgerTypeController {
 
     @GetMapping("/Get")
     public ResponseEntity<List<FinancialLedgerTypeDto>> responseEntity() {
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        return ResponseEntity.ok(financialLedgerTypeService.getFinancialLedgerType(organizationId));
+//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        return ResponseEntity.ok(financialLedgerTypeService.getFinancialLedgerType(100L));
 
     }
 
