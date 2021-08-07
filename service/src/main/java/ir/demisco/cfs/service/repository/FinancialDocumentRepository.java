@@ -66,22 +66,23 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
                    "             or fndi.centric_account_id_6 = cnt.id)) " +
                    "   and (:user is null or (fidc.creator_id = :userId or " +
                    "       fidc.last_modifier_id = :userId)) " +
-                   "   and ((:priceTypeId = 1  " +
-                   "      and (:fromPrice is null or " +
+                   "   and ((:priceType is null or " +
+                   "       (:priceTypeId = 1  " +
+                   "   and (:fromPrice is null or " +
                    "       (fndi.debit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0)) " +
                    "   and (:toPrice is null or " +
-                   "       (fndi.debit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))) or " +
-                   "       (:priceTypeId = 2  " +
-                   "     and  (:fromPrice is null or " +
+                   "       (fndi.debit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))) or " +
+                   "       (:priceType is null or (:priceTypeId = 2  " +
+                   "   and  (:fromPrice is null or " +
                    "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
-                   "    and   (:toPrice is null  or " +
-                   "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))) " +
+                   "   and   (:toPrice is null  or " +
+                   "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
                    "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description "
             , nativeQuery = true)
     Page<Object[]> getFinancialDocumentList(LocalDateTime startDate, LocalDateTime endDate, Long financialNumberingTypeId,Object fromNumber,Long fromNumberId
                                             ,Object toNumber,Long toNumberId,String description,Object fromAccount,String fromAccountCode, Object toAccount,
                                             String toAccountCode, Object centricAccount,Long centricAccountId,
                                             Object centricAccountType,Long centricAccountTypeId, Object user,Long userId,
-                                            Long priceTypeId,Object fromPrice,Long fromPriceAmount,Object toPrice,Long toPriceAmount,Double tolerance,
-                                            List<Long> documentStatusId,Pageable pageable);
+                                            Object priceType,Long priceTypeId,Object fromPrice,Long fromPriceAmount,Object toPrice,Long toPriceAmount,
+                                            Double tolerance,List<Long> documentStatusId,Pageable pageable);
 }
