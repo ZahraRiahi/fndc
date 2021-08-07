@@ -7,13 +7,14 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "FINANCIAL_LEDGER_TYPE" , schema = "fndc")
+@Table(name = "FINANCIAL_LEDGER_TYPE", schema = "fndc")
 public class FinancialLedgerType extends AuditModel<Long> {
 
-    private String    description;
-    private  FinancialCodingType financialCodingType;
+    private String description;
+    private FinancialCodingType financialCodingType;
     private Organization organization;
     private LocalDateTime DeletedDate;
+    private boolean activeFlag;
 
 
     @Override
@@ -31,6 +32,7 @@ public class FinancialLedgerType extends AuditModel<Long> {
     public void setDescription(String description) {
         this.description = description;
     }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FINANCIAL_CODING_TYPE_ID")
     public FinancialCodingType getFinancialCodingType() {
@@ -58,4 +60,18 @@ public class FinancialLedgerType extends AuditModel<Long> {
     public void setDeletedDate(LocalDateTime deletedDate) {
         DeletedDate = deletedDate;
     }
+
+    @Column(name="ACTIVE_FLAG")
+    public boolean isActiveFlag() { return activeFlag; }
+
+    public void setActiveFlag(boolean activeFlag) { this.activeFlag = activeFlag; }
+
+//    @ManyToOne(fetch = FetchType.LAZY)
+//    @JoinColumn(name="FINANCIAL_NUMBERING_TYPE_ID")
+//    public FinancialNumberingType getNumberingType() { return financialNumberingType; }
+//
+//    public void setNumberingType(FinancialNumberingType numberingType) { this.financialNumberingType = numberingType;
+//    }
+
+
 }
