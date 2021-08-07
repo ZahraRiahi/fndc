@@ -46,9 +46,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 paramSearch.getEndDate(),paramSearch.getFinancialNumberingTypeId(),paramMap.get("fromNumber"),paramSearch.getFromNumber(),
                 paramMap.get("toNumber"),paramSearch.getToNumber(),paramSearch.getDescription(),paramMap.get("fromAccount"),paramSearch.getFromAccountCode(),
                 paramMap.get("toAccountCode"),paramSearch.getToAccountCode(),paramMap.get("centricAccount"),paramSearch.getCentricAccountId()
-                ,paramMap.get("centricAccountType"),paramSearch.getCentricAccountTypeId(),paramMap.get("user"),paramSearch.getUserId(),
-                paramSearch.getPriceTypeId(),paramMap.get("fromPrice"),paramSearch.getFromPrice(),paramMap.get("toPrice"),paramSearch.getToPrice()
-                ,paramSearch.getTolerance(),paramSearch.getFinancialDocumentStatusDtoListId(),pageable);
+                ,paramMap.get("centricAccountType"),paramSearch.getCentricAccountTypeId(),paramMap.get("user"),paramSearch.getUserId()
+                ,paramMap.get("priceType"),paramSearch.getPriceTypeId(),paramMap.get("fromPrice"),paramSearch.getFromPrice(),paramMap.get("toPrice"),
+                paramSearch.getToPrice(),paramSearch.getTolerance(),paramSearch.getFinancialDocumentStatusDtoListId(),pageable);
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -183,7 +183,15 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     break;
 
                 case "priceType.id" :
-                    responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
+                    if (item.getValue() != null) {
+                        map.put("priceType", "priceType");
+                        responseFinancialDocumentDto.setParamMap(map);
+                        responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
+                    }else{
+                        map.put("priceType",null);
+                        responseFinancialDocumentDto.setParamMap(map);
+                        responseFinancialDocumentDto.setPriceTypeId(0L);
+                    }
                     break;
 
                 case "fromPriceAmount" :
@@ -211,7 +219,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     break;
 
                 case "tolerance" :
-                    responseFinancialDocumentDto.setTolerance(Double.parseDouble(item.getValue().toString()));
+                    if (item.getValue() != null) {
+                        responseFinancialDocumentDto.setTolerance(Double.parseDouble(item.getValue().toString()));
+                    } else {
+                        responseFinancialDocumentDto.setTolerance(0D);
+                    }
+
                     break;
             }
         }
