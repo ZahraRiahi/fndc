@@ -5,7 +5,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-import org.springframework.stereotype.Component;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -22,7 +21,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "  fndi.debit_amount, " +
             "  fndi.credit_amount, " +
             "  fndi.description  || '-' ||  fiac.full_description as full_description, " +
-            "  cnac.code|| '-' || cnac.name as centricAccountDescription " +
+            "  cnac.code|| '-' || cnac.name as centricAccountDescription, " +
+            "  fndi.sequence_number " +
             "  from fndc.financial_document fidc " +
             " inner join fndc.financial_document_item fndi " +
             "    on fidc.id = fndi.financial_document_id" +
