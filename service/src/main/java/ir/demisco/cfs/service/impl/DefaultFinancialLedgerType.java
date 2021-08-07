@@ -47,7 +47,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                 , param.getFinancialCodingType(), param.getFinancialLedgerTypeId(), param.getFinancialLedgerType(), pageable);
         List<FinancialLedgerTypeResponse> financialLedgerTypeResponses = list.stream().map(item ->
                 FinancialLedgerTypeResponse.builder()
-                        .id(Long.parseLong(item[0].toString()))
+                        .financialLedgerTypeId(Long.parseLong(item[0].toString()))
                         .description(item[1].toString())
                         .financialCodingTypeId(Long.parseLong(item[2].toString()))
                         .activeFlag(Integer.parseInt(item[3].toString()) == 1)

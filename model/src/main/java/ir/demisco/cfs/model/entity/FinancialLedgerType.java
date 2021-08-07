@@ -61,17 +61,14 @@ public class FinancialLedgerType extends AuditModel<Long> {
         DeletedDate = deletedDate;
     }
 
-    @Column(name="ACTIVE_FLAG")
-    public boolean isActiveFlag() { return activeFlag; }
+    @Column(name = "ACTIVE_FLAG")
+    public boolean isActiveFlag() {
+        return activeFlag;
+    }
 
-    public void setActiveFlag(boolean activeFlag) { this.activeFlag = activeFlag; }
-
-//    @ManyToOne(fetch = FetchType.LAZY)
-//    @JoinColumn(name="FINANCIAL_NUMBERING_TYPE_ID")
-//    public FinancialNumberingType getNumberingType() { return financialNumberingType; }
-//
-//    public void setNumberingType(FinancialNumberingType numberingType) { this.financialNumberingType = numberingType;
-//    }
+    public void setActiveFlag(boolean activeFlag) {
+        this.activeFlag = activeFlag;
+    }
 
 
 }
