@@ -1,6 +1,5 @@
 package ir.demisco.cfs.model.dto.response;
 
-import java.time.LocalDateTime;
 import java.util.Date;
 
 public class FinancialDocumentItemDto {
@@ -15,6 +14,7 @@ public class FinancialDocumentItemDto {
     private Long  creditAmount;
     private String fullDescription;
     private String centricAccountDescription;
+    private Long  sequenceNumber;
 
 
     public Long getId() {
@@ -97,9 +97,18 @@ public class FinancialDocumentItemDto {
         this.centricAccountDescription = centricAccountDescription;
     }
 
+    public Long getSequenceNumber() {
+        return sequenceNumber;
+    }
+
+    public void setSequenceNumber(Long sequenceNumber) {
+        this.sequenceNumber = sequenceNumber;
+    }
+
     public  static Builder builder(){
         return new Builder();
     }
+
 
     public static final class Builder {
         private FinancialDocumentItemDto financialDocumentItemDto;
@@ -159,6 +168,11 @@ public class FinancialDocumentItemDto {
 
         public Builder centricAccountDescription(String centricAccountDescription) {
             financialDocumentItemDto.setCentricAccountDescription(centricAccountDescription);
+            return this;
+        }
+
+        public Builder sequenceNumber(Long sequenceNumber) {
+            financialDocumentItemDto.setSequenceNumber(sequenceNumber);
             return this;
         }
 
