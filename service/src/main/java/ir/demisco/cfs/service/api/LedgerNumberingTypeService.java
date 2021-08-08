@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.api;
 
+import ir.demisco.cfs.model.dto.request.LedgerNumberingTypeRequest;
 import ir.demisco.cfs.model.dto.response.FinancialNumberingTypeResponse;
 
 import java.util.List;
@@ -11,6 +12,6 @@ public interface LedgerNumberingTypeService {
      * @param ledgerNumberingTypeId
      * @return
      */
-    List<FinancialNumberingTypeResponse> getLedgerNumberingType(Long ledgerNumberingTypeId);
+    List<FinancialNumberingTypeResponse> getLedgerNumberingType(LedgerNumberingTypeRequest ledgerNumberingTypeRequest);
 
 }

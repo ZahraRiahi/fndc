@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.impl;
 
+import ir.demisco.cfs.model.dto.request.LedgerNumberingTypeRequest;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeResponse;
 import ir.demisco.cfs.model.dto.response.FinancialNumberingTypeResponse;
 import ir.demisco.cfs.service.api.LedgerNumberingTypeService;
@@ -21,11 +22,12 @@ public class DefaultLedgerNumberingType implements LedgerNumberingTypeService {
 
     @Override
     @Transactional
-    public List<FinancialNumberingTypeResponse> getLedgerNumberingType(Long ledgerNumberingTypeId) {
+    public List<FinancialNumberingTypeResponse> getLedgerNumberingType(LedgerNumberingTypeRequest ledgerNumberingTypeRequest) {
         FinancialLedgerTypeResponse parameter = new FinancialLedgerTypeResponse();
-        if (ledgerNumberingTypeId != null) {
+        Long financialLedgerTypeId = ledgerNumberingTypeRequest.getFinancialLedgerTypeId();
+        if ( financialLedgerTypeId!= null) {
             parameter.setFinancialLedgerType("financialLedgerType");
-            parameter.setFinancialLedgerTypeId(ledgerNumberingTypeId);
+            parameter.setFinancialLedgerTypeId(financialLedgerTypeId);
         } else {
             parameter.setFinancialLedgerTypeId(0L);
             parameter.setFinancialLedgerType(null);
