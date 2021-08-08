@@ -43,6 +43,10 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     public DataSourceResult financialLedgerTypeList(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialLedgerTypeParameterDto param = setParameterToDto(filters);
+        if (param.getOrganizationId() == null) {
+            Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+            param.setOrganizationId(organizationId);
+        }
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         Page<Object[]> list = financialDocumentTypeRepository.financialLedgerTypeList(param.getOrganizationId(), param.getFinancialCodingTypeId()
                 , param.getFinancialCodingType(), param.getFinancialLedgerTypeId(), param.getFinancialLedgerType(), pageable);
@@ -66,10 +70,6 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         FinancialLedgerTypeParameterDto financialLedgerTypeParameterDto = new FinancialLedgerTypeParameterDto();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
-                case "organization.id":
-                    Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-                    financialLedgerTypeParameterDto.setOrganizationId(organizationId);
-                    break;
                 case "financialCodingType.id":
                     if (item.getValue() != null) {
                         financialLedgerTypeParameterDto.setFinancialCodingType("financialCodingType");
