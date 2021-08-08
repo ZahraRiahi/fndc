@@ -2,19 +2,32 @@ package ir.demisco.cfs.model.dto.response;
 
 
 public class FinancialLedgerTypeResponse {
-    private Long id;
+    private Long financialLedgerTypeId;
     private String description;
     private Boolean activeFlag;
     private Long financialCodingTypeId;
     private String financialNumberingTypeDescription;
     private String financialCodingTypeDescription;
+    private String financialLedgerType;
 
-    public Long getId() {
-        return id;
+    public Long getFinancialLedgerTypeId() {
+        return financialLedgerTypeId;
     }
 
-    public void setId(Long id) {
-        this.id = id;
+    public void setFinancialLedgerTypeId(Long financialLedgerTypeId) {
+        this.financialLedgerTypeId = financialLedgerTypeId;
+    }
+
+    public Boolean getActiveFlag() {
+        return activeFlag;
+    }
+
+    public String getFinancialLedgerType() {
+        return financialLedgerType;
+    }
+
+    public void setFinancialLedgerType(String financialLedgerType) {
+        this.financialLedgerType = financialLedgerType;
     }
 
     public String getDescription() {
@@ -68,12 +81,12 @@ public class FinancialLedgerTypeResponse {
             financialLedgerTypeResponse = new FinancialLedgerTypeResponse();
         }
 
-        public static Builder financialLedgerTypeResponse() {
+        public static Builder aFinancialLedgerTypeResponse() {
             return new Builder();
         }
 
-        public Builder id(Long id) {
-            financialLedgerTypeResponse.setId(id);
+        public Builder financialLedgerTypeId(Long financialLedgerTypeId) {
+            financialLedgerTypeResponse.setFinancialLedgerTypeId(financialLedgerTypeId);
             return this;
         }
 
@@ -82,7 +95,7 @@ public class FinancialLedgerTypeResponse {
             return this;
         }
 
-        public Builder activeFlag(boolean activeFlag) {
+        public Builder activeFlag(Boolean activeFlag) {
             financialLedgerTypeResponse.setActiveFlag(activeFlag);
             return this;
         }
@@ -99,6 +112,11 @@ public class FinancialLedgerTypeResponse {
 
         public Builder financialCodingTypeDescription(String financialCodingTypeDescription) {
             financialLedgerTypeResponse.setFinancialCodingTypeDescription(financialCodingTypeDescription);
+            return this;
+        }
+
+        public Builder financialLedgerType(String financialLedgerType) {
+            financialLedgerTypeResponse.setFinancialLedgerType(financialLedgerType);
             return this;
         }
 

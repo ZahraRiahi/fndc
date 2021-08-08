@@ -9,6 +9,7 @@ import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -47,7 +48,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                 , param.getFinancialCodingType(), param.getFinancialLedgerTypeId(), param.getFinancialLedgerType(), pageable);
         List<FinancialLedgerTypeResponse> financialLedgerTypeResponses = list.stream().map(item ->
                 FinancialLedgerTypeResponse.builder()
-                        .id(Long.parseLong(item[0].toString()))
+                        .financialLedgerTypeId(Long.parseLong(item[0].toString()))
                         .description(item[1].toString())
                         .financialCodingTypeId(Long.parseLong(item[2].toString()))
                         .activeFlag(Integer.parseInt(item[3].toString()) == 1)
@@ -66,7 +67,8 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
                 case "organization.id":
-                    financialLedgerTypeParameterDto.setOrganizationId(Long.parseLong(item.getValue().toString()));
+                    Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+                    financialLedgerTypeParameterDto.setOrganizationId(organizationId);
                     break;
                 case "financialCodingType.id":
                     if (item.getValue() != null) {
