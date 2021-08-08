@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface FinancialLedgerTypeService {
     /**
-     * لیست انواع دفاتر مالی
+     * واکشی انواع دفاتر مالی
      *
      * @param organizationId
      * @return
