@@ -9,6 +9,7 @@ import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -66,7 +67,8 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
                 case "organization.id":
-                    financialLedgerTypeParameterDto.setOrganizationId(Long.parseLong(item.getValue().toString()));
+                    Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+                    financialLedgerTypeParameterDto.setOrganizationId(organizationId);
                     break;
                 case "financialCodingType.id":
                     if (item.getValue() != null) {
