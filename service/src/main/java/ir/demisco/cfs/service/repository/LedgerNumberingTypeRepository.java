@@ -11,13 +11,13 @@ public interface LedgerNumberingTypeRepository extends JpaRepository<FinancialNu
 
     @Query(value = "select fnnt.id," +
             "       fnnt.description," +
-            "       case when lgnt.id is null then 0 else 1 end flg_exists" +
-            "  from   fndc.financial_numbering_type fnnt" +
-            "  left outer join fndc.ledger_numbering_type lgnt" +
-            "    on lgnt.financial_numbering_type_id = fnnt.id" +
-            " where fnnt.deleted_date is null" +
-            "   and lgnt.deleted_date is null" +
-            "   and (:financialLedgerType is null or lgnt.financial_ledger_type_id = :financialLedgerTypeId)", nativeQuery = true)
+            "       case when :financialLedgerTypeId is null or not exists" +
+            "          (select 1 from fndc.ledger_numbering_type lgnt" +
+            "                where lgnt.financial_numbering_type_id = fnnt.id" +
+            "                  and lgnt.financial_ledger_type_id = :financialLedgerTypeId" +
+            "                  and lgnt.deleted_date is null) then 0 else 1 end flg_exists" +
+            "  from fndc.financial_numbering_type fnnt" +
+            "  where fnnt.deleted_date is null", nativeQuery = true)
     List<Object[]> getLedgerNumberingType(Long financialLedgerTypeId, String financialLedgerType);
 
 }

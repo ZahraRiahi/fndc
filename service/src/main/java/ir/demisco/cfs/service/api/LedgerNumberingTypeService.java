@@ -8,9 +8,6 @@ import java.util.List;
 public interface LedgerNumberingTypeService {
     /**
      * واکشی انواع شماره گذاری دفاتر مالی
-     *
-     * @param ledgerNumberingTypeId
-     * @return
      */
     List<FinancialNumberingTypeResponse> getLedgerNumberingType(LedgerNumberingTypeRequest ledgerNumberingTypeRequest);
 
