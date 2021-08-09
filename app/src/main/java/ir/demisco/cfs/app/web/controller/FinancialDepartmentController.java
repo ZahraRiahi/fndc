@@ -10,7 +10,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 @Controller()
-@RequestMapping("/api-financial_Department")
+@RequestMapping("/api-financialDepartment")
 public class FinancialDepartmentController {
 
     private final FinancialDepartmentService financialDepartmentService;
@@ -22,6 +22,5 @@ public class FinancialDepartmentController {
     @PostMapping("/List")
     public ResponseEntity<DataSourceResult> financialLedgerTypeList(@RequestBody DataSourceRequest dataSourceRequest) {
         return ResponseEntity.ok(financialDepartmentService.financialDepartmentList(dataSourceRequest));
-
     }
 }
