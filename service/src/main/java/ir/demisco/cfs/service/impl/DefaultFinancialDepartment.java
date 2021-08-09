@@ -28,8 +28,8 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
     public DataSourceResult financialDepartmentList(DataSourceRequest dataSourceRequest) {
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Page<Object[]> list1 = financialDepartmentRepository.getFinancialDocumentItemList(100L,pageable);
-        List<FinancialDepartmentResponse> financialLedgerTypeResponses = list1.stream().map(item ->
+        Page<Object[]>  financialDocumentItemList = financialDepartmentRepository.getFinancialDocumentItemList(100L,pageable);
+        List<FinancialDepartmentResponse> financialLedgerTypeResponses = financialDocumentItemList.stream().map(item ->
                 FinancialDepartmentResponse.builder()
                         .departmentId(Long.parseLong(item[0].toString()))
                         .code(item[1].toString())
@@ -40,7 +40,7 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialLedgerTypeResponses);
-        dataSourceResult.setTotal(list1.getTotalElements());
+        dataSourceResult.setTotal(financialDocumentItemList.getTotalElements());
         return  dataSourceResult;
 
     }
