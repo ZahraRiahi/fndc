@@ -78,7 +78,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "   and  (:fromPrice is null or " +
             "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
             "   and   (:toPrice is null  or " +
-            "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) "
+            "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
+            "  order by  fndi.sequence_number "
             , nativeQuery = true)
     Page<Object[]> getFinancialDocumentItemList(LocalDateTime startDate,LocalDateTime endDate, Long financialNumberingTypeId, Object fromNumber
                                                ,Long fromNumberId,Object toNumber, Long toNumberId,String description, Object fromAccount,String fromAccountCode,
