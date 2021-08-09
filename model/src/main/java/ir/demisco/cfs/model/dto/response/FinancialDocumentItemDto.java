@@ -7,6 +7,7 @@ public class FinancialDocumentItemDto {
     private Long id;
     private Date date;
     private Long documentNumber;
+    private Long  sequenceNumber;
     private Long financialAccountId;
     private String  financialAccountDescription;
     private String    description;
@@ -14,7 +15,7 @@ public class FinancialDocumentItemDto {
     private Long  creditAmount;
     private String fullDescription;
     private String centricAccountDescription;
-    private Long  sequenceNumber;
+
 
 
     public Long getId() {
@@ -136,6 +137,12 @@ public class FinancialDocumentItemDto {
             return this;
         }
 
+        public Builder sequenceNumber(Long sequenceNumber) {
+            financialDocumentItemDto.setSequenceNumber(sequenceNumber);
+            return this;
+        }
+
+
         public Builder financialAccountId(Long financialAccountId) {
             financialDocumentItemDto.setFinancialAccountId(financialAccountId);
             return this;
@@ -171,10 +178,6 @@ public class FinancialDocumentItemDto {
             return this;
         }
 
-        public Builder sequenceNumber(Long sequenceNumber) {
-            financialDocumentItemDto.setSequenceNumber(sequenceNumber);
-            return this;
-        }
 
         public FinancialDocumentItemDto build() {
             return financialDocumentItemDto;
