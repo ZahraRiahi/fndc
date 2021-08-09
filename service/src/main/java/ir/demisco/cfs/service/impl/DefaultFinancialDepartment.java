@@ -26,10 +26,6 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
     @Override
     @Transactional
     public DataSourceResult financialDepartmentList(DataSourceRequest dataSourceRequest) {
-//        List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
-//        for (DataSourceRequest.FilterDescriptor item : filters) {
-//            Object value = item.getValue();
-//        }
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         Page<Object[]> list1 = financialDepartmentRepository.getFinancialDocumentItemList(100L,pageable);

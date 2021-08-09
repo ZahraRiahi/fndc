@@ -22,6 +22,5 @@ public class FinancialDepartmentController {
     @PostMapping("/List")
     public ResponseEntity<DataSourceResult> financialLedgerTypeList(@RequestBody DataSourceRequest dataSourceRequest) {
         return ResponseEntity.ok(financialDepartmentService.financialDepartmentList(dataSourceRequest));
-
     }
 }
