@@ -16,13 +16,13 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "  fidc.document_date, " +
             "  fndi.description, " +
             "  fidc.document_number, " +
+            "  fndi.sequence_number, " +
             "  fiac.description  as financialAccountDescription, " +
             "  fndi.financial_account_id, " +
             "  fndi.debit_amount, " +
             "  fndi.credit_amount, " +
             "  fndi.description  || '-' ||  fiac.full_description as full_description, " +
-            "  cnac.code|| '-' || cnac.name as centricAccountDescription, " +
-            "  fndi.sequence_number " +
+            "  cnac.code|| '-' || cnac.name as centricAccountDescription " +
             "  from fndc.financial_document fidc " +
             " inner join fndc.financial_document_item fndi " +
             "    on fidc.id = fndi.financial_document_id" +
