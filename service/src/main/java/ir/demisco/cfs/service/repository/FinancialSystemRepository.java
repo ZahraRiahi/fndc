@@ -12,4 +12,5 @@ public interface FinancialSystemRepository extends JpaRepository<FinancialSystem
     List<FinancialSystem> findByFinancialSystem();
 
 
+
 }

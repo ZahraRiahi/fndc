@@ -51,7 +51,7 @@ public class DefaultFinancialDocumentDescription implements FinancialDocumentDes
         FinancialDocumentDescription documentDescription =
                 financialDocumentDescriptionRepository.findById(documentDescriptionDto.getId() == null ? 0L : documentDescriptionDto.getId()).orElse(new FinancialDocumentDescription());
         documentDescription.setDescription(documentDescriptionDto.getDescription());
-        documentDescription.setOrganization(organizationRepository.getOne(organizationId));
+        documentDescription.setOrganization(organizationRepository.getOne(100L));
         financialDocumentDescriptionRepository.save(documentDescription);
         return convertDocumentDescription(documentDescription);
     }

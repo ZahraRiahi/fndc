@@ -1,14 +1,14 @@
 package ir.demisco.cfs.app.web.controller;
 
+import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeGetDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentTypeDto;
 import ir.demisco.cfs.service.api.FinancialDocumentTypeService;
+import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
+import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -25,9 +25,29 @@ public class FinancialDocumentTypeController {
     @PostMapping("/get")
     public ResponseEntity<List<FinancialDocumentTypeGetDto>> responseEntity(@RequestBody ResponseFinancialDocumentTypeDto responseFinancialDocumentTypeDto) {
 
-//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         return ResponseEntity.ok(financialDocumentTypeService.getNumberingFormatByOrganizationId(organizationId, responseFinancialDocumentTypeDto));
 
+    }
+
+    @PostMapping("/Delete/{id}")
+    public ResponseEntity<Boolean> delete(@PathVariable("id") Long financialDocumentTypeId) {
+        boolean result;
+        result = financialDocumentTypeService.deleteFinancialDocumentTypeById(financialDocumentTypeId);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/List")
+    public ResponseEntity<DataSourceResult> responseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
+        return ResponseEntity.ok(financialDocumentTypeService.getFinancialDocumentTypeOrganizationIdAndFinancialSystemId(dataSourceRequest));
+    }
+
+    @PostMapping("/save")
+    public ResponseEntity<ResponseFinancialDocumentTypeDto> financialDocumentTypeSave(@RequestBody FinancialDocumentTypeDto financialDocumentTypeDto)  {
+        if(financialDocumentTypeDto.getId()==null){
+            return ResponseEntity.ok(financialDocumentTypeService.save(financialDocumentTypeDto));
+        }else{
+            return ResponseEntity.ok(financialDocumentTypeService.update(financialDocumentTypeDto));
+        }
     }
 }

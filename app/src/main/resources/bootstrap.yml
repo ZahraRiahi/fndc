@@ -1,3 +1,3 @@
 spring:
-  application:
-    name: fndc-service
+    application:
+        name: fndc-service
