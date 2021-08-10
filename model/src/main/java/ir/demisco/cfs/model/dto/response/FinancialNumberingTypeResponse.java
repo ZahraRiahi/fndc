@@ -4,7 +4,7 @@ public class FinancialNumberingTypeResponse {
 
     private Long id;
     private String description;
-    private Boolean flgExists;
+    private Long flgExists;
 
     public Long getId() {
         return id;
@@ -22,11 +22,11 @@ public class FinancialNumberingTypeResponse {
         this.description = description;
     }
 
-    public Boolean getFlgExists() {
+    public Long getFlgExists() {
         return flgExists;
     }
 
-    public void setFlgExists(Boolean flgExists) {
+    public void setFlgExists(Long flgExists) {
         this.flgExists = flgExists;
     }
 
@@ -55,7 +55,7 @@ public class FinancialNumberingTypeResponse {
             return this;
         }
 
-        public Builder flgExists(Boolean flgExists) {
+        public Builder flgExists(Long flgExists) {
             ledgerNumberingTypeDto.setFlgExists(flgExists);
             return this;
         }
