@@ -38,18 +38,16 @@ public class DefaultLedgerNumberingType implements LedgerNumberingTypeService {
         FinancialLedgerTypeResponse parameter = new FinancialLedgerTypeResponse();
         Long financialLedgerTypeId = ledgerNumberingTypeRequest.getFinancialLedgerTypeId();
         if (financialLedgerTypeId != null) {
-            parameter.setFinancialLedgerType("financialLedgerType");
             parameter.setFinancialLedgerTypeId(financialLedgerTypeId);
         } else {
-            parameter.setFinancialLedgerTypeId(0L);
             parameter.setFinancialLedgerType(null);
+            parameter.setFinancialLedgerTypeId(0L);
         }
         List<Object[]> ledgerNumberingTypeList = ledgerNumberingTypeRepository.getLedgerNumberingType(parameter.getFinancialLedgerTypeId(), parameter.getFinancialLedgerType());
         return ledgerNumberingTypeList.stream().map(objects -> FinancialNumberingTypeResponse.builder().id(Long.parseLong(objects[0].toString()))
                 .description(objects[1].toString())
-                .flgExists(Boolean.valueOf((objects[2].toString())))
+                .flgExists(Long.valueOf((objects[2].toString())))
                 .build()).collect(Collectors.toList());
 
     }
-
 }
