@@ -26,7 +26,6 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
     @Override
     @Transactional
     public DataSourceResult financialDepartmentList() {
-//        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
 //        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         List<Object[]>  financialDocumentItemList = financialDepartmentRepository.getFinancialDocumentItemList(100L);
         List<FinancialDepartmentResponse> financialLedgerTypeResponses = financialDocumentItemList.stream().map(item ->
