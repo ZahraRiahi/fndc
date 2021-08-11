@@ -32,6 +32,7 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             "   and  fnlt.organization_id = :organizationId" +
             "   and  (:financialCodingType is null or fnlt.financial_coding_type_id =:financialCodingTypeId)" +
             "   and  (:financialLedgerType is null or fnlt.id = :financialLedgerTypeId)" +
+            "   and lgnt.deleted_date is null" +
             "   group by fnlt.id," +
             "       fnlt.description," +
             "       fnlt.financial_coding_type_id," +
