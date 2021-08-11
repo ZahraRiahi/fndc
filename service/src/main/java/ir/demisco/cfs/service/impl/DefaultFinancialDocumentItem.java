@@ -54,13 +54,14 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                         .date((Date) item[1])
                         .description(item[2].toString())
                         .documentNumber(Long.parseLong(item[3].toString()))
-                        .financialAccountDescription(item[4].toString())
-                        .financialAccountId(Long.parseLong(item[5].toString()))
-                        .debitAmount(Long.parseLong(item[6].toString()))
-                        .creditAmount(Long.parseLong(item[7].toString()))
-                        .fullDescription(item[8].toString())
-                        .centricAccountDescription(item[9].toString())
-                        .sequenceNumber(Long.parseLong(item[10].toString()))
+                        .sequenceNumber(Long.parseLong(item[4].toString()))
+                        .financialAccountDescription(item[5].toString())
+                        .financialAccountId(Long.parseLong(item[6].toString()))
+                        .debitAmount(Long.parseLong(item[7].toString()))
+                        .creditAmount(Long.parseLong(item[8].toString()))
+                        .fullDescription(item[9].toString())
+                        .centricAccountDescription(item[10].toString())
+
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(documentItemDtoList);

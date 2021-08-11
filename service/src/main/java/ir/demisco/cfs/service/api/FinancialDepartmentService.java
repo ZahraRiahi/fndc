@@ -8,6 +8,6 @@ public interface FinancialDepartmentService {
     /**لیست انواع شعب مال
      * @return
      */
-    DataSourceResult financialDepartmentList(DataSourceRequest dataSourceRequest);
+    DataSourceResult financialDepartmentList();
 
 }
