@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface FinancialDepartmentRepository extends JpaRepository<FinancialDepartment,Long>{
 
     @Query(value = "select fndp.id  as departmentId," +
@@ -24,7 +26,7 @@ public interface FinancialDepartmentRepository extends JpaRepository<FinancialDe
             " where fndp.deleted_date is null" +
             "   and fnlt.organization_id = :organizationId" +
             "   and fndp.organization_id = :organizationId",nativeQuery = true)
-    Page<Object[]> getFinancialDocumentItemList(Long organizationId, Pageable pageable);
+    List<Object[]> getFinancialDocumentItemList(Long organizationId);
 
 
 }
