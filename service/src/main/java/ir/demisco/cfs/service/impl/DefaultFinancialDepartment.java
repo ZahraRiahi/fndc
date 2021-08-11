@@ -25,10 +25,9 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
 
     @Override
     @Transactional
-    public DataSourceResult financialDepartmentList(DataSourceRequest dataSourceRequest) {
-        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
+    public DataSourceResult financialDepartmentList() {
 //        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Page<Object[]>  financialDocumentItemList = financialDepartmentRepository.getFinancialDocumentItemList(100L,pageable);
+        List<Object[]>  financialDocumentItemList = financialDepartmentRepository.getFinancialDocumentItemList(100L);
         List<FinancialDepartmentResponse> financialLedgerTypeResponses = financialDocumentItemList.stream().map(item ->
                 FinancialDepartmentResponse.builder()
                         .departmentId(Long.parseLong(item[0].toString()))
@@ -40,7 +39,7 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialLedgerTypeResponses);
-        dataSourceResult.setTotal(financialDocumentItemList.getTotalElements());
+//        dataSourceResult.setTotal(financialDocumentItemList.getTotalElements());
         return  dataSourceResult;
 
     }
