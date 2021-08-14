@@ -76,11 +76,7 @@ public class DefaultLedgerNumberingType implements LedgerNumberingTypeService {
             Optional<LedgerNumberingType> ledgerNumberingType = ledgerNumberingTypeRepository.findById(ledgerNumberingTypeDto.getId());
             LedgerNumberingType ledgerNumberingTypeTBL = ledgerNumberingType.get();
             if (ledgerNumberingType.isPresent() && ledgerNumberingTypeTBL.getDeletedDate() == null) {
-                try {
                     updateLedgerNumberingType(ledgerNumberingTypeTBL, financialNumberingTypeRequest, financialLedgerTypeRequest);
-                } catch (Exception e) {
-                    throw new RuleException(" بروزرسانی انجام نشد");
-                }
             } else {
                 insertLedgerNumberingType(financialNumberingTypeRequest, financialLedgerTypeRequest);
             }
