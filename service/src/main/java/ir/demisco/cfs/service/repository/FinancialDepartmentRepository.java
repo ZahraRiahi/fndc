@@ -1,14 +1,12 @@
 package ir.demisco.cfs.service.repository;
 
 import ir.demisco.cfs.model.entity.FinancialDepartment;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface FinancialDepartmentRepository extends JpaRepository<FinancialDepartment,Long>{
+public interface FinancialDepartmentRepository extends JpaRepository<FinancialDepartment, Long> {
 
     @Query(value = "select fndp.id  as departmentId," +
             "       fndp.code," +
@@ -25,7 +23,7 @@ public interface FinancialDepartmentRepository extends JpaRepository<FinancialDe
             "   and fnlt.deleted_date is null" +
             " where fndp.deleted_date is null" +
             "   and fnlt.organization_id = :organizationId" +
-            "   and fndp.organization_id = :organizationId",nativeQuery = true)
+            "   and fndp.organization_id = :organizationId", nativeQuery = true)
     List<Object[]> getFinancialDocumentItemList(Long organizationId);
 
 

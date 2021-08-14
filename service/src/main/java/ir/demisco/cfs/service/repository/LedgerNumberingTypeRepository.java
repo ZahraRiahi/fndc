@@ -1,13 +1,14 @@
 package ir.demisco.cfs.service.repository;
 
 import ir.demisco.cfs.model.entity.FinancialNumberingType;
+import ir.demisco.cfs.model.entity.LedgerNumberingType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
 
-public interface LedgerNumberingTypeRepository extends JpaRepository<FinancialNumberingType, Long> {
+public interface LedgerNumberingTypeRepository extends JpaRepository<LedgerNumberingType, Long> {
 
     @Query(value = "select fnnt.id," +
             "       fnnt.description," +
@@ -19,5 +20,13 @@ public interface LedgerNumberingTypeRepository extends JpaRepository<FinancialNu
             "  from fndc.financial_numbering_type fnnt" +
             "  where fnnt.deleted_date is null", nativeQuery = true)
     List<Object[]> getLedgerNumberingType(Long financialLedgerTypeId, String financialLedgerType);
+
+
+    @Query("select coalesce(COUNT(lnt.id),0) from LedgerNumberingType lnt where lnt.financialLedgerType.id=:financialLedgerTypeId" +
+            " and lnt.financialNumberingType.id=:financialNumberingTypeId " +
+//            " and lnt.deletedDate=:deleteDate " +
+            " and lnt.deletedDate is null")
+    Long getCountByLedgerTypeIdAndNumberingTypeIdAndDeleteDate(Long financialLedgerTypeId, Long financialNumberingTypeId);
+
 
 }

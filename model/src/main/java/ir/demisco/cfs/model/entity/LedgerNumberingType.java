@@ -1,8 +1,10 @@
 package ir.demisco.cfs.model.entity;
 
 import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
+import org.bouncycastle.asn1.cms.TimeStampedData;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "LEDGER_NUMBERING_TYPE", schema = "fndc")
@@ -10,7 +12,7 @@ public class LedgerNumberingType extends AuditModel<Long> {
 
     private FinancialNumberingType financialNumberingType;
     private FinancialLedgerType financialLedgerType;
-
+    private LocalDateTime deletedDate;
 
     @Override
     @Id
@@ -39,5 +41,13 @@ public class LedgerNumberingType extends AuditModel<Long> {
 
     public void setFinancialLedgerType(FinancialLedgerType financialLedgerType) {
         this.financialLedgerType = financialLedgerType;
+    }
+    @Column(name = "DELETED_DATE")
+    public LocalDateTime getDeletedDate() {
+        return deletedDate;
+    }
+
+    public void setDeletedDate(LocalDateTime deletedDate) {
+        this.deletedDate = deletedDate;
     }
 }

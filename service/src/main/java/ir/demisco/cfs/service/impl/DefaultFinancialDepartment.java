@@ -1,14 +1,9 @@
 package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.response.FinancialDepartmentResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import ir.demisco.cfs.service.api.FinancialDepartmentService;
 import ir.demisco.cfs.service.repository.FinancialDepartmentRepository;
-import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
-import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -27,7 +22,7 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
     @Transactional
     public DataSourceResult financialDepartmentList() {
 //        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        List<Object[]>  financialDocumentItemList = financialDepartmentRepository.getFinancialDocumentItemList(100L);
+        List<Object[]> financialDocumentItemList = financialDepartmentRepository.getFinancialDocumentItemList(100L);
         List<FinancialDepartmentResponse> financialLedgerTypeResponses = financialDocumentItemList.stream().map(item ->
                 FinancialDepartmentResponse.builder()
                         .departmentId(Long.parseLong(item[0].toString()))
@@ -40,7 +35,7 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialLedgerTypeResponses);
 //        dataSourceResult.setTotal(financialDocumentItemList.getTotalElements());
-        return  dataSourceResult;
+        return dataSourceResult;
 
     }
 }

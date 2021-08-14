@@ -2,6 +2,7 @@ package ir.demisco.cfs.app.web.controller;
 
 import ir.demisco.cfs.model.dto.request.LedgerNumberingTypeRequest;
 import ir.demisco.cfs.model.dto.response.FinancialNumberingTypeResponse;
+import ir.demisco.cfs.model.dto.response.LedgerNumberingTypeDto;
 import ir.demisco.cfs.service.api.LedgerNumberingTypeService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -27,4 +28,11 @@ public class LedgerNumberingTypeController {
         return ResponseEntity.ok(ledgerNumberingTypeService.getLedgerNumberingType(ledgerNumberingTypeRequest));
 
     }
+
+    @PostMapping("/Save")
+    public ResponseEntity<Boolean> SaveLedgerNumberingType(@RequestBody LedgerNumberingTypeDto ledgerNumberingTypeDto) {
+        return ResponseEntity.ok(ledgerNumberingTypeService.saveLedgerNumberingType(ledgerNumberingTypeDto));
+
+    }
+
 }
