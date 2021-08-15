@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.api;
 
+import ir.demisco.cfs.model.dto.request.FinancialLedgerTypeRequest;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeDto;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -22,4 +23,11 @@ public interface FinancialLedgerTypeService {
      * @return
      */
     DataSourceResult financialLedgerTypeList(DataSourceRequest dataSourceRequest);
+
+    /**
+     * 	ذخیره انواع دفاتر مالی
+     * @param financialLedgerTypeRequest
+     * @return
+     */
+    Boolean saveFinancialLedgerType(FinancialLedgerTypeRequest financialLedgerTypeRequest);
 }

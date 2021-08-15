@@ -1,6 +1,8 @@
 package ir.demisco.cfs.app.web.controller;
 
+import ir.demisco.cfs.model.dto.request.FinancialLedgerTypeRequest;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeDto;
+import ir.demisco.cfs.model.entity.FinancialLedgerType;
 import ir.demisco.cfs.service.api.FinancialLedgerTypeService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -34,5 +36,10 @@ public class FinancialLedgerTypeController {
     @PostMapping("/List")
     public ResponseEntity<DataSourceResult> financialLedgerTypeList(@RequestBody DataSourceRequest dataSourceRequest) {
         return ResponseEntity.ok(financialLedgerTypeService.financialLedgerTypeList(dataSourceRequest));
+    }
+
+    @PostMapping("/Save")
+    public ResponseEntity<Boolean> saveFinancialLedgerType (@RequestBody FinancialLedgerTypeRequest financialLedgerTypeRequest) {
+        return ResponseEntity.ok(financialLedgerTypeService.saveFinancialLedgerType(financialLedgerTypeRequest));
     }
 }
