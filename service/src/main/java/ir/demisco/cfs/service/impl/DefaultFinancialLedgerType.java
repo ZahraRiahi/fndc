@@ -153,27 +153,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         financialLedgerTypeNew.setActiveFlag(financialLedgerTypeRequest.getActiveFlag());
         FinancialLedgerType financialLedgerType = financialLedgerTypeRepository.save(financialLedgerTypeNew);
         List<Long> financialNumberingTypeIdList = financialLedgerTypeRequest.getNumberingTypeIdList();
-        LedgerNumberingType ledgerNumberingTypeNew = new LedgerNumberingType();
-        Optional<FinancialLedgerType> financialLedgerTypeRepositoryById = financialLedgerTypeRepository.findById(financialLedgerType.getId());
         saveLedgerNumberingType(financialNumberingTypeIdList, financialLedgerTypeRequest, financialLedgerType);
-
-//        for (Long financialNumberingTypeId : financialNumberingTypeIdList) {
-//            Optional<FinancialNumberingType> financialNumberingTypeTbl = financialNumberingTypeRepository.findById(financialNumberingTypeId);
-//            if (financialNumberingTypeTbl.isPresent()) {
-//                Long countByLedgerTypeIdAndNumberingTypeIdAndDeleteDate = ledgerNumberingTypeRepository.getCountByLedgerTypeIdAndNumberingTypeIdAndDeleteDate(financialLedgerTypeRequest.getFinancialLedgerTypeId()
-//                        , financialNumberingTypeTbl.get().getId());
-//                if (countByLedgerTypeIdAndNumberingTypeIdAndDeleteDate > 0) {
-//                    throw new RuleException("نوع شماره گذاری، برای این نوع دفتر مالی، قبلا ثبت شده است.");
-//                } else {
-//
-//                    checkFinancialLedgerTypeTbl(financialLedgerTypeRepositoryById,financialLedgerTypeRequest);
-//                    ledgerNumberingTypeNew.setFinancialNumberingType(financialNumberingTypeTbl.get());
-//                    ledgerNumberingTypeRepository.save(ledgerNumberingTypeNew);
-//                }
-//            } else {
-//                throw new RuleException("شناسه نوع شماره گذاری، وارد شده معتبر نمی باشد");
-//            }
-//        }
         return true;
     }
 
@@ -184,7 +164,6 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
             financialLedgerTypeRepository.save(financialLedgerType);
         }
         updateLedgerNumberingType(financialLedgerType, financialLedgerTypeRequest);
-
         return true;
     }
 
