@@ -40,6 +40,8 @@ public class FinancialLedgerTypeController {
 
     @PostMapping("/Save")
     public ResponseEntity<Boolean> saveFinancialLedgerType (@RequestBody FinancialLedgerTypeRequest financialLedgerTypeRequest) {
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        financialLedgerTypeRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(financialLedgerTypeService.saveFinancialLedgerType(financialLedgerTypeRequest));
     }
 }
