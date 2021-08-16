@@ -1,8 +1,5 @@
 package ir.demisco.cfs.model.dto.request;
 
-import ir.demisco.cfs.model.entity.FinancialNumberingType;
-import ir.demisco.cfs.model.entity.LedgerNumberingType;
-
 import java.util.List;
 
 public class FinancialLedgerTypeRequest {
