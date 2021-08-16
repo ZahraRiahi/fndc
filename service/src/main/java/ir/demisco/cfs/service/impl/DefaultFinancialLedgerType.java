@@ -69,10 +69,10 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         List<FinancialLedgerTypeResponse> financialLedgerTypeResponses = list.stream().map(item ->
                 FinancialLedgerTypeResponse.builder()
                         .financialLedgerTypeId(Long.parseLong(item[0].toString()))
-                        .description(item[1].toString())
+                        .description(item[1] == null ? "" : item[1].toString())
                         .financialCodingTypeId(Long.parseLong(item[2].toString()))
                         .activeFlag(Integer.parseInt(item[3].toString()) == 1)
-                        .financialCodingTypeDescription(item[4].toString())
+                        .financialCodingTypeDescription(item[4] == null ? "" : item[4].toString())
                         .financialNumberingTypeDescription(item[5] == null ? "" : item[5].toString())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
