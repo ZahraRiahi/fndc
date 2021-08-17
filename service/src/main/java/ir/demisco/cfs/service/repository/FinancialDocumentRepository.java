@@ -85,4 +85,12 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
                                             Object centricAccountType,Long centricAccountTypeId, Object user,Long userId,
                                             Object priceType,Long priceTypeId,Object fromPrice,Long fromPriceAmount,Object toPrice,Long toPriceAmount,
                                             Double tolerance,List<Long> documentStatusId,Pageable pageable);
+
+
+    @Query("select coalesce(COUNT(fd.id),0) from FinancialDocument fd where fd.financialDepartment.id=:financialDepartmentId" +
+            " and fd.financialLedgerType.id=:financialLedgerTypeId " +
+            " and fd.deletedDate is null")
+    Long getCountByLedgerTypeIdAndDepartmentIdAndDeleteDate(Long financialDepartmentId, Long financialLedgerTypeId);
+
+
 }
