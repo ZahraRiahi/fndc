@@ -17,7 +17,15 @@ public interface FinancialDepartmentLedgerRepository extends JpaRepository<Finan
 
 
     @Query("select coalesce(COUNT(fdl.id),0) from FinancialDepartmentLedger fdl where fdl.financialDepartment.id=:financialDepartmentId" +
-            " and fdl.financialLedgerType.id=:financialLedgerTypeId " +
+            " and (fdl.financialLedgerType.id is null or fdl.financialLedgerType.id=:financialLedgerTypeId)" +
+            " and fdl.deletedDate is null")
+    Long getCountByIsNullLedgerTypeIdAndDepartmentIdAndDeleteDate(Long financialDepartmentId, Long financialLedgerTypeId);
+
+
+    @Query("select coalesce(COUNT(fdl.id),0) from FinancialDepartmentLedger fdl where fdl.financialDepartment.id=:financialDepartmentId" +
+            " and  fdl.financialLedgerType.id=:financialLedgerTypeId" +
             " and fdl.deletedDate is null")
     Long getCountByLedgerTypeIdAndDepartmentIdAndDeleteDate(Long financialDepartmentId, Long financialLedgerTypeId);
+
+
 }
