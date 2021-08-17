@@ -18,7 +18,7 @@ public class FinancialDocument  extends AuditModel<Long> {
     private Boolean automaticFlag;
     private Organization organization;
     private FinancialDocumentType financialDocumentType;
-    private Long financialPeriodId;
+    private FinancialPeriod financialPeriod;
     private FinancialLedgerType financialLedgerType;
     private FinancialDepartment financialDepartment;
     private Long documentNumber;
@@ -98,13 +98,14 @@ public class FinancialDocument  extends AuditModel<Long> {
     public void setFinancialDocumentType(FinancialDocumentType financialDocumentType) {
         this.financialDocumentType = financialDocumentType;
     }
-
-    public Long getFinancialPeriodId() {
-        return financialPeriodId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FINANCIAL_PERIOD_ID")
+    public FinancialPeriod getFinancialPeriod() {
+        return financialPeriod;
     }
 
-    public void setFinancialPeriodId(Long financialPeriodId) {
-        this.financialPeriodId = financialPeriodId;
+    public void setFinancialPeriod(FinancialPeriod financialPeriod) {
+        this.financialPeriod = financialPeriod;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
