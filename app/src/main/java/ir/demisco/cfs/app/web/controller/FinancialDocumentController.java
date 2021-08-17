@@ -1,9 +1,13 @@
 package ir.demisco.cfs.app.web.controller;
 
 
+import ir.demisco.cfs.model.dto.response.FinancialDocumentDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentNumberDto;
+import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentStatusDto;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -24,5 +28,18 @@ public class FinancialDocumentController {
     public ResponseEntity<DataSourceResult> financialDocumentList(@RequestBody DataSourceRequest dataSourceRequest){
 
         return ResponseEntity.ok(financialDocumentService.getFinancialDocumentList(dataSourceRequest));
+    }
+
+//    @PostMapping("/SetStatus")
+//    public ResponseEntity<FinancialDocumentDto> responseEntitySetStatus(@RequestBody ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto)
+//    {
+//        return ResponseEntity.ok(financialDocumentService.changeStatus(responseFinancialDocumentStatusDto));
+//    }
+
+    @PostMapping("/CreateNumber")
+    public ResponseEntity<String> creatNumber(@RequestBody FinancialDocumentNumberDto financialDocumentNumberDto){
+        String result;
+        result = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+        return ResponseEntity.ok(result);
     }
 }

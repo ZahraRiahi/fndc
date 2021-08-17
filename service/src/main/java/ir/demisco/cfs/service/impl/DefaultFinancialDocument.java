@@ -2,9 +2,16 @@ package ir.demisco.cfs.service.impl;
 
 
 import ir.demisco.cfs.model.dto.response.FinancialDocumentDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentNumberDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentDto;
+import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentStatusDto;
+import ir.demisco.cfs.model.entity.FinancialDocument;
+import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
+import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentStatusRepository;
+import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.core.utils.DateUtil;
@@ -17,6 +24,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
@@ -29,9 +37,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
 
     private final FinancialDocumentRepository financialDocumentRepository;
+    private final FinancialDocumentStatusRepository  documentStatusRepository;
+    private final FinancialDocumentItemRepository  financialDocumentItemRepository;
 
-    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository) {
+    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository, FinancialDocumentItemRepository financialDocumentItemRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
+        this.documentStatusRepository = documentStatusRepository;
+        this.financialDocumentItemRepository = financialDocumentItemRepository;
     }
 
 
@@ -250,5 +262,111 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         } else {
             throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
         }
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public FinancialDocumentDto changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
+        FinancialDocument financialDocument=financialDocumentRepository.findById(responseFinancialDocumentStatusDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        validationSetStatus(financialDocument);
+        financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(responseFinancialDocumentStatusDto.getFinancialDocumentStatusId()));
+        financialDocumentRepository.save(financialDocument);
+        return financialDocumentToDto(financialDocument);
+    }
+
+    private void validationSetStatus(FinancialDocument financialDocument) {
+
+        if(financialDocument.getDescription() == null)
+        {
+            throw new RuleException("سند بدون شرح است.");
+        }
+
+        List<FinancialDocumentItem> documentItemList=financialDocumentItemRepository.getDocumentItem(financialDocument.getId());
+        if(documentItemList == null){
+            throw new RuleException("سند بدون ردیف است.");
+        }else{
+            documentItemList.forEach(documentItem ->{
+                double creditAmount = documentItem.getCreditAmount() % 1;
+                double debitAmount=documentItem.getDebitAmount()%1;
+
+                if((creditAmount!=000) || (debitAmount!= 000))
+                {
+                    throw new RuleException("مبلغ در ردیف اعشاری است.");
+                }
+
+                if((documentItem.getCreditAmount()==0) && (documentItem.getDebitAmount()==0)){
+
+                    throw new RuleException("در ردیف سند مبلغ بستانکار و بدهکار صفر می باشد.");
+                }
+
+                if((documentItem.getCreditAmount()!=0) && (documentItem.getDebitAmount()!=0)){
+
+                    throw new RuleException("در ردیف سند مبلغ بستانکار و بدهکار هر دو دارای مقدار می باشد.");
+                }
+
+                if((documentItem.getCreditAmount() < 0) && (documentItem.getDebitAmount()< 0)){
+                    throw new RuleException("در ردیف سند مبلغ بستانکار یا بدهکار  منفی می باشد.");
+                }
+
+                if(documentItem.getDescription()==null){
+
+                    throw new RuleException("در سند ردیف بدون شرح وجود دارد.");
+                }
+
+            });
+        }
+
+
+
+        List<Object[]> cost=financialDocumentItemRepository.getCostDocument(financialDocument.getId());
+        if(cost==null)
+        {
+            throw new RuleException("مجموع مبالغ بستانکار و بدهکار در ردیف های سند بالانس نیست.");
+        }
+
+       FinancialDocument documentPeriod=financialDocumentRepository.getActivePeriodInDocument(financialDocument.getId());
+        if(documentPeriod != null){
+            throw new RuleException("وضعیت دوره مالی مربوط به سند بسته است.");
+        }
+
+        FinancialDocumentItem documentItemMoneyType=financialDocumentItemRepository.getDocumentMoneyType(financialDocument.getId());
+        if(documentItemMoneyType!= null){
+            throw new RuleException("نوع ارز ریال می باشد.");
+        }
+//        List<FinancialDocumentItem>  documentReference=financialDocumentItemRepository.getDocumentRefrnce(financialDocument.getId());
+//        if(documentReference!= null){
+//            throw new RuleException("تاریخ و شرح در مدارک مرجع پر نشده.");
+//        }
+
+
+
+    }
+
+    private FinancialDocumentDto financialDocumentToDto(FinancialDocument financialDocument) {
+        Object[] objects=financialDocumentItemRepository.getParamByDocumentId(financialDocument.getId());
+        return FinancialDocumentDto.builder()
+                .id(financialDocument.getId())
+                .documentDate(java.util.Date.from(financialDocument.getDocumentDate().atZone(ZoneId.systemDefault()).toInstant()))
+                .documentNumber(financialDocument.getDocumentNumber())
+                .financialDocumentTypeId(financialDocument.getFinancialDocumentType().getId())
+                .financialDocumentTypeDescription(financialDocument.getFinancialDocumentType().getDescription())
+                .userId(financialDocument.getCreator().getId())
+                .userName(financialDocument.getCreator().getUsername())
+                .description(financialDocument.getDescription())
+//                .creditAmount(Long.parseLong(objects[1].toString()))
+//                .debitAmount(Long.parseLong(objects[0].toString()))
+//                .fullDescription(objects[2].toString())
+
+                .build();
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto) {
+        //        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId = 100L;
+        String documentNumber=financialDocumentRepository.getDocumentNumber(organizationId,financialDocumentNumberDto.getDate(),
+                financialDocumentNumberDto.getFinancialPeriodId());
+        return documentNumber;
     }
 }
