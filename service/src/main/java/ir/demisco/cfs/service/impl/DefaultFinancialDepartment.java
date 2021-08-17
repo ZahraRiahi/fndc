@@ -4,6 +4,7 @@ import ir.demisco.cfs.model.dto.response.FinancialDepartmentResponse;
 import ir.demisco.cfs.service.api.FinancialDepartmentService;
 import ir.demisco.cfs.service.repository.FinancialDepartmentRepository;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -21,8 +22,8 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
     @Override
     @Transactional
     public DataSourceResult financialDepartmentList() {
-//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        List<Object[]> financialDocumentItemList = financialDepartmentRepository.getFinancialDocumentItemList(100L);
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        List<Object[]> financialDocumentItemList = financialDepartmentRepository.getFinancialDocumentItemList(organizationId);
         List<FinancialDepartmentResponse> financialLedgerTypeResponses = financialDocumentItemList.stream().map(item ->
                 FinancialDepartmentResponse.builder()
                         .departmentId(Long.parseLong(item[0].toString()))

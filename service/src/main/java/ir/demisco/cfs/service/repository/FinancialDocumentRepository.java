@@ -96,4 +96,12 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       and (fd.financialPeriod.id=:financialPeriodId)" +
             "       and  substr(to_char(fd.documentNumber),0,8)=to_char(:date, 'yyyy/mm/dd', 'NLS_CALENDAR=persian')")
     String getDocumentNumber(Long organizationId,LocalDateTime date,Long financialPeriodId);
+
+
+    @Query("select coalesce(COUNT(fd.id),0) from FinancialDocument fd where fd.financialDepartment.id=:financialDepartmentId" +
+            " and fd.financialLedgerType.id=:financialLedgerTypeId " +
+            " and fd.deletedDate is null")
+    Long getCountByLedgerTypeIdAndDepartmentIdAndDeleteDate(Long financialDepartmentId, Long financialLedgerTypeId);
+
+
 }
