@@ -103,5 +103,6 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " and fd.deletedDate is null")
     Long getCountByLedgerTypeIdAndDepartmentIdAndDeleteDate(Long financialDepartmentId, Long financialLedgerTypeId);
 
-
+    @Query("select fd from FinancialDocument fd where fd.id=:FinancialDocumentId and fd.deletedDate is null")
+    FinancialDocument getActiveDocumentById(Long FinancialDocumentId);
 }

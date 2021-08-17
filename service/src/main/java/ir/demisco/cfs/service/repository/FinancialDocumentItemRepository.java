@@ -120,5 +120,6 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
                    "    where t.financial_document_id =:FinancialDocumentId ", nativeQuery = true)
     Object[] getParamByDocumentId(Long FinancialDocumentId);
 
-
+    @Query("select fdi from FinancialDocumentItem fdi where fdi.financialDocument.id=:FinancialDocumentId and fdi.description like %:description%")
+List<FinancialDocumentItem>  findDocumentItemByDescription(Long FinancialDocumentId,String description);
 }

@@ -1,6 +1,7 @@
 package ir.demisco.cfs.app.web.controller;
 
 
+import ir.demisco.cfs.model.dto.response.FinancialDocumentChengDescriptionDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentNumberDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentStatusDto;
@@ -40,6 +41,13 @@ public class FinancialDocumentController {
     public ResponseEntity<String> creatNumber(@RequestBody FinancialDocumentNumberDto financialDocumentNumberDto){
         String result;
         result = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+        return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/ChangeDescription")
+    public ResponseEntity<String> changeDescription(@RequestBody FinancialDocumentChengDescriptionDto financialDocumentDto){
+        String result;
+        result = financialDocumentService.changeDescription(financialDocumentDto);
         return ResponseEntity.ok(result);
     }
 }
