@@ -1,10 +1,7 @@
 package ir.demisco.cfs.service.impl;
 
 
-import ir.demisco.cfs.model.dto.response.FinancialDocumentDto;
-import ir.demisco.cfs.model.dto.response.FinancialDocumentNumberDto;
-import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentDto;
-import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentStatusDto;
+import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.FinancialDocument;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
@@ -367,6 +364,30 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         Long organizationId = 100L;
         String documentNumber=financialDocumentRepository.getDocumentNumber(organizationId,financialDocumentNumberDto.getDate(),
                 financialDocumentNumberDto.getFinancialPeriodId());
+        if(documentNumber==null){
+            throw new RuleException("سند یافت نشد.");
+        }
         return documentNumber;
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public String changeDescription(FinancialDocumentChengDescriptionDto financialDocumentDto) {
+        FinancialDocument financialDocument=financialDocumentRepository.getActiveDocumentById(financialDocumentDto.getId());
+        if(financialDocument==null){
+            throw new RuleException("سند یافت نشد.");
+        }
+        List<FinancialDocumentItem> financialDocumentItemList=financialDocumentItemRepository.findDocumentItemByDescription(financialDocumentDto.getId(),financialDocumentDto.getOldDescription());
+         if(financialDocumentItemList.isEmpty()){
+             throw new RuleException("ردیف یافت نشد.");
+         }else {
+             financialDocumentItemList.forEach(documentItem -> {
+                 documentItem.setDescription(financialDocumentDto.getNewDescription());
+                 financialDocumentItemRepository.save(documentItem);
+             });
+         }
+        financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
+        financialDocumentRepository.save(financialDocument);
+        return "عملیات با موفقیت انجام شد.";
     }
 }
