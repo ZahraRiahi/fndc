@@ -54,7 +54,6 @@ public class DefaultFinancialDocumentDescription implements FinancialDocumentDes
         documentDescription.setOrganization(organizationRepository.getOne(organizationId));
         financialDocumentDescriptionRepository.save(documentDescription);
         return convertDocumentDescription(documentDescription);
-        
     }
 
     @Override
