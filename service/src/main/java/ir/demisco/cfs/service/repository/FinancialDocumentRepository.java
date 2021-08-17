@@ -94,7 +94,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " from FinancialDocument fd" +
             " where fd.organization.id=:organizationId" +
             "       and (fd.financialPeriod.id=:financialPeriodId)" +
-            "       and  substr(to_char(fd.documentNumber),0,8)=to_char(:date, 'yyyy/mm/dd', 'NLS_CALENDAR=persian')")
+            "       and  substr(to_char(fd.documentNumber),0,8)=to_char(:date, 'yyyymmdd', 'NLS_CALENDAR=persian')")
     String getDocumentNumber(Long organizationId,LocalDateTime date,Long financialPeriodId);
 
 
