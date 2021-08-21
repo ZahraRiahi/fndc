@@ -122,4 +122,10 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
 
     @Query("select fdi from FinancialDocumentItem fdi where fdi.financialDocument.id=:FinancialDocumentId and fdi.description like %:description%")
 List<FinancialDocumentItem>  findDocumentItemByDescription(Long FinancialDocumentId,String description);
+
+    @Query("select fdi from FinancialDocumentItem fdi where fdi.financialDocument.id=:documentId  and fdi.financialAccount.id=:accountId ")
+    List<FinancialDocumentItem> getItemByDocumentIdAndAccountId(Long documentId,Long accountId);
+
+    @Query("select fdi from FinancialDocumentItem fdi where fdi.financialDocument.id=:documentId and fdi.financialAccount.id=:newAccountId")
+    List<FinancialDocumentItem> getByNewAccount(Long documentId,Long newAccountId);
 }

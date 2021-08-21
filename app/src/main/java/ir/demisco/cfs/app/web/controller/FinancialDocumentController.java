@@ -1,6 +1,8 @@
 package ir.demisco.cfs.app.web.controller;
 
 
+import ir.demisco.cfs.model.dto.response.FinancialDocumentAccountDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentAccountMessageDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentChengDescriptionDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentNumberDto;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
@@ -50,5 +52,10 @@ public class FinancialDocumentController {
         boolean result;
         result = financialDocumentService.deleteFinancialDocumentById(financialDocumentId);
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/ChangeAccount")
+    public ResponseEntity<FinancialDocumentAccountMessageDto>  changeAccount(@RequestBody FinancialDocumentAccountDto financialDocumentAccountDto){
+     return  ResponseEntity.ok(financialDocumentService.changeAccountDocument(financialDocumentAccountDto));
     }
 }
