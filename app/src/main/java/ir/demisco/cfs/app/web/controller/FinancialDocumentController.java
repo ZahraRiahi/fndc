@@ -45,7 +45,7 @@ public class FinancialDocumentController {
         return ResponseEntity.ok(result);
     }
 
-    @PostMapping("/Delete/{id}")
+    @GetMapping("/Delete/{id}")
     public ResponseEntity<Boolean> delete(@PathVariable("id") Long financialDocumentId) {
         boolean result;
         result = financialDocumentService.deleteFinancialDocumentById(financialDocumentId);
