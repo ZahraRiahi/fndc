@@ -86,7 +86,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
                                             Object priceType,Long priceTypeId,Object fromPrice,Long fromPriceAmount,Object toPrice,Long toPriceAmount,
                                             Double tolerance,List<Long> documentStatusId,Pageable pageable);
 
-    @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=2 and fd.id=:FinancialDocumentId")
+    @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:FinancialDocumentId")
     FinancialDocument getActivePeriodInDocument(Long FinancialDocumentId);
 
     @Query("select to_char(:date, 'yyyymmdd', 'NLS_CALENDAR=persian') ||" +
@@ -105,4 +105,16 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
 
     @Query("select fd from FinancialDocument fd where fd.id=:FinancialDocumentId and fd.deletedDate is null")
     FinancialDocument getActiveDocumentById(Long FinancialDocumentId);
+
+    @Query(" select fd from FinancialDocument fd join fd.financialPeriod fp where fp.financialPeriodStatus.id=1 and fd.id=:FinancialDocumentId " +
+            " and exists ( select fm from FinancialMonth fm " +
+            "              join FinancialMonthType fmt on fmt.id=fm.financialMonthType.id " +
+            "              join FinancialPeriodType fpt on fpt.id=fmt.financialPeriodType.id " +
+            "              join FinancialPeriodTypeAssign fpts on fpts.financialPeriodType.id=fpt.id " +
+            "              join FinancialPeriod fp on fp.financialPeriodTypeAssign.id=fpts.id" +
+            "              join FinancialDocument fd on fd.financialPeriod.id=fp.id " +
+            "            where fd.id=:FinancialDocumentId " +
+            "                  and extract(month from fd.documentDate)=fpt.fromMonth + fmt.monthNumber-1" +
+            "                  and fm.financialMonthStatus.id=1)")
+    FinancialDocument getActivePeriodAndMontInDocument(Long FinancialDocumentId);
 }

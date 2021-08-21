@@ -4,24 +4,23 @@ package ir.demisco.cfs.service.impl;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.FinancialDocument;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
+import ir.demisco.cfs.model.entity.FinancialDocumentItemCurrency;
+import ir.demisco.cfs.model.entity.FinancialDocumentReference;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
-import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
-import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
-import ir.demisco.cfs.service.repository.FinancialDocumentStatusRepository;
+import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
 import org.codehaus.jackson.map.util.ISO8601Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.ZoneId;
 import java.util.Date;
 import java.util.HashMap;
@@ -36,11 +35,15 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialDocumentRepository financialDocumentRepository;
     private final FinancialDocumentStatusRepository  documentStatusRepository;
     private final FinancialDocumentItemRepository  financialDocumentItemRepository;
+    private final FinancialDocumentReferenceRepository financialDocumentReferenceRepository;
+    private final FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository;
 
-    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository, FinancialDocumentItemRepository financialDocumentItemRepository) {
+    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
+        this.financialDocumentReferenceRepository = financialDocumentReferenceRepository;
+        this.documentItemCurrencyRepository = documentItemCurrencyRepository;
     }
 
 
@@ -67,8 +70,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         .financialDocumentTypeId(Long.parseLong(item[4].toString()))
                         .financialDocumentTypeDescription(item[5].toString())
                          .fullDescription(item[6].toString())
-                        .debitAmount(Long.parseLong(item[7].toString()))
-                        .creditAmount(Long.parseLong(item[8].toString()))
+                        .debitAmount(((BigDecimal)item[7]).doubleValue())
+                        .creditAmount(((BigDecimal)item[8]).doubleValue())
                         .userId(Long.parseLong(item[9].toString()))
                         .userName(item[10].toString())
                         .build()).collect(Collectors.toList());
@@ -322,7 +325,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
 
        FinancialDocument documentPeriod=financialDocumentRepository.getActivePeriodInDocument(financialDocument.getId());
-        if(documentPeriod != null){
+        if(documentPeriod == null){
             throw new RuleException("وضعیت دوره مالی مربوط به سند بسته است.");
         }
 
@@ -360,8 +363,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto) {
-        //        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         String documentNumber=financialDocumentRepository.getDocumentNumber(organizationId,financialDocumentNumberDto.getDate(),
                 financialDocumentNumberDto.getFinancialPeriodId());
         if(documentNumber==null){
@@ -389,5 +391,35 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
         financialDocumentRepository.save(financialDocument);
         return "عملیات با موفقیت انجام شد.";
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public boolean deleteFinancialDocumentById(Long financialDocumentId) {
+        FinancialDocument  financialDocument=financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocumentId);
+
+        if(financialDocument == null) {
+          throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
+        }else {
+            financialDocument.setDeletedDate(LocalDateTime.now());
+            financialDocumentRepository.save(financialDocument);
+            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentItem(financialDocumentId);
+            financialDocumentItemList.forEach(documentItem -> {
+                documentItem.setDeletedDate(LocalDateTime.now());
+                financialDocumentItemRepository.save(documentItem);
+                FinancialDocumentReference financialDocumentReference = financialDocumentReferenceRepository.getByDocumentItemId(documentItem.getId());
+                if(financialDocumentReference!=null) {
+                    financialDocumentReference.setDeletedDate(LocalDateTime.now());
+                    financialDocumentReferenceRepository.save(financialDocumentReference);
+                }
+                FinancialDocumentItemCurrency financialDocumentItemCurrency = documentItemCurrencyRepository.getByDocumentItemId(documentItem.getId());
+                if(financialDocumentItemCurrency!= null) {
+                    financialDocumentItemCurrency.setDeletedDate(LocalDateTime.now());
+                    documentItemCurrencyRepository.save(financialDocumentItemCurrency);
+                }
+            });
+        }
+
+        return true;
     }
 }

@@ -8,7 +8,7 @@ import java.util.Date;
 
 @Entity
 @Table(name = "FINANCIAL_DOCUMENT_REFRENCE" , schema = "fndc")
-public class FinancialDocumentRefrence  extends AuditModel<Long> {
+public class FinancialDocumentReference  extends AuditModel<Long> {
 
     private Long                   id;
     private FinancialDocumentItem  financialDocumentItem;
@@ -36,6 +36,7 @@ public class FinancialDocumentRefrence  extends AuditModel<Long> {
         this.financialDocumentItem = financialDocumentItem;
     }
 
+    @Column(name = "REFRENCE_NUMBER")
     public Long getReferenceNumber() {
         return referenceNumber;
     }
@@ -44,6 +45,7 @@ public class FinancialDocumentRefrence  extends AuditModel<Long> {
         this.referenceNumber = referenceNumber;
     }
 
+    @Column(name = "REFRENCE_DATE")
     public Date getReferenceDate() {
         return referenceDate;
     }
@@ -52,6 +54,7 @@ public class FinancialDocumentRefrence  extends AuditModel<Long> {
         this.referenceDate = referenceDate;
     }
 
+    @Column(name = "REFRENCE_DESCRIPTION")
     public String getReferenceDescription() {
         return referenceDescription;
     }
