@@ -126,7 +126,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
             FinancialDepartmentLedger financialDepartmentLedgerForUpdate = financialDepartmentLedgerRepositoryById.get();
             Optional<FinancialDepartment> financialDepartmentRepositoryById = financialDepartmentRepository.findById(financialDepartmentLedgerRequestListId.getFinancialDepartmentId());
             if (financialLedgerTypeRepositoryById.isPresent()) {
-                Boolean hasInDocument = checkDocument(financialDepartmentRepositoryById.get().getId(), financialLedgerTypeRepositoryById.get().getId());
+                boolean hasInDocument = checkDocument(financialDepartmentRepositoryById.get().getId(), financialLedgerTypeRepositoryById.get().getId());
                 if (hasInDocument) {
                     financialDepartmentLedgerForUpdate.setFinancialLedgerType(financialLedgerTypeRepositoryById.get());
                     boolean hasInFinancialDepartmentLedger = checkFinancialDepartmentLedger(financialDepartmentLedgerRepositoryById.get().getId(), financialLedgerTypeRepositoryById.get().getId());
@@ -159,23 +159,34 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
         }
     }
 
-    private Boolean checkDocument(Long financialDepartmentId, Long financialLedgerTypeId) {
+    private boolean checkDocument(Long financialDepartmentId, Long financialLedgerTypeId) {
         Long countByLedgerTypeIdAndDepartmentIdAndDeleteDate =
                 financialDocumentRepository.getCountByLedgerTypeIdAndDepartmentIdAndDeleteDate(financialDepartmentId, financialLedgerTypeId);
-        return countByLedgerTypeIdAndDepartmentIdAndDeleteDate == 0 ? true : false;
+        if(countByLedgerTypeIdAndDepartmentIdAndDeleteDate==0) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
     private Boolean checkFinancialDepartmentLedger(Long financialDepartmentId, Long financialLedgerTypeId) {
         Long countByLedgerTypeIdAndDepartmentIdAndDeleteDate = financialDepartmentLedgerRepository.getCountByLedgerTypeIdAndDepartmentIdAndDeleteDate(financialDepartmentId,
                 financialLedgerTypeId);
-        return countByLedgerTypeIdAndDepartmentIdAndDeleteDate == 0 ? true : false;
-
+        if(countByLedgerTypeIdAndDepartmentIdAndDeleteDate==0) {
+            return true;
+        }else{
+            return false;
+        }
     }
 
     private Boolean checkWhenFinancialLedgerIsNull(Long financialDepartment) {
         Long countByLedgerTypeIdAndDepartmentIdAndDeleteDate = financialDepartmentLedgerRepository.getCountByIsNullLedgerTypeIdAndDepartmentIdAndDeleteDate
-                (financialDepartment, null);
-        return countByLedgerTypeIdAndDepartmentIdAndDeleteDate == 0 ? true : false;
+                (null, financialDepartment);
+        if(countByLedgerTypeIdAndDepartmentIdAndDeleteDate==0) {
+            return true;
+        }else{
+            return false;
+        }
 
     }
 }
