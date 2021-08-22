@@ -15,6 +15,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -35,14 +37,16 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialDocumentReferenceRepository financialDocumentReferenceRepository;
     private final FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository;
     private final FinancialAccountRepository financialAccountRepository;
+    private final EntityManager entityManager;
 
-    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository) {
+    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository, EntityManager entityManager) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
         this.financialDocumentReferenceRepository = financialDocumentReferenceRepository;
         this.documentItemCurrencyRepository = documentItemCurrencyRepository;
         this.financialAccountRepository = financialAccountRepository;
+        this.entityManager = entityManager;
     }
 
 
@@ -378,15 +382,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if(financialDocument==null){
             throw new RuleException("سند یافت نشد.");
         }
-        List<FinancialDocumentItem> financialDocumentItemList=financialDocumentItemRepository.findDocumentItemByDescription(financialDocumentDto.getId(),financialDocumentDto.getOldDescription());
-         if(financialDocumentItemList.isEmpty()){
-             throw new RuleException("ردیف یافت نشد.");
-         }else {
-             financialDocumentItemList.forEach(documentItem -> {
-                 documentItem.setDescription(financialDocumentDto.getNewDescription());
-                 financialDocumentItemRepository.save(documentItem);
-             });
-         }
+        entityManager.createNativeQuery(" update fndc.financial_document_item " +
+                "   set description = replace(description,:description,:newDescription) " +
+                "   where financial_document_id =:FinancialDocumentId " +
+                "   And description like '%'|| :description ||'%'").setParameter("description",financialDocumentDto.getOldDescription())
+                .setParameter("newDescription",financialDocumentDto.getNewDescription())
+                .setParameter("FinancialDocumentId",financialDocumentDto.getId()).executeUpdate();
+
         financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
         financialDocumentRepository.save(financialDocument);
         return "عملیات با موفقیت انجام شد.";
