@@ -2,10 +2,7 @@ package ir.demisco.cfs.service.impl;
 
 
 import ir.demisco.cfs.model.dto.response.*;
-import ir.demisco.cfs.model.entity.FinancialDocument;
-import ir.demisco.cfs.model.entity.FinancialDocumentItem;
-import ir.demisco.cfs.model.entity.FinancialDocumentItemCurrency;
-import ir.demisco.cfs.model.entity.FinancialDocumentReference;
+import ir.demisco.cfs.model.entity.*;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.core.middle.exception.RuleException;
@@ -37,13 +34,15 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialDocumentItemRepository  financialDocumentItemRepository;
     private final FinancialDocumentReferenceRepository financialDocumentReferenceRepository;
     private final FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository;
+    private final FinancialAccountRepository financialAccountRepository;
 
-    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository) {
+    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
         this.financialDocumentReferenceRepository = financialDocumentReferenceRepository;
         this.documentItemCurrencyRepository = documentItemCurrencyRepository;
+        this.financialAccountRepository = financialAccountRepository;
     }
 
 
@@ -396,8 +395,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public boolean deleteFinancialDocumentById(Long financialDocumentId) {
+//        FinancialDocument  document=financialDocumentRepository.findById(financialDocumentId).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
         FinancialDocument  financialDocument=financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocumentId);
-
         if(financialDocument == null) {
           throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
         }else {
@@ -421,5 +420,45 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
 
         return true;
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public FinancialDocumentAccountMessageDto changeAccountDocument(FinancialDocumentAccountDto financialDocumentAccountDto) {
+        FinancialDocument  financialDocument=financialDocumentRepository.findById(financialDocumentAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        List<FinancialDocumentItem>  financialDocumentItemList=financialDocumentItemRepository.getItemByDocumentIdAndAccountId(financialDocumentAccountDto.getId(),
+                financialDocumentAccountDto.getFinancialAccountId());
+        financialDocumentItemList.forEach(documentItem ->{
+            documentItem.setFinancialAccount(financialAccountRepository.getOne(financialDocumentAccountDto.getNewFinancialAccountId()));
+            financialDocumentItemRepository.save(documentItem);
+        });
+
+        financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
+        financialDocumentRepository.save(financialDocument);
+        FinancialAccount financialAccount=financialAccountRepository.getFinancialAccountRelationType(financialDocumentAccountDto.getFinancialAccountId(),
+                financialDocumentAccountDto.getNewFinancialAccountId());
+        if(financialAccount==null){
+            List<FinancialDocumentItem> centricDocumentItem=financialDocumentItemRepository.getByNewAccount(financialDocumentAccountDto.getId(),
+                        financialDocumentAccountDto.getNewFinancialAccountId());
+            centricDocumentItem.forEach(centricItem -> {
+                centricItem.setCentricAccountId1(null);
+                centricItem.setCentricAccountId2(null);
+                centricItem.setCentricAccountId3(null);
+                centricItem.setCentricAccountId4(null);
+                centricItem.setCentricAccountId5(null);
+                centricItem.setCentricAccountId6(null);
+                financialDocumentItemRepository.save(centricItem);
+            });
+            return FinancialDocumentAccountMessageDto.builder()
+        .id(financialDocument.getId())
+        .message("به دلیل انواع تفاوت در وابستگی حساب جدید با حساب قبلی،تمام تمرکز های مربوطه حذف شده.لطفا تمرکز های مربوطه را درج نمایید.")
+        .build();
+        }else{
+            return FinancialDocumentAccountMessageDto.builder()
+                    .id(financialDocument.getId())
+                    .message("عملیات موفقیت امیز بود.")
+                    .build();
+        }
+
     }
 }
