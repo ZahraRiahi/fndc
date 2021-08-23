@@ -18,4 +18,6 @@ public interface FinancialDocumentService {
     boolean deleteFinancialDocumentById(Long financialDocumentId);
 
     FinancialDocumentAccountMessageDto changeAccountDocument(FinancialDocumentAccountDto financialDocumentAccountDto);
+
+    String changeCentricAccount(FinancialCentricAccountDto financialCentricAccountDto);
 }

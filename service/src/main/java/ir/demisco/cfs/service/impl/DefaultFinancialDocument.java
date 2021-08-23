@@ -15,6 +15,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -32,14 +33,15 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
 
     private final FinancialDocumentRepository financialDocumentRepository;
-    private final FinancialDocumentStatusRepository  documentStatusRepository;
-    private final FinancialDocumentItemRepository  financialDocumentItemRepository;
+    private final FinancialDocumentStatusRepository documentStatusRepository;
+    private final FinancialDocumentItemRepository financialDocumentItemRepository;
     private final FinancialDocumentReferenceRepository financialDocumentReferenceRepository;
     private final FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository;
     private final FinancialAccountRepository financialAccountRepository;
     private final EntityManager entityManager;
+    private final CentricAccountRepository centricAccountRepository;
 
-    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository, EntityManager entityManager) {
+    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository, EntityManager entityManager, CentricAccountRepository centricAccountRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -47,6 +49,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.documentItemCurrencyRepository = documentItemCurrencyRepository;
         this.financialAccountRepository = financialAccountRepository;
         this.entityManager = entityManager;
+        this.centricAccountRepository = centricAccountRepository;
     }
 
 
@@ -54,16 +57,16 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Transactional
     public DataSourceResult getFinancialDocumentList(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
-        ResponseFinancialDocumentDto  paramSearch=setParameter(filters);
+        ResponseFinancialDocumentDto paramSearch = setParameter(filters);
         Map<String, Object> paramMap = paramSearch.getParamMap();
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
-        Page<Object[]> list =financialDocumentRepository.getFinancialDocumentList(paramSearch.getStartDate(),
-                paramSearch.getEndDate(),paramSearch.getFinancialNumberingTypeId(),paramMap.get("fromNumber"),paramSearch.getFromNumber(),
-                paramMap.get("toNumber"),paramSearch.getToNumber(),paramSearch.getDescription(),paramMap.get("fromAccount"),paramSearch.getFromAccountCode(),
-                paramMap.get("toAccountCode"),paramSearch.getToAccountCode(),paramMap.get("centricAccount"),paramSearch.getCentricAccountId()
-                ,paramMap.get("centricAccountType"),paramSearch.getCentricAccountTypeId(),paramMap.get("user"),paramSearch.getUserId()
-                ,paramMap.get("priceType"),paramSearch.getPriceTypeId(),paramMap.get("fromPrice"),paramSearch.getFromPrice(),paramMap.get("toPrice"),
-                paramSearch.getToPrice(),paramSearch.getTolerance(),paramSearch.getFinancialDocumentStatusDtoListId(),pageable);
+        Page<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getStartDate(),
+                paramSearch.getEndDate(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
+                paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
+                paramMap.get("toAccountCode"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId()
+                , paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId()
+                , paramMap.get("priceType"), paramSearch.getPriceTypeId(), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
+                paramSearch.getToPrice(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId(), pageable);
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -72,9 +75,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         .documentNumber(Long.parseLong(item[3].toString()))
                         .financialDocumentTypeId(Long.parseLong(item[4].toString()))
                         .financialDocumentTypeDescription(item[5].toString())
-                         .fullDescription(item[6].toString())
-                        .debitAmount(((BigDecimal)item[7]).doubleValue())
-                        .creditAmount(((BigDecimal)item[8]).doubleValue())
+                        .fullDescription(item[6].toString())
+                        .debitAmount(((BigDecimal) item[7]).doubleValue())
+                        .creditAmount(((BigDecimal) item[8]).doubleValue())
                         .userId(Long.parseLong(item[9].toString()))
                         .userName(item[10].toString())
                         .build()).collect(Collectors.toList());
@@ -85,155 +88,155 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     private ResponseFinancialDocumentDto setParameter(List<DataSourceRequest.FilterDescriptor> filters) {
-        ResponseFinancialDocumentDto responseFinancialDocumentDto=new ResponseFinancialDocumentDto();
+        ResponseFinancialDocumentDto responseFinancialDocumentDto = new ResponseFinancialDocumentDto();
         Map<String, Object> map = new HashMap<>();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
 
                 case "startDate":
-                    responseFinancialDocumentDto.setStartDate(parseStringToLocalDateTime(String.valueOf(item.getValue()),false));
+                    responseFinancialDocumentDto.setStartDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
                     break;
 
                 case "endDate":
-                    responseFinancialDocumentDto.setEndDate(parseStringToLocalDateTime(String.valueOf(item.getValue()),false));
+                    responseFinancialDocumentDto.setEndDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
                     break;
 
-                case "financialNumberingType.id" :
+                case "financialNumberingType.id":
                     responseFinancialDocumentDto.setFinancialNumberingTypeId(Long.parseLong(item.getValue().toString()));
                     break;
 
-                case "fromNumber.id" :
+                case "fromNumber.id":
                     if (item.getValue() != null) {
                         map.put("fromNumber", "fromNumber");
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setFromNumber(Long.parseLong(item.getValue().toString()));
-                    }else{
+                    } else {
                         map.put("fromNumber", null);
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setFromNumber(0L);
                     }
                     break;
 
-                case "toNumber.id" :
+                case "toNumber.id":
                     if (item.getValue() != null) {
                         map.put("toNumber", "toNumber");
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setToNumber(Long.parseLong(item.getValue().toString()));
-                    }else{
+                    } else {
                         map.put("toNumber", null);
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setToNumber(0L);
                     }
                     break;
 
-                case "financialDocumentStatusDtoList" :
-                      responseFinancialDocumentDto.setFinancialDocumentStatusDtoListId((List<Long>) item.getValue());
+                case "financialDocumentStatusDtoList":
+                    responseFinancialDocumentDto.setFinancialDocumentStatusDtoListId((List<Long>) item.getValue());
                     break;
 
-                case "description" :
+                case "description":
                     if (item.getValue() != null) {
                         responseFinancialDocumentDto.setDescription(item.getValue().toString());
-                    }else{
+                    } else {
                         responseFinancialDocumentDto.setDescription("");
                     }
                     break;
 
-                case "fromAccount.code" :
+                case "fromAccount.code":
                     if (item.getValue() != null) {
                         map.put("fromAccount", "fromAccount");
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setFromAccountCode(item.getValue().toString());
-                    }else{
+                    } else {
                         map.put("fromAccount", null);
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setFromAccountCode("");
                     }
                     break;
 
-                case "toAccount.code" :
+                case "toAccount.code":
                     if (item.getValue() != null) {
                         map.put("toAccount", "toAccount");
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setToAccountCode(item.getValue().toString());
-                    }else{
+                    } else {
                         map.put("toAccount", null);
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setToAccountCode("");
                     }
                     break;
 
-                case "centricAccount.id" :
+                case "centricAccount.id":
                     if (item.getValue() != null) {
                         map.put("centricAccount", "centricAccount");
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setCentricAccountId(Long.parseLong(item.getValue().toString()));
-                    }else{
+                    } else {
                         map.put("centricAccount", null);
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setCentricAccountId(0L);
                     }
                     break;
-                case "centricAccountType.id" :
+                case "centricAccountType.id":
                     if (item.getValue() != null) {
                         map.put("centricAccountType", "centricAccountType");
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setCentricAccountTypeId(Long.parseLong(item.getValue().toString()));
-                    }else{
+                    } else {
                         map.put("centricAccountType", null);
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setCentricAccountTypeId(0L);
                     }
                     break;
 
-                case "user.id" :
+                case "user.id":
                     if (item.getValue() != null) {
                         map.put("user", "user");
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setUserId(Long.parseLong(item.getValue().toString()));
-                    }else{
+                    } else {
                         map.put("user", null);
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setUserId(0L);
                     }
                     break;
 
-                case "priceType.id" :
+                case "priceType.id":
                     if (item.getValue() != null) {
                         map.put("priceType", "priceType");
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
-                    }else{
-                        map.put("priceType",null);
+                    } else {
+                        map.put("priceType", null);
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setPriceTypeId(0L);
                     }
                     break;
 
-                case "fromPriceAmount" :
+                case "fromPriceAmount":
                     if (item.getValue() != null) {
                         map.put("fromPrice", "fromPrice");
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setFromPrice(Long.parseLong(item.getValue().toString()));
-                    }else{
+                    } else {
                         map.put("fromPrice", null);
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setFromPrice(0L);
                     }
                     break;
 
-                case "toPriceAmount" :
+                case "toPriceAmount":
                     if (item.getValue() != null) {
                         map.put("toPrice", "toPrice");
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setToPrice(Long.parseLong(item.getValue().toString()));
-                    }else{
+                    } else {
                         map.put("toPrice", null);
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setToPrice(0L);
                     }
                     break;
 
-                case "tolerance" :
+                case "tolerance":
                     if (item.getValue() != null) {
                         responseFinancialDocumentDto.setTolerance(Double.parseDouble(item.getValue().toString()));
                     } else {
@@ -250,18 +253,18 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
         if (input instanceof String) {
             try {
-                Date date = ISO8601Utils.parse((String)input);
+                Date date = ISO8601Utils.parse((String) input);
                 LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
                 return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
             } catch (Exception var4) {
-                if (((String)input).equalsIgnoreCase("current_date")) {
+                if (((String) input).equalsIgnoreCase("current_date")) {
                     return truncateDate ? DateUtil.truncate(LocalDateTime.now()) : LocalDateTime.now();
                 } else {
-                    return ((String)input).equalsIgnoreCase("current_timestamp") ? LocalDateTime.now() : LocalDateTime.parse((String)input);
+                    return ((String) input).equalsIgnoreCase("current_timestamp") ? LocalDateTime.now() : LocalDateTime.parse((String) input);
                 }
             }
         } else if (input instanceof LocalDateTime) {
-            return truncateDate ? DateUtil.truncate((LocalDateTime)input) : (LocalDateTime) input;
+            return truncateDate ? DateUtil.truncate((LocalDateTime) input) : (LocalDateTime) input;
         } else {
             throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
         }
@@ -270,7 +273,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public FinancialDocumentDto changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
-        FinancialDocument financialDocument=financialDocumentRepository.findById(responseFinancialDocumentStatusDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        FinancialDocument financialDocument = financialDocumentRepository.findById(responseFinancialDocumentStatusDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
         validationSetStatus(financialDocument);
         financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(responseFinancialDocumentStatusDto.getFinancialDocumentStatusId()));
         financialDocumentRepository.save(financialDocument);
@@ -279,39 +282,37 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     private void validationSetStatus(FinancialDocument financialDocument) {
 
-        if(financialDocument.getDescription() == null)
-        {
+        if (financialDocument.getDescription() == null) {
             throw new RuleException("سند بدون شرح است.");
         }
 
-        List<FinancialDocumentItem> documentItemList=financialDocumentItemRepository.getDocumentItem(financialDocument.getId());
-        if(documentItemList == null){
+        List<FinancialDocumentItem> documentItemList = financialDocumentItemRepository.getDocumentItem(financialDocument.getId());
+        if (documentItemList == null) {
             throw new RuleException("سند بدون ردیف است.");
-        }else{
-            documentItemList.forEach(documentItem ->{
+        } else {
+            documentItemList.forEach(documentItem -> {
                 double creditAmount = documentItem.getCreditAmount() % 1;
-                double debitAmount=documentItem.getDebitAmount()%1;
+                double debitAmount = documentItem.getDebitAmount() % 1;
 
-                if((creditAmount!=000) || (debitAmount!= 000))
-                {
+                if ((creditAmount != 000) || (debitAmount != 000)) {
                     throw new RuleException("مبلغ در ردیف اعشاری است.");
                 }
 
-                if((documentItem.getCreditAmount()==0) && (documentItem.getDebitAmount()==0)){
+                if ((documentItem.getCreditAmount() == 0) && (documentItem.getDebitAmount() == 0)) {
 
                     throw new RuleException("در ردیف سند مبلغ بستانکار و بدهکار صفر می باشد.");
                 }
 
-                if((documentItem.getCreditAmount()!=0) && (documentItem.getDebitAmount()!=0)){
+                if ((documentItem.getCreditAmount() != 0) && (documentItem.getDebitAmount() != 0)) {
 
                     throw new RuleException("در ردیف سند مبلغ بستانکار و بدهکار هر دو دارای مقدار می باشد.");
                 }
 
-                if((documentItem.getCreditAmount() < 0) && (documentItem.getDebitAmount()< 0)){
+                if ((documentItem.getCreditAmount() < 0) && (documentItem.getDebitAmount() < 0)) {
                     throw new RuleException("در ردیف سند مبلغ بستانکار یا بدهکار  منفی می باشد.");
                 }
 
-                if(documentItem.getDescription()==null){
+                if (documentItem.getDescription() == null) {
 
                     throw new RuleException("در سند ردیف بدون شرح وجود دارد.");
                 }
@@ -320,33 +321,30 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
 
 
-
-        List<Object[]> cost=financialDocumentItemRepository.getCostDocument(financialDocument.getId());
-        if(cost==null)
-        {
+        List<Object[]> cost = financialDocumentItemRepository.getCostDocument(financialDocument.getId());
+        if (cost == null) {
             throw new RuleException("مجموع مبالغ بستانکار و بدهکار در ردیف های سند بالانس نیست.");
         }
 
-       FinancialDocument documentPeriod=financialDocumentRepository.getActivePeriodInDocument(financialDocument.getId());
-        if(documentPeriod == null){
+        FinancialDocument documentPeriod = financialDocumentRepository.getActivePeriodInDocument(financialDocument.getId());
+        if (documentPeriod == null) {
             throw new RuleException("وضعیت دوره مالی مربوط به سند بسته است.");
         }
 
-        FinancialDocumentItem documentItemMoneyType=financialDocumentItemRepository.getDocumentMoneyType(financialDocument.getId());
-        if(documentItemMoneyType!= null){
+        FinancialDocumentItem documentItemMoneyType = financialDocumentItemRepository.getDocumentMoneyType(financialDocument.getId());
+        if (documentItemMoneyType != null) {
             throw new RuleException("نوع ارز ریال می باشد.");
         }
-//        List<FinancialDocumentItem>  documentReference=financialDocumentItemRepository.getDocumentRefrnce(financialDocument.getId());
+//        List<FinancialDocumentItem>  documentReference=financialDocumentItemRepository.getDocumentRefernce(financialDocument.getId());
 //        if(documentReference!= null){
 //            throw new RuleException("تاریخ و شرح در مدارک مرجع پر نشده.");
 //        }
 
 
-
     }
 
     private FinancialDocumentDto financialDocumentToDto(FinancialDocument financialDocument) {
-        Object[] objects=financialDocumentItemRepository.getParamByDocumentId(financialDocument.getId());
+        Object[] objects = financialDocumentItemRepository.getParamByDocumentId(financialDocument.getId());
         return FinancialDocumentDto.builder()
                 .id(financialDocument.getId())
                 .documentDate(java.util.Date.from(financialDocument.getDocumentDate().atZone(ZoneId.systemDefault()).toInstant()))
@@ -367,10 +365,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Transactional(rollbackOn = Throwable.class)
     public String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        String documentNumber=financialDocumentRepository.getDocumentNumber(organizationId,financialDocumentNumberDto.getDate(),
+        String documentNumber = financialDocumentRepository.getDocumentNumber(organizationId, financialDocumentNumberDto.getDate(),
                 financialDocumentNumberDto.getFinancialPeriodId());
-        if(documentNumber==null){
-            throw new RuleException("سند یافت نشد.");
+        if (documentNumber == null) {
+            throw new RuleException(" شماره سند یافت نشد.");
         }
         return documentNumber;
     }
@@ -378,16 +376,16 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public String changeDescription(FinancialDocumentChengDescriptionDto financialDocumentDto) {
-        FinancialDocument financialDocument=financialDocumentRepository.getActiveDocumentById(financialDocumentDto.getId());
-        if(financialDocument==null){
+        FinancialDocument financialDocument = financialDocumentRepository.getActiveDocumentById(financialDocumentDto.getId());
+        if (financialDocument == null) {
             throw new RuleException("سند یافت نشد.");
         }
         entityManager.createNativeQuery(" update fndc.financial_document_item " +
                 "   set description = replace(description,:description,:newDescription) " +
                 "   where financial_document_id =:FinancialDocumentId " +
-                "   And description like '%'|| :description ||'%'").setParameter("description",financialDocumentDto.getOldDescription())
-                .setParameter("newDescription",financialDocumentDto.getNewDescription())
-                .setParameter("FinancialDocumentId",financialDocumentDto.getId()).executeUpdate();
+                "   And description like '%'|| :description ||'%'").setParameter("description", financialDocumentDto.getOldDescription())
+                .setParameter("newDescription", financialDocumentDto.getNewDescription())
+                .setParameter("FinancialDocumentId", financialDocumentDto.getId()).executeUpdate();
 
         financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
         financialDocumentRepository.save(financialDocument);
@@ -397,11 +395,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public boolean deleteFinancialDocumentById(Long financialDocumentId) {
-//        FinancialDocument  document=financialDocumentRepository.findById(financialDocumentId).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
-        FinancialDocument  financialDocument=financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocumentId);
-        if(financialDocument == null) {
-          throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
-        }else {
+        FinancialDocument document = financialDocumentRepository.findById(financialDocumentId).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
+        if (financialDocument == null) {
+            throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
+        } else {
             financialDocument.setDeletedDate(LocalDateTime.now());
             financialDocumentRepository.save(financialDocument);
             List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentItem(financialDocumentId);
@@ -409,12 +407,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 documentItem.setDeletedDate(LocalDateTime.now());
                 financialDocumentItemRepository.save(documentItem);
                 FinancialDocumentReference financialDocumentReference = financialDocumentReferenceRepository.getByDocumentItemId(documentItem.getId());
-                if(financialDocumentReference!=null) {
+                if (financialDocumentReference != null) {
                     financialDocumentReference.setDeletedDate(LocalDateTime.now());
                     financialDocumentReferenceRepository.save(financialDocumentReference);
                 }
                 FinancialDocumentItemCurrency financialDocumentItemCurrency = documentItemCurrencyRepository.getByDocumentItemId(documentItem.getId());
-                if(financialDocumentItemCurrency!= null) {
+                if (financialDocumentItemCurrency != null) {
                     financialDocumentItemCurrency.setDeletedDate(LocalDateTime.now());
                     documentItemCurrencyRepository.save(financialDocumentItemCurrency);
                 }
@@ -427,21 +425,21 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public FinancialDocumentAccountMessageDto changeAccountDocument(FinancialDocumentAccountDto financialDocumentAccountDto) {
-        FinancialDocument  financialDocument=financialDocumentRepository.findById(financialDocumentAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
-        List<FinancialDocumentItem>  financialDocumentItemList=financialDocumentItemRepository.getItemByDocumentIdAndAccountId(financialDocumentAccountDto.getId(),
+        FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getItemByDocumentIdAndAccountId(financialDocumentAccountDto.getId(),
                 financialDocumentAccountDto.getFinancialAccountId());
-        financialDocumentItemList.forEach(documentItem ->{
+        financialDocumentItemList.forEach(documentItem -> {
             documentItem.setFinancialAccount(financialAccountRepository.getOne(financialDocumentAccountDto.getNewFinancialAccountId()));
             financialDocumentItemRepository.save(documentItem);
         });
 
         financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
         financialDocumentRepository.save(financialDocument);
-        FinancialAccount financialAccount=financialAccountRepository.getFinancialAccountRelationType(financialDocumentAccountDto.getFinancialAccountId(),
+        FinancialAccount financialAccount = financialAccountRepository.getFinancialAccountRelationType(financialDocumentAccountDto.getFinancialAccountId(),
                 financialDocumentAccountDto.getNewFinancialAccountId());
-        if(financialAccount==null){
-            List<FinancialDocumentItem> centricDocumentItem=financialDocumentItemRepository.getByNewAccount(financialDocumentAccountDto.getId(),
-                        financialDocumentAccountDto.getNewFinancialAccountId());
+        if (financialAccount == null) {
+            List<FinancialDocumentItem> centricDocumentItem = financialDocumentItemRepository.getByNewAccount(financialDocumentAccountDto.getId(),
+                    financialDocumentAccountDto.getNewFinancialAccountId());
             centricDocumentItem.forEach(centricItem -> {
                 centricItem.setCentricAccountId1(null);
                 centricItem.setCentricAccountId2(null);
@@ -452,15 +450,68 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 financialDocumentItemRepository.save(centricItem);
             });
             return FinancialDocumentAccountMessageDto.builder()
-        .id(financialDocument.getId())
-        .message("به دلیل انواع تفاوت در وابستگی حساب جدید با حساب قبلی،تمام تمرکز های مربوطه حذف شده.لطفا تمرکز های مربوطه را درج نمایید.")
-        .build();
-        }else{
+                    .id(financialDocument.getId())
+                    .message("به دلیل انواع تفاوت در وابستگی حساب جدید با حساب قبلی،تمام تمرکز های مربوطه حذف شده.لطفا تمرکز های مربوطه را درج نمایید.")
+                    .build();
+        } else {
             return FinancialDocumentAccountMessageDto.builder()
                     .id(financialDocument.getId())
                     .message("عملیات موفقیت امیز بود.")
                     .build();
         }
 
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public String changeCentricAccount(FinancialCentricAccountDto financialCentricAccountDto) {
+
+        FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        CentricAccount centricAccount = centricAccountRepository.findById(financialCentricAccountDto.getCentricAccountId()).orElseThrow(() -> new RuleException("کد تمرکز یافت نشد."));
+        CentricAccount newCentricAccount = centricAccountRepository.findById(financialCentricAccountDto.getNewCentricAccountId()).orElseThrow(() -> new RuleException("کد تمرکز یافت نشد."));
+        if (centricAccount.getCentricAccountType().getId().equals(newCentricAccount.getCentricAccountType().getId())) {
+            List<FinancialDocumentItem> financialDocumentItemList =
+                    financialDocumentItemRepository.getByDocumentIdAndCentricAccount(document.getId(), financialCentricAccountDto.getAccountId(), financialCentricAccountDto.getNewCentricAccountId());
+            if(financialDocumentItemList.isEmpty()){
+                throw new RuleException("ردیفی یافت نشد.");
+            }
+            Long centricAccountId = financialCentricAccountDto.getCentricAccountId();
+            financialDocumentItemList.forEach(documentItem -> {
+                if (centricAccountId.equals(documentItem.getCentricAccountId1().getId())) {
+                    documentItem.setCentricAccountId1(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
+                    documentItem.setCentricAccountId2(null);
+                    documentItem.setCentricAccountId3(null);
+                    documentItem.setCentricAccountId4(null);
+                    documentItem.setCentricAccountId5(null);
+                    documentItem.setCentricAccountId6(null);
+                } else if (centricAccountId.equals(documentItem.getCentricAccountId2().getId())) {
+                    documentItem.setCentricAccountId2(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
+                    documentItem.setCentricAccountId3(null);
+                    documentItem.setCentricAccountId4(null);
+                    documentItem.setCentricAccountId5(null);
+                    documentItem.setCentricAccountId6(null);
+                } else if (centricAccountId.equals(documentItem.getCentricAccountId3().getId())) {
+                    documentItem.setCentricAccountId3(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
+                    documentItem.setCentricAccountId4(null);
+                    documentItem.setCentricAccountId5(null);
+                    documentItem.setCentricAccountId6(null);
+                } else if (centricAccountId.equals(documentItem.getCentricAccountId4().getId())) {
+                    documentItem.setCentricAccountId4(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
+                    documentItem.setCentricAccountId5(null);
+                    documentItem.setCentricAccountId6(null);
+                } else if (centricAccountId.equals(documentItem.getCentricAccountId5().getId())) {
+                    documentItem.setCentricAccountId5(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
+                    documentItem.setCentricAccountId6(null);
+                }else{
+                    documentItem.setCentricAccountId6(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
+                }
+                financialDocumentItemRepository.save(documentItem);
+            });
+
+        } else {
+            throw new RuleException("نوع کد تمرکز جدید و قبلی یکسان نیست.");
+        }
+
+        return "تمامی تمرکز های سطوح بعد از تمرکز تغییر یافته حذف شدند. لطفا مجددا نسبت به انتخاب تمرکز ها اقدام فرمایید.";
     }
 }

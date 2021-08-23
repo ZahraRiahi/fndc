@@ -1,10 +1,7 @@
 package ir.demisco.cfs.app.web.controller;
 
 
-import ir.demisco.cfs.model.dto.response.FinancialDocumentAccountDto;
-import ir.demisco.cfs.model.dto.response.FinancialDocumentAccountMessageDto;
-import ir.demisco.cfs.model.dto.response.FinancialDocumentChengDescriptionDto;
-import ir.demisco.cfs.model.dto.response.FinancialDocumentNumberDto;
+import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -41,10 +38,12 @@ public class FinancialDocumentController {
     }
 
     @PostMapping("/ChangeDescription")
-    public ResponseEntity<String> changeDescription(@RequestBody FinancialDocumentChengDescriptionDto financialDocumentDto){
+    public ResponseEntity<FinancialDocumentAccountMessageDto> changeDescription(@RequestBody FinancialDocumentChengDescriptionDto financialDocumentDto){
         String result;
+        FinancialDocumentAccountMessageDto financialDocumentAccountMessageDto=new FinancialDocumentAccountMessageDto();
         result = financialDocumentService.changeDescription(financialDocumentDto);
-        return ResponseEntity.ok(result);
+        financialDocumentAccountMessageDto.setMessage(result);
+        return ResponseEntity.ok(financialDocumentAccountMessageDto);
     }
 
     @GetMapping("/Delete/{id}")
@@ -57,5 +56,14 @@ public class FinancialDocumentController {
     @PostMapping("/ChangeAccount")
     public ResponseEntity<FinancialDocumentAccountMessageDto>  changeAccount(@RequestBody FinancialDocumentAccountDto financialDocumentAccountDto){
      return  ResponseEntity.ok(financialDocumentService.changeAccountDocument(financialDocumentAccountDto));
+    }
+
+    @PostMapping("/ChangeCentricAccount")
+    public ResponseEntity<FinancialDocumentAccountMessageDto> changeCentricAccount(@RequestBody FinancialCentricAccountDto financialCentricAccountDto){
+        String result;
+        FinancialDocumentAccountMessageDto financialDocumentAccountMessageDto=new FinancialDocumentAccountMessageDto();
+        result = financialDocumentService.changeCentricAccount(financialCentricAccountDto);
+        financialDocumentAccountMessageDto.setMessage(result);
+        return ResponseEntity.ok(financialDocumentAccountMessageDto);
     }
 }
