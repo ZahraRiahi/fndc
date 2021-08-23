@@ -108,7 +108,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " join FinancialDocumentRefrence fr on fr.financialDocumentItem.id=fd.id " +
             " where fd.financialDocument.id=:FinancialDocumentId " +
             " and ((fr.referenceDate is null) or (fr.referenceDescription is null))", nativeQuery = true)
-    List<FinancialDocumentItem> getDocumentRefrnce(Long FinancialDocumentId);
+    List<FinancialDocumentItem> getDocumentRefernce(Long FinancialDocumentId);
 
     @Query(value = "  select sum(t.debit_amount) as debit_amount, " +
                    "         sum(t.credit_amount) as credit_amount, " +
@@ -127,4 +127,10 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
 
     @Query("select fdi from FinancialDocumentItem fdi where fdi.financialDocument.id=:documentId and fdi.financialAccount.id=:newAccountId")
     List<FinancialDocumentItem> getByNewAccount(Long documentId,Long newAccountId);
+
+    @Query("select fdi from FinancialDocumentItem fdi " +
+            " where fdi.financialDocument.id=:documentId and fdi.financialAccount.id=:accountId " +
+            " and fdi.centricAccountId1.id <>:newCentricAccountId and fdi.centricAccountId2.id <>:newCentricAccountId and fdi.centricAccountId3.id <>:newCentricAccountId " +
+            " and fdi.centricAccountId4.id <>:newCentricAccountId and fdi.centricAccountId5.id <>:newCentricAccountId and fdi.centricAccountId6.id <>:newCentricAccountId")
+    List<FinancialDocumentItem> getByDocumentIdAndCentricAccount(Long documentId,Long accountId,Long newCentricAccountId);
 }
