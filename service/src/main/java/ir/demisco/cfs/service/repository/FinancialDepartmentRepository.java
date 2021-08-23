@@ -22,9 +22,6 @@ public interface FinancialDepartmentRepository extends JpaRepository<FinancialDe
             "    on fnlt.id = fnlg.financial_ledger_type_id" +
             "   and fnlt.deleted_date is null" +
             " where fndp.deleted_date is null" +
-            "   and fnlt.organization_id = :organizationId" +
             "   and fndp.organization_id = :organizationId", nativeQuery = true)
     List<Object[]> getFinancialDocumentItemList(Long organizationId);
-
-
 }
