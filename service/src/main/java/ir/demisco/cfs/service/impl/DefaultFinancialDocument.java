@@ -484,32 +484,32 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             }
             Long centricAccountId = financialCentricAccountDto.getCentricAccountId();
             financialDocumentItemList.forEach(documentItem -> {
-                if (centricAccountId.equals(documentItem.getCentricAccountId1().getId())) {
+                if ((documentItem.getCentricAccountId1()!= null)   && (centricAccountId.equals(documentItem.getCentricAccountId1().getId()))) {
                     documentItem.setCentricAccountId1(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId2(null);
                     documentItem.setCentricAccountId3(null);
                     documentItem.setCentricAccountId4(null);
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
-                } else if (centricAccountId.equals(documentItem.getCentricAccountId2().getId())) {
+                } else if (documentItem.getCentricAccountId2()!= null && centricAccountId.equals(documentItem.getCentricAccountId2().getId())) {
                     documentItem.setCentricAccountId2(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId3(null);
                     documentItem.setCentricAccountId4(null);
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
-                } else if (centricAccountId.equals(documentItem.getCentricAccountId3().getId())) {
+                } else if (documentItem.getCentricAccountId3()!=null && centricAccountId.equals(documentItem.getCentricAccountId3().getId())) {
                     documentItem.setCentricAccountId3(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId4(null);
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
-                } else if (centricAccountId.equals(documentItem.getCentricAccountId4().getId())) {
+                } else if (documentItem.getCentricAccountId4()!=null && centricAccountId.equals(documentItem.getCentricAccountId4().getId())) {
                     documentItem.setCentricAccountId4(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
-                } else if (centricAccountId.equals(documentItem.getCentricAccountId5().getId())) {
+                } else if (documentItem.getCentricAccountId5()!= null && centricAccountId.equals(documentItem.getCentricAccountId5().getId())) {
                     documentItem.setCentricAccountId5(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId6(null);
-                }else{
+                }else if(documentItem.getCentricAccountId6()!= null&& centricAccountId.equals(documentItem.getCentricAccountId6().getId())){
                     documentItem.setCentricAccountId6(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                 }
                 financialDocumentItemRepository.save(documentItem);
