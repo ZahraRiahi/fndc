@@ -380,6 +380,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialDocument == null) {
             throw new RuleException("سند یافت نشد.");
         }
+        List<FinancialDocumentItem> financialDocumentItemList=financialDocumentItemRepository.getDocumentDescription(financialDocumentDto.getId(),financialDocumentDto.getOldDescription());
+        if(financialDocumentItemList.isEmpty()){
+            throw new RuleException("ردیفی با پارامترهای ارسالی یافت نشد");
+        }
         entityManager.createNativeQuery(" update fndc.financial_document_item " +
                 "   set description = replace(description,:description,:newDescription) " +
                 "   where financial_document_id =:FinancialDocumentId " +
