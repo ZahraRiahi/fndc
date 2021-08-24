@@ -430,6 +430,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Transactional(rollbackOn = Throwable.class)
     public FinancialDocumentAccountMessageDto changeAccountDocument(FinancialDocumentAccountDto financialDocumentAccountDto) {
         FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        if(financialDocumentAccountDto.getFinancialAccountId().equals(financialDocumentAccountDto.getNewFinancialAccountId())){
+            throw new RuleException("حساب های ارسالی یکسان است.");
+        }
         List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getItemByDocumentIdAndAccountId(financialDocumentAccountDto.getId(),
                 financialDocumentAccountDto.getFinancialAccountId());
         financialDocumentItemList.forEach(documentItem -> {
