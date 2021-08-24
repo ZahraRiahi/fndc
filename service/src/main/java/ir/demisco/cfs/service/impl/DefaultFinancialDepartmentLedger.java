@@ -152,7 +152,6 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
             if (financialDepartmentLedgerRequestListId.getFinancialDepartmentLedgerId().equals(financialDepartmentLedgerForUpdate.getId())) {
                 financialDepartmentLedgerForUpdate.setDeletedDate(LocalDateTime.now());
                 financialDepartmentLedgerRepository.save(financialDepartmentLedgerForUpdate);
-                insertFinancialDepartmentLedger(financialLedgerTypeRepositoryById, financialDepartmentLedgerRequestListId);
             }
         } else {
             throw new RuleException("شناسه دفتر مالی شعبه، وارد شده معتبر نمی باشد.");
