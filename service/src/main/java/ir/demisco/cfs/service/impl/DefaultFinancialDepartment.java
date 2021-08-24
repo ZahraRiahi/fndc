@@ -24,18 +24,17 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
     public DataSourceResult financialDepartmentList() {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         List<Object[]> financialDocumentItemList = financialDepartmentRepository.getFinancialDocumentItemList(organizationId);
-        List<FinancialDepartmentResponse> financialLedgerTypeResponses = financialDocumentItemList.stream().map(item ->
+        List<FinancialDepartmentResponse> financialDepartmentResponses = financialDocumentItemList.stream().map(item ->
                 FinancialDepartmentResponse.builder()
                         .departmentId(Long.parseLong(item[0].toString()))
                         .code(item[1].toString())
                         .name((item[2].toString()))
-                        .financialLedgerTypeId(Long.valueOf((item[3].toString())))
-                        .ledgerTypeDescription(item[4].toString())
-                        .financialDepartmentLedgerId(Long.valueOf(item[5].toString()))
+                        .financialLedgerTypeId(Long.parseLong(item[3] == null ? "0" : item[3].toString()))
+                        .ledgerTypeDescription(item[4] == null ? "" : item[4].toString())
+                        .financialDepartmentLedgerId(Long.parseLong(item[5] == null ? "0" : item[5].toString()))
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(financialLedgerTypeResponses);
-//        dataSourceResult.setTotal(financialDocumentItemList.getTotalElements());
+        dataSourceResult.setData(financialDepartmentResponses);
         return dataSourceResult;
 
     }
