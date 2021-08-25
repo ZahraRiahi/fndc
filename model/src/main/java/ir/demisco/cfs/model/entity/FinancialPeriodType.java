@@ -16,6 +16,7 @@ public class FinancialPeriodType extends AuditModel<Long> {
     private Long fromMonth;
     private Long toMonth;
     private Long calendarTypeId;
+    private Boolean calendarYearFlag;
 
     @Id
     public Long getId() {
@@ -59,5 +60,14 @@ public class FinancialPeriodType extends AuditModel<Long> {
 
     public void setCalendarTypeId(Long calendarTypeId) {
         this.calendarTypeId = calendarTypeId;
+    }
+
+    @Column(name = "CURRENT_YEAR_FLAG")
+    public Boolean getCalendarYearFlag() {
+        return calendarYearFlag;
+    }
+
+    public void setCalendarYearFlag(Boolean calendarYearFlag) {
+        this.calendarYearFlag = calendarYearFlag;
     }
 }
