@@ -20,4 +20,6 @@ public interface FinancialDocumentService {
     FinancialDocumentAccountMessageDto changeAccountDocument(FinancialDocumentAccountDto financialDocumentAccountDto);
 
     String changeCentricAccount(FinancialCentricAccountDto financialCentricAccountDto);
+
+    Boolean changeAmountDocument(FinancialCentricAccountDto financialCentricAccountDto);
 }
