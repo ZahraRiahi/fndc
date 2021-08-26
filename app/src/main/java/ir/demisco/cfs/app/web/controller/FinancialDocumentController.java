@@ -6,6 +6,7 @@ import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -65,5 +66,13 @@ public class FinancialDocumentController {
         result = financialDocumentService.changeCentricAccount(financialCentricAccountDto);
         financialDocumentAccountMessageDto.setMessage(result);
         return ResponseEntity.ok(financialDocumentAccountMessageDto);
+    }
+
+    @PostMapping("/ChangeAmount")
+    public ResponseEntity<Boolean> changeAmount(@RequestBody FinancialCentricAccountDto financialCentricAccountDto){
+
+        Boolean result;
+        result=financialDocumentService.changeAmountDocument(financialCentricAccountDto);
+        return ResponseEntity.ok(result);
     }
 }

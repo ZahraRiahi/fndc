@@ -521,4 +521,24 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
         return "تمامی تمرکز های سطوح بعد از تمرکز تغییر یافته حذف شدند. لطفا مجددا نسبت به انتخاب تمرکز ها اقدام فرمایید.";
     }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean changeAmountDocument(FinancialCentricAccountDto financialCentricAccountDto) {
+        FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
+        if (financialDocument == null) {
+            throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
+        } else {
+            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentItem(financialCentricAccountDto.getId());
+            financialDocumentItemList.forEach(documentItem -> {
+                Double newAmount=documentItem.getCreditAmount();
+                documentItem.setCreditAmount(documentItem.getDebitAmount());
+                documentItem.setDebitAmount(newAmount);
+                financialDocumentItemRepository.save(documentItem);
+            });
+
+        }
+        return true;
+    }
 }
