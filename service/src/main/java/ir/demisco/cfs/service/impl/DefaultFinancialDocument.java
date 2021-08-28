@@ -537,6 +537,29 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 documentItem.setDebitAmount(newAmount);
                 financialDocumentItemRepository.save(documentItem);
             });
+            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
+            financialDocumentRepository.save(financialDocument);
+
+        }
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean setAmountDocument(FinancialCentricAccountDto financialCentricAccountDto) {
+        FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
+        if (financialDocument == null) {
+            throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
+        } else {
+            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentItem(financialCentricAccountDto.getId());
+            financialDocumentItemList.forEach(documentItem -> {
+                documentItem.setCreditAmount(0D);
+                documentItem.setDebitAmount(0D);
+                financialDocumentItemRepository.save(documentItem);
+            });
+            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
+            financialDocumentRepository.save(financialDocument);
 
         }
         return true;

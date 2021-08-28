@@ -75,4 +75,12 @@ public class FinancialDocumentController {
         result=financialDocumentService.changeAmountDocument(financialCentricAccountDto);
         return ResponseEntity.ok(result);
     }
+
+    @PostMapping("/SetAmount")
+    public ResponseEntity<Boolean> setAmount(@RequestBody FinancialCentricAccountDto financialCentricAccountDto){
+
+        Boolean result;
+        result=financialDocumentService.setAmountDocument(financialCentricAccountDto);
+        return ResponseEntity.ok(result);
+    }
 }
