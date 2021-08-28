@@ -380,6 +380,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialDocument == null) {
             throw new RuleException("سند یافت نشد.");
         }
+        List<FinancialDocumentItem> financialDocumentItemList=financialDocumentItemRepository.getDocumentDescription(financialDocumentDto.getId(),financialDocumentDto.getOldDescription());
+        if(financialDocumentItemList.isEmpty()){
+            throw new RuleException("ردیفی با پارامترهای ارسالی یافت نشد");
+        }
         entityManager.createNativeQuery(" update fndc.financial_document_item " +
                 "   set description = replace(description,:description,:newDescription) " +
                 "   where financial_document_id =:FinancialDocumentId " +
@@ -426,6 +430,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Transactional(rollbackOn = Throwable.class)
     public FinancialDocumentAccountMessageDto changeAccountDocument(FinancialDocumentAccountDto financialDocumentAccountDto) {
         FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        if(financialDocumentAccountDto.getFinancialAccountId().equals(financialDocumentAccountDto.getNewFinancialAccountId())){
+            throw new RuleException("حساب های ارسالی یکسان است.");
+        }
         List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getItemByDocumentIdAndAccountId(financialDocumentAccountDto.getId(),
                 financialDocumentAccountDto.getFinancialAccountId());
         financialDocumentItemList.forEach(documentItem -> {
@@ -477,32 +484,32 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             }
             Long centricAccountId = financialCentricAccountDto.getCentricAccountId();
             financialDocumentItemList.forEach(documentItem -> {
-                if (centricAccountId.equals(documentItem.getCentricAccountId1().getId())) {
+                if ((documentItem.getCentricAccountId1()!= null)   && (centricAccountId.equals(documentItem.getCentricAccountId1().getId()))) {
                     documentItem.setCentricAccountId1(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId2(null);
                     documentItem.setCentricAccountId3(null);
                     documentItem.setCentricAccountId4(null);
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
-                } else if (centricAccountId.equals(documentItem.getCentricAccountId2().getId())) {
+                } else if (documentItem.getCentricAccountId2()!= null && centricAccountId.equals(documentItem.getCentricAccountId2().getId())) {
                     documentItem.setCentricAccountId2(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId3(null);
                     documentItem.setCentricAccountId4(null);
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
-                } else if (centricAccountId.equals(documentItem.getCentricAccountId3().getId())) {
+                } else if (documentItem.getCentricAccountId3()!=null && centricAccountId.equals(documentItem.getCentricAccountId3().getId())) {
                     documentItem.setCentricAccountId3(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId4(null);
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
-                } else if (centricAccountId.equals(documentItem.getCentricAccountId4().getId())) {
+                } else if (documentItem.getCentricAccountId4()!=null && centricAccountId.equals(documentItem.getCentricAccountId4().getId())) {
                     documentItem.setCentricAccountId4(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
-                } else if (centricAccountId.equals(documentItem.getCentricAccountId5().getId())) {
+                } else if (documentItem.getCentricAccountId5()!= null && centricAccountId.equals(documentItem.getCentricAccountId5().getId())) {
                     documentItem.setCentricAccountId5(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId6(null);
-                }else{
+                }else if(documentItem.getCentricAccountId6()!= null&& centricAccountId.equals(documentItem.getCentricAccountId6().getId())){
                     documentItem.setCentricAccountId6(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                 }
                 financialDocumentItemRepository.save(documentItem);
@@ -513,5 +520,48 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
 
         return "تمامی تمرکز های سطوح بعد از تمرکز تغییر یافته حذف شدند. لطفا مجددا نسبت به انتخاب تمرکز ها اقدام فرمایید.";
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean changeAmountDocument(FinancialCentricAccountDto financialCentricAccountDto) {
+        FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
+        if (financialDocument == null) {
+            throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
+        } else {
+            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentItem(financialCentricAccountDto.getId());
+            financialDocumentItemList.forEach(documentItem -> {
+                Double newAmount=documentItem.getCreditAmount();
+                documentItem.setCreditAmount(documentItem.getDebitAmount());
+                documentItem.setDebitAmount(newAmount);
+                financialDocumentItemRepository.save(documentItem);
+            });
+            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
+            financialDocumentRepository.save(financialDocument);
+
+        }
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean setAmountDocument(FinancialCentricAccountDto financialCentricAccountDto) {
+        FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
+        if (financialDocument == null) {
+            throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
+        } else {
+            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentItem(financialCentricAccountDto.getId());
+            financialDocumentItemList.forEach(documentItem -> {
+                documentItem.setCreditAmount(0D);
+                documentItem.setDebitAmount(0D);
+                financialDocumentItemRepository.save(documentItem);
+            });
+            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
+            financialDocumentRepository.save(financialDocument);
+
+        }
+        return true;
     }
 }

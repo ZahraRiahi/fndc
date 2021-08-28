@@ -130,7 +130,12 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
 
     @Query("select fdi from FinancialDocumentItem fdi " +
             " where fdi.financialDocument.id=:documentId and fdi.financialAccount.id=:accountId " +
-            " and fdi.centricAccountId1.id <>:newCentricAccountId and fdi.centricAccountId2.id <>:newCentricAccountId and fdi.centricAccountId3.id <>:newCentricAccountId " +
-            " and fdi.centricAccountId4.id <>:newCentricAccountId and fdi.centricAccountId5.id <>:newCentricAccountId and fdi.centricAccountId6.id <>:newCentricAccountId")
+            " and nvl(fdi.centricAccountId1.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId2.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId3.id,0) <>:newCentricAccountId " +
+            " and nvl(fdi.centricAccountId4.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId5.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId6.id,0) <>:newCentricAccountId")
     List<FinancialDocumentItem> getByDocumentIdAndCentricAccount(Long documentId,Long accountId,Long newCentricAccountId);
+
+    @Query("select fdi from FinancialDocumentItem fdi" +
+            "   where fdi.financialDocument.id =:financialDocumentId " +
+            "   And fdi.description like  %:oldDescription% ")
+    List<FinancialDocumentItem> getDocumentDescription(Long financialDocumentId,String oldDescription);
 }

@@ -111,10 +111,16 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "              join FinancialMonthType fmt on fmt.id=fm.financialMonthType.id " +
             "              join FinancialPeriodType fpt on fpt.id=fmt.financialPeriodType.id " +
             "              join FinancialPeriodTypeAssign fpts on fpts.financialPeriodType.id=fpt.id " +
-            "              join FinancialPeriod fp on fp.financialPeriodTypeAssign.id=fpts.id" +
+            "              join FinancialPeriod fp on fp.financialPeriodTypeAssign.id=fpts.id " +
             "              join FinancialDocument fd on fd.financialPeriod.id=fp.id " +
             "            where fd.id=:FinancialDocumentId " +
-            "                  and extract(month from fd.documentDate)=fpt.fromMonth + fmt.monthNumber-1" +
-            "                  and fm.financialMonthStatus.id=1)")
+            "                  and fm.financialMonthStatus.id=1" +
+            "                  and case fpt.calendarTypeId when 2 then extract(month from TO_DATE(TO_char(fd.documentDate,'mm/dd/yyyy'),'mm/dd/yyyy'))" +
+            "                                              when 1 then TO_NUMBER(substr(TO_CHAR(TO_DATE(TO_char(fd.documentDate,'mm/dd/yyyy'),'mm/dd/yyyy'),'yyyy/mm/dd','NLS_CALENDAR=persian'),6,2)) " +
+            "                       end = case when fpt.calendarYearFlag = 1 then (fpt.fromMonth + (fmt.monthNumber-1)) "+
+            "                       else  " +
+            "                       case when (fpt.fromMonth + (fmt.monthNumber-1)) > 12 then (fpt.fromMonth + (fmt.monthNumber-13)) else (fpt.fromMonth+(fmt.monthNumber-1)) end" +
+            "                       end" +
+            "                     )")
     FinancialDocument getActivePeriodAndMontInDocument(Long FinancialDocumentId);
 }
