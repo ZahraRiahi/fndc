@@ -66,7 +66,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
                 Optional<FinancialDepartmentLedger> financialDepartmentLedgerRepositoryById = financialDepartmentLedgerRepository.findById(financialDepartmentLedgerRequestListId.getFinancialDepartmentLedgerId());
                 updateDeleteDate(financialDepartmentLedgerRepositoryById, financialDepartmentLedgerRequestListId);
             } else if(financialDepartmentLedgerRequestListId.getFinancialLedgerTypeId() == null && financialDepartmentLedgerRequestListId.getFinancialDepartmentLedgerId() == null) {
-                insertFinancialDepartmentLedger(financialLedgerTypeRepositoryById, financialDepartmentLedgerRequestListId);
+               continue;
             }else {
                 Long financialDepartmentLedger = financialDepartmentLedgerRepository.getFinancialDepartmentLedger(
                         financialDepartmentLedgerRequestListId.getFinancialDepartmentId()
