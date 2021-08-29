@@ -115,7 +115,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
             hasInFinancialDepartmentLedger = checkFinancialDepartmentLedger(financialDepartmentLedgerRequestListId, financialDepartmentRepositoryById.get().getId(),
                     financialLedgerTypeRepositoryById.get().getId());
         }
-        if (hasInFinancialDepartmentLedger) {
+        if (!hasInFinancialDepartmentLedger) {
             financialDepartmentLedgerRepository.save(financialDepartmentLedgerNew);
         } else {
             throw new RuleException("این نوع دفتر مالی، برای این شعبه، قبلا ثبت شده است.");
