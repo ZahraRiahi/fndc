@@ -11,13 +11,16 @@ public class FinancialDocumentItemCurrency extends AuditModel<Long> {
 
     private Long                   id;
     private FinancialDocumentItem  financialDocumentItem;
-    private Long                   foreignAmount;
+    private Double                   foreignDebitAmount;
+    private Double                   foreignCreditAmount;
     private Long                   exchangeRate;
     private MoneyType              moneyType;
     private MoneyPricingReference  moneyPricingReference;
     private LocalDateTime DeletedDate;
 
     @Id
+    @SequenceGenerator(schema = "fndc", name = "financial_document_item_reference_generator", sequenceName = "sq_financial_document_item_currency")
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_document_item_reference_generator")
     public Long getId() {
         return id;
     }
@@ -36,12 +39,20 @@ public class FinancialDocumentItemCurrency extends AuditModel<Long> {
         this.financialDocumentItem = financialDocumentItem;
     }
 
-    public Long getForeignAmount() {
-        return foreignAmount;
+    public Double getForeignDebitAmount() {
+        return foreignDebitAmount;
     }
 
-    public void setForeignAmount(Long foreignAmount) {
-        this.foreignAmount = foreignAmount;
+    public void setForeignDebitAmount(Double foreignDebitAmount) {
+        this.foreignDebitAmount = foreignDebitAmount;
+    }
+
+    public Double getForeignCreditAmount() {
+        return foreignCreditAmount;
+    }
+
+    public void setForeignCreditAmount(Double foreignCreditAmount) {
+        this.foreignCreditAmount = foreignCreditAmount;
     }
 
     public Long getExchangeRate() {

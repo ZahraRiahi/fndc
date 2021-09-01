@@ -89,8 +89,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
                                                 Pageable pageable);
 
 
-    @Query("select fd from FinancialDocumentItem fd where fd.financialDocument.id=:FinancialDocumentId ")
-    List<FinancialDocumentItem> getDocumentItem(Long FinancialDocumentId);
+//    @Query("select fd from FinancialDocumentItem fd where fd.financialDocument.id=:FinancialDocumentId ")
+    List<FinancialDocumentItem> findByFinancialDocumentIdAndDeletedDateIsNull(Long FinancialDocumentId);
 
     @Query(value = " select sum(t.debit_amount) as debit_amount,sum(t.credit_amount) as credit_amount " +
             " from fndc.Financial_Document_Item t " +

@@ -32,8 +32,8 @@ public class FinancialDocumentController {
 //    }
 
     @PostMapping("/CreateNumber")
-    public ResponseEntity<String> creatNumber(@RequestBody FinancialDocumentNumberDto financialDocumentNumberDto){
-        String result;
+    public ResponseEntity<Long> creatNumber(@RequestBody FinancialDocumentNumberDto financialDocumentNumberDto){
+        Long result;
         result = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
         return ResponseEntity.ok(result);
     }
@@ -82,5 +82,15 @@ public class FinancialDocumentController {
         Boolean result;
         result=financialDocumentService.setAmountDocument(financialCentricAccountDto);
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/Save")
+    public ResponseEntity<FinancialDocumentSaveDto> saveFinancialDocument(@RequestBody FinancialDocumentSaveDto requestFinancialDocumentSaveDto){
+        if(requestFinancialDocumentSaveDto.getFinancialDocumentId()==null) {
+            return ResponseEntity.ok(financialDocumentService.saveDocument(requestFinancialDocumentSaveDto));
+        }else{
+            return ResponseEntity.ok(financialDocumentService.updateDocument(requestFinancialDocumentSaveDto));
+        }
+
     }
 }
