@@ -15,17 +15,14 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
-import org.springframework.util.Assert;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -40,8 +37,15 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialAccountRepository financialAccountRepository;
     private final EntityManager entityManager;
     private final CentricAccountRepository centricAccountRepository;
+    private final OrganizationRepository organizationRepository;
+    private final FinancialDocumentTypeRepository financialDocumentTypeRepository;
+    private final FinancialPeriodRepository financialPeriodRepository;
+    private final FinancialLedgerTypeRepository financialLedgerTypeRepository;
+    private final FinancialDepartmentRepository financialDepartmentRepository;
+    private final MoneyTypeRepository moneyTypeRepository;
+    private final MoneyPrisingReferenceRepository prisingReferenceRepository;
 
-    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository, EntityManager entityManager, CentricAccountRepository centricAccountRepository) {
+    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository, EntityManager entityManager, CentricAccountRepository centricAccountRepository, OrganizationRepository organizationRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialPeriodRepository financialPeriodRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, FinancialDepartmentRepository financialDepartmentRepository, MoneyTypeRepository moneyTypeRepository, MoneyPrisingReferenceRepository prisingReferenceRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -50,6 +54,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.financialAccountRepository = financialAccountRepository;
         this.entityManager = entityManager;
         this.centricAccountRepository = centricAccountRepository;
+        this.organizationRepository = organizationRepository;
+        this.financialDocumentTypeRepository = financialDocumentTypeRepository;
+        this.financialPeriodRepository = financialPeriodRepository;
+        this.financialLedgerTypeRepository = financialLedgerTypeRepository;
+        this.financialDepartmentRepository = financialDepartmentRepository;
+        this.moneyTypeRepository = moneyTypeRepository;
+        this.prisingReferenceRepository = prisingReferenceRepository;
     }
 
 
@@ -286,7 +297,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             throw new RuleException("سند بدون شرح است.");
         }
 
-        List<FinancialDocumentItem> documentItemList = financialDocumentItemRepository.getDocumentItem(financialDocument.getId());
+        List<FinancialDocumentItem> documentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocument.getId());
         if (documentItemList == null) {
             throw new RuleException("سند بدون ردیف است.");
         } else {
@@ -347,7 +358,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         Object[] objects = financialDocumentItemRepository.getParamByDocumentId(financialDocument.getId());
         return FinancialDocumentDto.builder()
                 .id(financialDocument.getId())
-                .documentDate(java.util.Date.from(financialDocument.getDocumentDate().atZone(ZoneId.systemDefault()).toInstant()))
+                .documentDate(financialDocument.getDocumentDate())
                 .documentNumber(financialDocument.getDocumentNumber())
                 .financialDocumentTypeId(financialDocument.getFinancialDocumentType().getId())
                 .financialDocumentTypeDescription(financialDocument.getFinancialDocumentType().getDescription())
@@ -363,9 +374,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
-    public String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto) {
+    public Long creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        String documentNumber = financialDocumentRepository.getDocumentNumber(organizationId, financialDocumentNumberDto.getDate(),
+        Long documentNumber = financialDocumentRepository.getDocumentNumber(organizationId, financialDocumentNumberDto.getDate(),
                 financialDocumentNumberDto.getFinancialPeriodId());
         if (documentNumber == null) {
             throw new RuleException(" شماره سند یافت نشد.");
@@ -380,8 +391,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialDocument == null) {
             throw new RuleException("سند یافت نشد.");
         }
-        List<FinancialDocumentItem> financialDocumentItemList=financialDocumentItemRepository.getDocumentDescription(financialDocumentDto.getId(),financialDocumentDto.getOldDescription());
-        if(financialDocumentItemList.isEmpty()){
+        List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentDescription(financialDocumentDto.getId(), financialDocumentDto.getOldDescription());
+        if (financialDocumentItemList.isEmpty()) {
             throw new RuleException("ردیفی با پارامترهای ارسالی یافت نشد");
         }
         entityManager.createNativeQuery(" update fndc.financial_document_item " +
@@ -406,7 +417,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         } else {
             financialDocument.setDeletedDate(LocalDateTime.now());
             financialDocumentRepository.save(financialDocument);
-            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentItem(financialDocumentId);
+            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocumentId);
             financialDocumentItemList.forEach(documentItem -> {
                 documentItem.setDeletedDate(LocalDateTime.now());
                 financialDocumentItemRepository.save(documentItem);
@@ -430,7 +441,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Transactional(rollbackOn = Throwable.class)
     public FinancialDocumentAccountMessageDto changeAccountDocument(FinancialDocumentAccountDto financialDocumentAccountDto) {
         FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
-        if(financialDocumentAccountDto.getFinancialAccountId().equals(financialDocumentAccountDto.getNewFinancialAccountId())){
+        if (financialDocumentAccountDto.getFinancialAccountId().equals(financialDocumentAccountDto.getNewFinancialAccountId())) {
             throw new RuleException("حساب های ارسالی یکسان است.");
         }
         List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getItemByDocumentIdAndAccountId(financialDocumentAccountDto.getId(),
@@ -479,37 +490,37 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (centricAccount.getCentricAccountType().getId().equals(newCentricAccount.getCentricAccountType().getId())) {
             List<FinancialDocumentItem> financialDocumentItemList =
                     financialDocumentItemRepository.getByDocumentIdAndCentricAccount(document.getId(), financialCentricAccountDto.getAccountId(), financialCentricAccountDto.getNewCentricAccountId());
-            if(financialDocumentItemList.isEmpty()){
+            if (financialDocumentItemList.isEmpty()) {
                 throw new RuleException("ردیفی یافت نشد.");
             }
             Long centricAccountId = financialCentricAccountDto.getCentricAccountId();
             financialDocumentItemList.forEach(documentItem -> {
-                if ((documentItem.getCentricAccountId1()!= null)   && (centricAccountId.equals(documentItem.getCentricAccountId1().getId()))) {
+                if ((documentItem.getCentricAccountId1() != null) && (centricAccountId.equals(documentItem.getCentricAccountId1().getId()))) {
                     documentItem.setCentricAccountId1(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId2(null);
                     documentItem.setCentricAccountId3(null);
                     documentItem.setCentricAccountId4(null);
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
-                } else if (documentItem.getCentricAccountId2()!= null && centricAccountId.equals(documentItem.getCentricAccountId2().getId())) {
+                } else if (documentItem.getCentricAccountId2() != null && centricAccountId.equals(documentItem.getCentricAccountId2().getId())) {
                     documentItem.setCentricAccountId2(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId3(null);
                     documentItem.setCentricAccountId4(null);
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
-                } else if (documentItem.getCentricAccountId3()!=null && centricAccountId.equals(documentItem.getCentricAccountId3().getId())) {
+                } else if (documentItem.getCentricAccountId3() != null && centricAccountId.equals(documentItem.getCentricAccountId3().getId())) {
                     documentItem.setCentricAccountId3(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId4(null);
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
-                } else if (documentItem.getCentricAccountId4()!=null && centricAccountId.equals(documentItem.getCentricAccountId4().getId())) {
+                } else if (documentItem.getCentricAccountId4() != null && centricAccountId.equals(documentItem.getCentricAccountId4().getId())) {
                     documentItem.setCentricAccountId4(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
-                } else if (documentItem.getCentricAccountId5()!= null && centricAccountId.equals(documentItem.getCentricAccountId5().getId())) {
+                } else if (documentItem.getCentricAccountId5() != null && centricAccountId.equals(documentItem.getCentricAccountId5().getId())) {
                     documentItem.setCentricAccountId5(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId6(null);
-                }else if(documentItem.getCentricAccountId6()!= null&& centricAccountId.equals(documentItem.getCentricAccountId6().getId())){
+                } else if (documentItem.getCentricAccountId6() != null && centricAccountId.equals(documentItem.getCentricAccountId6().getId())) {
                     documentItem.setCentricAccountId6(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                 }
                 financialDocumentItemRepository.save(documentItem);
@@ -530,9 +541,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialDocument == null) {
             throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
         } else {
-            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentItem(financialCentricAccountDto.getId());
+            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialCentricAccountDto.getId());
             financialDocumentItemList.forEach(documentItem -> {
-                Double newAmount=documentItem.getCreditAmount();
+                Double newAmount = documentItem.getCreditAmount();
                 documentItem.setCreditAmount(documentItem.getDebitAmount());
                 documentItem.setDebitAmount(newAmount);
                 financialDocumentItemRepository.save(documentItem);
@@ -552,7 +563,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialDocument == null) {
             throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
         } else {
-            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentItem(financialCentricAccountDto.getId());
+            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialCentricAccountDto.getId());
             financialDocumentItemList.forEach(documentItem -> {
                 documentItem.setCreditAmount(0D);
                 documentItem.setDebitAmount(0D);
@@ -564,4 +575,240 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
         return true;
     }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public FinancialDocumentSaveDto saveDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto) {
+
+        FinancialDocumentSaveDto responseDocumentSaveDto;
+        FinancialDocument financialDocument = saveFinancialDocument(requestFinancialDocumentSaveDto);
+        responseDocumentSaveDto = convertDocumentToDto(financialDocument);
+        List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList = new ArrayList<>();
+        List<FinancialDocumentReferenceDto> documentReferenceList = new ArrayList<>();
+        List<FinancialDocumentItemCurrencyDto> responseDocumentItemCurrencyList = new ArrayList<>();
+        requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().forEach(documentItem -> {
+            FinancialDocumentItem financialDocumentItem = new FinancialDocumentItem();
+            financialDocumentItem.setFinancialDocument(financialDocumentRepository.getOne(financialDocument.getId()));
+            financialDocumentItem.setSequenceNumber(documentItem.getSequenceNumber());
+            financialDocumentItem.setDebitAmount(documentItem.getDebitAmount());
+            financialDocumentItem.setCreditAmount(documentItem.getCreditAmount());
+            financialDocumentItem.setDescription(documentItem.getDescription());
+            financialDocumentItem.setFinancialAccount(financialAccountRepository.getOne(documentItem.getFinancialAccountId()));
+            financialDocumentItem.setCentricAccountId1(centricAccountRepository.getOne(documentItem.getCentricAccountId1()));
+            financialDocumentItem.setCentricAccountId2(centricAccountRepository.getOne(documentItem.getCentricAccountId2()));
+            financialDocumentItem.setCentricAccountId3(centricAccountRepository.getOne(documentItem.getCentricAccountId3()));
+            financialDocumentItem.setCentricAccountId4(centricAccountRepository.getOne(documentItem.getCentricAccountId4()));
+            financialDocumentItem.setCentricAccountId5(centricAccountRepository.getOne(documentItem.getCentricAccountId5()));
+            financialDocumentItem.setCentricAccountId6(centricAccountRepository.getOne(documentItem.getCentricAccountId6()));
+            financialDocumentItem = financialDocumentItemRepository.save(financialDocumentItem);
+            FinancialDocumentItem finalFinancialDocumentItem = financialDocumentItem;
+            ResponseFinancialDocumentItemDto documentItemToList = convertDocumentItemToList(financialDocumentItem);
+            if (documentItem.getDocumentReferenceList() != null) {
+                documentItem.getDocumentReferenceList().forEach(documentReference -> {
+                    FinancialDocumentReference financialDocumentReference = new FinancialDocumentReference();
+                    financialDocumentReference.setFinancialDocumentItem(finalFinancialDocumentItem);
+                    financialDocumentReference.setReferenceNumber(documentReference.getReferenceNumber());
+                    financialDocumentReference.setReferenceDate(documentReference.getReferenceDate());
+                    financialDocumentReference.setReferenceDescription(documentReference.getReferenceDescription());
+                    financialDocumentReference = financialDocumentReferenceRepository.save(financialDocumentReference);
+                    documentReferenceList.add(convertFinancialDocumentItemToDto(financialDocumentReference));
+                    documentItemToList.setDocumentReferenceList(documentReferenceList);
+                });
+            }
+            if (documentItem.getDocumentItemCurrencyList() != null) {
+                documentItem.getDocumentItemCurrencyList().forEach(itemCurrency -> {
+                    FinancialDocumentItemCurrency documentItemCurrency = new FinancialDocumentItemCurrency();
+                    documentItemCurrency.setFinancialDocumentItem(finalFinancialDocumentItem);
+                    documentItemCurrency.setForeignCreditAmount(itemCurrency.getForeignCreditAmount());
+                    documentItemCurrency.setForeignDebitAmount(itemCurrency.getForeignDebitAmount());
+                    documentItemCurrency.setExchangeRate(itemCurrency.getExchangeRate());
+                    documentItemCurrency.setMoneyType(moneyTypeRepository.getOne(itemCurrency.getMoneyTypeId()));
+                    documentItemCurrency.setMoneyPricingReference(prisingReferenceRepository.getOne(itemCurrency.getMoneyPricingReferenceId()));
+                    documentItemCurrency = documentItemCurrencyRepository.save(documentItemCurrency);
+                    responseDocumentItemCurrencyList.add(convertDocumentItemCurrency(documentItemCurrency));
+                    documentItemToList.setDocumentItemCurrencyList(responseDocumentItemCurrencyList);
+                });
+            }
+            financialDocumentItemDtoList.add(documentItemToList);
+            responseDocumentSaveDto.setFinancialDocumentItemDtoList(financialDocumentItemDtoList);
+        });
+
+        return responseDocumentSaveDto;
+    }
+
+    private FinancialDocumentItemCurrencyDto convertDocumentItemCurrency(FinancialDocumentItemCurrency documentItemCurrency) {
+        return FinancialDocumentItemCurrencyDto.builder()
+                .financialDocumentItemCurrencyId(documentItemCurrency.getId())
+                .financialDocumentItemId(documentItemCurrency.getFinancialDocumentItem().getId())
+                .foreignDebitAmount(documentItemCurrency.getForeignDebitAmount())
+                .foreignCreditAmount(documentItemCurrency.getForeignCreditAmount())
+                .moneyTypeId(documentItemCurrency.getMoneyType().getId())
+                .moneyTypeDescription(documentItemCurrency.getMoneyType().getDescription())
+                .moneyPricingReferenceId(documentItemCurrency.getMoneyPricingReference().getId())
+                .moneyPricingReferenceDescription(documentItemCurrency.getMoneyPricingReference().getDescription())
+                .build();
+    }
+
+    private FinancialDocumentReferenceDto convertFinancialDocumentItemToDto(FinancialDocumentReference financialDocumentReference) {
+        return FinancialDocumentReferenceDto.builder()
+                .financialDocumentReferenceId(financialDocumentReference.getId())
+                .financialDocumentItemId(financialDocumentReference.getFinancialDocumentItem().getId())
+                .referenceNumber(financialDocumentReference.getReferenceNumber())
+                .referenceDate(financialDocumentReference.getReferenceDate())
+                .referenceDescription(financialDocumentReference.getReferenceDescription())
+                .build();
+    }
+
+    private ResponseFinancialDocumentItemDto convertDocumentItemToList(FinancialDocumentItem financialDocumentItem) {
+
+        return ResponseFinancialDocumentItemDto.builder()
+                .financialDocumentItemId(financialDocumentItem.getId())
+                .sequenceNumber(financialDocumentItem.getSequenceNumber())
+                .financialAccountId(financialDocumentItem.getFinancialAccount().getId())
+                .debitAmount(financialDocumentItem.getDebitAmount())
+                .creditAmount(financialDocumentItem.getCreditAmount())
+                .description(financialDocumentItem.getDescription())
+                .centricAccountId1(financialDocumentItem.getCentricAccountId1().getId())
+                .centricAccountId2(financialDocumentItem.getCentricAccountId2().getId())
+                .centricAccountId3(financialDocumentItem.getCentricAccountId3().getId())
+                .centricAccountId4(financialDocumentItem.getCentricAccountId4().getId())
+                .centricAccountId5(financialDocumentItem.getCentricAccountId5().getId())
+                .centricAccountId6(financialDocumentItem.getCentricAccountId6().getId())
+                .build();
+    }
+
+
+    private FinancialDocumentSaveDto convertDocumentToDto(FinancialDocument financialDocument) {
+        return FinancialDocumentSaveDto.builder()
+                .financialDocumentId(financialDocument.getId())
+                .documentDate(financialDocument.getDocumentDate())
+                .documentNumber(financialDocument.getDocumentNumber())
+                .financialDocumentTypeId(financialDocument.getFinancialDocumentType().getId())
+                .financialDocumentTypeDescription(financialDocument.getFinancialDocumentType().getDescription())
+                .financialDocumentStatusId(financialDocument.getFinancialDocumentStatus().getId())
+                .automaticFlag(financialDocument.getAutomaticFlag())
+                .description(financialDocument.getDescription())
+                .organizationId(financialDocument.getOrganization().getId())
+//                .financialDocumentDescriptionId()
+                .financialLedgerTypeId(financialDocument.getFinancialLedgerType().getId())
+                .financialLedgerTypeDescription(financialDocument.getFinancialLedgerType().getDescription())
+                .departmentId(financialDocument.getFinancialDepartment().getId())
+                .departmentName(financialDocument.getFinancialDepartment().getName())
+                .build();
+    }
+
+    private FinancialDocument saveFinancialDocument(FinancialDocumentSaveDto financialDocumentSaveDto) {
+        //        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId = 100L;
+        FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
+        financialDocumentNumberDto.setDate(financialDocumentSaveDto.getDocumentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        financialDocumentNumberDto.setFinancialPeriodId(financialDocumentSaveDto.getFinancialPeriodId());
+        if (financialDocumentSaveDto.getFinancialDocumentItemDtoList().isEmpty()) {
+            throw new RuleException("لطفا یک ردیف وارد کنید.");
+        }
+        FinancialDocument financialDocument = financialDocumentRepository.
+                findById(financialDocumentSaveDto.getFinancialDocumentId() == null ? 0L : financialDocumentSaveDto.getFinancialDocumentId()).orElse(new FinancialDocument());
+        financialDocument.setDocumentDate(financialDocumentSaveDto.getDocumentDate());
+        financialDocument.setDescription(financialDocumentSaveDto.getDescription());
+        financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(financialDocumentSaveDto.getFinancialDocumentStatusId()));
+        financialDocument.setPermanentDocumentNumber(financialDocumentSaveDto.getPermanentDocumentNumber());
+        financialDocument.setAutomaticFlag(financialDocumentSaveDto.getAutomaticFlag());
+        financialDocument.setOrganization(organizationRepository.getOne(organizationId));
+        financialDocument.setFinancialDocumentType(financialDocumentTypeRepository.getOne(financialDocumentSaveDto.getFinancialDocumentTypeId()));
+        financialDocument.setFinancialPeriod(financialPeriodRepository.getOne(financialDocumentSaveDto.getFinancialPeriodId()));
+        financialDocument.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialDocumentSaveDto.getFinancialLedgerTypeId()));
+        financialDocument.setFinancialDepartment(financialDepartmentRepository.getOne(financialDocumentSaveDto.getDepartmentId()));
+        financialDocument.setDocumentNumber(creatDocumentNumber(financialDocumentNumberDto));
+        return financialDocumentRepository.save(financialDocument);
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public FinancialDocumentSaveDto updateDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto) {
+        FinancialDocumentSaveDto responseDocumentSaveDto;
+        List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList = new ArrayList<>();
+        List<FinancialDocumentReferenceDto> documentReferenceList = new ArrayList<>();
+        List<FinancialDocumentItemCurrencyDto> responseDocumentItemCurrencyList = new ArrayList<>();
+        FinancialDocument updateFinancialDocument = updateFinancialDocument(requestFinancialDocumentSaveDto);
+        responseDocumentSaveDto = convertDocumentToDto(updateFinancialDocument);
+        financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(updateFinancialDocument.getId())
+                .forEach(financialDocumentItem -> {
+                    requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().stream().filter(e -> e.getFinancialDocumentItemId()
+                            .equals(financialDocumentItem.getId()))
+                            .findAny().ifPresent(responseFinancialDocumentItemDto ->
+                    {
+                        financialDocumentItem.setSequenceNumber(responseFinancialDocumentItemDto.getSequenceNumber());
+                        financialDocumentItem.setDebitAmount(responseFinancialDocumentItemDto.getDebitAmount());
+                        financialDocumentItem.setCreditAmount(responseFinancialDocumentItemDto.getCreditAmount());
+                        financialDocumentItem.setDescription(responseFinancialDocumentItemDto.getDescription());
+                        financialDocumentItem.setFinancialAccount(financialAccountRepository.getOne(responseFinancialDocumentItemDto.getFinancialAccountId()));
+                        financialDocumentItem.setCentricAccountId1(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId1()));
+                        financialDocumentItem.setCentricAccountId2(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId2()));
+                        financialDocumentItem.setCentricAccountId3(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId3()));
+                        financialDocumentItem.setCentricAccountId4(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId4()));
+                        financialDocumentItem.setCentricAccountId5(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId5()));
+                        financialDocumentItem.setCentricAccountId6(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId6()));
+                        ResponseFinancialDocumentItemDto documentItemToList = convertDocumentItemToList(financialDocumentItem);
+                        financialDocumentReferenceRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(financialDocumentItem.getId())
+                                .forEach(documentReference -> {
+                                    responseFinancialDocumentItemDto.getDocumentReferenceList()
+                                            .stream().filter(r -> r.getFinancialDocumentReferenceId().equals(documentReference.getId()))
+                                            .findAny().ifPresent(responseReference -> {
+                                        documentReference.setReferenceNumber(responseReference.getReferenceNumber());
+                                        documentReference.setReferenceDate(responseReference.getReferenceDate());
+                                        documentReference.setReferenceDescription(responseReference.getReferenceDescription());
+                                        documentReferenceList.add(convertFinancialDocumentItemToDto(documentReference));
+                                        documentItemToList.setDocumentReferenceList(documentReferenceList);
+
+                                    });
+
+                                });
+                        documentItemCurrencyRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(financialDocumentItem.getId())
+                                .forEach(itemCurrency -> {
+                                    responseFinancialDocumentItemDto.getDocumentItemCurrencyList().stream().filter(c -> c.getFinancialDocumentItemCurrencyId()
+                                            .equals(itemCurrency.getId())).findAny().ifPresent(financialItemCurrency -> {
+                                        itemCurrency.setForeignCreditAmount(financialItemCurrency.getForeignCreditAmount());
+                                        itemCurrency.setForeignDebitAmount(financialItemCurrency.getForeignDebitAmount());
+                                        itemCurrency.setExchangeRate(financialItemCurrency.getExchangeRate());
+                                        itemCurrency.setMoneyType(moneyTypeRepository.getOne(itemCurrency.getMoneyType().getId()));
+                                        itemCurrency.setMoneyPricingReference(prisingReferenceRepository.getOne(financialItemCurrency.getMoneyPricingReferenceId()));
+                                        responseDocumentItemCurrencyList.add(convertDocumentItemCurrency(itemCurrency));
+                                        documentItemToList.setDocumentItemCurrencyList(responseDocumentItemCurrencyList);
+
+                                    });
+                                });
+
+                        financialDocumentItemDtoList.add(documentItemToList);
+                    });
+
+                    responseDocumentSaveDto.setFinancialDocumentItemDtoList(financialDocumentItemDtoList);
+                });
+
+        return responseDocumentSaveDto;
+    }
+
+    private FinancialDocument updateFinancialDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto) {
+
+
+        //        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId = 100L;
+        FinancialDocument financialDocument = financialDocumentRepository.
+                findById(requestFinancialDocumentSaveDto.getFinancialDocumentId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
+        financialDocumentNumberDto.setDate(requestFinancialDocumentSaveDto.getDocumentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
+        financialDocumentNumberDto.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
+        financialDocument.setDocumentDate(requestFinancialDocumentSaveDto.getDocumentDate());
+        financialDocument.setDescription(requestFinancialDocumentSaveDto.getDescription());
+        financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDocumentStatusId()));
+        financialDocument.setPermanentDocumentNumber(requestFinancialDocumentSaveDto.getPermanentDocumentNumber());
+        financialDocument.setAutomaticFlag(requestFinancialDocumentSaveDto.getAutomaticFlag());
+        financialDocument.setOrganization(organizationRepository.getOne(organizationId));
+        financialDocument.setFinancialDocumentType(financialDocumentTypeRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDocumentTypeId()));
+        financialDocument.setFinancialPeriod(financialPeriodRepository.getOne(requestFinancialDocumentSaveDto.getFinancialPeriodId()));
+        financialDocument.setFinancialLedgerType(financialLedgerTypeRepository.getOne(requestFinancialDocumentSaveDto.getFinancialLedgerTypeId()));
+        financialDocument.setFinancialDepartment(financialDepartmentRepository.getOne(requestFinancialDocumentSaveDto.getDepartmentId()));
+        financialDocument.setDocumentNumber(creatDocumentNumber(financialDocumentNumberDto));
+        return financialDocumentRepository.save(financialDocument);
+    }
+
 }

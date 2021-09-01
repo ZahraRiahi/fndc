@@ -5,13 +5,14 @@ import ir.demisco.cloud.basic.model.entity.org.Organization;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "FINANCIAL_DOCUMENT" , schema = "fndc")
 public class FinancialDocument  extends AuditModel<Long> {
 
     private Long id;
-    private LocalDateTime documentDate;
+    private Date documentDate;
     private String    description;
     private FinancialDocumentStatus  financialDocumentStatus;
     private Long permanentDocumentNumber;
@@ -37,11 +38,11 @@ public class FinancialDocument  extends AuditModel<Long> {
         this.id = id;
     }
 
-    public LocalDateTime getDocumentDate() {
+    public Date getDocumentDate() {
         return documentDate;
     }
 
-    public void setDocumentDate(LocalDateTime documentDate) {
+    public void setDocumentDate(Date documentDate) {
         this.documentDate = documentDate;
     }
 

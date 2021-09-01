@@ -11,7 +11,7 @@ public interface FinancialDocumentService {
 
     FinancialDocumentDto changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto);
 
-    String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto);
+    Long creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto);
 
     String changeDescription(FinancialDocumentChengDescriptionDto financialDocumentDto);
 
@@ -24,4 +24,8 @@ public interface FinancialDocumentService {
     Boolean changeAmountDocument(FinancialCentricAccountDto financialCentricAccountDto);
 
     Boolean setAmountDocument(FinancialCentricAccountDto financialCentricAccountDto);
+
+    FinancialDocumentSaveDto saveDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto);
+
+    FinancialDocumentSaveDto updateDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto);
 }
