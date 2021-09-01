@@ -47,11 +47,19 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
             Optional<FinancialLedgerType> financialLedgerTypeRepositoryById = null;
             if (financialLedgerTypeIdRequest != null) {
                 financialLedgerTypeRepositoryById = financialLedgerTypeRepository.findById(financialLedgerTypeIdRequest);
+//                if (!financialLedgerTypeRepositoryById.isPresent()) {
+//                    throw new RuleException("شناسه نوع دفتر مالی، وارد شده معتبر نمی باشد.");
+//                }
             }
+
             Optional<FinancialDepartment> financialDepartmentRepositoryById = null;
             if (financialDepartmentLedgerRequestListId.getFinancialDepartmentId() != null) {
                 financialDepartmentRepositoryById = financialDepartmentRepository.findById(financialDepartmentLedgerRequestListId.getFinancialDepartmentId());
+                if (!financialDepartmentRepositoryById.isPresent()) {
+                    throw new RuleException("شناسه نوع شعبه، وارد شده معتبر نمی باشد.");
+                }
             }
+
             boolean hasInFinancialDepartmentLedger = true;
             if (financialDepartmentLedgerRequestListId.getFinancialLedgerTypeId() == null) {
                 hasInFinancialDepartmentLedger = checkWhenFinancialLedgerIsNull(financialDepartmentRepositoryById.get().getId());
@@ -62,9 +70,16 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
             if (!hasInFinancialDepartmentLedger) {
                 throw new RuleException("این نوع دفتر مالی، برای این شعبه، قبلا ثبت شده است.");
             }
-            if (financialDepartmentLedgerRequestListId.getFinancialLedgerTypeId() == null) {
+            if (financialDepartmentLedgerRequestListId.getFinancialLedgerTypeId() == null && financialDepartmentLedgerRequestListId.getFinancialDepartmentLedgerId() != null) {
                 Optional<FinancialDepartmentLedger> financialDepartmentLedgerRepositoryById = financialDepartmentLedgerRepository.findById(financialDepartmentLedgerRequestListId.getFinancialDepartmentLedgerId());
-                updateDeleteDateAndInsertFinancialDepLedger(financialDepartmentLedgerRepositoryById, financialLedgerTypeRepositoryById, financialDepartmentLedgerRequestListId);
+                updateDeleteDate(financialDepartmentLedgerRepositoryById, financialDepartmentLedgerRequestListId);
+            } else if (financialDepartmentLedgerRequestListId.getFinancialLedgerTypeId() == null &&
+                    financialDepartmentLedgerRequestListId.getFinancialDepartmentLedgerId() == null) {
+                if (financialDepartmentLedgerRequest.size() >= 2) {
+                    continue;
+                } else {
+                    return true;
+                }
             } else {
                 Long financialDepartmentLedger = financialDepartmentLedgerRepository.getFinancialDepartmentLedger(
                         financialDepartmentLedgerRequestListId.getFinancialDepartmentId()
@@ -100,7 +115,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
         } else {
             throw new RuleException("شناسه نوع دفتر مالی، وارد شده معتبر نمی باشد.");
         }
-        saveNewFinancialDepartmentLedger(financialDepartmentLedgerRequestListId,financialDepartmentRepositoryById, financialLedgerTypeRepositoryById, financialDepartmentLedgerNew);
+        saveNewFinancialDepartmentLedger(financialDepartmentLedgerRequestListId, financialDepartmentRepositoryById, financialLedgerTypeRepositoryById, financialDepartmentLedgerNew);
     }
 
     private void saveNewFinancialDepartmentLedger(FinancialDepartmentLedgerRequest financialDepartmentLedgerRequestListId, Optional<FinancialDepartment> financialDepartmentRepositoryById,
@@ -146,7 +161,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
         }
     }
 
-    private void updateDeleteDateAndInsertFinancialDepLedger(Optional<FinancialDepartmentLedger> financialDepartmentLedgerRepositoryById, Optional<FinancialLedgerType> financialLedgerTypeRepositoryById, FinancialDepartmentLedgerRequest financialDepartmentLedgerRequestListId) {
+    private void updateDeleteDate(Optional<FinancialDepartmentLedger> financialDepartmentLedgerRepositoryById, FinancialDepartmentLedgerRequest financialDepartmentLedgerRequestListId) {
         if (financialDepartmentLedgerRepositoryById.isPresent()) {
             FinancialDepartmentLedger financialDepartmentLedgerForUpdate = financialDepartmentLedgerRepositoryById.get();
             if (financialDepartmentLedgerRequestListId.getFinancialDepartmentLedgerId().equals(financialDepartmentLedgerForUpdate.getId())) {
@@ -185,9 +200,9 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
         return null;
     }
 
-    private Boolean checkWhenFinancialLedgerIsNull(Long financialDepartment) {
+    private Boolean checkWhenFinancialLedgerIsNull(Long financialDepartmentId) {
         Long countByLedgerTypeIdAndDepartmentIdAndDeleteDate = financialDepartmentLedgerRepository.getCountByIsNullLedgerTypeIdAndDepartmentIdAndDeleteDate
-                (null, financialDepartment);
+                (financialDepartmentId, null);
         if (countByLedgerTypeIdAndDepartmentIdAndDeleteDate == 0) {
             return true;
         } else {
