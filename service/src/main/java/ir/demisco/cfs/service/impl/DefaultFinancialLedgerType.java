@@ -2,12 +2,11 @@ package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.FinancialLedgerTypeParameterDto;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerTypeRequest;
+import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerDto;
+import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerResponse;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeDto;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeResponse;
-import ir.demisco.cfs.model.entity.FinancialCodingType;
-import ir.demisco.cfs.model.entity.FinancialLedgerType;
-import ir.demisco.cfs.model.entity.FinancialNumberingType;
-import ir.demisco.cfs.model.entity.LedgerNumberingType;
+import ir.demisco.cfs.model.entity.*;
 import ir.demisco.cfs.service.api.FinancialLedgerTypeService;
 import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.basic.model.entity.org.Organization;
@@ -26,7 +25,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-
 @Service
 public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
 
@@ -35,14 +33,16 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     private final OrganizationRepository organizationRepository;
     private final FinancialNumberingTypeRepository financialNumberingTypeRepository;
     private final LedgerNumberingTypeRepository ledgerNumberingTypeRepository;
+    private final FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository;
 
     public DefaultFinancialLedgerType(FinancialLedgerTypeRepository financialLedgerTypeRepository, FinancialCodingTypeRepository financialCodingTypeRepository
-            , OrganizationRepository organizationRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository) {
+            , OrganizationRepository organizationRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository, FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository) {
         this.financialLedgerTypeRepository = financialLedgerTypeRepository;
         this.financialCodingTypeRepository = financialCodingTypeRepository;
         this.organizationRepository = organizationRepository;
         this.financialNumberingTypeRepository = financialNumberingTypeRepository;
         this.ledgerNumberingTypeRepository = ledgerNumberingTypeRepository;
+        this.financialDepartmentLedgerRepository = financialDepartmentLedgerRepository;
     }
 
     @Override
@@ -136,6 +136,15 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         }
         return true;
     }
+
+    @Override
+    public List<FinancialDepartmentLedgerResponse> getFinancialLedgerByDepartmentId(FinancialDepartmentLedgerDto departmentLedgerDto) {
+        List<Object[]> financialDepartmentLedgerListObject = financialDepartmentLedgerRepository.findByFinancialDepartmentId(departmentLedgerDto.getFinancialDepartmentId());
+        return financialDepartmentLedgerListObject.stream().map(objects -> FinancialDepartmentLedgerResponse.builder().financialLedgerTypeId(Long.parseLong(objects[0].toString()))
+                .description(objects[1].toString())
+                .build()).collect(Collectors.toList());
+    }
+
 
     @Transactional
     public Boolean insertFinancialLedgerType(FinancialLedgerTypeRequest financialLedgerTypeRequest) {
