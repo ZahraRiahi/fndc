@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 
-public interface FinancialDocumentItemRepository extends JpaRepository<FinancialDocumentItem,Long> {
+public interface FinancialDocumentItemRepository extends JpaRepository<FinancialDocumentItem, Long> {
 
     @Query(value = "  select fndi.id, " +
             "  fidc.document_date, " +
@@ -81,10 +81,61 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
             "  order by  fndi.sequence_number "
             , nativeQuery = true)
-    Page<Object[]> getFinancialDocumentItemList(LocalDateTime startDate,LocalDateTime endDate, Long financialNumberingTypeId, Object fromNumber
-                                               ,Long fromNumberId,Object toNumber, Long toNumberId,String description, Object fromAccount,String fromAccountCode,
-                                                Object toAccount,String toAccountCode, Object centricAccount, Long centricAccountId,Object centricAccountType,
-                                                Long centricAccountTypeId, Object user, Long userId,Object priceType, Long priceTypeId, Object fromPrice,
-                                                Long fromPriceAmount, Object toPrice, Long toPriceAmount,Double tolerance, List<Long> documentStatusId,
+    Page<Object[]> getFinancialDocumentItemList(LocalDateTime startDate, LocalDateTime endDate, Long financialNumberingTypeId, Object fromNumber
+            , Long fromNumberId, Object toNumber, Long toNumberId, String description, Object fromAccount, String fromAccountCode,
+                                                Object toAccount, String toAccountCode, Object centricAccount, Long centricAccountId, Object centricAccountType,
+                                                Long centricAccountTypeId, Object user, Long userId, Object priceType, Long priceTypeId, Object fromPrice,
+                                                Long fromPriceAmount, Object toPrice, Long toPriceAmount, Double tolerance, List<Long> documentStatusId,
                                                 Pageable pageable);
+
+
+//    @Query("select fd from FinancialDocumentItem fd where fd.financialDocument.id=:FinancialDocumentId ")
+    List<FinancialDocumentItem> findByFinancialDocumentIdAndDeletedDateIsNull(Long FinancialDocumentId);
+
+    @Query(value = " select sum(t.debit_amount) as debit_amount,sum(t.credit_amount) as credit_amount " +
+            " from fndc.Financial_Document_Item t " +
+            " where t.financial_document_id = :FinancialDocumentId " +
+            " having(sum(t.debit_amount)=sum(t.credit_amount))", nativeQuery = true)
+    List<Object[]> getCostDocument(Long FinancialDocumentId);
+
+    @Query("select fdi from FinancialDocumentItem fdi " +
+            " join FinancialDocumentItemCurrency fdic on fdic.financialDocumentItem.id=fdi.id " +
+            "  where fdi.financialDocument.id=:FinancialDocumentId " +
+            "  and fdic.moneyType.id=1")
+    FinancialDocumentItem getDocumentMoneyType(Long FinancialDocumentId);
+
+    @Query(value = " select fd from FinancialDocumentItem fd " +
+            " join FinancialDocumentRefrence fr on fr.financialDocumentItem.id=fd.id " +
+            " where fd.financialDocument.id=:FinancialDocumentId " +
+            " and ((fr.referenceDate is null) or (fr.referenceDescription is null))", nativeQuery = true)
+    List<FinancialDocumentItem> getDocumentRefernce(Long FinancialDocumentId);
+
+    @Query(value = "  select sum(t.debit_amount) as debit_amount, " +
+                   "         sum(t.credit_amount) as credit_amount, " +
+                   "         max(fiac.full_description)  as fullDescription " +
+                   "   from fndc.Financial_Document_Item t  " +
+                   "        inner join fnac.financial_account fiac " +
+                   "            on fiac.id =t.financial_account_id   " +
+                   "            and fiac.deleted_date is null  " +
+                   "    where t.financial_document_id =:FinancialDocumentId ", nativeQuery = true)
+    Object[] getParamByDocumentId(Long FinancialDocumentId);
+
+
+
+    @Query("select fdi from FinancialDocumentItem fdi where fdi.financialDocument.id=:documentId  and fdi.financialAccount.id=:accountId ")
+    List<FinancialDocumentItem> getItemByDocumentIdAndAccountId(Long documentId,Long accountId);
+
+    @Query("select fdi from FinancialDocumentItem fdi where fdi.financialDocument.id=:documentId and fdi.financialAccount.id=:newAccountId")
+    List<FinancialDocumentItem> getByNewAccount(Long documentId,Long newAccountId);
+
+    @Query("select fdi from FinancialDocumentItem fdi " +
+            " where fdi.financialDocument.id=:documentId and fdi.financialAccount.id=:accountId " +
+            " and nvl(fdi.centricAccountId1.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId2.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId3.id,0) <>:newCentricAccountId " +
+            " and nvl(fdi.centricAccountId4.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId5.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId6.id,0) <>:newCentricAccountId")
+    List<FinancialDocumentItem> getByDocumentIdAndCentricAccount(Long documentId,Long accountId,Long newCentricAccountId);
+
+    @Query("select fdi from FinancialDocumentItem fdi" +
+            "   where fdi.financialDocument.id =:financialDocumentId " +
+            "   And fdi.description like  %:oldDescription% ")
+    List<FinancialDocumentItem> getDocumentDescription(Long financialDocumentId,String oldDescription);
 }

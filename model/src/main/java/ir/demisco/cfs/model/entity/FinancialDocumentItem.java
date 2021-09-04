@@ -26,7 +26,7 @@ public class FinancialDocumentItem extends AuditModel<Long> {
 
     @Override
     @Id
-    @SequenceGenerator(schema = "fndc", name = "financial_document_item_generator", sequenceName = "Sq_Financial_Document_Item;")
+    @SequenceGenerator(schema = "fndc", name = "financial_document_item_generator", sequenceName = "sq_financial_document_item")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_document_item_generator")
     public Long getId() {
         return super.getId();

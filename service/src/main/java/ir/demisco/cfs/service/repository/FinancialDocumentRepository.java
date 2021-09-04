@@ -85,4 +85,42 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
                                             Object centricAccountType,Long centricAccountTypeId, Object user,Long userId,
                                             Object priceType,Long priceTypeId,Object fromPrice,Long fromPriceAmount,Object toPrice,Long toPriceAmount,
                                             Double tolerance,List<Long> documentStatusId,Pageable pageable);
+
+    @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:FinancialDocumentId")
+    FinancialDocument getActivePeriodInDocument(Long FinancialDocumentId);
+
+    @Query("select to_char(:date, 'yyyymmdd', 'NLS_CALENDAR=persian') ||" +
+            "      nvl(lpad(max(to_number(substr(to_char(fd.documentNumber), 9, 3)) + 1),3,'0'),'001')" +
+            " from FinancialDocument fd" +
+            " where fd.organization.id=:organizationId" +
+            "       and (fd.financialPeriod.id=:financialPeriodId)" +
+            "       and  substr(to_char(fd.documentNumber),0,8)=to_char(:date, 'yyyymmdd', 'NLS_CALENDAR=persian')")
+    Long getDocumentNumber(Long organizationId,LocalDateTime date,Long financialPeriodId);
+
+
+    @Query("select coalesce(COUNT(fd.id),0) from FinancialDocument fd where fd.financialDepartment.id=:financialDepartmentId" +
+            " and fd.financialLedgerType.id=:financialLedgerTypeId " +
+            " and fd.deletedDate is null")
+    Long getCountByLedgerTypeIdAndDepartmentIdAndDeleteDate(Long financialDepartmentId, Long financialLedgerTypeId);
+
+    @Query("select fd from FinancialDocument fd where fd.id=:FinancialDocumentId and fd.deletedDate is null")
+    FinancialDocument getActiveDocumentById(Long FinancialDocumentId);
+
+    @Query(" select fd from FinancialDocument fd join fd.financialPeriod fp where fp.financialPeriodStatus.id=1 and fd.id=:FinancialDocumentId " +
+            " and exists ( select fm from FinancialMonth fm " +
+            "              join FinancialMonthType fmt on fmt.id=fm.financialMonthType.id " +
+            "              join FinancialPeriodType fpt on fpt.id=fmt.financialPeriodType.id " +
+            "              join FinancialPeriodTypeAssign fpts on fpts.financialPeriodType.id=fpt.id " +
+            "              join FinancialPeriod fp on fp.financialPeriodTypeAssign.id=fpts.id " +
+            "              join FinancialDocument fd on fd.financialPeriod.id=fp.id " +
+            "            where fd.id=:FinancialDocumentId " +
+            "                  and fm.financialMonthStatus.id=1" +
+            "                  and case fpt.calendarTypeId when 2 then extract(month from TO_DATE(TO_char(fd.documentDate,'mm/dd/yyyy'),'mm/dd/yyyy'))" +
+            "                                              when 1 then TO_NUMBER(substr(TO_CHAR(TO_DATE(TO_char(fd.documentDate,'mm/dd/yyyy'),'mm/dd/yyyy'),'yyyy/mm/dd','NLS_CALENDAR=persian'),6,2)) " +
+            "                       end = case when fpt.calendarYearFlag = 1 then (fpt.fromMonth + (fmt.monthNumber-1)) "+
+            "                       else  " +
+            "                       case when (fpt.fromMonth + (fmt.monthNumber-1)) > 12 then (fpt.fromMonth + (fmt.monthNumber-13)) else (fpt.fromMonth+(fmt.monthNumber-1)) end" +
+            "                       end" +
+            "                     )")
+    FinancialDocument getActivePeriodAndMontInDocument(Long FinancialDocumentId);
 }

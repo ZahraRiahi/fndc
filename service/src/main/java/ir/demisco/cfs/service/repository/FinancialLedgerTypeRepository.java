@@ -26,13 +26,14 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             "  from fndc.financial_ledger_type fnlt" +
             " inner join fnac.financial_coding_type fnct" +
             "    on fnlt.financial_coding_type_id = fnct.id" +
-            " left outer join fndc.ledger_numbering_type lgnt on lgnt.financial_ledger_type_id=fnlt.id" +
-            " left outer join fndc.financial_numbering_type fnnt on fnnt.id=lgnt.financial_numbering_type_id" +
-            "  where fnlt.deleted_date is null" +
-            "   and  fnlt.organization_id = :organizationId" +
-            "   and  (:financialCodingType is null or fnlt.financial_coding_type_id =:financialCodingTypeId)" +
-            "   and  (:financialLedgerType is null or fnlt.id = :financialLedgerTypeId)" +
-            "   group by fnlt.id," +
+            "    left outer join fndc.ledger_numbering_type lgnt on lgnt.financial_ledger_type_id=fnlt.id" +
+            "    and lgnt.deleted_date is null" +
+            "    left outer join fndc.financial_numbering_type fnnt on fnnt.id=lgnt.financial_numbering_type_id" +
+            "     where fnlt.deleted_date is null" +
+            "    and  fnlt.organization_id = :organizationId" +
+            "    and  ( :financialCodingType is null or fnlt.financial_coding_type_id = :financialCodingTypeId)" +
+            "    and  ( :financialLedgerType is null or fnlt.id = :financialLedgerTypeId )" +
+            "    group by   fnlt.id," +
             "       fnlt.description," +
             "       fnlt.financial_coding_type_id," +
             "       fnlt.active_flag," +

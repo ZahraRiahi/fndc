@@ -1,10 +1,12 @@
 package ir.demisco.cfs.model.dto.response;
 
 import ir.demisco.cloud.basic.model.entity.org.Organization;
+import org.bouncycastle.asn1.cms.TimeStampedData;
 
 import java.time.LocalDateTime;
 
 public class LedgerNumberingTypeDto {
+    private Long id;
     private Long financialNumberingTypeId;
     private String financialNumberingTypeDescription;
     private LocalDateTime financialNumberingTypeDeletedDate;
@@ -13,7 +15,22 @@ public class LedgerNumberingTypeDto {
     private Organization financialLedgerTypeOrganization;
     private LocalDateTime financialLedgerTypeDeletedDate;
     private boolean financialLedgerTypeActiveFlag;
+    private LocalDateTime deletedDate;
+    public Long getId() {
+        return id;
+    }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getDeleteDate() {
+        return deletedDate;
+    }
+
+    public void setDeleteDate(LocalDateTime deleteDate) {
+        this.deletedDate = deleteDate;
+    }
 
     public Long getFinancialLedgerTypeId() {
         return financialLedgerTypeId;
@@ -83,6 +100,7 @@ public class LedgerNumberingTypeDto {
         return new Builder();
     }
 
+
     public static final class Builder {
         private LedgerNumberingTypeDto ledgerNumberingTypeDto;
 
@@ -92,6 +110,11 @@ public class LedgerNumberingTypeDto {
 
         public static Builder aLedgerNumberingTypeDto() {
             return new Builder();
+        }
+
+        public Builder id(Long id) {
+            ledgerNumberingTypeDto.setId(id);
+            return this;
         }
 
         public Builder financialNumberingTypeId(Long financialNumberingTypeId) {
@@ -106,6 +129,11 @@ public class LedgerNumberingTypeDto {
 
         public Builder financialNumberingTypeDeletedDate(LocalDateTime financialNumberingTypeDeletedDate) {
             ledgerNumberingTypeDto.setFinancialNumberingTypeDeletedDate(financialNumberingTypeDeletedDate);
+            return this;
+        }
+
+        public Builder financialLedgerTypeId(Long financialLedgerTypeId) {
+            ledgerNumberingTypeDto.setFinancialLedgerTypeId(financialLedgerTypeId);
             return this;
         }
 
@@ -126,6 +154,11 @@ public class LedgerNumberingTypeDto {
 
         public Builder financialLedgerTypeActiveFlag(boolean financialLedgerTypeActiveFlag) {
             ledgerNumberingTypeDto.setFinancialLedgerTypeActiveFlag(financialLedgerTypeActiveFlag);
+            return this;
+        }
+
+        public Builder deleteDate(LocalDateTime deleteDate) {
+            ledgerNumberingTypeDto.setDeleteDate(deleteDate);
             return this;
         }
 
