@@ -811,4 +811,35 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         return financialDocumentRepository.save(financialDocument);
     }
 
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean setArrangeSequence(FinancialDocumentDto financialDocumentDto) {
+        FinancialDocument document = financialDocumentRepository.findById(financialDocumentDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        entityManager.createNativeQuery("update fndc.financial_document_item  fndi_outer " +
+                "   set fndi_outer.sequence_number = " +
+                "       (select rn " +
+                "          from (select ROW_NUMBER() over(order by fndi.credit_amount - fndi.debit_amount desc, fnc.code, cnt1.code, cnt2.code, cnt3.code, cnt4.code, cnt5.code, cnt6.code) as rn, " +
+                "                       fndi.id " +
+                "                  from fndc.financial_document_item fndi " +
+                "                 inner join fnac.financial_account fnc " +
+                "                    on fnc.id = fndi.financial_account_id " +
+                "                 inner join fnac.centric_account cnt1 " +
+                "                    on fndi.centric_account_id_1 = cnt1.id " +
+                "                 inner join fnac.centric_account cnt2 " +
+                "                    on fndi.centric_account_id_2 = cnt2.id " +
+                "                 inner join fnac.centric_account cnt3 " +
+                "                    on fndi.centric_account_id_3 = cnt3.id " +
+                "                 inner join fnac.centric_account cnt4 " +
+                "                    on fndi.centric_account_id_4 = cnt4.id " +
+                "                 inner join fnac.centric_account cnt5 " +
+                "                    on fndi.centric_account_id_5 = cnt5.id " +
+                "                 inner join fnac.centric_account cnt6 " +
+                "                    on fndi.centric_account_id_6 = cnt6.id " +
+                "                 where fndi.financial_document_id = :financialDocumentId " +
+                "                 ) qry " +
+                "         where      " +
+                "         qry.id = fndi_outer.id) " +
+                " where fndi_outer.financial_document_id = :financialDocumentId ").setParameter("financialDocumentId",financialDocumentDto.getId()).executeUpdate();
+        return true;
+    }
 }

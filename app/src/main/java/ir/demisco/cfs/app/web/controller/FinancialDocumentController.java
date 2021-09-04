@@ -6,7 +6,6 @@ import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
@@ -93,4 +92,20 @@ public class FinancialDocumentController {
         }
 
     }
+
+    @PostMapping("/ArrangeSequence")
+    public ResponseEntity<Boolean> arrangeSequence(@RequestBody FinancialDocumentDto financialDocumentDto){
+        boolean result;
+        result=financialDocumentService.setArrangeSequence(financialDocumentDto);
+        return ResponseEntity.ok(result);
+
+    }
+
+//    @PostMapping("/TransferDocument")
+//    public ResponseEntity<Boolean> transferDocument(@RequestBody ){
+//        boolean result;
+//        result=financialDocumentService.transferDocument();
+//        return ResponseEntity.ok(result);
+//
+//    }
 }
