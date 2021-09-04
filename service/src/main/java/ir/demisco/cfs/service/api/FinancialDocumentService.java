@@ -28,4 +28,6 @@ public interface FinancialDocumentService {
     FinancialDocumentSaveDto saveDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto);
 
     FinancialDocumentSaveDto updateDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto);
+
+    Boolean setArrangeSequence(FinancialDocumentDto financialDocumentDto);
 }
