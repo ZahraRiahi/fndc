@@ -7,7 +7,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "financial_period", schema = "fnpr")
-public class FinancialPeriod  extends AuditModel<Long> {
+public class FinancialPeriod extends AuditModel<Long> {
 
     private Long id;
     private LocalDateTime startDate;
@@ -15,6 +15,7 @@ public class FinancialPeriod  extends AuditModel<Long> {
     private Long openMonthCount;
     private FinancialPeriodStatus financialPeriodStatus;
     private FinancialPeriodTypeAssign financialPeriodTypeAssign;
+    private String description;
     private LocalDateTime deletedDat;
 
     @Id
@@ -84,5 +85,14 @@ public class FinancialPeriod  extends AuditModel<Long> {
 
     public void setDeletedDat(LocalDateTime deletedDat) {
         this.deletedDat = deletedDat;
+    }
+
+    @Column(name = "DESCRIPTION")
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }
