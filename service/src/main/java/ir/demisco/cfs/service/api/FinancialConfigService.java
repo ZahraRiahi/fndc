@@ -5,7 +5,7 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 
 public interface FinancialConfigService {
-    DataSourceResult getFinancialConfigByOrganizationIdAndUserAndDepartment(DataSourceRequest dataSourceRequest);
+    DataSourceResult getFinancialConfigByOrganizationIdAndUserAndDepartment(DataSourceRequest dataSourceRequest, Long organizationId);
 
     Boolean saveOrUpdateFinancialConfig(FinancialConfigRequest financialConfigRequest);
 }
