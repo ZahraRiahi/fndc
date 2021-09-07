@@ -1,5 +1,6 @@
 package ir.demisco.cfs.app.web.controller;
 
+import ir.demisco.cfs.model.dto.request.FinancialConfigRequest;
 import ir.demisco.cfs.service.api.FinancialConfigService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -23,5 +24,11 @@ public class FinancialConfigController {
         return ResponseEntity.ok(financialConfigService.getFinancialConfigByOrganizationIdAndUserAndDepartment(dataSourceRequest));
     }
 
-
+    @PostMapping("/Save")
+    public ResponseEntity<Boolean> saveFinancialConfig(@RequestBody FinancialConfigRequest financialConfigRequest) {
+        boolean result;
+        result = financialConfigService.saveOrUpdateFinancialConfig(financialConfigRequest);
+        return ResponseEntity.ok(result);
+    }
 }
+
