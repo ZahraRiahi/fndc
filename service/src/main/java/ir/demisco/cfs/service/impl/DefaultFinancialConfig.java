@@ -1,7 +1,6 @@
 package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.request.FinancialConfigRequest;
-import ir.demisco.cfs.model.dto.response.FinancialConfigDto;
 import ir.demisco.cfs.model.entity.FinancialConfig;
 import ir.demisco.cfs.service.api.FinancialConfigService;
 import ir.demisco.cfs.service.repository.*;
@@ -9,6 +8,7 @@ import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -48,6 +48,10 @@ public class DefaultFinancialConfig implements FinancialConfigService {
     @Transactional(rollbackFor = Throwable.class)
     public Boolean saveOrUpdateFinancialConfig(FinancialConfigRequest financialConfigRequest) {
         FinancialConfig financialConfig = financialConfigRepository.findById(financialConfigRequest.getId() == null ? 0 : financialConfigRequest.getId()).orElse(new FinancialConfig());
+        Long financialAccountStructureCount = financialConfigRepository.getCountByFinancialConfigAndOrganizationAndUser(financialConfigRequest.getOrganizationId(),financialConfigRequest.getUserId());
+        if (financialAccountStructureCount > 0) {
+            throw new RuleException("برای این کاربر در این سازمان قبلا رکوردی ثبت شده است");
+        }
         if (financialConfig.getId() != null) {
             financialConfig.setDeletedDate(LocalDateTime.now());
         }
@@ -63,36 +67,4 @@ public class DefaultFinancialConfig implements FinancialConfigService {
         return true;
     }
 
-    private Boolean convertFinancialConfigToDto(FinancialConfig financialConfig) {
-        FinancialConfigDto.builder()
-                .id(financialConfig.getId())
-                .organizationId(financialConfig.getOrganization().getId())
-                .financialDepartmentId(financialConfig.getFinancialDepartment().getId())
-                .userId(financialConfig.getUser().getId())
-                .financialDocumentTypeId(financialConfig.getFinancialDocumentType().getId())
-                .documentDescription(financialConfig.getDocumentDescription())
-                .financialLedgerTypeId(financialConfig.getFinancialLedgerType().getId())
-                .financialPeriodId(financialConfig.getFinancialPeriod().getId())
-                .build();
-        return true;
-    }
-
 }
-//
-//
-//    List<CentricPersonRole> centricPersonRoles = centricPersonRoleRepository.findByCentricAccountId(centricAccountId);
-//    CentricAccount centricAccount;
-//        if(!centricPersonRoles.isEmpty())
-//
-//    {
-//        centricPersonRoles.forEach(e -> e.setDeletedDate(LocalDateTime.now()));
-//    }
-//
-//    centricAccount =centricAccountRepository.findById(centricAccountId).
-//
-//    orElseThrow(() ->new
-//
-//    RuleException("ایتمی با این شناسه وجود ندارد"));
-//        centricAccount.setDeletedDate(LocalDateTime.now());
-//        return true;
-//}
