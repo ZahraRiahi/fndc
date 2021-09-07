@@ -66,21 +66,22 @@ public class FinancialConfigListGridProvider implements GridDataProvider {
                     .build();
         }).collect(Collectors.toList());
     }
-//
-//    @Override
-//    public Predicate getCustomRestriction(FilterContext filterContext) {
-//        DataSourceRequest dataSourceRequest = filterContext.getDataSourceRequest();
-//        for (DataSourceRequest.FilterDescriptor filter : dataSourceRequest.getFilter().getFilters()) {
-//            switch (filter.getField()) {
-//                case "user.id":
-//                case "organization.id":
-//                    if (filter.getValue() == null) {
-//                        filter.setDisable(true);
-//                    }
-//                    break;
-//            }
-//        }
-//        return null;
-//    }
+
+    @Override
+    public Predicate getCustomRestriction(FilterContext filterContext) {
+        DataSourceRequest dataSourceRequest = filterContext.getDataSourceRequest();
+        for (DataSourceRequest.FilterDescriptor filter : dataSourceRequest.getFilter().getFilters()) {
+            switch (filter.getField()) {
+                case "user.id":
+                case "organization.id":
+                case "financialDepartment.id":
+                    if (filter.getValue() == null) {
+                        filter.setDisable(true);
+                    }
+                    break;
+            }
+        }
+        return null;
+    }
 
 }
