@@ -1,8 +1,7 @@
 package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.request.FinancialConfigRequest;
-import ir.demisco.cfs.model.entity.CentricAccount;
-import ir.demisco.cfs.model.entity.CentricPersonRole;
+import ir.demisco.cfs.model.dto.response.FinancialConfigResponse;
 import ir.demisco.cfs.model.entity.FinancialConfig;
 import ir.demisco.cfs.service.api.FinancialConfigService;
 import ir.demisco.cfs.service.repository.*;
@@ -11,10 +10,6 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
-import java.util.List;
-
 
 @Service
 public class DefaultFinancialConfig implements FinancialConfigService {
@@ -42,7 +37,7 @@ public class DefaultFinancialConfig implements FinancialConfigService {
 
     @Override
     @Transactional(readOnly = true)
-    public DataSourceResult getFinancialConfigByOrganizationIdAndUserAndDepartment(DataSourceRequest dataSourceRequest) {
+    public DataSourceResult getFinancialConfigByOrganizationIdAndUserAndDepartment(DataSourceRequest dataSourceRequest, Long organizationId) {
         return gridFilterService.filter(dataSourceRequest, financialConfigListGridProvider);
     }
 
@@ -59,8 +54,8 @@ public class DefaultFinancialConfig implements FinancialConfigService {
 //            financialConfig.setDocumentDescription(financialConfigRequest.getDocumentDescription());
 //            financialConfig.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialConfigRequest.getFinancialLedgerTypeId()));
 //            financialConfig.setFinancialPeriod(financialPeriodRepository.getOne(financialConfigRequest.getFinancialPeriodId()));
-
-//            accountRelatedDescription = accountRelatedDescriptionRepository.save(accountRelatedDescription);
+//
+//            accountRelatedDescription = financialConfigRepository.save(accountRelatedDescription);
 //            return convertAccountRelatedDescriptionDto(accountRelatedDescription);
 //        }
 
