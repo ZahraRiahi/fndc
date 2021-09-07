@@ -1,5 +1,6 @@
 package ir.demisco.cfs.model.entity;
 
+import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
 import ir.demisco.cloud.basic.model.entity.org.Organization;
 import ir.demisco.cloud.basic.model.entity.sec.User;
 
@@ -9,8 +10,8 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "financial_config", schema = "fndc")
-public class FinancialConfig {
-    private Long id;
+public class FinancialConfig extends AuditModel<Long> {
+
     private Organization organization;
     private FinancialDepartment financialDepartment;
     private User user;
@@ -20,15 +21,13 @@ public class FinancialConfig {
     private FinancialPeriod financialPeriod;
     private LocalDateTime deletedDate;
 
+
+    @Override
     @Id
     @SequenceGenerator(schema = "fndc", name = "financial_config_generator", sequenceName = "sq_financial_config")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_config_generator")
     public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
+        return super.getId();
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

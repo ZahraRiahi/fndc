@@ -1,15 +1,18 @@
 package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.request.FinancialConfigRequest;
-import ir.demisco.cfs.model.dto.response.FinancialConfigResponse;
+import ir.demisco.cfs.model.dto.response.FinancialConfigDto;
 import ir.demisco.cfs.model.entity.FinancialConfig;
 import ir.demisco.cfs.service.api.FinancialConfigService;
 import ir.demisco.cfs.service.repository.*;
+import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
 
 @Service
 public class DefaultFinancialConfig implements FinancialConfigService {
@@ -42,25 +45,38 @@ public class DefaultFinancialConfig implements FinancialConfigService {
     }
 
     @Override
-    @Transactional(readOnly = true)
+    @Transactional(rollbackFor = Throwable.class)
     public Boolean saveOrUpdateFinancialConfig(FinancialConfigRequest financialConfigRequest) {
-        Long financialConfigCount = financialConfigRepository.getFinancialConfigById(financialConfigRequest.getId());
-//        if (financialConfigCount == null) {
-//            FinancialConfig financialConfig = new FinancialConfig();
-//            financialConfig.setOrganization(organizationRepository.getOne(100L));
-//            financialConfig.setFinancialDepartment(financialDepartmentRepository.getOne(financialConfigRequest.getFinancialDepartmentId()));
-//            financialConfig.setUser(applicationUserRepository.getOne(financialConfigRequest.getUserId()));
-//            financialConfig.setFinancialDocumentType(financialDocumentTypeRepository.getOne(financialConfigRequest.getFinancialDocumentTypeId()));
-//            financialConfig.setDocumentDescription(financialConfigRequest.getDocumentDescription());
-//            financialConfig.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialConfigRequest.getFinancialLedgerTypeId()));
-//            financialConfig.setFinancialPeriod(financialPeriodRepository.getOne(financialConfigRequest.getFinancialPeriodId()));
-//
-//            accountRelatedDescription = financialConfigRepository.save(accountRelatedDescription);
-//            return convertAccountRelatedDescriptionDto(accountRelatedDescription);
-//        }
-
-        return null;
+        FinancialConfig financialConfig = financialConfigRepository.findById(financialConfigRequest.getId() == null ? 0 : financialConfigRequest.getId()).orElse(new FinancialConfig());
+        if (financialConfig.getId() != null) {
+            financialConfig.setDeletedDate(LocalDateTime.now());
+        }
+        FinancialConfig financialConfigNew = new FinancialConfig();
+        financialConfigNew.setOrganization(organizationRepository.getOne(100L));
+        financialConfigNew.setFinancialDepartment(financialDepartmentRepository.getOne(financialConfigRequest.getFinancialDepartmentId()));
+        financialConfigNew.setUser(applicationUserRepository.getOne(financialConfigRequest.getUserId()));
+        financialConfigNew.setFinancialDocumentType(financialDocumentTypeRepository.getOne(financialConfigRequest.getFinancialDocumentTypeId()));
+        financialConfigNew.setDocumentDescription(financialConfigRequest.getDocumentDescription());
+        financialConfigNew.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialConfigRequest.getFinancialLedgerTypeId()));
+        financialConfigNew.setFinancialPeriod(financialPeriodRepository.getOne(financialConfigRequest.getFinancialPeriodId()));
+        financialConfigRepository.save(financialConfigNew);
+        return true;
     }
+
+    private Boolean convertFinancialConfigToDto(FinancialConfig financialConfig) {
+        FinancialConfigDto.builder()
+                .id(financialConfig.getId())
+                .organizationId(financialConfig.getOrganization().getId())
+                .financialDepartmentId(financialConfig.getFinancialDepartment().getId())
+                .userId(financialConfig.getUser().getId())
+                .financialDocumentTypeId(financialConfig.getFinancialDocumentType().getId())
+                .documentDescription(financialConfig.getDocumentDescription())
+                .financialLedgerTypeId(financialConfig.getFinancialLedgerType().getId())
+                .financialPeriodId(financialConfig.getFinancialPeriod().getId())
+                .build();
+        return true;
+    }
+
 }
 //
 //
