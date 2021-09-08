@@ -3,6 +3,7 @@ package ir.demisco.cfs.app.web.controller;
 
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
+import ir.demisco.cfs.service.api.TransferFinancialDocumentService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import org.springframework.http.ResponseEntity;
@@ -13,9 +14,11 @@ import org.springframework.web.bind.annotation.*;
 public class FinancialDocumentController {
 
     private final FinancialDocumentService financialDocumentService;
+    private final TransferFinancialDocumentService transferFinancialDocumentService;
 
-    public FinancialDocumentController(FinancialDocumentService financialDocumentService) {
+    public FinancialDocumentController(FinancialDocumentService financialDocumentService, TransferFinancialDocumentService transferFinancialDocumentService) {
         this.financialDocumentService = financialDocumentService;
+        this.transferFinancialDocumentService = transferFinancialDocumentService;
     }
 
     @PostMapping("/list")
@@ -101,11 +104,11 @@ public class FinancialDocumentController {
 
     }
 
-//    @PostMapping("/TransferDocument")
-//    public ResponseEntity<Boolean> transferDocument(@RequestBody ){
-//        boolean result;
-//        result=financialDocumentService.transferDocument();
-//        return ResponseEntity.ok(result);
-//
-//    }
+    @PostMapping("/TransferDocument")
+    public ResponseEntity<Boolean> transferDocument(@RequestBody  FinancialDocumentTransferDto  financialDocumentTransferDto){
+        boolean result;
+        result=transferFinancialDocumentService.transferDocument(financialDocumentTransferDto);
+        return ResponseEntity.ok(result);
+
+    }
 }

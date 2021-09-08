@@ -123,4 +123,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                       end" +
             "                     )")
     FinancialDocument getActivePeriodAndMontInDocument(Long FinancialDocumentId);
+
+    @Query("select fd from FinancialDocument fd where fd.documentNumber = :documentNumber and fd.deletedDate is null")
+    FinancialDocument getFinancialDocumentByDocumentNumber(Long documentNumber);
 }
