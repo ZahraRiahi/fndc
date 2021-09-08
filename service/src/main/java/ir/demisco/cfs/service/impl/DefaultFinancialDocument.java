@@ -18,11 +18,11 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -45,7 +45,15 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final MoneyTypeRepository moneyTypeRepository;
     private final MoneyPrisingReferenceRepository prisingReferenceRepository;
 
-    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository, EntityManager entityManager, CentricAccountRepository centricAccountRepository, OrganizationRepository organizationRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialPeriodRepository financialPeriodRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, FinancialDepartmentRepository financialDepartmentRepository, MoneyTypeRepository moneyTypeRepository, MoneyPrisingReferenceRepository prisingReferenceRepository) {
+    public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
+                                    FinancialDocumentItemRepository financialDocumentItemRepository,
+                                    FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
+                                    FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, OrganizationRepository organizationRepository,
+                                    FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialPeriodRepository financialPeriodRepository,
+                                    FinancialLedgerTypeRepository financialLedgerTypeRepository, FinancialDepartmentRepository financialDepartmentRepository,
+                                    MoneyTypeRepository moneyTypeRepository, MoneyPrisingReferenceRepository prisingReferenceRepository) {
+
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -839,7 +847,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 "                 ) qry " +
                 "         where      " +
                 "         qry.id = fndi_outer.id) " +
-                " where fndi_outer.financial_document_id = :financialDocumentId ").setParameter("financialDocumentId",financialDocumentDto.getId()).executeUpdate();
+                " where fndi_outer.financial_document_id = :financialDocumentId ").setParameter("financialDocumentId", document.getId()).executeUpdate();
         return true;
     }
+
 }

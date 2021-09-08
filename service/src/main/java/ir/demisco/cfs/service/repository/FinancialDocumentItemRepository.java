@@ -138,4 +138,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "   where fdi.financialDocument.id =:financialDocumentId " +
             "   And fdi.description like  %:oldDescription% ")
     List<FinancialDocumentItem> getDocumentDescription(Long financialDocumentId,String oldDescription);
+
+    @Query("select fdi.id from FinancialDocumentItem fdi where fdi.financialDocument.id=:financialDocumentId and fdi.deletedDate is null")
+    List<Long> findByFinancialDocumentIdByDocumentId(Long financialDocumentId);
 }
