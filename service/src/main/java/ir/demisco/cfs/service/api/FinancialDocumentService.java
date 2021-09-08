@@ -25,10 +25,6 @@ public interface FinancialDocumentService {
 
     Boolean setAmountDocument(FinancialCentricAccountDto financialCentricAccountDto);
 
-    FinancialDocumentSaveDto saveDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto);
-
-    FinancialDocumentSaveDto updateDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto);
-
     Boolean setArrangeSequence(FinancialDocumentDto financialDocumentDto);
 
 

@@ -3,6 +3,7 @@ package ir.demisco.cfs.app.web.controller;
 
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
+import ir.demisco.cfs.service.api.SaveFinancialDocumentService;
 import ir.demisco.cfs.service.api.TransferFinancialDocumentService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -15,10 +16,12 @@ public class FinancialDocumentController {
 
     private final FinancialDocumentService financialDocumentService;
     private final TransferFinancialDocumentService transferFinancialDocumentService;
+    private final SaveFinancialDocumentService  saveFinancialDocumentService;
 
-    public FinancialDocumentController(FinancialDocumentService financialDocumentService, TransferFinancialDocumentService transferFinancialDocumentService) {
+    public FinancialDocumentController(FinancialDocumentService financialDocumentService, TransferFinancialDocumentService transferFinancialDocumentService, SaveFinancialDocumentService saveFinancialDocumentService) {
         this.financialDocumentService = financialDocumentService;
         this.transferFinancialDocumentService = transferFinancialDocumentService;
+        this.saveFinancialDocumentService = saveFinancialDocumentService;
     }
 
     @PostMapping("/list")
@@ -89,9 +92,9 @@ public class FinancialDocumentController {
     @PostMapping("/Save")
     public ResponseEntity<FinancialDocumentSaveDto> saveFinancialDocument(@RequestBody FinancialDocumentSaveDto requestFinancialDocumentSaveDto){
         if(requestFinancialDocumentSaveDto.getFinancialDocumentId()==null) {
-            return ResponseEntity.ok(financialDocumentService.saveDocument(requestFinancialDocumentSaveDto));
+            return ResponseEntity.ok(saveFinancialDocumentService.saveDocument(requestFinancialDocumentSaveDto));
         }else{
-            return ResponseEntity.ok(financialDocumentService.updateDocument(requestFinancialDocumentSaveDto));
+            return ResponseEntity.ok(saveFinancialDocumentService.updateDocument(requestFinancialDocumentSaveDto));
         }
 
     }
