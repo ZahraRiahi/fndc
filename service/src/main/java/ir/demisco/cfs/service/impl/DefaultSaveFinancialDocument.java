@@ -117,12 +117,24 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocumentItem.setCreditAmount(documentItem.getCreditAmount());
         financialDocumentItem.setDescription(documentItem.getDescription());
         financialDocumentItem.setFinancialAccount(financialAccountRepository.getOne(documentItem.getFinancialAccountId()));
-        financialDocumentItem.setCentricAccountId1(centricAccountRepository.getOne(documentItem.getCentricAccountId1()));
-        financialDocumentItem.setCentricAccountId2(centricAccountRepository.getOne(documentItem.getCentricAccountId2()));
-        financialDocumentItem.setCentricAccountId3(centricAccountRepository.getOne(documentItem.getCentricAccountId3()));
-        financialDocumentItem.setCentricAccountId4(centricAccountRepository.getOne(documentItem.getCentricAccountId4()));
-        financialDocumentItem.setCentricAccountId5(centricAccountRepository.getOne(documentItem.getCentricAccountId5()));
-        financialDocumentItem.setCentricAccountId6(centricAccountRepository.getOne(documentItem.getCentricAccountId6()));
+        if(documentItem.getCentricAccountId1()!=null) {
+            financialDocumentItem.setCentricAccountId1(centricAccountRepository.getOne(documentItem.getCentricAccountId1()));
+        }
+        if(documentItem.getCentricAccountId2()!=null){
+            financialDocumentItem.setCentricAccountId2(centricAccountRepository.getOne(documentItem.getCentricAccountId2()));
+        }
+        if(documentItem.getCentricAccountId3()!=null) {
+            financialDocumentItem.setCentricAccountId3(centricAccountRepository.getOne(documentItem.getCentricAccountId3()));
+        }
+        if(documentItem.getCentricAccountId4()!=null) {
+            financialDocumentItem.setCentricAccountId4(centricAccountRepository.getOne(documentItem.getCentricAccountId4()));
+        }
+        if(documentItem.getCentricAccountId5()!=null) {
+            financialDocumentItem.setCentricAccountId5(centricAccountRepository.getOne(documentItem.getCentricAccountId5()));
+        }
+        if(documentItem.getCentricAccountId6()!=null) {
+            financialDocumentItem.setCentricAccountId6(centricAccountRepository.getOne(documentItem.getCentricAccountId6()));
+        }
         return financialDocumentItemRepository.save(financialDocumentItem);
     }
 
@@ -265,12 +277,12 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .debitAmount(financialDocumentItem.getDebitAmount())
                 .creditAmount(financialDocumentItem.getCreditAmount())
                 .description(financialDocumentItem.getDescription())
-                .centricAccountId1(financialDocumentItem.getCentricAccountId1().getId())
-                .centricAccountId2(financialDocumentItem.getCentricAccountId2().getId())
-                .centricAccountId3(financialDocumentItem.getCentricAccountId3().getId())
-                .centricAccountId4(financialDocumentItem.getCentricAccountId4().getId())
-                .centricAccountId5(financialDocumentItem.getCentricAccountId5().getId())
-                .centricAccountId6(financialDocumentItem.getCentricAccountId6().getId())
+                .centricAccountId1(financialDocumentItem.getCentricAccountId1() == null ? null :financialDocumentItem.getCentricAccountId1().getId())
+                .centricAccountId2(financialDocumentItem.getCentricAccountId2() == null ? null :financialDocumentItem.getCentricAccountId2().getId())
+                .centricAccountId3(financialDocumentItem.getCentricAccountId3() == null ? null :financialDocumentItem.getCentricAccountId3().getId())
+                .centricAccountId4(financialDocumentItem.getCentricAccountId4() == null ? null :financialDocumentItem.getCentricAccountId4().getId())
+                .centricAccountId5(financialDocumentItem.getCentricAccountId5() == null ? null :financialDocumentItem.getCentricAccountId5().getId())
+                .centricAccountId6(financialDocumentItem.getCentricAccountId6() == null ? null :financialDocumentItem.getCentricAccountId6().getId())
                 .build();
     }
 
