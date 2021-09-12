@@ -416,4 +416,32 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .moneyPricingReferenceDescription(documentItemCurrency.getMoneyPricingReference().getDescription())
                 .build();
     }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public FinancialDocumentSaveDto getFinancialDocumentInfo(FinancialDocumentDto financialDocumentDto) {
+        FinancialDocumentSaveDto responseDocumentSaveDto;
+        List<ResponseFinancialDocumentItemDto>  financialDocumentItemDtoList=new ArrayList<>();
+        List<FinancialDocumentReferenceDto> documentReferenceList = new ArrayList<>();
+        List<FinancialDocumentItemCurrencyDto> responseDocumentItemCurrencyList = new ArrayList<>();
+        FinancialDocument financialDocument=financialDocumentRepository.findById(financialDocumentDto.getId()).orElseThrow(() -> new RuleException("سند یافت نشد"));
+        responseDocumentSaveDto = convertDocumentToDto(financialDocument);
+        List<FinancialDocumentItem>  financialDocumentItemList=financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocument.getId());
+        financialDocumentItemList.forEach(documentItem ->{
+            ResponseFinancialDocumentItemDto documentItemToList=convertDocumentItemToList(documentItem);
+            financialDocumentReferenceRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItem.getId())
+                    .forEach(documentReference ->{
+                        documentReferenceList.add(convertFinancialDocumentItemToDto(documentReference));
+                        documentItemToList.setDocumentReferenceList(documentReferenceList);
+                    });
+            documentItemCurrencyRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItem.getId())
+                    .forEach(documentItemCurrency ->{
+                        responseDocumentItemCurrencyList.add(convertDocumentItemCurrency(documentItemCurrency));
+                        documentItemToList.setDocumentItemCurrencyList(responseDocumentItemCurrencyList);
+                    });
+            financialDocumentItemDtoList.add(documentItemToList);
+        });
+        responseDocumentSaveDto.setFinancialDocumentItemDtoList(financialDocumentItemDtoList);
+        return responseDocumentSaveDto;
+    }
 }
