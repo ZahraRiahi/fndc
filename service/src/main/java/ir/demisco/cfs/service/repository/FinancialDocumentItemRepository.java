@@ -22,7 +22,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "  fndi.debit_amount, " +
             "  fndi.credit_amount, " +
             "  fndi.description  || '-' ||  fiac.full_description as full_description, " +
-            "  cnac.code|| '-' || cnac.name as centricAccountDescription " +
+            "  cnac.code|| '-' || cnac.name as centricAccountDescription," +
+            "  fidc.id  as FinancialDocumenyId " +
             "  from fndc.financial_document fidc " +
             " inner join fndc.financial_document_item fndi " +
             "    on fidc.id = fndi.financial_document_id" +

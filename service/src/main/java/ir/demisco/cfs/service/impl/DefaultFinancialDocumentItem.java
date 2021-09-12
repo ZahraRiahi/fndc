@@ -61,6 +61,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                         .creditAmount(Long.parseLong(item[8].toString()))
                         .fullDescription(item[9].toString())
                         .centricAccountDescription(item[10].toString())
+                        .financialDocumentId(((BigDecimal) item[11]).longValue())
 
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
