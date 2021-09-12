@@ -30,11 +30,11 @@ public class FinancialDocumentController {
         return ResponseEntity.ok(financialDocumentService.getFinancialDocumentList(dataSourceRequest));
     }
 
-//    @PostMapping("/SetStatus")
-//    public ResponseEntity<FinancialDocumentDto> responseEntitySetStatus(@RequestBody ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto)
-//    {
-//        return ResponseEntity.ok(financialDocumentService.changeStatus(responseFinancialDocumentStatusDto));
-//    }
+    @PostMapping("/SetStatus")
+    public ResponseEntity<ResponseFinancialDocumentSetStatusDto> responseEntitySetStatus(@RequestBody ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto)
+    {
+        return ResponseEntity.ok(financialDocumentService.changeStatus(responseFinancialDocumentStatusDto));
+    }
 
     @PostMapping("/CreateNumber")
     public ResponseEntity<Long> creatNumber(@RequestBody FinancialDocumentNumberDto financialDocumentNumberDto){
