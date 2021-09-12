@@ -114,4 +114,9 @@ public class FinancialDocumentController {
         return ResponseEntity.ok(result);
 
     }
+
+    @PostMapping("/Get")
+    public ResponseEntity<FinancialDocumentSaveDto> getFinancialDocumentInfo(@RequestBody FinancialDocumentDto financialDocumentDto){
+        return ResponseEntity.ok(saveFinancialDocumentService.getFinancialDocumentInfo(financialDocumentDto));
+    }
 }
