@@ -9,7 +9,7 @@ public interface FinancialDocumentService {
 
     DataSourceResult getFinancialDocumentList(DataSourceRequest dataSourceRequest);
 
-    FinancialDocumentDto changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto);
+    ResponseFinancialDocumentSetStatusDto changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto);
 
     Long creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto);
 
