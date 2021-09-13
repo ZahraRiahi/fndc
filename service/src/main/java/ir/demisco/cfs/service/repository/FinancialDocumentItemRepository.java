@@ -177,4 +177,29 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
 
     @Query("select fdi.id from FinancialDocumentItem fdi where fdi.financialDocument.id=:financialDocumentId and fdi.deletedDate is null")
     List<Long> findByFinancialDocumentIdByDocumentId(Long financialDocumentId);
+
+    @Query(value = " SELECT SUM(DI.DEBIT_AMOUNT) SUM_DEBIT, " +
+            "       SUM(DI.CREDIT_AMOUNT) SUM_CREDIT, " +
+            "       FA.CODE FINANCIAL_ACCOUNTCODE,    " +
+            "       FA.DESCRIPTION FINANCIAL_ACCOUNT_DESCRIPTION, " +
+            "       FA.ID FINANCIAL_ACCOUNT_ID " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT_ITEM DI " +
+            " INNER JOIN FNAC.FINANCIAL_ACCOUNT FA " +
+            "    ON FA.ID = DI.FINANCIAL_ACCOUNT_ID " +
+            "   AND FA.DELETED_DATE IS NULL " +
+            " WHERE DI.FINANCIAL_DOCUMENT_ID = :financialDocumentId" +
+            "   AND EXISTS " +
+            " (SELECT 1 " +
+            "          FROM FNAC.ACCOUNT_STRUCTURE_LEVEL SL_OUTER " +
+            "         WHERE SL_OUTER.FINANCIAL_ACCOUNT_ID = DI.FINANCIAL_ACCOUNT_ID " +
+            "           AND SL_OUTER.DELETED_DATE IS NULL " +
+            "           AND SL_OUTER.STRUCTURE_LEVEL > = " +
+            "               (SELECT DISTINCT SL.STRUCTURE_LEVEL " +
+            "                  FROM FNAC.ACCOUNT_STRUCTURE_LEVEL SL " +
+            "                 WHERE SL.FINANCIAL_STRUCTURE_ID = :financialStructureId " +
+            "                   AND SL.FINANCIAL_ACCOUNT_ID = DI.FINANCIAL_ACCOUNT_ID " +
+            "                   AND SL.DELETED_DATE IS NULL)) " +
+            "   AND DI.DELETED_DATE IS NULL " +
+            "  GROUP BY FA.ID,FA.CODE, FA.DESCRIPTION", nativeQuery = true)
+    Page<Object[]> getDocumentByStructure(Long financialDocumentId, Long financialStructureId, Pageable pageable);
 }

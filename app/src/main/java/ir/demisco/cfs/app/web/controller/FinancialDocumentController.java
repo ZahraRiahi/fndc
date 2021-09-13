@@ -119,4 +119,10 @@ public class FinancialDocumentController {
     public ResponseEntity<FinancialDocumentSaveDto> getFinancialDocumentInfo(@RequestBody FinancialDocumentDto financialDocumentDto){
         return ResponseEntity.ok(saveFinancialDocumentService.getFinancialDocumentInfo(financialDocumentDto));
     }
+
+    @PostMapping("/DocumentByStructure")
+    public ResponseEntity<DataSourceResult> responseDocumentByStructure(@RequestBody DataSourceRequest dataSourceRequest)
+    {
+        return ResponseEntity.ok(financialDocumentService.documentByStructure(dataSourceRequest));
+    }
 }

@@ -27,5 +27,5 @@ public interface FinancialDocumentService {
 
     Boolean setArrangeSequence(FinancialDocumentDto financialDocumentDto);
 
-
+    DataSourceResult documentByStructure(DataSourceRequest dataSourceRequest);
 }
