@@ -93,92 +93,87 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
     List<FinancialDocumentItem> findByFinancialDocumentIdAndDeletedDateIsNull(Long FinancialDocumentId);
 
 
-//    @Query(" select fdi from FinancialDocumentItem fdi " +
-//            "where fdi.financialDocument.id=:FinancialDocumentId" +
-//            " having(sum(fdi.debitAmount)=sum(fdi.creditAmount))")
-//    List<FinancialDocumentItem> getCostDocument(Long FinancialDocumentId);
+    @Query(value = " select 1 from fndc.financial_document_item fdi " +
+            " where fdi.financial_document_id= :financialDocumentId" +
+            " having sum(fdi.debit_amount)=sum(fdi.credit_amount)", nativeQuery = true)
+    Long getCostDocument(Long financialDocumentId);
 
-//    @Query(" select 1 from FinancialDocumentItem fdi " +
-//            " join FinancialAccount  fa on fa.id=fdi.financialAccount.id " +
-//            " join FinancialAccountStructure fs on fs.id=fa.financialAccountStructure.id and fs.id in(" +
-//            " select fs_inner.id from FinancialAccountStructure  fs_inner  " +
-//            "  where fs_inner.financialCodingType.id=fs.financialCodingType.id" +
-//            " and fs_inner.sequence != (select max(fs_inner2.sequence) from FinancialAccountStructure fs_inner2" +
-//            " where fs_inner2.financialCodingType.id=fs.financialCodingType.id))" +
-//            " where fdi.financialDocument.id=:FinancialDocumentId")
-//    Boolean getFinancialAccount(Long FinancialDocumentId);
+    @Query(" select 1 from FinancialDocumentItem fdi " +
+            " join FinancialAccount  fa on fa.id=fdi.financialAccount.id " +
+            " join FinancialAccountStructure fs on fs.id=fa.financialAccountStructure.id and fs.id in(" +
+            " select fs_inner.id from FinancialAccountStructure  fs_inner  " +
+            "  where fs_inner.financialCodingType.id=fs.financialCodingType.id" +
+            " and fs_inner.sequence != (select max(fs_inner2.sequence) from FinancialAccountStructure fs_inner2" +
+            " where fs_inner2.financialCodingType.id=fs.financialCodingType.id))" +
+            " where fdi.financialDocument.id=:FinancialDocumentId")
+    Long getFinancialAccount(Long FinancialDocumentId);
 
-//    @Query(" select 1 from FinancialDocumentItem fdi"+
-//            " join FinancialAccount  fa on fa.id=fdi.financialAccount.id  and fa.exchangeFlag=true " +
-//            " join FinancialDocumentItemCurrency dc on dc.financialDocumentItem.id=fdi.id " +
-//            " where fdi.financialDocument.id=:FinancialDocumentId " +
-//            " and ((dc.foreignDebitAmount is null and dc.foreignCreditAmount is null) or dc.exchangeRate is null or dc.moneyPricingReference is null or dc.moneyType is null)" )
-//    Boolean getInfoCurrency(Long FinancialDocumentId);
-//
-//    @Query("select 1 from FinancialDocumentItem fdi " +
-//            " join FinancialAccount  fa on fa.id=fdi.financialAccount.id  and fa.exchangeFlag=true " +
-//            " join FinancialDocumentItemCurrency dc on dc.financialDocumentItem.id=fdi.id " +
-//            " where fdi.financialDocument.id=:FinancialDocumentId " +
-//            " and not exists (select 1 from AccountMoneyType mt where mt.financialAccount.id=fa.id " +
-//            "                   and mt.moneyType.id=dc.moneyType.id)" )
-//    Boolean equalCurrency(Long FinancialDocumentId);
-//
-//    @Query(" select 1 from FinancialDocumentItem fdi  " +
-//            " join FinancialDocumentItemCurrency fdic on fdic.financialDocumentItem.id=fdi.id " +
-//            " where fdi.financialDocument.id=:FinancialDocumentId " +
-//            " group by fdi.creditAmount,fdi.debitAmount " +
-//            " having (nvl(fdi.debitAmount,0) != 0 and sum(nvl(fdic.foreignDebitAmount,0)) =0) " +
-//            " or (nvl(fdi.debitAmount,0) = 0 and sum(nvl(fdic.foreignDebitAmount,0)) != 0)" +
-//            " or (nvl(fdi.creditAmount,0) != 0 and sum(nvl(fdic.foreignCreditAmount,0)) = 0) " +
-//            " or (nvl(fdi.creditAmount,0) = 0 and sum(nvl(fdic.foreignCreditAmount,0)) != 0)" +
-//            " or (nvl(fdi.debitAmount,0) != 0 and nvl(fdi.creditAmount,0) != 0) "
-//    )
-//    Boolean costHarmony(Long FinancialDocumentId);
+    @Query(" select 1 from FinancialDocumentItem fdi" +
+            " join FinancialAccount  fa on fa.id=fdi.financialAccount.id  and fa.exchangeFlag=1 " +
+            " join FinancialDocumentItemCurrency dc on dc.financialDocumentItem.id=fdi.id " +
+            " where fdi.id=:FinancialDocumentItemId " +
+            " and ((dc.foreignDebitAmount is null and dc.foreignCreditAmount is null) " +
+            "      or dc.exchangeRate is null or dc.moneyPricingReference is null or dc.moneyType is null)")
+    Long getInfoCurrency(Long FinancialDocumentItemId);
 
-//@Query("select 1 from FinancialDocumentItem fdi " +
-//        " left join CentricAccount cn on cn.id=fdi.centricAccountId1.id " +
-//        " left join CentricAccount cn on cn.id=fdi.centricAccountId2.id " +
-//        " left join CentricAccount cn on cn.id=fdi.centricAccountId3.id " +
-//        " left join CentricAccount cn on cn.id=fdi.centricAccountId4.id " +
-//        " left join CentricAccount cn on cn.id=fdi.centricAccountId5.id " +
-//        " left join CentricAccount cn on cn.id=fdi.centricAccountId6.id " +
-//        " where fdi.financialDocument.id =:FinancialDocumentId ")
-//    Boolean referenceCode(Long FinancialDocumentId);
+    @Query("select 1 from FinancialDocumentItem fdi " +
+            " join FinancialAccount  fa on fa.id=fdi.financialAccount.id  and fa.exchangeFlag=1 " +
+            " join FinancialDocumentItemCurrency dc on dc.financialDocumentItem.id=fdi.id " +
+            " where fdi.id=:FinancialDocumentItemId " +
+            "   and not exists (select 1 from AccountMoneyType mt where mt.financialAccount.id=fa.id " +
+            "            and mt.moneyType.id=dc.moneyType.id)")
+    Long equalCurrency(Long FinancialDocumentItemId);
 
-//    @Query(" select fd from FinancialDocumentItem fd " +
-//            " join FinancialDocumentReference fr on fr.financialDocumentItem.id=fd.id " +
-//            " where fd.financialDocument.id=:FinancialDocumentId " +
-//            " and ((fr.referenceDate is null) or (fr.referenceDescription is null))")
-//    List<FinancialDocumentItem> getDocumentReference(Long FinancialDocumentId);
+    @Query(" select 1 from FinancialDocumentItem fdi  " +
+            " join FinancialDocumentItemCurrency fdic on fdic.financialDocumentItem.id=fdi.id " +
+            " where fdi.financialDocument.id=:FinancialDocumentId " +
+            " group by fdi.creditAmount,fdi.debitAmount " +
+            " having (nvl(fdi.debitAmount,0) != 0 and sum(nvl(fdic.foreignDebitAmount,0)) =0) " +
+            " or (nvl(fdi.debitAmount,0) = 0 and sum(nvl(fdic.foreignDebitAmount,0)) != 0)" +
+            " or (nvl(fdi.creditAmount,0) != 0 and sum(nvl(fdic.foreignCreditAmount,0)) = 0) " +
+            " or (nvl(fdi.creditAmount,0) = 0 and sum(nvl(fdic.foreignCreditAmount,0)) != 0)" +
+            " or (nvl(fdi.debitAmount,0) != 0 and nvl(fdi.creditAmount,0) != 0) "
+    )
+    Long costHarmony(Long FinancialDocumentId);
+
+    @Query("select 1 from FinancialDocumentItem fdi " +
+            " left join CentricAccount cn on cn.id=fdi.centricAccountId1.id " +
+            " left join CentricAccount cn on cn.id=fdi.centricAccountId2.id " +
+            " left join CentricAccount cn on cn.id=fdi.centricAccountId3.id " +
+            " left join CentricAccount cn on cn.id=fdi.centricAccountId4.id " +
+            " left join CentricAccount cn on cn.id=fdi.centricAccountId5.id " +
+            " left join CentricAccount cn on cn.id=fdi.centricAccountId6.id " +
+            " where fdi.financialDocument.id =:FinancialDocumentId ")
+    Long referenceCode(Long FinancialDocumentId);
+
 
     @Query(value = "  select sum(t.debit_amount) as debit_amount, " +
-                   "         sum(t.credit_amount) as credit_amount, " +
-                   "         max(fiac.full_description)  as fullDescription " +
-                   "   from fndc.Financial_Document_Item t  " +
-                   "        inner join fnac.financial_account fiac " +
-                   "            on fiac.id =t.financial_account_id   " +
-                   "            and fiac.deleted_date is null  " +
-                   "    where t.financial_document_id =:FinancialDocumentId ", nativeQuery = true)
-    Object[] getParamByDocumentId(Long FinancialDocumentId);
-
+            "         sum(t.credit_amount) as credit_amount, " +
+            "         max(fiac.full_description)  as fullDescription " +
+            "   from fndc.Financial_Document_Item t  " +
+            "        inner join fnac.financial_account fiac " +
+            "            on fiac.id =t.financial_account_id   " +
+            "            and fiac.deleted_date is null  " +
+            "    where t.financial_document_id =:FinancialDocumentId ", nativeQuery = true)
+    List<Object[]> findParamByDocumentId(Long FinancialDocumentId);
 
 
     @Query("select fdi from FinancialDocumentItem fdi where fdi.financialDocument.id=:documentId  and fdi.financialAccount.id=:accountId ")
-    List<FinancialDocumentItem> getItemByDocumentIdAndAccountId(Long documentId,Long accountId);
+    List<FinancialDocumentItem> getItemByDocumentIdAndAccountId(Long documentId, Long accountId);
 
     @Query("select fdi from FinancialDocumentItem fdi where fdi.financialDocument.id=:documentId and fdi.financialAccount.id=:newAccountId")
-    List<FinancialDocumentItem> getByNewAccount(Long documentId,Long newAccountId);
+    List<FinancialDocumentItem> getByNewAccount(Long documentId, Long newAccountId);
 
     @Query("select fdi from FinancialDocumentItem fdi " +
             " where fdi.financialDocument.id=:documentId and fdi.financialAccount.id=:accountId " +
             " and nvl(fdi.centricAccountId1.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId2.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId3.id,0) <>:newCentricAccountId " +
             " and nvl(fdi.centricAccountId4.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId5.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId6.id,0) <>:newCentricAccountId")
-    List<FinancialDocumentItem> getByDocumentIdAndCentricAccount(Long documentId,Long accountId,Long newCentricAccountId);
+    List<FinancialDocumentItem> getByDocumentIdAndCentricAccount(Long documentId, Long accountId, Long newCentricAccountId);
 
     @Query("select fdi from FinancialDocumentItem fdi" +
             "   where fdi.financialDocument.id =:financialDocumentId " +
             "   And fdi.description like  %:oldDescription% ")
-    List<FinancialDocumentItem> getDocumentDescription(Long financialDocumentId,String oldDescription);
+    List<FinancialDocumentItem> getDocumentDescription(Long financialDocumentId, String oldDescription);
 
     @Query("select fdi.id from FinancialDocumentItem fdi where fdi.financialDocument.id=:financialDocumentId and fdi.deletedDate is null")
     List<Long> findByFinancialDocumentIdByDocumentId(Long financialDocumentId);

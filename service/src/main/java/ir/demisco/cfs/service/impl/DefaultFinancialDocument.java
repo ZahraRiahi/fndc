@@ -273,18 +273,25 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public ResponseFinancialDocumentSetStatusDto changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
+        ResponseFinancialDocumentSetStatusDto responseFinancialDocumentSetStatusDto=new ResponseFinancialDocumentSetStatusDto();
         FinancialDocument financialDocument = financialDocumentRepository.findById(responseFinancialDocumentStatusDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
-//        List<FinancialDocumentErrorDto> financialDocumentErrorDtoList=validationSetStatus(financialDocument);
-        financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(responseFinancialDocumentStatusDto.getFinancialDocumentStatusId()));
-        financialDocumentRepository.save(financialDocument);
-        return financialDocumentToDto(financialDocument);
+        List<FinancialDocumentErrorDto> financialDocumentErrorDtoList=validationSetStatus(financialDocument);
+        if(financialDocumentErrorDtoList.isEmpty()) {
+            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(responseFinancialDocumentStatusDto.getFinancialDocumentStatusId()));
+            financialDocumentRepository.save(financialDocument);
+            responseFinancialDocumentSetStatusDto=convertFinancialDocumentToDto(financialDocument);
+        }else{
+            responseFinancialDocumentSetStatusDto.setFinancialDocumentErrorDtoList(financialDocumentErrorDtoList);
+            responseFinancialDocumentSetStatusDto.setErrorFoundFlag(true);
+        }
+        return responseFinancialDocumentSetStatusDto;
     }
 
     private List<FinancialDocumentErrorDto> validationSetStatus(FinancialDocument financialDocument) {
         List<FinancialDocumentErrorDto> financialDocumentErrorDtoList=new ArrayList<>();
 
         List<FinancialDocumentItem> documentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocument.getId());
-        if (documentItemList == null) {
+        if (documentItemList.isEmpty()) {
             FinancialDocumentErrorDto documentItem=new FinancialDocumentErrorDto();
             documentItem.setFinancialDocumentId(financialDocument.getId());
             documentItem.setMessage("سند بدون ردیف است.");
@@ -299,7 +306,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     checkZeroAmount.setFinancialDocumentId(financialDocument.getId());
                     checkZeroAmount.setFinancialDocumentItemId(documentItem.getId());
                     checkZeroAmount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-                    checkZeroAmount.setMessage("در ردیف  مبلغ بستانکار و بدهکار صفر می باشد.");
+                    checkZeroAmount.setMessage("در ردیف  مبلغ بستانکار و بدهکار صفر می باشد");
                     financialDocumentErrorDtoList.add(checkZeroAmount);
                 }
 
@@ -330,7 +337,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     financialDocumentErrorDtoList.add(itemAmount);
                 }
 
-                if ((documentItem.getCreditAmount() < 0) && (documentItem.getDebitAmount() < 0)) {
+                if ((documentItem.getCreditAmount() < 0) || (documentItem.getDebitAmount() < 0)) {
                     FinancialDocumentErrorDto documentItemAmount=new FinancialDocumentErrorDto();
                     documentItemAmount.setFinancialDocumentId(financialDocument.getId());
                     documentItemAmount.setFinancialDocumentItemId(documentItem.getId());
@@ -338,72 +345,78 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     documentItemAmount.setMessage("در ردیف سند مبلغ بستانکار یا بدهکار  منفی می باشد.");
                     financialDocumentErrorDtoList.add(documentItemAmount);
                 }
+
+                Long  documentReference=financialDocumentReferenceRepository.getDocumentReference(documentItem.getId());
+                if(documentReference != null){
+                    FinancialDocumentErrorDto FinancialDocumentReference=new FinancialDocumentErrorDto();
+                    FinancialDocumentReference.setFinancialDocumentId(financialDocument.getId());
+                    FinancialDocumentReference.setFinancialDocumentItemId(documentItem.getId());
+                    FinancialDocumentReference.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+                    FinancialDocumentReference.setMessage("تاریخ و شرح در مدارک مرجع پر نشده.");
+                    financialDocumentErrorDtoList.add(FinancialDocumentReference);
+                }
+
+                Long financialDocumentItemInfoCurrency=financialDocumentItemRepository.getInfoCurrency(documentItem.getId());
+                if(financialDocumentItemInfoCurrency != null){
+                    FinancialDocumentErrorDto infoCurrency=new FinancialDocumentErrorDto();
+                    infoCurrency.setFinancialDocumentId(financialDocument.getId());
+                    infoCurrency.setFinancialDocumentItemId(documentItem.getId());
+                    infoCurrency.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+                    infoCurrency.setMessage("لطفا اطلاعات ارزی را برای ردیفهای ارزی ، به صورت کامل وارد نمایید");
+                    financialDocumentErrorDtoList.add(infoCurrency);
+                }
+
+                Long financialDocumentEqualCurrency=financialDocumentItemRepository.equalCurrency(documentItem.getId());
+                if(financialDocumentEqualCurrency != null){
+                    FinancialDocumentErrorDto equalCurrency=new FinancialDocumentErrorDto();
+                    equalCurrency.setFinancialDocumentId(financialDocument.getId());
+                    equalCurrency.setFinancialDocumentItemId(documentItem.getId());
+                    equalCurrency.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+                    equalCurrency.setMessage("نوع ارز انتخاب شده در ردیفهای ارزی سند ، با نوع ارز یکسان نمیباشد");
+                    financialDocumentErrorDtoList.add(equalCurrency);
+                }
             });
         }
 
-//        List<FinancialDocumentItem> cost = financialDocumentItemRepository.getCostDocument(financialDocument.getId());
-//        if (cost == null) {
-//            FinancialDocumentErrorDto financialDocumentCost=new FinancialDocumentErrorDto();
-//            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
-//            financialDocumentCost.setMessage("مجموع مبالغ بستانکار و بدهکار در ردیف های سند بالانس نیست.");
-//            financialDocumentErrorDtoList.add(financialDocumentCost);
-//        }
+        Long cost = financialDocumentItemRepository.getCostDocument(financialDocument.getId());
+        if (cost == null) {
+            FinancialDocumentErrorDto financialDocumentCost=new FinancialDocumentErrorDto();
+            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
+            financialDocumentCost.setMessage("مجموع مبالغ بستانکار و بدهکار در ردیف های سند بالانس نیست.");
+            financialDocumentErrorDtoList.add(financialDocumentCost);
+        }
 
-//        FinancialDocument documentPeriod = financialDocumentRepository.getActivePeriodInDocument(financialDocument.getId());
-//        if (documentPeriod == null) {
-//            FinancialDocumentErrorDto financialDocumentCost=new FinancialDocumentErrorDto();
-//            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
-//            financialDocumentCost.setMessage("وضعیت دوره مالی مربوط به سند بسته است.");
-//            financialDocumentErrorDtoList.add(financialDocumentCost);
-//        }
+        FinancialDocument documentPeriod = financialDocumentRepository.getActivePeriodInDocument(financialDocument.getId());
+        if (documentPeriod == null) {
+            FinancialDocumentErrorDto financialDocumentCost=new FinancialDocumentErrorDto();
+            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
+            financialDocumentCost.setMessage("وضعیت دوره مالی مربوط به سند بسته است.");
+            financialDocumentErrorDtoList.add(financialDocumentCost);
+        }
 
-//        Boolean financialDocumentItemAccount=financialDocumentItemRepository.getFinancialAccount(financialDocument.getId());
-//        if(financialDocumentItemAccount){
-//            FinancialDocumentErrorDto financialAccount=new FinancialDocumentErrorDto();
-//            financialAccount.setFinancialDocumentId(financialDocument.getId());
-//            financialAccount.setMessage(" حساب انتخاب شده  روی یک / چند ردیف از سند ، آخرین سطح حساب نمی باشد");
-//            financialDocumentErrorDtoList.add(financialAccount);
-//        }
+        Long financialDocumentItemAccount=financialDocumentItemRepository.getFinancialAccount(financialDocument.getId());
+        if(financialDocumentItemAccount != null){
+            FinancialDocumentErrorDto financialAccount=new FinancialDocumentErrorDto();
+            financialAccount.setFinancialDocumentId(financialDocument.getId());
+            financialAccount.setMessage(" حساب انتخاب شده  روی یک / چند ردیف از سند ، آخرین سطح حساب نمی باشد");
+            financialDocumentErrorDtoList.add(financialAccount);
+        }
 
-//        List<FinancialDocumentItem>  documentReference=financialDocumentItemRepository.getDocumentReference(financialDocument.getId());
-//        if(documentReference!= null){
-//            FinancialDocumentErrorDto FinancialDocumentReference=new FinancialDocumentErrorDto();
-//            FinancialDocumentReference.setFinancialDocumentId(financialDocument.getId());
-//            FinancialDocumentReference.setMessage("تاریخ و شرح در مدارک مرجع پر نشده.");
-//            financialDocumentErrorDtoList.add(FinancialDocumentReference);
-//        }
+        Long financialDocumentItemCostHarmony=financialDocumentItemRepository.costHarmony(financialDocument.getId());
+        if(financialDocumentItemCostHarmony != null){
+            FinancialDocumentErrorDto costHarmony=new FinancialDocumentErrorDto();
+            costHarmony.setFinancialDocumentId(financialDocument.getId());
+            costHarmony.setMessage(" مبالغ بدهکار یا بستانکار ردیف یا ردیفها با مبالغ بدهکار یا بستانکار ارزی همخوانی ندارد.");
+            financialDocumentErrorDtoList.add(costHarmony);
+        }
 
-//       Boolean financialDocumentItemInfoCurrency=financialDocumentItemRepository.getInfoCurrency(financialDocument.getId());
-//        if(financialDocumentItemInfoCurrency){
-//            FinancialDocumentErrorDto infoCurrency=new FinancialDocumentErrorDto();
-//            infoCurrency.setFinancialDocumentId(financialDocument.getId());
-//            infoCurrency.setMessage("لطفا اطلاعات ارزی را برای ردیفهای ارزی ، به صورت کامل وارد نمایید");
-//            financialDocumentErrorDtoList.add(infoCurrency);
-//        }
-
-//        Boolean financialDocumentEqualCurrency=financialDocumentItemRepository.equalCurrency(financialDocument.getId());
-//        if(financialDocumentEqualCurrency){
-//            FinancialDocumentErrorDto equalCurrency=new FinancialDocumentErrorDto();
-//            equalCurrency.setFinancialDocumentId(financialDocument.getId());
-//            equalCurrency.setMessage("نوع ارز انتخاب شده در ردیفهای ارزی سند ، با نوع ارز یکسان نمیباشد");
-//            financialDocumentErrorDtoList.add(equalCurrency);
-//        }
-
-//        Boolean financialDocumentItemCostHarmony=financialDocumentItemRepository.costHarmony(financialDocument.getId());
-//        if(financialDocumentItemCostHarmony){
-//            FinancialDocumentErrorDto costHarmony=new FinancialDocumentErrorDto();
-//            costHarmony.setFinancialDocumentId(financialDocument.getId());
-//            costHarmony.setMessage(" مبالغ بدهکار یا بستانکار ردیف/ردیفها با مبالغ بدهکار یا بستانکار ارزی همخوانی ندارد.");
-//            financialDocumentErrorDtoList.add(costHarmony);
-//        }
-
-//        Boolean financialDocumentItemReferenceCode=financialDocumentItemRepository.referenceCode(financialDocument.getId());
-//        if(financialDocumentItemCostHarmony){
-//            FinancialDocumentErrorDto referenceCode=new FinancialDocumentErrorDto();
-//            referenceCode.setFinancialDocumentId(financialDocument.getId());
-//            referenceCode.setMessage(" کدهای تمرکز ثبت شده باید با کد تمرکز مرجع خود همخوانی داشته باشد");
-//            financialDocumentErrorDtoList.add(referenceCode);
-//        }
+        Long financialDocumentItemReferenceCode=financialDocumentItemRepository.referenceCode(financialDocument.getId());
+        if(financialDocumentItemReferenceCode != null){
+            FinancialDocumentErrorDto referenceCode=new FinancialDocumentErrorDto();
+            referenceCode.setFinancialDocumentId(financialDocument.getId());
+            referenceCode.setMessage(" کدهای تمرکز ثبت شده باید با کد تمرکز مرجع خود همخوانی داشته باشد");
+            financialDocumentErrorDtoList.add(referenceCode);
+        }
 
         if (financialDocument.getDescription() == null) {
             FinancialDocumentErrorDto documentDescription=new FinancialDocumentErrorDto();
@@ -415,8 +428,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         return financialDocumentErrorDtoList;
     }
 
-    private ResponseFinancialDocumentSetStatusDto financialDocumentToDto(FinancialDocument financialDocument) {
-        Object[] objects = financialDocumentItemRepository.getParamByDocumentId(financialDocument.getId());
+    private ResponseFinancialDocumentSetStatusDto convertFinancialDocumentToDto(FinancialDocument financialDocument) {
+        List<Object[]> objects = financialDocumentItemRepository.findParamByDocumentId(financialDocument.getId());
         return ResponseFinancialDocumentSetStatusDto.builder()
                 .id(financialDocument.getId())
                 .documentDate(financialDocument.getDocumentDate())
@@ -426,10 +439,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 .userId(financialDocument.getCreator().getId())
                 .userName(financialDocument.getCreator().getUsername())
                 .description(financialDocument.getDescription())
-//                .creditAmount(Long.parseLong(objects[1].toString()))
-//                .debitAmount(Long.parseLong(objects[0].toString()))
-//                .fullDescription(objects[2].toString())
-
+                .debitAmount(((BigDecimal)objects.get(0)[0]).doubleValue())
+                .creditAmount(((BigDecimal)objects.get(0)[1]).doubleValue())
+                .fullDescription(objects.get(0)[2].toString())
                 .build();
     }
 

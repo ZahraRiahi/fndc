@@ -86,8 +86,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
                                             Object priceType,Long priceTypeId,Object fromPrice,Long fromPriceAmount,Object toPrice,Long toPriceAmount,
                                             Double tolerance,List<Long> documentStatusId,Pageable pageable);
 
-//    @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:FinancialDocumentId")
-//    FinancialDocument getActivePeriodInDocument(Long FinancialDocumentId);
+    @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:FinancialDocumentId")
+    FinancialDocument getActivePeriodInDocument(Long FinancialDocumentId);
 
     @Query("select to_char(:date, 'yyyymmdd', 'NLS_CALENDAR=persian') ||" +
             "      nvl(lpad(max(to_number(substr(to_char(fd.documentNumber), 9, 3)) + 1),3,'0'),'001')" +
