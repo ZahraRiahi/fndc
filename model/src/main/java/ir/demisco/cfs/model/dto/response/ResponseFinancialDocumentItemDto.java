@@ -4,7 +4,7 @@ import java.util.List;
 
 public class ResponseFinancialDocumentItemDto {
 
-    private Long financialDocumentItemId;
+    private Long id;
     private Long sequenceNumber;
     private Long financialAccountId;
     private Double debitAmount;
@@ -19,12 +19,12 @@ public class ResponseFinancialDocumentItemDto {
     private List<FinancialDocumentReferenceDto> documentReferenceList;
     private List<FinancialDocumentItemCurrencyDto>  documentItemCurrencyList;
 
-    public Long getFinancialDocumentItemId() {
-        return financialDocumentItemId;
+    public Long getId() {
+        return id;
     }
 
-    public void setFinancialDocumentItemId(Long financialDocumentItemId) {
-        this.financialDocumentItemId = financialDocumentItemId;
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public Long getSequenceNumber() {
@@ -144,12 +144,12 @@ public class ResponseFinancialDocumentItemDto {
             responseFinancialDocumentItemDto = new ResponseFinancialDocumentItemDto();
         }
 
-        public static Builder aResponseFinancialDocumentItemDto() {
+        public static Builder responseFinancialDocumentItemDto() {
             return new Builder();
         }
 
-        public Builder financialDocumentItemId(Long financialDocumentItemId) {
-            responseFinancialDocumentItemDto.setFinancialDocumentItemId(financialDocumentItemId);
+        public Builder id(Long id) {
+            responseFinancialDocumentItemDto.setId(id);
             return this;
         }
 
@@ -210,6 +210,11 @@ public class ResponseFinancialDocumentItemDto {
 
         public Builder documentReferenceList(List<FinancialDocumentReferenceDto> documentReferenceList) {
             responseFinancialDocumentItemDto.setDocumentReferenceList(documentReferenceList);
+            return this;
+        }
+
+        public Builder documentItemCurrencyList(List<FinancialDocumentItemCurrencyDto> documentItemCurrencyList) {
+            responseFinancialDocumentItemDto.setDocumentItemCurrencyList(documentItemCurrencyList);
             return this;
         }
 
