@@ -14,7 +14,9 @@ import org.codehaus.jackson.map.util.ISO8601Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -273,14 +275,14 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public ResponseFinancialDocumentSetStatusDto changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
-        ResponseFinancialDocumentSetStatusDto responseFinancialDocumentSetStatusDto=new ResponseFinancialDocumentSetStatusDto();
+        ResponseFinancialDocumentSetStatusDto responseFinancialDocumentSetStatusDto = new ResponseFinancialDocumentSetStatusDto();
         FinancialDocument financialDocument = financialDocumentRepository.findById(responseFinancialDocumentStatusDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
-        List<FinancialDocumentErrorDto> financialDocumentErrorDtoList=validationSetStatus(financialDocument);
-        if(financialDocumentErrorDtoList.isEmpty()) {
+        List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = validationSetStatus(financialDocument);
+        if (financialDocumentErrorDtoList.isEmpty()) {
             financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(responseFinancialDocumentStatusDto.getFinancialDocumentStatusId()));
             financialDocumentRepository.save(financialDocument);
-            responseFinancialDocumentSetStatusDto=convertFinancialDocumentToDto(financialDocument);
-        }else{
+            responseFinancialDocumentSetStatusDto = convertFinancialDocumentToDto(financialDocument);
+        } else {
             responseFinancialDocumentSetStatusDto.setFinancialDocumentErrorDtoList(financialDocumentErrorDtoList);
             responseFinancialDocumentSetStatusDto.setErrorFoundFlag(true);
         }
@@ -288,11 +290,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     private List<FinancialDocumentErrorDto> validationSetStatus(FinancialDocument financialDocument) {
-        List<FinancialDocumentErrorDto> financialDocumentErrorDtoList=new ArrayList<>();
+        List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = new ArrayList<>();
 
         List<FinancialDocumentItem> documentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocument.getId());
         if (documentItemList.isEmpty()) {
-            FinancialDocumentErrorDto documentItem=new FinancialDocumentErrorDto();
+            FinancialDocumentErrorDto documentItem = new FinancialDocumentErrorDto();
             documentItem.setFinancialDocumentId(financialDocument.getId());
             documentItem.setMessage("سند بدون ردیف است.");
             financialDocumentErrorDtoList.add(documentItem);
@@ -302,7 +304,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 double debitAmount = documentItem.getDebitAmount() % 1;
 
                 if ((documentItem.getCreditAmount() == 0) && (documentItem.getDebitAmount() == 0)) {
-                    FinancialDocumentErrorDto checkZeroAmount=new FinancialDocumentErrorDto();
+                    FinancialDocumentErrorDto checkZeroAmount = new FinancialDocumentErrorDto();
                     checkZeroAmount.setFinancialDocumentId(financialDocument.getId());
                     checkZeroAmount.setFinancialDocumentItemId(documentItem.getId());
                     checkZeroAmount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
@@ -311,7 +313,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 }
 
                 if ((documentItem.getCreditAmount() != 0) && (documentItem.getDebitAmount() != 0)) {
-                    FinancialDocumentErrorDto  checkCostAmount=new FinancialDocumentErrorDto();
+                    FinancialDocumentErrorDto checkCostAmount = new FinancialDocumentErrorDto();
                     checkCostAmount.setFinancialDocumentId(financialDocument.getId());
                     checkCostAmount.setFinancialDocumentItemId(documentItem.getId());
                     checkCostAmount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
@@ -320,7 +322,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 }
 
                 if (documentItem.getDescription() == null) {
-                    FinancialDocumentErrorDto documentItemDescription=new FinancialDocumentErrorDto();
+                    FinancialDocumentErrorDto documentItemDescription = new FinancialDocumentErrorDto();
                     documentItemDescription.setFinancialDocumentId(financialDocument.getId());
                     documentItemDescription.setFinancialDocumentItemId(documentItem.getId());
                     documentItemDescription.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
@@ -329,7 +331,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 }
 
                 if ((creditAmount != 000) || (debitAmount != 000)) {
-                    FinancialDocumentErrorDto itemAmount=new FinancialDocumentErrorDto();
+                    FinancialDocumentErrorDto itemAmount = new FinancialDocumentErrorDto();
                     itemAmount.setFinancialDocumentId(financialDocument.getId());
                     itemAmount.setFinancialDocumentItemId(documentItem.getId());
                     itemAmount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
@@ -338,7 +340,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 }
 
                 if ((documentItem.getCreditAmount() < 0) || (documentItem.getDebitAmount() < 0)) {
-                    FinancialDocumentErrorDto documentItemAmount=new FinancialDocumentErrorDto();
+                    FinancialDocumentErrorDto documentItemAmount = new FinancialDocumentErrorDto();
                     documentItemAmount.setFinancialDocumentId(financialDocument.getId());
                     documentItemAmount.setFinancialDocumentItemId(documentItem.getId());
                     documentItemAmount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
@@ -346,9 +348,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     financialDocumentErrorDtoList.add(documentItemAmount);
                 }
 
-                Long  documentReference=financialDocumentReferenceRepository.getDocumentReference(documentItem.getId());
-                if(documentReference != null){
-                    FinancialDocumentErrorDto FinancialDocumentReference=new FinancialDocumentErrorDto();
+                Long documentReference = financialDocumentReferenceRepository.getDocumentReference(documentItem.getId());
+                if (documentReference != null) {
+                    FinancialDocumentErrorDto FinancialDocumentReference = new FinancialDocumentErrorDto();
                     FinancialDocumentReference.setFinancialDocumentId(financialDocument.getId());
                     FinancialDocumentReference.setFinancialDocumentItemId(documentItem.getId());
                     FinancialDocumentReference.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
@@ -356,9 +358,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     financialDocumentErrorDtoList.add(FinancialDocumentReference);
                 }
 
-                Long financialDocumentItemInfoCurrency=financialDocumentItemRepository.getInfoCurrency(documentItem.getId());
-                if(financialDocumentItemInfoCurrency != null){
-                    FinancialDocumentErrorDto infoCurrency=new FinancialDocumentErrorDto();
+                Long financialDocumentItemInfoCurrency = financialDocumentItemRepository.getInfoCurrency(documentItem.getId());
+                if (financialDocumentItemInfoCurrency != null) {
+                    FinancialDocumentErrorDto infoCurrency = new FinancialDocumentErrorDto();
                     infoCurrency.setFinancialDocumentId(financialDocument.getId());
                     infoCurrency.setFinancialDocumentItemId(documentItem.getId());
                     infoCurrency.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
@@ -366,9 +368,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     financialDocumentErrorDtoList.add(infoCurrency);
                 }
 
-                Long financialDocumentEqualCurrency=financialDocumentItemRepository.equalCurrency(documentItem.getId());
-                if(financialDocumentEqualCurrency != null){
-                    FinancialDocumentErrorDto equalCurrency=new FinancialDocumentErrorDto();
+                Long financialDocumentEqualCurrency = financialDocumentItemRepository.equalCurrency(documentItem.getId());
+                if (financialDocumentEqualCurrency != null) {
+                    FinancialDocumentErrorDto equalCurrency = new FinancialDocumentErrorDto();
                     equalCurrency.setFinancialDocumentId(financialDocument.getId());
                     equalCurrency.setFinancialDocumentItemId(documentItem.getId());
                     equalCurrency.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
@@ -380,7 +382,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
         Long cost = financialDocumentItemRepository.getCostDocument(financialDocument.getId());
         if (cost == null) {
-            FinancialDocumentErrorDto financialDocumentCost=new FinancialDocumentErrorDto();
+            FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
             financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
             financialDocumentCost.setMessage("مجموع مبالغ بستانکار و بدهکار در ردیف های سند بالانس نیست.");
             financialDocumentErrorDtoList.add(financialDocumentCost);
@@ -388,38 +390,38 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
         FinancialDocument documentPeriod = financialDocumentRepository.getActivePeriodInDocument(financialDocument.getId());
         if (documentPeriod == null) {
-            FinancialDocumentErrorDto financialDocumentCost=new FinancialDocumentErrorDto();
+            FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
             financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
             financialDocumentCost.setMessage("وضعیت دوره مالی مربوط به سند بسته است.");
             financialDocumentErrorDtoList.add(financialDocumentCost);
         }
 
-        Long financialDocumentItemAccount=financialDocumentItemRepository.getFinancialAccount(financialDocument.getId());
-        if(financialDocumentItemAccount != null){
-            FinancialDocumentErrorDto financialAccount=new FinancialDocumentErrorDto();
+        Long financialDocumentItemAccount = financialDocumentItemRepository.getFinancialAccount(financialDocument.getId());
+        if (financialDocumentItemAccount != null) {
+            FinancialDocumentErrorDto financialAccount = new FinancialDocumentErrorDto();
             financialAccount.setFinancialDocumentId(financialDocument.getId());
             financialAccount.setMessage(" حساب انتخاب شده  روی یک / چند ردیف از سند ، آخرین سطح حساب نمی باشد");
             financialDocumentErrorDtoList.add(financialAccount);
         }
 
-        Long financialDocumentItemCostHarmony=financialDocumentItemRepository.costHarmony(financialDocument.getId());
-        if(financialDocumentItemCostHarmony != null){
-            FinancialDocumentErrorDto costHarmony=new FinancialDocumentErrorDto();
+        Long financialDocumentItemCostHarmony = financialDocumentItemRepository.costHarmony(financialDocument.getId());
+        if (financialDocumentItemCostHarmony != null) {
+            FinancialDocumentErrorDto costHarmony = new FinancialDocumentErrorDto();
             costHarmony.setFinancialDocumentId(financialDocument.getId());
             costHarmony.setMessage(" مبالغ بدهکار یا بستانکار ردیف یا ردیفها با مبالغ بدهکار یا بستانکار ارزی همخوانی ندارد.");
             financialDocumentErrorDtoList.add(costHarmony);
         }
 
-        Long financialDocumentItemReferenceCode=financialDocumentItemRepository.referenceCode(financialDocument.getId());
-        if(financialDocumentItemReferenceCode != null){
-            FinancialDocumentErrorDto referenceCode=new FinancialDocumentErrorDto();
+        Long financialDocumentItemReferenceCode = financialDocumentItemRepository.referenceCode(financialDocument.getId());
+        if (financialDocumentItemReferenceCode != null) {
+            FinancialDocumentErrorDto referenceCode = new FinancialDocumentErrorDto();
             referenceCode.setFinancialDocumentId(financialDocument.getId());
             referenceCode.setMessage(" کدهای تمرکز ثبت شده باید با کد تمرکز مرجع خود همخوانی داشته باشد");
             financialDocumentErrorDtoList.add(referenceCode);
         }
 
         if (financialDocument.getDescription() == null) {
-            FinancialDocumentErrorDto documentDescription=new FinancialDocumentErrorDto();
+            FinancialDocumentErrorDto documentDescription = new FinancialDocumentErrorDto();
             documentDescription.setFinancialDocumentId(financialDocument.getId());
             documentDescription.setMessage("سند بدون شرح است.");
             financialDocumentErrorDtoList.add(documentDescription);
@@ -439,8 +441,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 .userId(financialDocument.getCreator().getId())
                 .userName(financialDocument.getCreator().getUsername())
                 .description(financialDocument.getDescription())
-                .debitAmount(((BigDecimal)objects.get(0)[0]).doubleValue())
-                .creditAmount(((BigDecimal)objects.get(0)[1]).doubleValue())
+                .debitAmount(((BigDecimal) objects.get(0)[0]).doubleValue())
+                .creditAmount(((BigDecimal) objects.get(0)[1]).doubleValue())
                 .fullDescription(objects.get(0)[2].toString())
                 .build();
     }
@@ -680,5 +682,42 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 "         qry.id = fndi_outer.id) " +
                 " where fndi_outer.financial_document_id = :financialDocumentId ").setParameter("financialDocumentId", document.getId()).executeUpdate();
         return true;
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public DataSourceResult documentByStructure(DataSourceRequest dataSourceRequest) {
+        List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
+        RequestDocumentStructureDto paramSearch = setParamDocumentStructure(filters);
+        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
+        Page<Object[]> list = financialDocumentItemRepository.getDocumentByStructure(paramSearch.getFinancialDocumentId(),
+                paramSearch.getFinancialStructureId(), pageable);
+        List<ResponseDocumentStructureDto> documentStructureDtoList = list.stream().map(item ->
+                ResponseDocumentStructureDto.builder()
+                        .debit(((BigDecimal)item[0]).doubleValue())
+                        .credit(((BigDecimal)item[1]).doubleValue())
+                        .financialAccountCode(item[2].toString())
+                        .financialAccountDescription(item[3].toString())
+                        .financialAccountId(Long.parseLong(item[4].toString()))
+                        .build()).collect(Collectors.toList());
+        DataSourceResult dataSourceResult = new DataSourceResult();
+        dataSourceResult.setData(documentStructureDtoList);
+        dataSourceResult.setTotal(list.getTotalElements());
+        return dataSourceResult;
+    }
+
+    private RequestDocumentStructureDto setParamDocumentStructure(List<DataSourceRequest.FilterDescriptor> filters) {
+        RequestDocumentStructureDto requestDocumentStructureDto = new RequestDocumentStructureDto();
+        for (DataSourceRequest.FilterDescriptor item : filters) {
+            switch (item.getField()) {
+                case "financialDocument.id":
+                    requestDocumentStructureDto.setFinancialDocumentId(Long.parseLong(item.getValue().toString()));
+                    break;
+                case "financialStructure.id":
+                    requestDocumentStructureDto.setFinancialStructureId(Long.parseLong(item.getValue().toString()));
+                    break;
+            }
+        }
+        return requestDocumentStructureDto;
     }
 }
