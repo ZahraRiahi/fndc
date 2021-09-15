@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.repository;
 
+import ir.demisco.cfs.model.entity.FinancialAccountStructure;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -208,4 +209,17 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "and fdi.sequenceNumber=:sequenceNumber " +
             "and fdi.deletedDate is null")
     FinancialDocumentItem findBySequence(Long financialDocumentId,Long sequenceNumber);
+
+    @Query(" select DISTINCT fs_final.id as documentStructueId," +
+            "       fs_final.sequence as sequence, " +
+            "       fs_final.description as description, " +
+            "       fs_final.financialCodingType.id" +
+            " from FinancialDocumentItem fd " +
+            " join FinancialAccount  fa  on fa.id=fd.financialAccount.id and fa.deletedDate is null " +
+            " join FinancialAccountStructure fs on fs.id=fa.financialAccountStructure.id and fs.deletedDate is null " +
+            " join FinancialAccountStructure fs_final on fs_final.financialCodingType.id=fs.financialCodingType.id and fs_final.deletedDate is null" +
+            " where fd.financialDocument.id=:financialDocumentId" +
+            " and fd.deletedDate is null" +
+            " order by fs_final.sequence ")
+    List<Object[]> getDocumentStructurList(Long financialDocumentId);
 }

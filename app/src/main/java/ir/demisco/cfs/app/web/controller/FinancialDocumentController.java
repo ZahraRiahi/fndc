@@ -10,6 +10,8 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 @RestController
 @RequestMapping("/api-financialDocument")
 public class FinancialDocumentController {
@@ -125,5 +127,11 @@ public class FinancialDocumentController {
     public ResponseEntity<DataSourceResult> responseDocumentByStructure(@RequestBody DataSourceRequest dataSourceRequest)
     {
         return ResponseEntity.ok(financialDocumentService.documentByStructure(dataSourceRequest));
+    }
+
+    @PostMapping("/GetStructure")
+    public ResponseEntity<List<ResponseFinancialDocumentStructureDto>> responseDocumentByStructure(@RequestBody RequestDocumentStructureDto requestDocumentStructureDto)
+    {
+        return ResponseEntity.ok(financialDocumentService.getDocumentStructure(requestDocumentStructureDto));
     }
 }
