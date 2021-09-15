@@ -202,4 +202,10 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "   AND DI.DELETED_DATE IS NULL " +
             "  GROUP BY FA.ID,FA.CODE, FA.DESCRIPTION", nativeQuery = true)
     Page<Object[]> getDocumentByStructure(Long financialDocumentId, Long financialStructureId, Pageable pageable);
+
+    @Query(" select fdi from  FinancialDocumentItem fdi " +
+            "where fdi.financialDocument.id=:financialDocumentId " +
+            "and fdi.sequenceNumber=:sequenceNumber " +
+            "and fdi.deletedDate is null")
+    FinancialDocumentItem findBySequence(Long financialDocumentId,Long sequenceNumber);
 }

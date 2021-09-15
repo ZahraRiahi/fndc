@@ -66,11 +66,12 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     public FinancialDocumentSaveDto saveDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto) {
 
         FinancialDocumentSaveDto responseDocumentSaveDto;
-        FinancialDocument financialDocument = saveFinancialDocument(requestFinancialDocumentSaveDto);
-        responseDocumentSaveDto = convertDocumentToDto(financialDocument);
         List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList = new ArrayList<>();
         List<FinancialDocumentReferenceDto> documentReferenceList = new ArrayList<>();
         List<FinancialDocumentItemCurrencyDto> responseDocumentItemCurrencyList = new ArrayList<>();
+
+        FinancialDocument financialDocument = saveFinancialDocument(requestFinancialDocumentSaveDto);
+        responseDocumentSaveDto = convertDocumentToDto(financialDocument);
         requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().forEach(documentItem -> {
             FinancialDocumentItem financialDocumentItem = saveFinancialDocumentItem(financialDocument, documentItem);
             FinancialDocumentItem finalFinancialDocumentItem = financialDocumentItem;
@@ -120,6 +121,12 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private FinancialDocumentItem saveFinancialDocumentItem(FinancialDocument financialDocument, ResponseFinancialDocumentItemDto documentItem) {
 
         FinancialDocumentItem financialDocumentItem = new FinancialDocumentItem();
+
+        FinancialDocumentItem item=financialDocumentItemRepository.findBySequence(financialDocument.getId(),documentItem.getSequenceNumber());
+        if(item != null){
+            throw new RuleException("شماره ردیف تکراری است.");
+        }
+
         financialDocumentItem.setFinancialDocument(financialDocument);
         financialDocumentItem.setSequenceNumber(documentItem.getSequenceNumber());
         financialDocumentItem.setDebitAmount(documentItem.getDebitAmount());
@@ -368,11 +375,12 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .automaticFlag(financialDocument.getAutomaticFlag())
                 .description(financialDocument.getDescription())
                 .organizationId(financialDocument.getOrganization().getId())
-//                .financialDocumentDescriptionId()
                 .financialLedgerTypeId(financialDocument.getFinancialLedgerType().getId())
                 .financialLedgerTypeDescription(financialDocument.getFinancialLedgerType().getDescription())
                 .departmentId(financialDocument.getFinancialDepartment().getId())
                 .departmentName(financialDocument.getFinancialDepartment().getName())
+                .financialPeriodId(financialDocument.getFinancialPeriod().getId())
+                .financialPeriodDescription(financialDocument.getFinancialPeriod().getDescription())
                 .build();
     }
 
@@ -382,6 +390,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .id(financialDocumentItem.getId())
                 .sequenceNumber(financialDocumentItem.getSequenceNumber())
                 .financialAccountId(financialDocumentItem.getFinancialAccount().getId())
+                .financialAccountDescription(financialDocumentItem.getFinancialAccount().getDescription())
                 .debitAmount(financialDocumentItem.getDebitAmount())
                 .creditAmount(financialDocumentItem.getCreditAmount())
                 .description(financialDocumentItem.getDescription())
@@ -410,6 +419,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .financialDocumentItemId(documentItemCurrency.getFinancialDocumentItem().getId())
                 .foreignDebitAmount(documentItemCurrency.getForeignDebitAmount())
                 .foreignCreditAmount(documentItemCurrency.getForeignCreditAmount())
+                .exchangeRate(documentItemCurrency.getExchangeRate())
                 .moneyTypeId(documentItemCurrency.getMoneyType().getId())
                 .moneyTypeDescription(documentItemCurrency.getMoneyType().getDescription())
                 .moneyPricingReferenceId(documentItemCurrency.getMoneyPricingReference().getId())
