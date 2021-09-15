@@ -292,6 +292,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = new ArrayList<>();
 
         List<FinancialDocumentItem> documentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocument.getId());
+
         if (documentItemList.isEmpty()) {
             FinancialDocumentErrorDto documentItem = new FinancialDocumentErrorDto();
             documentItem.setFinancialDocumentId(financialDocument.getId());
@@ -392,6 +393,15 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         financialDocumentErrorDtoList.add(centricAccount);
                     }
                 });
+                FinancialDocument  document= financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocument.getId());
+                if(document==null){
+                    FinancialDocumentErrorDto activeMountStatus = new FinancialDocumentErrorDto();
+                    activeMountStatus.setFinancialDocumentId(financialDocument.getId());
+                    activeMountStatus.setFinancialDocumentItemId(documentItem.getId());
+                    activeMountStatus.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+                    activeMountStatus.setMessage("نوع ارز انتخاب شده در ردیفهای ارزی سند ، با نوع ارز یکسان نمیباشد");
+                    financialDocumentErrorDtoList.add(activeMountStatus);
+                }
             });
         }
 
