@@ -735,4 +735,22 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
         return requestDocumentStructureDto;
     }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public List<ResponseFinancialDocumentStructureDto> getDocumentStructure(RequestDocumentStructureDto requestDocumentStructureDto) {
+        List<Object[]> documentStructure=financialDocumentItemRepository.getDocumentStructurList(requestDocumentStructureDto.getFinancialDocumentId());
+        return documentStructure.stream().map(objects ->
+            ResponseFinancialDocumentStructureDto.builder()
+                    .DocumentStructureId(Long.parseLong(objects[0].toString()))
+                    .sequence(Long.parseLong(objects[1].toString()))
+                   .description(objects[2].toString())
+                    .FinancialCodingTypeId(Long.parseLong(objects[3].toString()))
+                    .build()
+        ).collect(Collectors.toList());
+    }
+
+
+
+
 }
