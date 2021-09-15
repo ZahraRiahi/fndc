@@ -8,15 +8,12 @@ import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
-import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
 import org.codehaus.jackson.map.util.ISO8601Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
@@ -38,12 +35,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialAccountRepository financialAccountRepository;
     private final EntityManager entityManager;
     private final CentricAccountRepository centricAccountRepository;
+    private final AccountDefaultValueRepository accountDefaultValueRepository;
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
                                     FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                     FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
-                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository) {
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -52,6 +50,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.financialAccountRepository = financialAccountRepository;
         this.entityManager = entityManager;
         this.centricAccountRepository = centricAccountRepository;
+        this.accountDefaultValueRepository = accountDefaultValueRepository;
     }
 
 
@@ -377,6 +376,22 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     equalCurrency.setMessage("نوع ارز انتخاب شده در ردیفهای ارزی سند ، با نوع ارز یکسان نمیباشد");
                     financialDocumentErrorDtoList.add(equalCurrency);
                 }
+                List<AccountDefaultValue> accountDefaultValueList=accountDefaultValueRepository.getAccountDefaultValueByDocumentItemId(documentItem.getId());
+                accountDefaultValueList.forEach(defaultValue ->{
+                    if((documentItem.getCentricAccountId1() != defaultValue.getCentricAccount()) ||
+                       (documentItem.getCentricAccountId2() != defaultValue.getCentricAccount()) ||
+                       (documentItem.getCentricAccountId3() != defaultValue.getCentricAccount()) ||
+                       (documentItem.getCentricAccountId4() != defaultValue.getCentricAccount()) ||
+                       (documentItem.getCentricAccountId5() != defaultValue.getCentricAccount()) ||
+                       (documentItem.getCentricAccountId6() != defaultValue.getCentricAccount())){
+                        FinancialDocumentErrorDto centricAccount = new FinancialDocumentErrorDto();
+                        centricAccount.setFinancialDocumentId(financialDocument.getId());
+                        centricAccount.setFinancialDocumentItemId(documentItem.getId());
+                        centricAccount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+                        centricAccount.setMessage("کد / کدهای تمرکز با تمرکز های حساب ، همخوانی ندارد");
+                        financialDocumentErrorDtoList.add(centricAccount);
+                    }
+                });
             });
         }
 
@@ -662,19 +677,19 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 "          from (select ROW_NUMBER() over(order by fndi.credit_amount - fndi.debit_amount desc, fnc.code, cnt1.code, cnt2.code, cnt3.code, cnt4.code, cnt5.code, cnt6.code) as rn, " +
                 "                       fndi.id " +
                 "                  from fndc.financial_document_item fndi " +
-                "                 inner join fnac.financial_account fnc " +
+                "                 left join fnac.financial_account fnc " +
                 "                    on fnc.id = fndi.financial_account_id " +
-                "                 inner join fnac.centric_account cnt1 " +
+                "                 left join fnac.centric_account cnt1 " +
                 "                    on fndi.centric_account_id_1 = cnt1.id " +
-                "                 inner join fnac.centric_account cnt2 " +
+                "                 left join fnac.centric_account cnt2 " +
                 "                    on fndi.centric_account_id_2 = cnt2.id " +
-                "                 inner join fnac.centric_account cnt3 " +
+                "                 left join fnac.centric_account cnt3 " +
                 "                    on fndi.centric_account_id_3 = cnt3.id " +
-                "                 inner join fnac.centric_account cnt4 " +
+                "                 left join fnac.centric_account cnt4 " +
                 "                    on fndi.centric_account_id_4 = cnt4.id " +
-                "                 inner join fnac.centric_account cnt5 " +
+                "                 left join fnac.centric_account cnt5 " +
                 "                    on fndi.centric_account_id_5 = cnt5.id " +
-                "                 inner join fnac.centric_account cnt6 " +
+                "                 left join fnac.centric_account cnt6 " +
                 "                    on fndi.centric_account_id_6 = cnt6.id " +
                 "                 where fndi.financial_document_id = :financialDocumentId " +
                 "                 ) qry " +

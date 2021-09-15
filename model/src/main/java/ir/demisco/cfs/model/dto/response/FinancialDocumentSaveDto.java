@@ -15,7 +15,7 @@ public class FinancialDocumentSaveDto {
     private String   description;
     private Long     organizationId;
     private Long     financialPeriodId;
-    private Long     financialDocumentDescriptionId;
+    private String   financialPeriodDescription;
     private Long     financialLedgerTypeId;
     private String   financialLedgerTypeDescription;
     private Long     departmentId;
@@ -88,13 +88,6 @@ public class FinancialDocumentSaveDto {
         this.organizationId = organizationId;
     }
 
-    public Long getFinancialDocumentDescriptionId() {
-        return financialDocumentDescriptionId;
-    }
-
-    public void setFinancialDocumentDescriptionId(Long financialDocumentDescriptionId) {
-        this.financialDocumentDescriptionId = financialDocumentDescriptionId;
-    }
 
     public Long getFinancialLedgerTypeId() {
         return financialLedgerTypeId;
@@ -154,6 +147,14 @@ public class FinancialDocumentSaveDto {
         this.financialPeriodId = financialPeriodId;
     }
 
+    public String getFinancialPeriodDescription() {
+        return financialPeriodDescription;
+    }
+
+    public void setFinancialPeriodDescription(String financialPeriodDescription) {
+        this.financialPeriodDescription = financialPeriodDescription;
+    }
+
     public Boolean getAutomaticFlag() {
         return automaticFlag;
     }
@@ -174,7 +175,7 @@ public class FinancialDocumentSaveDto {
             financialDocumentSaveDto = new FinancialDocumentSaveDto();
         }
 
-        public static Builder aFinancialDocumentSaveDto() {
+        public static Builder financialDocumentSaveDto() {
             return new Builder();
         }
 
@@ -228,10 +229,11 @@ public class FinancialDocumentSaveDto {
             return this;
         }
 
-        public Builder financialDocumentDescriptionId(Long financialDocumentDescriptionId) {
-            financialDocumentSaveDto.setFinancialDocumentDescriptionId(financialDocumentDescriptionId);
+        public Builder financialPeriodDescription(String financialPeriodDescription) {
+            financialDocumentSaveDto.setFinancialPeriodDescription(financialPeriodDescription);
             return this;
         }
+
 
         public Builder financialLedgerTypeId(Long financialLedgerTypeId) {
             financialDocumentSaveDto.setFinancialLedgerTypeId(financialLedgerTypeId);
@@ -262,8 +264,6 @@ public class FinancialDocumentSaveDto {
             financialDocumentSaveDto.setFinancialDocumentItemDtoList(financialDocumentItemDtoList);
             return this;
         }
-
-
 
         public FinancialDocumentSaveDto build() {
             return financialDocumentSaveDto;

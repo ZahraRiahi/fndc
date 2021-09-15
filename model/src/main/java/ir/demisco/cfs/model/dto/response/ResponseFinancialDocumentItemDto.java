@@ -7,6 +7,7 @@ public class ResponseFinancialDocumentItemDto {
     private Long id;
     private Long sequenceNumber;
     private Long financialAccountId;
+    private String financialAccountDescription;
     private Double debitAmount;
     private Double creditAmount;
     private String description;
@@ -132,6 +133,14 @@ public class ResponseFinancialDocumentItemDto {
         this.documentItemCurrencyList = documentItemCurrencyList;
     }
 
+    public String getFinancialAccountDescription() {
+        return financialAccountDescription;
+    }
+
+    public void setFinancialAccountDescription(String financialAccountDescription) {
+        this.financialAccountDescription = financialAccountDescription;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -160,6 +169,11 @@ public class ResponseFinancialDocumentItemDto {
 
         public Builder financialAccountId(Long financialAccountId) {
             responseFinancialDocumentItemDto.setFinancialAccountId(financialAccountId);
+            return this;
+        }
+
+        public Builder financialAccountDescription(String financialAccountDescription) {
+            responseFinancialDocumentItemDto.setFinancialAccountDescription(financialAccountDescription);
             return this;
         }
 
