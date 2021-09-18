@@ -129,7 +129,6 @@ public class FinancialDocumentController {
         return ResponseEntity.ok(financialDocumentService.documentByStructure(dataSourceRequest));
     }
 
-
     @PostMapping("/GetStructure")
     public ResponseEntity<List<ResponseFinancialDocumentStructureDto>> responseDocumentByStructure(@RequestBody RequestDocumentStructureDto requestDocumentStructureDto)
     {
