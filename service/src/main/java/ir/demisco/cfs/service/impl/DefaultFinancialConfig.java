@@ -41,6 +41,7 @@ public class DefaultFinancialConfig implements FinancialConfigService {
     @Override
     @Transactional(readOnly = true)
     public DataSourceResult getFinancialConfigByOrganizationIdAndUserAndDepartment(DataSourceRequest dataSourceRequest, Long organizationId) {
+        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("deletedDate", null, DataSourceRequest.Operators.IS_NULL));
         return gridFilterService.filter(dataSourceRequest, financialConfigListGridProvider);
     }
 

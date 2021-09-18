@@ -21,7 +21,7 @@ public class FinancialConfigController {
     }
 
     @PostMapping("/Get")
-    public ResponseEntity<DataSourceResult> responseEntity(@RequestBody DataSourceRequest dataSourceRequest,Long organizationId) {
+    public ResponseEntity<DataSourceResult> responseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
         return ResponseEntity.ok(financialConfigService.getFinancialConfigByOrganizationIdAndUserAndDepartment(dataSourceRequest, SecurityHelper.getCurrentUser().getOrganizationId()));
 
     }
