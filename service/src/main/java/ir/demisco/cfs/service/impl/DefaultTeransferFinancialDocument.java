@@ -171,8 +171,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
 
         FinancialDocument  updateFinancialDocument=financialDocumentRepository.findById(financialDocumentTransferDto.getId())
                 .orElseThrow(() -> new RuleException("سندی یافت نشد"));
-//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocumentTransferDto.getId());
         if (financialDocument == null) {
             throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
