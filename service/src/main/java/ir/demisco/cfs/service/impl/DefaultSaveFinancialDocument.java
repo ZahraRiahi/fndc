@@ -319,8 +319,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private FinancialDocument saveFinancialDocument(FinancialDocumentSaveDto financialDocumentSaveDto) {
-//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
         financialDocumentNumberDto.setDate(financialDocumentSaveDto.getDocumentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
         financialDocumentNumberDto.setFinancialPeriodId(financialDocumentSaveDto.getFinancialPeriodId());
@@ -344,8 +343,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
     private FinancialDocument updateFinancialDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto) {
 
-//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         FinancialDocument financialDocument = financialDocumentRepository.
                 findById(requestFinancialDocumentSaveDto.getFinancialDocumentId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
         FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();

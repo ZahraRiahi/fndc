@@ -8,6 +8,7 @@ import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
 import org.codehaus.jackson.map.util.ISO8601Utils;
 import org.springframework.data.domain.Page;
@@ -475,8 +476,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public Long creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto) {
-//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         Long documentNumber = financialDocumentRepository.getDocumentNumber(organizationId, financialDocumentNumberDto.getDate(),
                 financialDocumentNumberDto.getFinancialPeriodId());
         if (documentNumber == null) {
