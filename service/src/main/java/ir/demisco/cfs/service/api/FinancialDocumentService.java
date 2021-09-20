@@ -13,7 +13,7 @@ public interface FinancialDocumentService {
 
     ResponseFinancialDocumentSetStatusDto changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto);
 
-    Long creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto);
+    String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto);
 
     String changeDescription(FinancialDocumentChengDescriptionDto financialDocumentDto);
 

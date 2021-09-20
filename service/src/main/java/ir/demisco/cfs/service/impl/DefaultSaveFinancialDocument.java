@@ -370,6 +370,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .financialDocumentTypeId(financialDocument.getFinancialDocumentType().getId())
                 .financialDocumentTypeDescription(financialDocument.getFinancialDocumentType().getDescription())
                 .financialDocumentStatusId(financialDocument.getFinancialDocumentStatus().getId())
+                .financialDocumentStatusCode(financialDocument.getFinancialDocumentStatus().getCode())
                 .automaticFlag(financialDocument.getAutomaticFlag())
                 .description(financialDocument.getDescription())
                 .organizationId(financialDocument.getOrganization().getId())

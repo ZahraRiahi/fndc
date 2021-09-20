@@ -11,7 +11,7 @@ public class FinancialDocumentNumber extends AuditModel<Long> {
 
     private FinancialNumberingType financialNumberingType;
     private FinancialDocument financialDocument;
-    private Long  documentNumber;
+    private String  documentNumber;
     private LocalDateTime deletedDate;
 
     @Override
@@ -42,11 +42,11 @@ public class FinancialDocumentNumber extends AuditModel<Long> {
         this.financialDocument = financialDocument;
     }
 
-    public Long getDocumentNumber() {
+    public String getDocumentNumber() {
         return documentNumber;
     }
 
-    public void setDocumentNumber(Long documentNumber) {
+    public void setDocumentNumber(String documentNumber) {
         this.documentNumber = documentNumber;
     }
 

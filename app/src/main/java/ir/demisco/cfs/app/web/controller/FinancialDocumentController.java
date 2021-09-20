@@ -39,8 +39,8 @@ public class FinancialDocumentController {
     }
 
     @PostMapping("/CreateNumber")
-    public ResponseEntity<Long> creatNumber(@RequestBody FinancialDocumentNumberDto financialDocumentNumberDto){
-        Long result;
+    public ResponseEntity<String> creatNumber(@RequestBody FinancialDocumentNumberDto financialDocumentNumberDto){
+        String result;
         result = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
         return ResponseEntity.ok(result);
     }

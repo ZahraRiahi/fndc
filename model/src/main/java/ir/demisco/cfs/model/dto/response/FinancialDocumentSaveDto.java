@@ -7,11 +7,12 @@ public class FinancialDocumentSaveDto {
 
     private Long     financialDocumentId;
     private Date     documentDate;
-    private Long     permanentDocumentNumber;
-    private Long     documentNumber;
+    private String     permanentDocumentNumber;
+    private String     documentNumber;
     private Long     financialDocumentTypeId;
     private String   financialDocumentTypeDescription;
     private Long     financialDocumentStatusId;
+    private String   financialDocumentStatusCode;
     private String   description;
     private Long     organizationId;
     private Long     financialPeriodId;
@@ -40,11 +41,11 @@ public class FinancialDocumentSaveDto {
         this.documentDate = documentDate;
     }
 
-    public Long getDocumentNumber() {
+    public String getDocumentNumber() {
         return documentNumber;
     }
 
-    public void setDocumentNumber(Long documentNumber) {
+    public void setDocumentNumber(String documentNumber) {
         this.documentNumber = documentNumber;
     }
 
@@ -70,6 +71,14 @@ public class FinancialDocumentSaveDto {
 
     public void setFinancialDocumentStatusId(Long financialDocumentStatusId) {
         this.financialDocumentStatusId = financialDocumentStatusId;
+    }
+
+    public String getFinancialDocumentStatusCode() {
+        return financialDocumentStatusCode;
+    }
+
+    public void setFinancialDocumentStatusCode(String financialDocumentStatusCode) {
+        this.financialDocumentStatusCode = financialDocumentStatusCode;
     }
 
     public String getDescription() {
@@ -131,11 +140,11 @@ public class FinancialDocumentSaveDto {
 
 
 
-    public Long getPermanentDocumentNumber() {
+    public String getPermanentDocumentNumber() {
         return permanentDocumentNumber;
     }
 
-    public void setPermanentDocumentNumber(Long permanentDocumentNumber) {
+    public void setPermanentDocumentNumber(String permanentDocumentNumber) {
         this.permanentDocumentNumber = permanentDocumentNumber;
     }
 
@@ -189,12 +198,12 @@ public class FinancialDocumentSaveDto {
             return this;
         }
 
-        public Builder permanentDocumentNumber(Long permanentDocumentNumber) {
+        public Builder permanentDocumentNumber(String permanentDocumentNumber) {
             financialDocumentSaveDto.setPermanentDocumentNumber(permanentDocumentNumber);
             return this;
         }
 
-        public Builder documentNumber(Long documentNumber) {
+        public Builder documentNumber(String documentNumber) {
             financialDocumentSaveDto.setDocumentNumber(documentNumber);
             return this;
         }
@@ -211,6 +220,11 @@ public class FinancialDocumentSaveDto {
 
         public Builder financialDocumentStatusId(Long financialDocumentStatusId) {
             financialDocumentSaveDto.setFinancialDocumentStatusId(financialDocumentStatusId);
+            return this;
+        }
+
+        public Builder financialDocumentStatusCode(String financialDocumentStatusCode) {
+            financialDocumentSaveDto.setFinancialDocumentStatusCode(financialDocumentStatusCode);
             return this;
         }
 
@@ -233,7 +247,6 @@ public class FinancialDocumentSaveDto {
             financialDocumentSaveDto.setFinancialPeriodDescription(financialPeriodDescription);
             return this;
         }
-
 
         public Builder financialLedgerTypeId(Long financialLedgerTypeId) {
             financialDocumentSaveDto.setFinancialLedgerTypeId(financialLedgerTypeId);

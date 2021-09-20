@@ -10,4 +10,6 @@ public interface FinancialDocumentStatusRepository extends JpaRepository<Financi
 
     @Query("select fds from FinancialDocumentStatus fds where fds.deletedDate is null")
     List<FinancialDocumentStatus> getFinancialDocumentStatusList();
+
+    FinancialDocumentStatus findFinancialDocumentStatusByCode(String financialDocumentStatusCode);
 }

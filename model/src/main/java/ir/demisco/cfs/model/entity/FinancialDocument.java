@@ -15,14 +15,14 @@ public class FinancialDocument  extends AuditModel<Long> {
     private Date documentDate;
     private String    description;
     private FinancialDocumentStatus  financialDocumentStatus;
-    private Long permanentDocumentNumber;
+    private String permanentDocumentNumber;
     private Boolean automaticFlag;
     private Organization organization;
     private FinancialDocumentType financialDocumentType;
     private FinancialPeriod financialPeriod;
     private FinancialLedgerType financialLedgerType;
     private FinancialDepartment financialDepartment;
-    private Long documentNumber;
+    private String documentNumber;
     private LocalDateTime DeletedDate;
 
 
@@ -64,11 +64,11 @@ public class FinancialDocument  extends AuditModel<Long> {
         this.financialDocumentStatus = financialDocumentStatus;
     }
 
-    public Long getPermanentDocumentNumber() {
+    public String getPermanentDocumentNumber() {
         return permanentDocumentNumber;
     }
 
-    public void setPermanentDocumentNumber(Long permanentDocumentNumber) {
+    public void setPermanentDocumentNumber(String permanentDocumentNumber) {
         this.permanentDocumentNumber = permanentDocumentNumber;
     }
 
@@ -129,11 +129,11 @@ public class FinancialDocument  extends AuditModel<Long> {
         this.financialDepartment = financialDepartment;
     }
 
-    public Long getDocumentNumber() {
+    public String getDocumentNumber() {
         return documentNumber;
     }
 
-    public void setDocumentNumber(Long documentNumber) {
+    public void setDocumentNumber(String documentNumber) {
         this.documentNumber = documentNumber;
     }
 

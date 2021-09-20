@@ -9,7 +9,7 @@ public class FinancialDocumentTransferDto {
     private List<Long> financialDocumentItemIdList;
     private int transferType;
     private Date date;
-    private Long documentNumber;
+    private String documentNumber;
     private Boolean allItemFlag;
 
     public Long getId() {
@@ -44,11 +44,11 @@ public class FinancialDocumentTransferDto {
         this.date = date;
     }
 
-    public Long getDocumentNumber() {
+    public String getDocumentNumber() {
         return documentNumber;
     }
 
-    public void setDocumentNumber(Long documentNumber) {
+    public void setDocumentNumber(String documentNumber) {
         this.documentNumber = documentNumber;
     }
 

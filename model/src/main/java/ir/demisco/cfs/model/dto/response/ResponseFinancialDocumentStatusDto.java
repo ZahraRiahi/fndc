@@ -4,6 +4,7 @@ public class ResponseFinancialDocumentStatusDto {
 
     private Long id;
     private Long financialDocumentStatusId;
+    private String financialDocumentStatusCode;
 
     public Long getId() {
         return id;
@@ -21,6 +22,14 @@ public class ResponseFinancialDocumentStatusDto {
         this.financialDocumentStatusId = financialDocumentStatusId;
     }
 
+    public String getFinancialDocumentStatusCode() {
+        return financialDocumentStatusCode;
+    }
+
+    public void setFinancialDocumentStatusCode(String financialDocumentStatusCode) {
+        this.financialDocumentStatusCode = financialDocumentStatusCode;
+    }
+
 
     public static final class Builder {
         private ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto;
@@ -29,7 +38,7 @@ public class ResponseFinancialDocumentStatusDto {
             responseFinancialDocumentStatusDto = new ResponseFinancialDocumentStatusDto();
         }
 
-        public static Builder aResponseFinancialDocumentStatusDto() {
+        public static Builder responseFinancialDocumentStatusDto() {
             return new Builder();
         }
 
@@ -40,6 +49,11 @@ public class ResponseFinancialDocumentStatusDto {
 
         public Builder financialDocumentStatusId(Long financialDocumentStatusId) {
             responseFinancialDocumentStatusDto.setFinancialDocumentStatusId(financialDocumentStatusId);
+            return this;
+        }
+
+        public Builder financialDocumentStatusCode(String financialDocumentStatusCode) {
+            responseFinancialDocumentStatusDto.setFinancialDocumentStatusCode(financialDocumentStatusCode);
             return this;
         }
 

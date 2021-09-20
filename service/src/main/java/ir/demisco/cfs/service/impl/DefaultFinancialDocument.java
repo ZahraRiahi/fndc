@@ -74,7 +74,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         .id(((BigDecimal) item[0]).longValue())
                         .documentDate((Date) item[1])
                         .description(item[2].toString())
-                        .documentNumber(Long.parseLong(item[3].toString()))
+                        .documentNumber(item[3].toString())
                         .financialDocumentTypeId(Long.parseLong(item[4].toString()))
                         .financialDocumentTypeDescription(item[5].toString())
                         .fullDescription(item[6].toString())
@@ -277,15 +277,25 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     public ResponseFinancialDocumentSetStatusDto changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
         ResponseFinancialDocumentSetStatusDto responseFinancialDocumentSetStatusDto = new ResponseFinancialDocumentSetStatusDto();
         FinancialDocument financialDocument = financialDocumentRepository.findById(responseFinancialDocumentStatusDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
-        List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = validationSetStatus(financialDocument);
-        if (financialDocumentErrorDtoList.isEmpty()) {
-            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(responseFinancialDocumentStatusDto.getFinancialDocumentStatusId()));
+        FinancialDocumentStatus financialDocumentStatus=
+                documentStatusRepository.findFinancialDocumentStatusByCode(responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode());
+        if(responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode().equals("20")) {
+            List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = validationSetStatus(financialDocument);
+            if (financialDocumentErrorDtoList.isEmpty()) {
+                financialDocument.setFinancialDocumentStatus(financialDocumentStatus);
+                financialDocumentRepository.save(financialDocument);
+                responseFinancialDocumentSetStatusDto = convertFinancialDocumentToDto(financialDocument);
+            } else {
+                responseFinancialDocumentSetStatusDto.setFinancialDocumentErrorDtoList(financialDocumentErrorDtoList);
+                responseFinancialDocumentSetStatusDto.setErrorFoundFlag(true);
+            }
+        }else{
+
+            financialDocument.setFinancialDocumentStatus(financialDocumentStatus);
             financialDocumentRepository.save(financialDocument);
             responseFinancialDocumentSetStatusDto = convertFinancialDocumentToDto(financialDocument);
-        } else {
-            responseFinancialDocumentSetStatusDto.setFinancialDocumentErrorDtoList(financialDocumentErrorDtoList);
-            responseFinancialDocumentSetStatusDto.setErrorFoundFlag(true);
         }
+
         return responseFinancialDocumentSetStatusDto;
     }
 
@@ -475,9 +485,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
-    public Long creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto) {
+    public String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Long documentNumber = financialDocumentRepository.getDocumentNumber(organizationId, financialDocumentNumberDto.getDate(),
+        String documentNumber = financialDocumentRepository.getDocumentNumber(organizationId, financialDocumentNumberDto.getDate(),
                 financialDocumentNumberDto.getFinancialPeriodId());
         if (documentNumber == null) {
             throw new RuleException(" شماره سند یافت نشد.");

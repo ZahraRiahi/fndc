@@ -10,7 +10,7 @@ public class FinancialDocumentDto {
     private String    description;
     private Long financialDocumentTypeId;
     private String financialDocumentTypeDescription;
-    private Long documentNumber;
+    private String documentNumber;
     private LocalDateTime deletedDate;
     private Long userId;
     private String userName;
@@ -59,11 +59,11 @@ public class FinancialDocumentDto {
         this.financialDocumentTypeDescription = financialDocumentTypeDescription;
     }
 
-    public Long getDocumentNumber() {
+    public String getDocumentNumber() {
         return documentNumber;
     }
 
-    public void setDocumentNumber(Long documentNumber) {
+    public void setDocumentNumber(String documentNumber) {
         this.documentNumber = documentNumber;
     }
 
@@ -156,7 +156,7 @@ public class FinancialDocumentDto {
             return this;
         }
 
-        public Builder documentNumber(Long documentNumber) {
+        public Builder documentNumber(String documentNumber) {
             financialDocumentDto.setDocumentNumber(documentNumber);
             return this;
         }
