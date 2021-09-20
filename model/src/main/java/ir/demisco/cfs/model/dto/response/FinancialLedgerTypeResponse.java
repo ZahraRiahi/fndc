@@ -9,6 +9,7 @@ public class FinancialLedgerTypeResponse {
     private String financialNumberingTypeDescription;
     private String financialCodingTypeDescription;
     private String financialLedgerType;
+    private String code;
 
     public Long getFinancialLedgerTypeId() {
         return financialLedgerTypeId;
@@ -69,6 +70,9 @@ public class FinancialLedgerTypeResponse {
     public void setFinancialCodingTypeDescription(String financialCodingTypeDescription) {
         this.financialCodingTypeDescription = financialCodingTypeDescription;
     }
+    public String getCode() { return code; }
+
+    public void setCode(String code) { this.code = code; }
 
     public static Builder builder() {
         return new Builder();
@@ -92,6 +96,10 @@ public class FinancialLedgerTypeResponse {
 
         public Builder description(String description) {
             financialLedgerTypeResponse.setDescription(description);
+            return this;
+        }
+        public Builder code(String code) {
+            financialLedgerTypeResponse.setCode(code);
             return this;
         }
 

@@ -15,6 +15,7 @@ public class FinancialLedgerType extends AuditModel<Long> {
     private Organization organization;
     private LocalDateTime DeletedDate;
     private boolean activeFlag;
+    private String code;
 
 
     @Override
@@ -70,5 +71,9 @@ public class FinancialLedgerType extends AuditModel<Long> {
         this.activeFlag = activeFlag;
     }
 
+    @Column(name = "CODE")
+    public String getCode() { return code; }
 
+    public void setCode(String code) { this.code = code;
+    }
 }

@@ -7,6 +7,7 @@ public class FinancialLedgerTypeDto {
     private Long id;
     private String description;
     private LocalDateTime DeletedDate;
+    private String code;
 
     public Long getId() {
         return id;
@@ -30,6 +31,14 @@ public class FinancialLedgerTypeDto {
 
     public void setDeletedDate(LocalDateTime deletedDate) {
         DeletedDate = deletedDate;
+    }
+
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 
     public static Builder builder() {
@@ -59,6 +68,10 @@ public class FinancialLedgerTypeDto {
 
         public Builder DeletedDate(LocalDateTime DeletedDate) {
             financialLedgerTypeDto.setDeletedDate(DeletedDate);
+            return this;
+        }
+        public Builder code(String code) {
+            financialLedgerTypeDto.setCode(code);
             return this;
         }
 
