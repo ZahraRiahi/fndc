@@ -57,7 +57,7 @@ public class FinancialDocumentListGridProvider  implements GridDataProvider {
                 .description((String) array[2])
                 .financialDocumentTypeId((Long) array[9])
                 .financialDocumentTypeDescription((String) array[10])
-                .documentNumber((Long) array[17])
+                .documentNumber(array[17].toString())
                 .deletedDate((LocalDateTime) array[18])
                 .build();
         }).collect(Collectors.toList());
