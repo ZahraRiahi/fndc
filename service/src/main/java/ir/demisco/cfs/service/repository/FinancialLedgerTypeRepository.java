@@ -19,6 +19,7 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
     @Query(value = "select" +
             "       fnlt.id," +
             "       fnlt.description," +
+            "       fnlt.code," +
             "       fnlt.financial_coding_type_id," +
             "       fnlt.active_flag," +
             "       fnct.description as financial_coding_type_Description," +
@@ -35,6 +36,7 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             "    and  ( :financialLedgerType is null or fnlt.id = :financialLedgerTypeId )" +
             "    group by   fnlt.id," +
             "       fnlt.description," +
+            "       fnlt.code," +
             "       fnlt.financial_coding_type_id," +
             "       fnlt.active_flag," +
             "       fnct.description"
