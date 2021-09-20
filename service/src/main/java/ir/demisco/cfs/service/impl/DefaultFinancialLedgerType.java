@@ -152,6 +152,9 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     public Boolean insertFinancialLedgerType(FinancialLedgerTypeRequest financialLedgerTypeRequest) {
         FinancialLedgerType financialLedgerTypeNew = new FinancialLedgerType();
         financialLedgerTypeNew.setDescription(financialLedgerTypeRequest.getDescription());
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        String financialLedgerTypeCodeByOrganizationId = financialLedgerTypeRepository.findFinancialLedgerTypeCodeByOrganizationId(organizationId);
+        financialLedgerTypeNew.setCode(financialLedgerTypeCodeByOrganizationId);
         Long financialCodingTypeId = financialLedgerTypeRequest.getFinancialCodingTypeId();
         Optional<FinancialCodingType> financialCodingType = financialCodingTypeRepository.findById(financialCodingTypeId);
         if (financialCodingType.isPresent()) {
