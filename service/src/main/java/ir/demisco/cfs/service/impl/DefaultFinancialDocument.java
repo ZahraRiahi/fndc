@@ -22,6 +22,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
 @Service
@@ -37,12 +38,16 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final EntityManager entityManager;
     private final CentricAccountRepository centricAccountRepository;
     private final AccountDefaultValueRepository accountDefaultValueRepository;
+    private final FinancialNumberingFormatRepository financialNumberingFormatRepository;
+    private final NumberingFormatSerialRepository numberingFormatSerialRepository;
+    private final FinancialDocumentNumberRepository financialDocumentNumberRepository;
+    private final FinancialNumberingTypeRepository financialNumberingTypeRepository;
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
                                     FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                     FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
-                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository) {
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -52,6 +57,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.entityManager = entityManager;
         this.centricAccountRepository = centricAccountRepository;
         this.accountDefaultValueRepository = accountDefaultValueRepository;
+        this.financialNumberingFormatRepository = financialNumberingFormatRepository;
+        this.numberingFormatSerialRepository = numberingFormatSerialRepository;
+        this.financialDocumentNumberRepository = financialDocumentNumberRepository;
+        this.financialNumberingTypeRepository = financialNumberingTypeRepository;
     }
 
 
@@ -479,20 +488,59 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 .description(financialDocument.getDescription())
                 .debitAmount(((BigDecimal) objects.get(0)[0]).doubleValue())
                 .creditAmount(((BigDecimal) objects.get(0)[1]).doubleValue())
-                .fullDescription(objects.get(0)[2].toString())
+                .fullDescription(objects.get(0)[2] == null ? null:objects.get(0)[2].toString())
                 .build();
     }
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto) {
+        List<FinancialNumberingRecordDto> financialNumberingRecordDtoList=new ArrayList<>();
+        AtomicReference<String> documentNumber=new AtomicReference<>("");
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        String documentNumber = financialDocumentRepository.getDocumentNumber(organizationId, financialDocumentNumberDto.getDate(),
-                financialDocumentNumberDto.getFinancialPeriodId());
-        if (documentNumber == null) {
-            throw new RuleException(" شماره سند یافت نشد.");
+        List<Object[]> list=financialDocumentRepository.getSerialNumber(organizationId,financialDocumentNumberDto.getFinancialDocumentId(),financialDocumentNumberDto.getNumberingType());
+        if(!list.isEmpty()){
+            list.forEach(objects -> {
+                NumberingFormatSerial numberingFormatSerial=new NumberingFormatSerial();
+                FinancialNumberingFormat financialNumberingFormat=
+                        financialNumberingFormatRepository.findById(Long.parseLong(objects[0].toString())).orElseThrow(() -> new RuleException("فرمتشماره گذاری یافت نشد"));;
+                numberingFormatSerial.setFinancialNumberingFormat(financialNumberingFormat);
+                numberingFormatSerial.setLastSerial(Long.parseLong(objects[1].toString()));
+                numberingFormatSerial.setSerialReseter(objects[2].toString());
+                numberingFormatSerial.setSerialLength(Long.parseLong(objects[3].toString()));
+                numberingFormatSerialRepository.save(numberingFormatSerial);
+
+            });
         }
-        return documentNumber;
+        List<NumberingFormatSerial> numberingFormatSerialList=
+                numberingFormatSerialRepository.findNumberingFormatSerialByParam(organizationId,financialDocumentNumberDto.getFinancialDocumentId(),financialDocumentNumberDto.getNumberingType());
+        numberingFormatSerialList.forEach(numberingFormatSerial -> {
+            numberingFormatSerial.setLastSerial(numberingFormatSerial.getLastSerial() +1);
+            numberingFormatSerialRepository.save(numberingFormatSerial);
+
+        });
+        List<Object[]> listDocumentNumber=
+                financialDocumentRepository.findDocumentNumber(organizationId,financialDocumentNumberDto.getFinancialDocumentId(),financialDocumentNumberDto.getNumberingType());
+        listDocumentNumber.forEach(documentNumberObject -> {
+            FinancialDocumentNumber financialDocumentNumber=new FinancialDocumentNumber();
+            FinancialNumberingRecordDto financialNumberingRecordDto=new FinancialNumberingRecordDto();
+            financialNumberingRecordDto.setFinancialDocumentId(financialDocumentNumberDto.getFinancialDocumentId());
+            financialNumberingRecordDto.setNumberingTypeId(Long.parseLong(documentNumberObject[0].toString()));
+            financialNumberingRecordDto.setFinancialDocumentNumber(documentNumberObject[1].toString());
+            financialDocumentNumber.setFinancialDocument(financialDocumentRepository.getOne(financialNumberingRecordDto.getFinancialDocumentId()));
+            financialDocumentNumber.setFinancialNumberingType(
+                    financialNumberingTypeRepository.getOne(financialNumberingRecordDto.getNumberingTypeId()));
+            financialDocumentNumber.setDocumentNumber(financialNumberingRecordDto.getFinancialDocumentNumber());
+            financialDocumentNumberRepository.save(financialDocumentNumber);
+            financialNumberingRecordDtoList.add(financialNumberingRecordDto);
+
+        });
+        financialNumberingRecordDtoList.forEach(record ->{
+            if(record.getNumberingTypeId()==2){
+                documentNumber.set(record.getFinancialDocumentNumber());
+            }
+        });
+        return documentNumber.get();
     }
 
     @Override

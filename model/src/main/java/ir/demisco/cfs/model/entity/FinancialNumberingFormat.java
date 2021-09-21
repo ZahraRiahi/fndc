@@ -36,7 +36,7 @@ public class FinancialNumberingFormat extends AuditModel<Long> {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FINANCIAL_NUMBERING_FORMAT_TYPE_ID")
+    @JoinColumn(name = "NUMBERING_FORMAT_TYPE_ID")
     public FinancialNumberingFormatType getFinancialNumberingFormatType() {
         return financialNumberingFormatType;
     }
