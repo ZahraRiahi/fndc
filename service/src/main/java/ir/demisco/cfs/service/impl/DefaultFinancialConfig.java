@@ -49,12 +49,13 @@ public class DefaultFinancialConfig implements FinancialConfigService {
     @Transactional(rollbackFor = Throwable.class)
     public Boolean saveOrUpdateFinancialConfig(FinancialConfigRequest financialConfigRequest) {
         FinancialConfig financialConfig = financialConfigRepository.findById(financialConfigRequest.getId() == null ? 0 : financialConfigRequest.getId()).orElse(new FinancialConfig());
+
+        if (financialConfig.getId() != null) {
+            financialConfig.setDeletedDate(LocalDateTime.now());
+        }
         Long financialAccountStructureCount = financialConfigRepository.getCountByFinancialConfigAndOrganizationAndUser(financialConfigRequest.getOrganizationId(),financialConfigRequest.getUserId());
         if (financialAccountStructureCount > 0) {
             throw new RuleException("برای این کاربر در این سازمان قبلا رکوردی ثبت شده است");
-        }
-        if (financialConfig.getId() != null) {
-            financialConfig.setDeletedDate(LocalDateTime.now());
         }
         FinancialConfig financialConfigNew = new FinancialConfig();
         financialConfigNew.setOrganization(organizationRepository.getOne(100L));
