@@ -126,4 +126,101 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
 
     @Query("select fd from FinancialDocument fd where fd.documentNumber = :documentNumber and fd.deletedDate is null")
     FinancialDocument getFinancialDocumentByDocumentNumber(String documentNumber);
+
+    @Query(value = " SELECT " +
+            "         NF_ID, " +
+            "         FIRST_SERIAL, " +
+            "         TRANSLATED_RESETER, " +
+            "         NF_SERIAL_LENGTH, " +
+            "         1 SERIAL_RESETER " +
+            "    FROM (SELECT NF.ID NF_ID, " +
+            "                 NF.FIRST_SERIAL - 1 FIRST_SERIAL, " +
+            "                 REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(NF.RESETER,'$DAT'," +
+            "                              TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE,'mm/dd/yyyy'),'mm/dd/yyyy'),'yyyymmdd', " +
+            "                                                                 'NLS_CALENDAR=persian')),'$LEG', " +
+            "                                                 (SELECT LT.CODE " +
+            "                                                    FROM fndc.FINANCIAL_LEDGER_TYPE LT " +
+            "                                                   WHERE LT.ID = " +
+            "                                                         FD.FINANCIAL_LEDGER_TYPE_ID)),'$DEP', " +
+            "                                         (SELECT DP.CODE " +
+            "                                            FROM FNDC.FINANCIAL_DEPARTMENT DP " +
+            "                                           WHERE DP.ID =FD.FINANCIAL_DEPARTMENT_ID)), '$ORG', " +
+            "                                 (SELECT OG.CODE " +
+            "                                    FROM FNDC.FINANCIAL_ORGANIZATION OG " +
+            "                                   WHERE OG.ORGANIZATION_ID =:organizationId)), '$PRI'," +
+            "                         (SELECT PR.CODE " +
+            "                            FROM FNPR.FINANCIAL_PERIOD PR " +
+            "                           WHERE PR.ID = FD.FINANCIAL_PERIOD_ID)) TRANSLATED_RESETER, " +
+            "                 NF.SERIAL_LENGTH NF_SERIAL_LENGTH " +
+            "            FROM fndc.FINANCIAL_DOCUMENT FD " +
+            "           INNER JOIN fndc.LEDGER_NUMBERING_TYPE LNT " +
+            "              ON LNT.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
+            "             AND LNT.DELETED_DATE IS NULL " +
+            "           INNER JOIN fndc.FINANCIAL_NUMBERING_TYPE NT " +
+            "              ON NT.ID = LNT.FINANCIAL_NUMBERING_TYPE_ID " +
+            "              AND NT.TYPE_STATUS = :numberingType" +
+            "             AND NT.DELETED_DATE IS NULL " +
+            "           INNER JOIN fndc.FINANCIAL_NUMBERING_FORMAT NF " +
+            "              ON NF.FINANCIAL_NUMBERING_TYPE_ID = NT.ID " +
+            "             AND NF.ORGANIZATION_ID = :organizationId" +
+            "             AND NF.DELETED_DATE IS NULL " +
+            "           WHERE FD.ID = :FinancialDocumentId" +
+            "             AND FD.DELETED_DATE IS NULL) " +
+            "    LEFT OUTER JOIN fndc.NUMBERING_FORMAT_SERIAL NFS " +
+            "      ON NFS.NUMBERING_FORMAT_ID = NF_ID " +
+            "     AND SERIAL_RESETER = TRANSLATED_RESETER " +
+            "     AND NFS.DELETED_DATE IS NULL " +
+            "     AND NFS.SERIAL_LENGTH = NF_SERIAL_LENGTH " +
+            "   WHERE NOT EXISTS (SELECT 1 " +
+            "            FROM fndc.NUMBERING_FORMAT_SERIAL NFS " +
+            "           WHERE NFS.NUMBERING_FORMAT_ID = NF_ID " +
+            "             AND SERIAL_RESETER = TRANSLATED_RESETER " +
+            "             AND NFS.DELETED_DATE IS NULL " +
+            "             AND NFS.SERIAL_LENGTH = NF_SERIAL_LENGTH) ", nativeQuery = true)
+    List<Object[]> getSerialNumber(Long organizationId,Long FinancialDocumentId,Long numberingType);
+
+    @Query(value ="SELECT NUMBERING_TYPE_ID," +
+            "         REPLACE(GENERATED_COD,'$SRL'," +
+            " LPAD(TO_CHAR(LAST_SERIAL), SERIAL_LENGTH,'0')) Final_Document_Number " +
+            "    FROM (SELECT NFS.ID NUMBERING_FORMAT_SERIAL_ID, " +
+            "                 NT.ID NUMBERING_TYPE_ID, " +
+            "                 NT.DESCRIPTION NUMBERING_TYPE_DESCRIPTION, " +
+            "                 NFT.ID NUMBERING_FORMAT_TYPE_ID, " +
+            "                 NFT.DESCRIPTION NUMBERING_FORMAT_TYPE_DESCRIPTION, " +
+            "                 NFT.CODE, " +
+            "                 NF.SERIAL_LENGTH, " +
+            "                 LAST_SERIAL, " +
+            "                 NFT.CODE FORMAT_CODE, " +
+            "                 REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(NFT.CODE,'$DAT', " +
+            "                         TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE, 'mm/dd/yyyy')," +
+            "                                'mm/dd/yyyy'),'yyyymmdd','NLS_CALENDAR=persian')),'$LEG', " +
+            "                        (SELECT LT.CODE FROM fndc.FINANCIAL_LEDGER_TYPE LT " +
+            "                                WHERE LT.ID =FD.FINANCIAL_LEDGER_TYPE_ID)),'$DEP', " +
+            "                        (SELECT DP.CODE  FROM FNDC.FINANCIAL_DEPARTMENT DP " +
+            "                                WHERE DP.ID =FD.FINANCIAL_DEPARTMENT_ID)),'$ORG', " +
+            "                        (SELECT OG.CODE  FROM FNDC.FINANCIAL_ORGANIZATION OG " +
+            "                                WHERE OG.ORGANIZATION_ID = :organizationId )),'$PRI', " +
+            "                        (SELECT PR.CODE  FROM FNPR.FINANCIAL_PERIOD PR " +
+            "                           WHERE PR.ID = FD.FINANCIAL_PERIOD_ID)) GENERATED_COD " +
+            "            FROM fndc.FINANCIAL_DOCUMENT FD " +
+            "           INNER JOIN fndc.LEDGER_NUMBERING_TYPE LNT " +
+            "              ON LNT.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
+            "             AND LNT.DELETED_DATE IS NULL " +
+            "           INNER JOIN fndc.FINANCIAL_NUMBERING_TYPE NT " +
+            "              ON NT.ID = LNT.FINANCIAL_NUMBERING_TYPE_ID " +
+            "              AND NT.TYPE_STATUS = :numberingType " +
+            "             AND NT.DELETED_DATE IS NULL " +
+            "           INNER JOIN fndc.FINANCIAL_NUMBERING_FORMAT NF " +
+            "              ON NF.FINANCIAL_NUMBERING_TYPE_ID = NT.ID " +
+            "             AND NF.ORGANIZATION_ID = :organizationId" +
+            "             AND NF.DELETED_DATE IS NULL " +
+            "           INNER JOIN fndc.FINANCIAL_NUMBERING_FORMAT_TYPE NFT " +
+            "              ON NFT.ID = NF.NUMBERING_FORMAT_TYPE_ID " +
+            "             AND NFT.DELETED_DATE IS NULL " +
+            "            LEFT OUTER JOIN fndc.NUMBERING_FORMAT_SERIAL NFS " +
+            "              ON NFS.NUMBERING_FORMAT_ID = NF.ID " +
+            "             AND NFS.DELETED_DATE IS NULL " +
+            "           WHERE FD.ID = :FinancialDocumentId " +
+            "             AND FD.DELETED_DATE IS NULL) ",nativeQuery = true)
+    List<Object[]> findDocumentNumber(Long organizationId,Long FinancialDocumentId,Long numberingType);
 }
