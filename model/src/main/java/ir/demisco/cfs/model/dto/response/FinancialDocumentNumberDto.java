@@ -6,24 +6,8 @@ public class FinancialDocumentNumberDto {
 
     private Long financialDocumentId;
     private Long numberingType;
-    private LocalDateTime date;
-    private Long financialPeriodId;
+    private Long organizationId;
 
-    public LocalDateTime getDate() {
-        return date;
-    }
-
-    public void setDate(LocalDateTime date) {
-        this.date = date;
-    }
-
-    public Long getFinancialPeriodId() {
-        return financialPeriodId;
-    }
-
-    public void setFinancialPeriodId(Long financialPeriodId) {
-        this.financialPeriodId = financialPeriodId;
-    }
 
     public Long getFinancialDocumentId() {
         return financialDocumentId;
@@ -39,5 +23,13 @@ public class FinancialDocumentNumberDto {
 
     public void setNumberingType(Long numberingType) {
         this.numberingType = numberingType;
+    }
+
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 }
