@@ -51,6 +51,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         List<FinancialLedgerType> financialLedgerType = financialLedgerTypeRepository.findFinancialLedgerTypeByOrganizationId(organizationId);
         return financialLedgerType.stream().map(e -> FinancialLedgerTypeDto.builder().id(e.getId())
                 .description(e.getDescription())
+                .code(e.getCode())
                 .build()).collect(Collectors.toList());
     }
 
@@ -70,10 +71,11 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                 FinancialLedgerTypeResponse.builder()
                         .financialLedgerTypeId(Long.parseLong(item[0].toString()))
                         .description(item[1] == null ? "" : item[1].toString())
-                        .financialCodingTypeId(Long.parseLong(item[2].toString()))
-                        .activeFlag(Integer.parseInt(item[3].toString()) == 1)
-                        .financialCodingTypeDescription(item[4] == null ? "" : item[4].toString())
-                        .financialNumberingTypeDescription(item[5] == null ? "" : item[5].toString())
+                        .code(item[2] == null ? "" : item[2].toString())
+                        .financialCodingTypeId(Long.parseLong(item[3].toString()))
+                        .activeFlag(Integer.parseInt(item[4].toString()) == 1)
+                        .financialCodingTypeDescription(item[5] == null ? "" : item[5].toString())
+                        .financialNumberingTypeDescription(item[6] == null ? "" : item[6].toString())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialLedgerTypeResponses);
@@ -150,6 +152,9 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     public Boolean insertFinancialLedgerType(FinancialLedgerTypeRequest financialLedgerTypeRequest) {
         FinancialLedgerType financialLedgerTypeNew = new FinancialLedgerType();
         financialLedgerTypeNew.setDescription(financialLedgerTypeRequest.getDescription());
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        String financialLedgerTypeCodeByOrganizationId = financialLedgerTypeRepository.findFinancialLedgerTypeCodeByOrganizationId(organizationId);
+        financialLedgerTypeNew.setCode(financialLedgerTypeCodeByOrganizationId);
         Long financialCodingTypeId = financialLedgerTypeRequest.getFinancialCodingTypeId();
         Optional<FinancialCodingType> financialCodingType = financialCodingTypeRepository.findById(financialCodingTypeId);
         if (financialCodingType.isPresent()) {

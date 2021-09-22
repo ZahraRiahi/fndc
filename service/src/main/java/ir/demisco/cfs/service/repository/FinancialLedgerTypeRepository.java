@@ -19,6 +19,7 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
     @Query(value = "select" +
             "       fnlt.id," +
             "       fnlt.description," +
+            "       fnlt.code," +
             "       fnlt.financial_coding_type_id," +
             "       fnlt.active_flag," +
             "       fnct.description as financial_coding_type_Description," +
@@ -35,10 +36,18 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             "    and  ( :financialLedgerType is null or fnlt.id = :financialLedgerTypeId )" +
             "    group by   fnlt.id," +
             "       fnlt.description," +
+            "       fnlt.code," +
             "       fnlt.financial_coding_type_id," +
             "       fnlt.active_flag," +
             "       fnct.description"
             , nativeQuery = true)
     Page<Object[]> financialLedgerTypeList(Long organizationId, Long financialCodingTypeId, String financialCodingType, Long financialLedgerTypeId, String financialLedgerType, Pageable pageable);
+
+
+    @Query(value = " SELECT to_char(nvl(max(to_number(t.code)), 10) + 1) from" +
+            " fndc.financial_ledger_type t where t.organization_id =:organizationId" +
+            " and t.deleted_date is null", nativeQuery = true)
+   String   findFinancialLedgerTypeCodeByOrganizationId(Long organizationId) ;
+
 
 }
