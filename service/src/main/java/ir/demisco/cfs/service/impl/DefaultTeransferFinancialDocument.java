@@ -183,8 +183,9 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
                 throw new RuleException("دوره / ماه عملیاتی در تاریخ انتخاب شده  میبایست در وضعیت باز باشد.");
             }else{
                 FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
-                financialDocumentNumberDto.setDate(financialDocumentTransferDto.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-                financialDocumentNumberDto.setFinancialPeriodId(financialPeriodList.get(0).getId());
+                financialDocumentNumberDto.setFinancialDocumentId(updateFinancialDocument.getId());
+                financialDocumentNumberDto.setOrganizationId(updateFinancialDocument.getOrganization().getId());
+                financialDocumentNumberDto.setNumberingType(1L);
                 updateFinancialDocument.setDocumentDate(financialDocumentTransferDto.getDate());
                 updateFinancialDocument.setFinancialPeriod(financialPeriodRepository.getOne(financialPeriodList.get(0).getId()));
                 updateFinancialDocument.setDocumentNumber(financialDocumentService.creatDocumentNumber(financialDocumentNumberDto));

@@ -69,8 +69,17 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList = new ArrayList<>();
         List<FinancialDocumentReferenceDto> documentReferenceList = new ArrayList<>();
         List<FinancialDocumentItemCurrencyDto> responseDocumentItemCurrencyList = new ArrayList<>();
+        FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
+        String documentNumber;
 
         FinancialDocument financialDocument = saveFinancialDocument(requestFinancialDocumentSaveDto);
+
+        financialDocumentNumberDto.setOrganizationId(financialDocument.getOrganization().getId());
+        financialDocumentNumberDto.setFinancialDocumentId(financialDocument.getId());
+        financialDocumentNumberDto.setNumberingType(1L);
+        documentNumber=financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+        financialDocument.setDocumentNumber(documentNumber);
+        financialDocumentRepository.save(financialDocument);
         responseDocumentSaveDto = convertDocumentToDto(financialDocument);
         requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().forEach(documentItem -> {
             FinancialDocumentItem financialDocumentItem = saveFinancialDocumentItem(financialDocument, documentItem);
@@ -320,9 +329,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
     private FinancialDocument saveFinancialDocument(FinancialDocumentSaveDto financialDocumentSaveDto) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
-        financialDocumentNumberDto.setDate(financialDocumentSaveDto.getDocumentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-        financialDocumentNumberDto.setFinancialPeriodId(financialDocumentSaveDto.getFinancialPeriodId());
+
         if (financialDocumentSaveDto.getFinancialDocumentItemDtoList().isEmpty()) {
             throw new RuleException("لطفا یک ردیف وارد کنید.");
         }
@@ -337,7 +344,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocument.setFinancialPeriod(financialPeriodRepository.getOne(financialDocumentSaveDto.getFinancialPeriodId()));
         financialDocument.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialDocumentSaveDto.getFinancialLedgerTypeId()));
         financialDocument.setFinancialDepartment(financialDepartmentRepository.getOne(financialDocumentSaveDto.getDepartmentId()));
-        financialDocument.setDocumentNumber(financialDocumentService.creatDocumentNumber(financialDocumentNumberDto));
+        financialDocument.setDocumentNumber("9999");
         return financialDocumentRepository.save(financialDocument);
     }
 
@@ -346,9 +353,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         FinancialDocument financialDocument = financialDocumentRepository.
                 findById(requestFinancialDocumentSaveDto.getFinancialDocumentId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
-        FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
-        financialDocumentNumberDto.setDate(requestFinancialDocumentSaveDto.getDocumentDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime());
-        financialDocumentNumberDto.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
         financialDocument.setDocumentDate(requestFinancialDocumentSaveDto.getDocumentDate());
         financialDocument.setDescription(requestFinancialDocumentSaveDto.getDescription());
         financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDocumentStatusId()));
@@ -358,7 +362,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocument.setFinancialPeriod(financialPeriodRepository.getOne(requestFinancialDocumentSaveDto.getFinancialPeriodId()));
         financialDocument.setFinancialLedgerType(financialLedgerTypeRepository.getOne(requestFinancialDocumentSaveDto.getFinancialLedgerTypeId()));
         financialDocument.setFinancialDepartment(financialDepartmentRepository.getOne(requestFinancialDocumentSaveDto.getDepartmentId()));
-        financialDocument.setDocumentNumber(financialDocumentService.creatDocumentNumber(financialDocumentNumberDto));
+        financialDocument.setDocumentNumber(financialDocument.getDocumentNumber());
         return financialDocumentRepository.save(financialDocument);
     }
 
