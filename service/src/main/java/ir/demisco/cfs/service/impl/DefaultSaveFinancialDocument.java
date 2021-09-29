@@ -76,8 +76,10 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
         financialDocumentNumberDto.setOrganizationId(financialDocument.getOrganization().getId());
         financialDocumentNumberDto.setFinancialDocumentId(financialDocument.getId());
+        
         financialDocumentNumberDto.setNumberingType(1L);
         documentNumber=financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+
         financialDocument.setDocumentNumber(documentNumber);
         financialDocumentRepository.save(financialDocument);
         responseDocumentSaveDto = convertDocumentToDto(financialDocument);
@@ -130,12 +132,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private FinancialDocumentItem saveFinancialDocumentItem(FinancialDocument financialDocument, ResponseFinancialDocumentItemDto documentItem) {
 
         FinancialDocumentItem financialDocumentItem = new FinancialDocumentItem();
-
-        FinancialDocumentItem item=financialDocumentItemRepository.findBySequence(financialDocument.getId(),documentItem.getSequenceNumber());
-        if(item != null){
-            throw new RuleException("شماره ردیف تکراری است.");
-        }
-
         financialDocumentItem.setFinancialDocument(financialDocument);
         financialDocumentItem.setSequenceNumber(documentItem.getSequenceNumber());
         financialDocumentItem.setDebitAmount(documentItem.getDebitAmount());
