@@ -132,12 +132,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private FinancialDocumentItem saveFinancialDocumentItem(FinancialDocument financialDocument, ResponseFinancialDocumentItemDto documentItem) {
 
         FinancialDocumentItem financialDocumentItem = new FinancialDocumentItem();
-
-        FinancialDocumentItem item=financialDocumentItemRepository.findBySequence(financialDocument.getId(),documentItem.getSequenceNumber());
-        if(item != null){
-            throw new RuleException("شماره ردیف تکراری است.");
-        }
-
         financialDocumentItem.setFinancialDocument(financialDocument);
         financialDocumentItem.setSequenceNumber(documentItem.getSequenceNumber());
         financialDocumentItem.setDebitAmount(documentItem.getDebitAmount());
