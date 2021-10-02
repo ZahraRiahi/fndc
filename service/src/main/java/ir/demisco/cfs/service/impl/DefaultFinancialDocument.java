@@ -288,7 +288,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         FinancialDocument financialDocument = financialDocumentRepository.findById(responseFinancialDocumentStatusDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
         FinancialDocumentStatus financialDocumentStatus=
                 documentStatusRepository.findFinancialDocumentStatusByCode(responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode());
-        if(responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode().equals("20")) {
+        if(responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode().equals("20") ||
+           responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode().equals("30")) {
             List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = validationSetStatus(financialDocument);
             if (financialDocumentErrorDtoList.isEmpty()) {
                 financialDocument.setFinancialDocumentStatus(financialDocumentStatus);
