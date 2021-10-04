@@ -721,7 +721,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialDocument == null) {
             throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
         } else {
-            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialCentricAccountDto.getId());
+            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentItemIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
             financialDocumentItemList.forEach(documentItem -> {
                 documentItem.setCreditAmount(0D);
                 documentItem.setDebitAmount(0D);
