@@ -1,9 +1,12 @@
 package ir.demisco.cfs.model.dto.response;
 
+import java.util.List;
+
 public class FinancialCentricAccountDto {
 
     private Long id;
     private Long accountId;
+    private List<Long> financialDocumentItemIdList;
     private Long centricAccountId;
     private Long newCentricAccountId;
 
@@ -21,6 +24,14 @@ public class FinancialCentricAccountDto {
 
     public void setAccountId(Long accountId) {
         this.accountId = accountId;
+    }
+
+    public List<Long> getFinancialDocumentItemIdList() {
+        return financialDocumentItemIdList;
+    }
+
+    public void setFinancialDocumentItemIdList(List<Long> financialDocumentItemIdList) {
+        this.financialDocumentItemIdList = financialDocumentItemIdList;
     }
 
     public Long getCentricAccountId() {
