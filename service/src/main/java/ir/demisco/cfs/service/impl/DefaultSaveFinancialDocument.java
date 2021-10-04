@@ -76,8 +76,10 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
         financialDocumentNumberDto.setOrganizationId(financialDocument.getOrganization().getId());
         financialDocumentNumberDto.setFinancialDocumentId(financialDocument.getId());
+        
         financialDocumentNumberDto.setNumberingType(1L);
         documentNumber=financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+
         financialDocument.setDocumentNumber(documentNumber);
         financialDocumentRepository.save(financialDocument);
         responseDocumentSaveDto = convertDocumentToDto(financialDocument);
@@ -129,17 +131,21 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
     private FinancialDocumentItem saveFinancialDocumentItem(FinancialDocument financialDocument, ResponseFinancialDocumentItemDto documentItem) {
 
+        double creditAmount = documentItem.getCreditAmount() % 1;
+        double debitAmount = documentItem.getDebitAmount() % 1;
         FinancialDocumentItem financialDocumentItem = new FinancialDocumentItem();
-
-        FinancialDocumentItem item=financialDocumentItemRepository.findBySequence(financialDocument.getId(),documentItem.getSequenceNumber());
-        if(item != null){
-            throw new RuleException("شماره ردیف تکراری است.");
-        }
-
         financialDocumentItem.setFinancialDocument(financialDocument);
         financialDocumentItem.setSequenceNumber(documentItem.getSequenceNumber());
-        financialDocumentItem.setDebitAmount(documentItem.getDebitAmount());
-        financialDocumentItem.setCreditAmount(documentItem.getCreditAmount());
+        if ((creditAmount != 000)) {
+            financialDocumentItem.setCreditAmount(Math.ceil(documentItem.getCreditAmount()));
+        }else{
+            financialDocumentItem.setCreditAmount(documentItem.getCreditAmount());
+        }
+        if ((debitAmount != 000)) {
+            financialDocumentItem.setDebitAmount(Math.ceil(documentItem.getDebitAmount()));
+        }else{
+            financialDocumentItem.setDebitAmount(documentItem.getDebitAmount());
+        }
         financialDocumentItem.setDescription(documentItem.getDescription());
         financialDocumentItem.setFinancialAccount(financialAccountRepository.getOne(documentItem.getFinancialAccountId()));
         if (documentItem.getCentricAccountId1() != null) {
@@ -302,9 +308,23 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private void updateFinancialDocumentItem(FinancialDocumentItem financialDocumentItem, ResponseFinancialDocumentItemDto responseFinancialDocumentItemDto) {
+
+        double creditAmount = responseFinancialDocumentItemDto.getCreditAmount() % 1;
+        double debitAmount = responseFinancialDocumentItemDto.getDebitAmount() % 1;
+
         financialDocumentItem.setSequenceNumber(responseFinancialDocumentItemDto.getSequenceNumber());
-        financialDocumentItem.setDebitAmount(responseFinancialDocumentItemDto.getDebitAmount());
-        financialDocumentItem.setCreditAmount(responseFinancialDocumentItemDto.getCreditAmount());
+
+        if ((creditAmount != 000)) {
+            financialDocumentItem.setCreditAmount(Math.ceil(responseFinancialDocumentItemDto.getCreditAmount()));
+        }else{
+            financialDocumentItem.setCreditAmount(responseFinancialDocumentItemDto.getCreditAmount());
+        }
+        if ((debitAmount != 000)) {
+            financialDocumentItem.setDebitAmount(Math.ceil(responseFinancialDocumentItemDto.getDebitAmount()));
+        }else{
+            financialDocumentItem.setDebitAmount(responseFinancialDocumentItemDto.getDebitAmount());
+        }
+
         financialDocumentItem.setDescription(responseFinancialDocumentItemDto.getDescription());
         financialDocumentItem.setFinancialAccount(financialAccountRepository.getOne(responseFinancialDocumentItemDto.getFinancialAccountId()));
         if(responseFinancialDocumentItemDto.getCentricAccountId1() != null) {
@@ -393,7 +413,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .id(financialDocumentItem.getId())
                 .sequenceNumber(financialDocumentItem.getSequenceNumber())
                 .financialAccountId(financialDocumentItem.getFinancialAccount().getId())
-                .financialAccountDescription(financialDocumentItem.getFinancialAccount().getDescription())
+                .financialAccountDescription(financialDocumentItem.getFinancialAccount().getDescription() == null ? null :financialDocumentItem.getFinancialAccount().getDescription())
                 .debitAmount(financialDocumentItem.getDebitAmount())
                 .creditAmount(financialDocumentItem.getCreditAmount())
                 .description(financialDocumentItem.getDescription())

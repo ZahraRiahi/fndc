@@ -17,7 +17,6 @@ public class FinancialAccount extends AuditModel<Long> {
     private String description;
     private String latinDescription;
     private AccountNatureType accountNatureType;
-    private Boolean permanentFlag;
     private Boolean relatedToOthersFlag;
     private AccountRelationType accountRelationType;
     private FinancialAccount financialAccountParent;
@@ -28,6 +27,7 @@ public class FinancialAccount extends AuditModel<Long> {
     private FinancialAccount accountAdjustment;
     private LocalDateTime deletedDate;
     private Boolean hasChild;
+    private AccountStatus accountStatus;
 
     @Id
     public Long getId() {
@@ -102,15 +102,6 @@ public class FinancialAccount extends AuditModel<Long> {
 
     public void setAccountNatureType(AccountNatureType accountNatureType) {
         this.accountNatureType = accountNatureType;
-    }
-
-    @Column(name = "PERMANENT_FLAG")
-    public Boolean getPermanentFlag() {
-        return permanentFlag;
-    }
-
-    public void setPermanentFlag(Boolean permanentFlag) {
-        this.permanentFlag = permanentFlag;
     }
 
     @Column(name = "RELATED_TO_OTHERS_FLAG")
@@ -195,6 +186,16 @@ public class FinancialAccount extends AuditModel<Long> {
 
     public void setDeletedDate(LocalDateTime deletedDate) {
         this.deletedDate = deletedDate;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ACCOUNT_STATUS_ID")
+    public AccountStatus getAccountStatus() {
+        return accountStatus;
+    }
+
+    public void setAccountStatus(AccountStatus accountStatus) {
+        this.accountStatus = accountStatus;
     }
 
     @Transient
