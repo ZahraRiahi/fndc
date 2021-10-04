@@ -643,7 +643,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         CentricAccount newCentricAccount = centricAccountRepository.findById(financialCentricAccountDto.getNewCentricAccountId()).orElseThrow(() -> new RuleException("کد تمرکز یافت نشد."));
         if (centricAccount.getCentricAccountType().getId().equals(newCentricAccount.getCentricAccountType().getId())) {
             List<FinancialDocumentItem> financialDocumentItemList =
-                    financialDocumentItemRepository.getByDocumentIdAndCentricAccount(document.getId(), financialCentricAccountDto.getAccountId(), financialCentricAccountDto.getNewCentricAccountId());
+                    financialDocumentItemRepository.getByDocumentIdAndCentricAccount(financialCentricAccountDto.getFinancialDocumentItemIdList(),financialCentricAccountDto.getNewCentricAccountId());
             if (financialDocumentItemList.isEmpty()) {
                 throw new RuleException("ردیفی یافت نشد.");
             }
@@ -683,6 +683,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         } else {
             throw new RuleException("نوع کد تمرکز جدید و قبلی یکسان نیست.");
         }
+        document.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
+        financialDocumentRepository.save(document);
 
         return "تمامی تمرکز های سطوح بعد از تمرکز تغییر یافته حذف شدند. لطفا مجددا نسبت به انتخاب تمرکز ها اقدام فرمایید.";
     }
