@@ -62,7 +62,7 @@ public class FinancialDocumentController {
     }
 
     @PostMapping("/ChangeAccount")
-    public ResponseEntity<FinancialDocumentAccountMessageDto>  changeAccount(@RequestBody FinancialDocumentAccountDto financialDocumentAccountDto){
+    public ResponseEntity<List<FinancialDocumentAccountMessageDto>>  changeAccount(@RequestBody FinancialDocumentAccountDto financialDocumentAccountDto){
      return  ResponseEntity.ok(financialDocumentService.changeAccountDocument(financialDocumentAccountDto));
     }
 

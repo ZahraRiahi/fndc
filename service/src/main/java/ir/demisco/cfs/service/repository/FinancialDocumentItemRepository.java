@@ -159,11 +159,10 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
     List<Object[]> findParamByDocumentId(Long FinancialDocumentId);
 
 
-    @Query("select fdi from FinancialDocumentItem fdi where fdi.financialDocument.id=:documentId  and fdi.financialAccount.id=:accountId ")
-    List<FinancialDocumentItem> getItemByDocumentIdAndAccountId(Long documentId, Long accountId);
+    @Query("select fdi from FinancialDocumentItem fdi where fdi.id in (:documentItemIdList)  and fdi.financialAccount.id=:accountId " +
+            " and fdi.deletedDate is null")
+    List<FinancialDocumentItem> getItemByDocumentItemIdListAndAccountId(List<Long> documentItemIdList, Long accountId);
 
-    @Query("select fdi from FinancialDocumentItem fdi where fdi.financialDocument.id=:documentId and fdi.financialAccount.id=:newAccountId")
-    List<FinancialDocumentItem> getByNewAccount(Long documentId, Long newAccountId);
 
     @Query("select fdi from FinancialDocumentItem fdi " +
             " where fdi.financialDocument.id=:documentId and fdi.financialAccount.id=:accountId " +
@@ -172,7 +171,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
     List<FinancialDocumentItem> getByDocumentIdAndCentricAccount(Long documentId, Long accountId, Long newCentricAccountId);
 
     @Query("select fdi from FinancialDocumentItem fdi" +
-            "   where fdi.id in(:financialDocumentItemIdList) " +
+            "   where fdi.id in(:financialDocumentItemIdList)" +
+            "   And fdi.deletedDate is null " +
             "   And fdi.description like  %:oldDescription% ")
     List<FinancialDocumentItem> getDocumentDescription(List<Long> financialDocumentItemIdList, String oldDescription);
 
