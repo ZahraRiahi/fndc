@@ -550,16 +550,16 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialDocument == null) {
             throw new RuleException("سند یافت نشد.");
         }
-        List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentDescription(financialDocumentDto.getId(), financialDocumentDto.getOldDescription());
+        List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentDescription(financialDocumentDto.getFinancialDocumentItemIdList(), financialDocumentDto.getOldDescription());
         if (financialDocumentItemList.isEmpty()) {
-            throw new RuleException("ردیفی با پارامترهای ارسالی یافت نشد");
+             throw new RuleException("ردیفی با پارامترهای ارسالی یافت نشد");
         }
         entityManager.createNativeQuery(" update fndc.financial_document_item " +
                 "   set description = replace(description,:description,:newDescription) " +
-                "   where financial_document_id =:FinancialDocumentId " +
+                "   where id in (:FinancialDocumentItemIdList) " +
                 "   And description like '%'|| :description ||'%'").setParameter("description", financialDocumentDto.getOldDescription())
                 .setParameter("newDescription", financialDocumentDto.getNewDescription())
-                .setParameter("FinancialDocumentId", financialDocumentDto.getId()).executeUpdate();
+                .setParameter("FinancialDocumentItemIdList", financialDocumentDto.getFinancialDocumentItemIdList()).executeUpdate();
 
         financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
         financialDocumentRepository.save(financialDocument);

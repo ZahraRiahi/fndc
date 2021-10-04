@@ -1,8 +1,11 @@
 package ir.demisco.cfs.model.dto.response;
 
+import java.util.List;
+
 public class FinancialDocumentChengDescriptionDto {
 
     private Long id;
+    private List<Long> financialDocumentItemIdList;
     private String oldDescription;
     private String newDescription;
 
@@ -12,6 +15,14 @@ public class FinancialDocumentChengDescriptionDto {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public List<Long> getFinancialDocumentItemIdList() {
+        return financialDocumentItemIdList;
+    }
+
+    public void setFinancialDocumentItemIdList(List<Long> financialDocumentItemIdList) {
+        this.financialDocumentItemIdList = financialDocumentItemIdList;
     }
 
     public String getOldDescription() {
