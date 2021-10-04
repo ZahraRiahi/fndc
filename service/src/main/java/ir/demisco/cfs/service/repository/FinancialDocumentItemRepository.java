@@ -93,6 +93,10 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
 
     List<FinancialDocumentItem> findByFinancialDocumentIdAndDeletedDateIsNull(Long FinancialDocumentId);
 
+    @Query("select fdi from FinancialDocumentItem fdi where fdi.id in (:documentItemIdList)  and fdi.deletedDate is null")
+    List<FinancialDocumentItem> findByFinancialDocumentItemIdList(List<Long> documentItemIdList);
+
+
 
     @Query(value = " select 1 from fndc.financial_document_item fdi " +
             " where fdi.financial_document_id= :financialDocumentId" +
