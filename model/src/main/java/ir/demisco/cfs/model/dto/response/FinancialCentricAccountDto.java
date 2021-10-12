@@ -9,6 +9,7 @@ public class FinancialCentricAccountDto {
     private List<Long> financialDocumentItemIdList;
     private Long centricAccountId;
     private Long newCentricAccountId;
+    private Long financialAccountId;
 
     public Long getId() {
         return id;
@@ -48,5 +49,13 @@ public class FinancialCentricAccountDto {
 
     public void setNewCentricAccountId(Long newCentricAccountId) {
         this.newCentricAccountId = newCentricAccountId;
+    }
+
+    public Long getFinancialAccountId() {
+        return financialAccountId;
+    }
+
+    public void setFinancialAccountId(Long financialAccountId) {
+        this.financialAccountId = financialAccountId;
     }
 }
