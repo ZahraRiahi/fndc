@@ -27,7 +27,7 @@ public class FinancialAccount extends AuditModel<Long> {
     private FinancialAccount accountAdjustment;
     private LocalDateTime deletedDate;
     private Boolean hasChild;
-    private AccountStatus accountStatus;
+    private AccountPermanentStatus accountPermanentStatus;
 
     @Id
     public Long getId() {
@@ -189,13 +189,13 @@ public class FinancialAccount extends AuditModel<Long> {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ACCOUNT_STATUS_ID")
-    public AccountStatus getAccountStatus() {
-        return accountStatus;
+    @JoinColumn(name = "ACCOUNT_PERMANENT_STATUS_ID")
+    public AccountPermanentStatus getAccountPermanentStatus() {
+        return accountPermanentStatus;
     }
 
-    public void setAccountStatus(AccountStatus accountStatus) {
-        this.accountStatus = accountStatus;
+    public void setAccountPermanentStatus(AccountPermanentStatus accountPermanentStatus) {
+        this.accountPermanentStatus = accountPermanentStatus;
     }
 
     @Transient

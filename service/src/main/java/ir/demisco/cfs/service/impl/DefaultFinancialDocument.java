@@ -643,7 +643,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         CentricAccount newCentricAccount = centricAccountRepository.findById(financialCentricAccountDto.getNewCentricAccountId()).orElseThrow(() -> new RuleException("کد تمرکز یافت نشد."));
         if (centricAccount.getCentricAccountType().getId().equals(newCentricAccount.getCentricAccountType().getId())) {
             List<FinancialDocumentItem> financialDocumentItemList =
-                    financialDocumentItemRepository.getByDocumentIdAndCentricAccount(financialCentricAccountDto.getFinancialDocumentItemIdList(),financialCentricAccountDto.getNewCentricAccountId());
+                    financialDocumentItemRepository.getByDocumentIdAndCentricAccount(financialCentricAccountDto.getFinancialDocumentItemIdList(),financialCentricAccountDto.getNewCentricAccountId(),financialCentricAccountDto.getFinancialAccountId());
             if (financialDocumentItemList.isEmpty()) {
                 throw new RuleException("ردیفی یافت نشد.");
             }
