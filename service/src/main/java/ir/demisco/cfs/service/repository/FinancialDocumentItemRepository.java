@@ -97,7 +97,6 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
     List<FinancialDocumentItem> findByFinancialDocumentItemIdList(List<Long> documentItemIdList);
 
 
-
     @Query(value = " select 1 from fndc.financial_document_item fdi " +
             " where fdi.financial_document_id= :financialDocumentId" +
             " having sum(fdi.debit_amount)=sum(fdi.credit_amount)", nativeQuery = true)
@@ -170,11 +169,12 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
 
     @Query("select fdi from FinancialDocumentItem fdi " +
             " where fdi.id in (:documentItemIdList) " +
+            " and fdi.financialAccount.id=:financialAccountId" +
             " and fdi.deletedDate is null" +
             " and nvl(fdi.centricAccountId1.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId2.id,0) <>:newCentricAccountId " +
             " and nvl(fdi.centricAccountId3.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId4.id,0) <>:newCentricAccountId " +
-            " and nvl(fdi.centricAccountId5.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId6.id,0) <>:newCentricAccountId " )
-    List<FinancialDocumentItem> getByDocumentIdAndCentricAccount(List<Long> documentItemIdList,Long newCentricAccountId);
+            " and nvl(fdi.centricAccountId5.id,0) <>:newCentricAccountId and nvl(fdi.centricAccountId6.id,0) <>:newCentricAccountId ")
+    List<FinancialDocumentItem> getByDocumentIdAndCentricAccount(List<Long> documentItemIdList, Long newCentricAccountId, Long financialAccountId);
 
     @Query("select fdi from FinancialDocumentItem fdi" +
             "   where fdi.id in(:financialDocumentItemIdList)" +
@@ -214,7 +214,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "where fdi.financialDocument.id=:financialDocumentId " +
             "and fdi.sequenceNumber=:sequenceNumber " +
             "and fdi.deletedDate is null")
-    FinancialDocumentItem findBySequence(Long financialDocumentId,Long sequenceNumber);
+    FinancialDocumentItem findBySequence(Long financialDocumentId, Long sequenceNumber);
 
     @Query(" select DISTINCT fs_final.id as documentStructueId," +
             "       fs_final.sequence as sequence, " +
