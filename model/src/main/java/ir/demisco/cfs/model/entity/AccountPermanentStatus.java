@@ -10,8 +10,8 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ACCOUNT_STATUS", schema = "fnac")
-public class AccountStatus extends AuditModel<Long> {
+@Table(name = "account_permanent_status", schema = "fnac")
+public class AccountPermanentStatus extends AuditModel<Long> {
 
     private Long id;
     private String code;
