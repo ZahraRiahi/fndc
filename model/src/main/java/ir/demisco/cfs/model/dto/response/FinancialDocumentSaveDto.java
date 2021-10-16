@@ -5,24 +5,25 @@ import java.util.List;
 
 public class FinancialDocumentSaveDto {
 
-    private Long     financialDocumentId;
-    private Date     documentDate;
-    private String     permanentDocumentNumber;
-    private String     documentNumber;
-    private Long     financialDocumentTypeId;
-    private String   financialDocumentTypeDescription;
-    private Long     financialDocumentStatusId;
-    private String   financialDocumentStatusCode;
-    private String   description;
-    private Long     organizationId;
-    private Long     financialPeriodId;
-    private String   financialPeriodDescription;
-    private Long     financialLedgerTypeId;
-    private String   financialLedgerTypeDescription;
-    private Long     departmentId;
-    private String   departmentName;
-    private Boolean  automaticFlag;
-    private List<ResponseFinancialDocumentItemDto>  financialDocumentItemDtoList;
+    private Long financialDocumentId;
+    private Date documentDate;
+    private String permanentDocumentNumber;
+    private String documentNumber;
+    private Long financialDocumentTypeId;
+    private String financialDocumentTypeDescription;
+    private Long financialDocumentStatusId;
+    private String financialDocumentStatusCode;
+    private String financialDocumentStatusDescription;
+    private String description;
+    private Long organizationId;
+    private Long financialPeriodId;
+    private String financialPeriodDescription;
+    private Long financialLedgerTypeId;
+    private String financialLedgerTypeDescription;
+    private Long departmentId;
+    private String departmentName;
+    private Boolean automaticFlag;
+    private List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList;
 
 
     public Long getFinancialDocumentId() {
@@ -79,6 +80,14 @@ public class FinancialDocumentSaveDto {
 
     public void setFinancialDocumentStatusCode(String financialDocumentStatusCode) {
         this.financialDocumentStatusCode = financialDocumentStatusCode;
+    }
+
+    public String getFinancialDocumentStatusDescription() {
+        return financialDocumentStatusDescription;
+    }
+
+    public void setFinancialDocumentStatusDescription(String financialDocumentStatusDescription) {
+        this.financialDocumentStatusDescription = financialDocumentStatusDescription;
     }
 
     public String getDescription() {
@@ -139,7 +148,6 @@ public class FinancialDocumentSaveDto {
     }
 
 
-
     public String getPermanentDocumentNumber() {
         return permanentDocumentNumber;
     }
@@ -172,7 +180,7 @@ public class FinancialDocumentSaveDto {
         this.automaticFlag = automaticFlag;
     }
 
-    public static Builder builder(){
+    public static Builder builder() {
         return new Builder();
     }
 
@@ -227,7 +235,10 @@ public class FinancialDocumentSaveDto {
             financialDocumentSaveDto.setFinancialDocumentStatusCode(financialDocumentStatusCode);
             return this;
         }
-
+        public Builder financialDocumentStatusDescription(String financialDocumentStatusDescription) {
+            financialDocumentSaveDto.setFinancialDocumentStatusDescription(financialDocumentStatusDescription);
+            return this;
+        }
         public Builder description(String description) {
             financialDocumentSaveDto.setDescription(description);
             return this;
