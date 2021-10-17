@@ -13,8 +13,8 @@ import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -109,8 +109,8 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private FinancialDocumentItemCurrency saveDocumentItemCurrency(FinancialDocumentItem finalFinancialDocumentItem, FinancialDocumentItemCurrencyDto itemCurrency) {
         FinancialDocumentItemCurrency documentItemCurrency = new FinancialDocumentItemCurrency();
         documentItemCurrency.setFinancialDocumentItem(finalFinancialDocumentItem);
-        documentItemCurrency.setForeignCreditAmount(itemCurrency.getForeignCreditAmount());
-        documentItemCurrency.setForeignDebitAmount(itemCurrency.getForeignDebitAmount());
+        documentItemCurrency.setForeignCreditAmount(itemCurrency.getForeignCreditAmount().doubleValue());
+        documentItemCurrency.setForeignDebitAmount(itemCurrency.getForeignDebitAmount().doubleValue());
         documentItemCurrency.setExchangeRate(itemCurrency.getExchangeRate());
         documentItemCurrency.setMoneyType(moneyTypeRepository.getOne(itemCurrency.getMoneyTypeId()));
         documentItemCurrency.setMoneyPricingReference(prisingReferenceRepository.getOne(itemCurrency.getMoneyPricingReferenceId()));
@@ -292,8 +292,8 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private void updateDocumentItemCurrency(FinancialDocumentItemCurrency itemCurrency, FinancialDocumentItemCurrencyDto financialItemCurrency) {
-        itemCurrency.setForeignCreditAmount(financialItemCurrency.getForeignCreditAmount());
-        itemCurrency.setForeignDebitAmount(financialItemCurrency.getForeignDebitAmount());
+        itemCurrency.setForeignCreditAmount(financialItemCurrency.getForeignCreditAmount().doubleValue());
+        itemCurrency.setForeignDebitAmount(financialItemCurrency.getForeignDebitAmount().doubleValue());
         itemCurrency.setExchangeRate(financialItemCurrency.getExchangeRate());
         itemCurrency.setMoneyType(moneyTypeRepository.getOne(itemCurrency.getMoneyType().getId()));
         itemCurrency.setMoneyPricingReference(prisingReferenceRepository.getOne(financialItemCurrency.getMoneyPricingReferenceId()));
@@ -346,7 +346,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private FinancialDocument saveFinancialDocument(FinancialDocumentSaveDto financialDocumentSaveDto) {
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
 
         if (financialDocumentSaveDto.getFinancialDocumentItemDtoList().isEmpty()) {
             throw new RuleException("لطفا یک ردیف وارد کنید.");
@@ -436,20 +436,20 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private FinancialDocumentItemCurrencyDto convertDocumentItemCurrency(FinancialDocumentItemCurrency documentItemCurrency) {
-        DecimalFormat df = new DecimalFormat();
-        df.setMaximumFractionDigits(340);// 340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
+//        DecimalFormat df = new DecimalFormat();
+//        df.setMaximumFractionDigits(340);// 340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
         return FinancialDocumentItemCurrencyDto.builder()
                 .financialDocumentItemCurrencyId(documentItemCurrency.getId())
                 .financialDocumentItemId(documentItemCurrency.getFinancialDocumentItem().getId())
-                .foreignDebitAmount(documentItemCurrency.getForeignDebitAmount())
-                .foreignCreditAmount(documentItemCurrency.getForeignCreditAmount())
+//                .foreignDebitAmount(documentItemCurrency.getForeignDebitAmount())
+//                .foreignCreditAmount(documentItemCurrency.getForeignCreditAmount())
                 .exchangeRate(documentItemCurrency.getExchangeRate())
                 .moneyTypeId(documentItemCurrency.getMoneyType().getId())
                 .moneyTypeDescription(documentItemCurrency.getMoneyType().getDescription())
                 .moneyPricingReferenceId(documentItemCurrency.getMoneyPricingReference().getId())
                 .moneyPricingReferenceDescription(documentItemCurrency.getMoneyPricingReference().getDescription())
-                .foreignCreditAmountStr(df.format(documentItemCurrency.getForeignDebitAmount()))
-                .foreignDebitAmountStr(df.format(documentItemCurrency.getForeignCreditAmount()))
+                .foreignCreditAmount(new BigDecimal(documentItemCurrency.getForeignDebitAmount()))
+                .foreignDebitAmount(new BigDecimal(documentItemCurrency.getForeignCreditAmount()))
                 .build();
     }
 
