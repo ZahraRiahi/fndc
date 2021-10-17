@@ -1,5 +1,7 @@
 package ir.demisco.cfs.model.dto.response;
 
+import java.math.BigDecimal;
+
 public class FinancialDocumentItemCurrencyDto {
 
     private Long financialDocumentItemCurrencyId;
@@ -11,6 +13,8 @@ public class FinancialDocumentItemCurrencyDto {
     private String moneyTypeDescription;
     private Long moneyPricingReferenceId;
     private String moneyPricingReferenceDescription;
+    private String foreignCreditAmountStr;
+    private String foreignDebitAmountStr;
 
     public Long getFinancialDocumentItemCurrencyId() {
         return financialDocumentItemCurrencyId;
@@ -84,9 +88,26 @@ public class FinancialDocumentItemCurrencyDto {
         this.moneyPricingReferenceDescription = moneyPricingReferenceDescription;
     }
 
+    public String getForeignCreditAmountStr() {
+        return foreignCreditAmountStr;
+    }
+
+    public void setForeignCreditAmountStr(String foreignCreditAmountStr) {
+        this.foreignCreditAmountStr = foreignCreditAmountStr;
+    }
+
+    public String getForeignDebitAmountStr() {
+        return foreignDebitAmountStr;
+    }
+
+    public void setForeignDebitAmountStr(String foreignDebitAmountStr) {
+        this.foreignDebitAmountStr = foreignDebitAmountStr;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
+
 
     public static final class Builder {
         private FinancialDocumentItemCurrencyDto financialDocumentItemCurrencyDto;
@@ -141,6 +162,16 @@ public class FinancialDocumentItemCurrencyDto {
 
         public Builder moneyPricingReferenceDescription(String moneyPricingReferenceDescription) {
             financialDocumentItemCurrencyDto.setMoneyPricingReferenceDescription(moneyPricingReferenceDescription);
+            return this;
+        }
+
+        public Builder foreignCreditAmountStr(String foreignCreditAmountStr) {
+            financialDocumentItemCurrencyDto.setForeignCreditAmountStr(foreignCreditAmountStr);
+            return this;
+        }
+
+        public Builder foreignDebitAmountStr(String foreignDebitAmountStr) {
+            financialDocumentItemCurrencyDto.setForeignDebitAmountStr(foreignDebitAmountStr);
             return this;
         }
 
