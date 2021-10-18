@@ -14,6 +14,8 @@ import org.codehaus.jackson.map.util.ISO8601Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
@@ -283,7 +285,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
-    public ResponseFinancialDocumentSetStatusDto changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
+    public ResponseEntity<ResponseFinancialDocumentSetStatusDto> changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
         ResponseFinancialDocumentSetStatusDto responseFinancialDocumentSetStatusDto = new ResponseFinancialDocumentSetStatusDto();
         FinancialDocument financialDocument = financialDocumentRepository.findById(responseFinancialDocumentStatusDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
         FinancialDocumentStatus financialDocumentStatus =
@@ -299,14 +301,16 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 responseFinancialDocumentSetStatusDto.setFinancialDocumentErrorDtoList(financialDocumentErrorDtoList);
                 responseFinancialDocumentSetStatusDto.setErrorFoundFlag(true);
             }
+            return ResponseEntity.status(HttpStatus.CONFLICT).body(responseFinancialDocumentSetStatusDto);
         } else {
 
             financialDocument.setFinancialDocumentStatus(financialDocumentStatus);
             financialDocumentRepository.save(financialDocument);
             responseFinancialDocumentSetStatusDto = convertFinancialDocumentToDto(financialDocument);
+            return ResponseEntity.ok(responseFinancialDocumentSetStatusDto);
         }
 
-        return responseFinancialDocumentSetStatusDto;
+//        return responseFinancialDocumentSetStatusDto;
     }
 
     private List<FinancialDocumentErrorDto> validationSetStatus(FinancialDocument financialDocument) {
