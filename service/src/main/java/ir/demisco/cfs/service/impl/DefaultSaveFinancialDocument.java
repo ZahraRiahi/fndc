@@ -352,6 +352,9 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         if (financialDocumentSaveDto.getFinancialDocumentItemDtoList().isEmpty()) {
             throw new RuleException("لطفا یک ردیف وارد کنید.");
         }
+        if(financialDocumentSaveDto.getFinancialDocumentStatusId() !=1){
+            throw new RuleException("وضعیت سند باید ایجاد باشد.");
+        }
         FinancialDocument financialDocument = financialDocumentRepository.
                 findById(financialDocumentSaveDto.getFinancialDocumentId() == null ? 0L : financialDocumentSaveDto.getFinancialDocumentId()).orElse(new FinancialDocument());
         financialDocument.setDocumentDate(financialDocumentSaveDto.getDocumentDate());
