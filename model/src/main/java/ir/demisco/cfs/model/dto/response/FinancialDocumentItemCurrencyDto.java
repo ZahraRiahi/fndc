@@ -1,20 +1,26 @@
 package ir.demisco.cfs.model.dto.response;
 
+import org.codehaus.jackson.JsonGenerator;
+import org.codehaus.jackson.JsonProcessingException;
+import org.codehaus.jackson.map.JsonSerializer;
+import org.codehaus.jackson.map.SerializerProvider;
+
+import java.io.IOException;
 import java.math.BigDecimal;
 
 public class FinancialDocumentItemCurrencyDto {
 
     private Long financialDocumentItemCurrencyId;
     private Long financialDocumentItemId;
-    private Double foreignDebitAmount;
-    private Double foreignCreditAmount;
+//    private Double foreignDebitAmount;
+//    private Double foreignCreditAmount;
     private Long exchangeRate;
     private Long moneyTypeId;
     private String moneyTypeDescription;
     private Long moneyPricingReferenceId;
     private String moneyPricingReferenceDescription;
-    private String foreignCreditAmountStr;
-    private String foreignDebitAmountStr;
+    private BigDecimal foreignDebitAmount;
+    private BigDecimal foreignCreditAmount;
 
     public Long getFinancialDocumentItemCurrencyId() {
         return financialDocumentItemCurrencyId;
@@ -32,21 +38,22 @@ public class FinancialDocumentItemCurrencyDto {
         this.financialDocumentItemId = financialDocumentItemId;
     }
 
-    public Double getForeignDebitAmount() {
-        return foreignDebitAmount;
-    }
-
-    public void setForeignDebitAmount(Double foreignDebitAmount) {
-        this.foreignDebitAmount = foreignDebitAmount;
-    }
-
-    public Double getForeignCreditAmount() {
-        return foreignCreditAmount;
-    }
-
-    public void setForeignCreditAmount(Double foreignCreditAmount) {
-        this.foreignCreditAmount = foreignCreditAmount;
-    }
+//    public Double getForeignDebitAmount() {
+//        return foreignDebitAmount;
+//    }
+//
+//    public void setForeignDebitAmount(Double foreignDebitAmount) {
+//        this.foreignDebitAmount = foreignDebitAmount;
+//    }
+//
+//
+//    public Double getForeignCreditAmount() {
+//        return foreignCreditAmount;
+//    }
+//
+//    public void setForeignCreditAmount(Double foreignCreditAmount) {
+//        this.foreignCreditAmount = foreignCreditAmount;
+//    }
 
     public Long getExchangeRate() {
         return exchangeRate;
@@ -88,20 +95,20 @@ public class FinancialDocumentItemCurrencyDto {
         this.moneyPricingReferenceDescription = moneyPricingReferenceDescription;
     }
 
-    public String getForeignCreditAmountStr() {
-        return foreignCreditAmountStr;
+    public BigDecimal getForeignDebitAmount() {
+        return foreignDebitAmount;
     }
 
-    public void setForeignCreditAmountStr(String foreignCreditAmountStr) {
-        this.foreignCreditAmountStr = foreignCreditAmountStr;
+    public void setForeignDebitAmount(BigDecimal foreignDebitAmount) {
+        this.foreignDebitAmount = foreignDebitAmount;
     }
 
-    public String getForeignDebitAmountStr() {
-        return foreignDebitAmountStr;
+    public BigDecimal getForeignCreditAmount() {
+        return foreignCreditAmount;
     }
 
-    public void setForeignDebitAmountStr(String foreignDebitAmountStr) {
-        this.foreignDebitAmountStr = foreignDebitAmountStr;
+    public void setForeignCreditAmount(BigDecimal foreignCreditAmount) {
+        this.foreignCreditAmount = foreignCreditAmount;
     }
 
     public static Builder builder() {
@@ -130,15 +137,15 @@ public class FinancialDocumentItemCurrencyDto {
             return this;
         }
 
-        public Builder foreignDebitAmount(Double foreignDebitAmount) {
-            financialDocumentItemCurrencyDto.setForeignDebitAmount(foreignDebitAmount);
-            return this;
-        }
-
-        public Builder foreignCreditAmount(Double foreignCreditAmount) {
-            financialDocumentItemCurrencyDto.setForeignCreditAmount(foreignCreditAmount);
-            return this;
-        }
+//        public Builder foreignDebitAmount(Double foreignDebitAmount) {
+//            financialDocumentItemCurrencyDto.setForeignDebitAmount(foreignDebitAmount);
+//            return this;
+//        }
+//
+//        public Builder foreignCreditAmount(Double foreignCreditAmount) {
+//            financialDocumentItemCurrencyDto.setForeignCreditAmount(foreignCreditAmount);
+//            return this;
+//        }
 
         public Builder exchangeRate(Long exchangeRate) {
             financialDocumentItemCurrencyDto.setExchangeRate(exchangeRate);
@@ -165,18 +172,31 @@ public class FinancialDocumentItemCurrencyDto {
             return this;
         }
 
-        public Builder foreignCreditAmountStr(String foreignCreditAmountStr) {
-            financialDocumentItemCurrencyDto.setForeignCreditAmountStr(foreignCreditAmountStr);
+        public Builder foreignCreditAmount(BigDecimal foreignCreditAmountStr) {
+            financialDocumentItemCurrencyDto.setForeignDebitAmount(foreignCreditAmountStr);
             return this;
         }
 
-        public Builder foreignDebitAmountStr(String foreignDebitAmountStr) {
-            financialDocumentItemCurrencyDto.setForeignDebitAmountStr(foreignDebitAmountStr);
+        public Builder foreignDebitAmount(BigDecimal foreignDebitAmountStr) {
+            financialDocumentItemCurrencyDto.setForeignCreditAmount(foreignDebitAmountStr);
             return this;
         }
 
         public FinancialDocumentItemCurrencyDto build() {
             return financialDocumentItemCurrencyDto;
         }
+    }
+
+    class MyDoubleDesirializer extends JsonSerializer<Double> {
+
+        @Override
+        public void serialize(Double value, JsonGenerator gen, SerializerProvider serializers)
+                throws IOException, JsonProcessingException {
+            // TODO Auto-generated method stub
+
+            BigDecimal d = new BigDecimal(value);
+            gen.writeNumber(d.toPlainString());
+        }
+
     }
 }

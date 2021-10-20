@@ -3,6 +3,7 @@ package ir.demisco.cfs.service.api;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import org.springframework.http.ResponseEntity;
 
 import java.util.List;
 
@@ -11,7 +12,7 @@ public interface FinancialDocumentService {
 
     DataSourceResult getFinancialDocumentList(DataSourceRequest dataSourceRequest);
 
-    ResponseFinancialDocumentSetStatusDto changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto);
+    ResponseEntity<ResponseFinancialDocumentSetStatusDto> changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto);
 
     String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto);
 
