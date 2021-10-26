@@ -267,6 +267,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (input instanceof String) {
             try {
                 Date date = ISO8601Utils.parse((String) input);
+
                 LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
                 return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
             } catch (Exception var4) {
