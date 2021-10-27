@@ -1,6 +1,7 @@
 package ir.demisco.cfs.service.impl;
 
 
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.*;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
@@ -8,9 +9,8 @@ import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
-import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
-import org.codehaus.jackson.map.util.ISO8601Utils;
+//import org.codehaus.jackson.map.util.ISO8601Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.text.ParsePosition;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
@@ -266,7 +267,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
         if (input instanceof String) {
             try {
-                Date date = ISO8601Utils.parse((String) input);
+//                Date date = ISO8601Utils.parse((String) input);
+                Date date = ISO8601Utils.parse((String) input, new ParsePosition(0));
                 LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
                 return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
             } catch (Exception var4) {
@@ -509,8 +511,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             list.forEach(objects -> {
                 FinancialNumberingFormat financialNumberingFormat =
                         financialNumberingFormatRepository.findById(Long.parseLong(objects[0].toString())).orElseThrow(() -> new RuleException("فرمت شماره گذاری یافت نشد"));
-                NumberingFormatSerial searchNumberingFormatSerial=numberingFormatSerialRepository.findByNumberingFormatAndDeletedDate(financialNumberingFormat.getId());
-                if(searchNumberingFormatSerial==null) {
+                NumberingFormatSerial searchNumberingFormatSerial = numberingFormatSerialRepository.findByNumberingFormatAndDeletedDate(financialNumberingFormat.getId());
+                if (searchNumberingFormatSerial == null) {
                     NumberingFormatSerial numberingFormatSerial = new NumberingFormatSerial();
                     numberingFormatSerial.setFinancialNumberingFormat(financialNumberingFormat);
                     numberingFormatSerial.setLastSerial(Long.parseLong(objects[1].toString()));
@@ -631,12 +633,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 documentItem.setCentricAccountId5(null);
                 documentItem.setCentricAccountId6(null);
                 financialDocumentItemRepository.save(documentItem);
-            }else
-            financialDocumentAccountMessageDtoList.add(
-                    FinancialDocumentAccountMessageDto.builder()
-                            .id(documentItem.getId())
-                            .message("به دلیل انواع تفاوت در وابستگی حساب جدید با حساب قبلی،تمام تمرکز های مربوطه حذف شده.لطفا تمرکز های مربوطه را درج نمایید.")
-                            .build());
+            } else
+                financialDocumentAccountMessageDtoList.add(
+                        FinancialDocumentAccountMessageDto.builder()
+                                .id(documentItem.getId())
+                                .message("به دلیل انواع تفاوت در وابستگی حساب جدید با حساب قبلی،تمام تمرکز های مربوطه حذف شده.لطفا تمرکز های مربوطه را درج نمایید.")
+                                .build());
         });
 
         financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
@@ -653,7 +655,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         CentricAccount newCentricAccount = centricAccountRepository.findById(financialCentricAccountDto.getNewCentricAccountId()).orElseThrow(() -> new RuleException("کد تمرکز یافت نشد."));
         if (centricAccount.getCentricAccountType().getId().equals(newCentricAccount.getCentricAccountType().getId())) {
             List<FinancialDocumentItem> financialDocumentItemList =
-                    financialDocumentItemRepository.getByDocumentIdAndCentricAccount(financialCentricAccountDto.getFinancialDocumentItemIdList(),financialCentricAccountDto.getNewCentricAccountId(),financialCentricAccountDto.getFinancialAccountId());
+                    financialDocumentItemRepository.getByDocumentIdAndCentricAccount(financialCentricAccountDto.getFinancialDocumentItemIdList(), financialCentricAccountDto.getNewCentricAccountId(), financialCentricAccountDto.getFinancialAccountId());
             if (financialDocumentItemList.isEmpty()) {
                 throw new RuleException("ردیفی یافت نشد.");
             }
