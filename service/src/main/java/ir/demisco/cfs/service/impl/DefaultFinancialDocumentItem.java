@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.impl;
 
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentDto;
 import ir.demisco.cfs.service.api.FinancialDocumentItemService;
@@ -7,7 +8,6 @@ import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.core.utils.DateUtil;
-import org.codehaus.jackson.map.util.ISO8601Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.text.ParsePosition;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.Date;
@@ -236,7 +237,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
     private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
         if (input instanceof String) {
             try {
-                Date date = ISO8601Utils.parse((String) input);
+                Date date = ISO8601Utils.parse((String)input,new ParsePosition(0));
                 LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
                 return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
             } catch (Exception var4) {

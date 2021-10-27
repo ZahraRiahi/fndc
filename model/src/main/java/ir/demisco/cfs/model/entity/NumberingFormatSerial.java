@@ -18,8 +18,9 @@ public class NumberingFormatSerial extends AuditModel<Long> {
 
     @Override
     @Id
-    @SequenceGenerator(schema = "fndc", name = "numbering_format_serial_generator", sequenceName = "sq_numbering_format_serial")
+    @SequenceGenerator(schema = "fndc", name = "numbering_format_serial_generator", sequenceName = "sq_numbering_format_serial", allocationSize = 50)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "numbering_format_serial_generator")
+
     public Long getId() {
         return super.getId();
     }
