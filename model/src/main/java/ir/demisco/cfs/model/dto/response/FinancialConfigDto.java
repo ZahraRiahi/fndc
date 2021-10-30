@@ -18,6 +18,7 @@ public class FinancialConfigDto {
     private String financialPeriodDescription;
     private String financialDocumentTypeDescription;
     private String financialLedgerTypeDescription;
+    private Long financialCodingTypeId;
 
     public Long getId() {
         return id;
@@ -139,6 +140,14 @@ public class FinancialConfigDto {
         this.financialLedgerTypeDescription = financialLedgerTypeDescription;
     }
 
+    public Long getFinancialCodingTypeId() {
+        return financialCodingTypeId;
+    }
+
+    public void setFinancialCodingTypeId(Long financialCodingTypeId) {
+        this.financialCodingTypeId = financialCodingTypeId;
+    }
+
     public static FinancialConfigDto.Builder builder() {
         return new FinancialConfigDto.Builder();
     }
@@ -228,7 +237,10 @@ public class FinancialConfigDto {
             financialConfigDto.setFinancialLedgerTypeDescription(financialLedgerTypeDescription);
             return this;
         }
-
+        public Builder financialCodingTypeId(Long financialCodingTypeId) {
+            financialConfigDto.setFinancialCodingTypeId(financialCodingTypeId);
+            return this;
+        }
         public FinancialConfigDto build() {
             return financialConfigDto;
         }
