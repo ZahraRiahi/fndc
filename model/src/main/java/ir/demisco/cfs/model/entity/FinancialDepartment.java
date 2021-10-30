@@ -11,7 +11,7 @@ public class FinancialDepartment  extends AuditModel<Long> {
 
     private String code;
     private String name;
-    private LocalDateTime DeletedDate;
+    private LocalDateTime deletedDate;
 
     @Override
     @Id
@@ -38,10 +38,10 @@ public class FinancialDepartment  extends AuditModel<Long> {
     }
 
     public LocalDateTime getDeletedDate() {
-        return DeletedDate;
+        return deletedDate;
     }
 
     public void setDeletedDate(LocalDateTime deletedDate) {
-        DeletedDate = deletedDate;
+        this.deletedDate = deletedDate;
     }
 }

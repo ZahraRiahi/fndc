@@ -13,7 +13,7 @@ public class FinancialLedgerType extends AuditModel<Long> {
     private String description;
     private FinancialCodingType financialCodingType;
     private Organization organization;
-    private LocalDateTime DeletedDate;
+    private LocalDateTime deletedDate;
     private boolean activeFlag;
     private String code;
 
@@ -54,12 +54,13 @@ public class FinancialLedgerType extends AuditModel<Long> {
         this.organization = organization;
     }
 
+    @Column(name = "DELETED_DATE")
     public LocalDateTime getDeletedDate() {
-        return DeletedDate;
+        return deletedDate;
     }
 
     public void setDeletedDate(LocalDateTime deletedDate) {
-        DeletedDate = deletedDate;
+        this.deletedDate = deletedDate;
     }
 
     @Column(name = "ACTIVE_FLAG")
