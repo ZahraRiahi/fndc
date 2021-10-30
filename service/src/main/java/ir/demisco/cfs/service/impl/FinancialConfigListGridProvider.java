@@ -37,7 +37,7 @@ public class FinancialConfigListGridProvider implements GridDataProvider {
                 filterContext.getPath("financialPeriod.description"),
                 filterContext.getPath("financialDocumentType.description"),
                 filterContext.getPath("financialLedgerType.description"),
-                filterContext.getPath("deletedDate")
+                filterContext.getPath("financialLedgerType.financialCodingType.id")
         );
     }
 
@@ -63,6 +63,7 @@ public class FinancialConfigListGridProvider implements GridDataProvider {
                     .financialPeriodDescription((String) array[12])
                     .financialDocumentTypeDescription((String) array[13])
                     .financialLedgerTypeDescription((String) array[14])
+                    .financialCodingTypeId((Long) array[15])
                     .build();
         }).collect(Collectors.toList());
     }

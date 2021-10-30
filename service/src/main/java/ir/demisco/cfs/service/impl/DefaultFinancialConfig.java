@@ -42,6 +42,10 @@ public class DefaultFinancialConfig implements FinancialConfigService {
     @Transactional(readOnly = true)
     public DataSourceResult getFinancialConfigByOrganizationIdAndUserAndDepartment(DataSourceRequest dataSourceRequest, Long organizationId) {
         dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("deletedDate", null, DataSourceRequest.Operators.IS_NULL));
+        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialDepartment.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
+        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialPeriod.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
+        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialDocumentType.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
+        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialLedgerType.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
         return gridFilterService.filter(dataSourceRequest, financialConfigListGridProvider);
     }
 
@@ -53,7 +57,7 @@ public class DefaultFinancialConfig implements FinancialConfigService {
         if (financialConfig.getId() != null) {
             financialConfig.setDeletedDate(LocalDateTime.now());
         }
-        Long financialAccountStructureCount = financialConfigRepository.getCountByFinancialConfigAndOrganizationAndUser(financialConfigRequest.getOrganizationId(),financialConfigRequest.getUserId());
+        Long financialAccountStructureCount = financialConfigRepository.getCountByFinancialConfigAndOrganizationAndUser(financialConfigRequest.getOrganizationId(), financialConfigRequest.getUserId());
         if (financialAccountStructureCount > 0) {
             throw new RuleException("برای این کاربر در این سازمان قبلا رکوردی ثبت شده است");
         }

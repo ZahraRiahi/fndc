@@ -15,7 +15,7 @@ public class FinancialDocumentType extends AuditModel<Long> {
     private Boolean activeFlag;
     private Boolean automaticFlag;
     private FinancialSystem financialSystem;
-    private LocalDateTime DeletedDate;
+    private LocalDateTime deletedDate;
 
     @Id
     @SequenceGenerator(schema = "fndc", name = "financial_document_type_generator", sequenceName = "sq_financial_document_type")
@@ -73,11 +73,12 @@ public class FinancialDocumentType extends AuditModel<Long> {
     }
 
     @Column(name = "DELETED_DATE")
+
     public LocalDateTime getDeletedDate() {
-        return DeletedDate;
+        return deletedDate;
     }
 
     public void setDeletedDate(LocalDateTime deletedDate) {
-        DeletedDate = deletedDate;
+        this.deletedDate = deletedDate;
     }
 }
