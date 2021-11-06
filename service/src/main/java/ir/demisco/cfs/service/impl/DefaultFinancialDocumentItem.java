@@ -53,7 +53,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                 FinancialDocumentItemDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
                         .date((Date) item[1])
-                        .description(item[2].toString())
+                        .description(item[2] != null ? item[2].toString() : null)
                         .documentNumber(Long.parseLong(item[3].toString()))
                         .sequenceNumber(Long.parseLong(item[4].toString()))
                         .financialAccountDescription(item[5].toString())
