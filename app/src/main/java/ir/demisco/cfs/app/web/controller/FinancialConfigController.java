@@ -1,6 +1,7 @@
 package ir.demisco.cfs.app.web.controller;
 
 import ir.demisco.cfs.model.dto.request.FinancialConfigRequest;
+import ir.demisco.cfs.service.api.FinancialAccountService;
 import ir.demisco.cfs.service.api.FinancialConfigService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -16,7 +17,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class FinancialConfigController {
     private final FinancialConfigService financialConfigService;
 
-    public FinancialConfigController(FinancialConfigService financialConfigService) {
+    public FinancialConfigController(FinancialConfigService financialConfigService ,FinancialAccountService financialAccountService) {
         this.financialConfigService = financialConfigService;
     }
 
