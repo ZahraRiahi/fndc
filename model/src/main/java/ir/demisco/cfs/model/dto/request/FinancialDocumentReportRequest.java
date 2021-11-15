@@ -1,13 +1,14 @@
 package ir.demisco.cfs.model.dto.request;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 
 public class FinancialDocumentReportRequest {
     private Long financialAccountId;
-    private Date fromDate;
-    private Date toDate;
-    private Date periodStartDate;
+    private LocalDateTime fromDate;
+    private LocalDateTime toDate;
+    private LocalDateTime periodStartDate;
     private Long documentNumberingTypeId;
     private Long centricAccountId1;
     private Long centricAccountId2;
@@ -47,11 +48,11 @@ public class FinancialDocumentReportRequest {
         this.referenceNumberObject = referenceNumberObject;
     }
 
-    public Date getPeriodStartDate() {
+    public LocalDateTime getPeriodStartDate() {
         return periodStartDate;
     }
 
-    public void setPeriodStartDate(Date periodStartDate) {
+    public void setPeriodStartDate(LocalDateTime periodStartDate) {
         this.periodStartDate = periodStartDate;
     }
 
@@ -63,19 +64,19 @@ public class FinancialDocumentReportRequest {
         this.financialAccountId = financialAccountId;
     }
 
-    public Date getFromDate() {
+    public LocalDateTime getFromDate() {
         return fromDate;
     }
 
-    public void setFromDate(Date fromDate) {
+    public void setFromDate(LocalDateTime fromDate) {
         this.fromDate = fromDate;
     }
 
-    public Date getToDate() {
+    public LocalDateTime getToDate() {
         return toDate;
     }
 
-    public void setToDate(Date toDate) {
+    public void setToDate(LocalDateTime toDate) {
         this.toDate = toDate;
     }
 

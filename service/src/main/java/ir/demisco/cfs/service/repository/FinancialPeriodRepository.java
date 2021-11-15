@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -36,7 +37,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " WHERE FP.FINANCIAL_PERIOD_STATUS_ID = 1 " +
             "   AND FP.DELETED_DATE IS NULL "
             , nativeQuery = true)
-    Date findByFinancialPeriodByOrganization(Long organizationId);
+    LocalDateTime findByFinancialPeriodByOrganization(Long organizationId);
 
     @Query(value = " SELECT  MAX(FP.START_DATE) " +
             "    FROM FNPR.FINANCIAL_PERIOD FP " +
@@ -50,7 +51,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "    WHERE FP.DELETED_DATE IS NULL " +
             "    AND :startDate > = FP.START_DATE "
             , nativeQuery = true)
-    Date findByFinancialPeriodByOrganizationStartDate(Long organizationId, Date startDate);
+    LocalDateTime findByFinancialPeriodByOrganizationStartDate(Long organizationId, LocalDateTime startDate);
 
     @Query(value = " SELECT alll.DOCUMENT_DATE, " +
             "                       alll.DOCUMENT_NUMBER, " +
@@ -247,12 +248,12 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                                  all2.CODE) alll " +
             "                 ORDER BY alll.ID "
             , nativeQuery = true)
-    Page<Object[]> findByFinancialPeriodByParam(Long organizationId, Long ledgerTypeId, Date periodStartDate,
-                                                Long dateFilterFlg, Date fromDate, Long documentNumberingTypeId,
+    Page<Object[]> findByFinancialPeriodByParam(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate,
+                                                Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId,
                                                 String fromNumber, Object centricAccount1, Long centricAccountId1,
                                                 Object centricAccount2, Long centricAccountId2, Object referenceNumberObject,
                                                 Long referenceNumber, String toNumber, Long financialAccountId,
-                                                Long summarizingType, Date toDate, Pageable pageable);
+                                                Long summarizingType, LocalDateTime toDate, Pageable pageable);
 
     @Query(value = " SELECT  MIN(FP.START_DATE) " +
             "      FROM FNPR.FINANCIAL_PERIOD FP " +
@@ -265,6 +266,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "        ON FPT.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID " +
             "     WHERE FP.DELETED_DATE IS NULL  "
             , nativeQuery = true)
-    Date findByFinancialPeriodByOrganization2(Long organizationId);
+    LocalDateTime findByFinancialPeriodByOrganization2(Long organizationId);
 
 }
