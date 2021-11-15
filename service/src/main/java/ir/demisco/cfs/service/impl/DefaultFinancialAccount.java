@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.impl;
 
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentReportRequest;
 import ir.demisco.cfs.model.dto.response.FinancialAccountReportResponse;
 import ir.demisco.cfs.service.api.FinancialAccountService;
@@ -17,6 +18,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.math.BigDecimal;
+import java.text.ParsePosition;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -40,16 +44,16 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         if (financialDocumentReportRequest.getFinancialAccountId() == null) {
             throw new RuleException("لطفا شناسه ی حساب مالی را وارد نمایید.");
         }
-        if(financialDocumentReportRequest.getDocumentNumberingTypeId()== null){
+        if (financialDocumentReportRequest.getDocumentNumberingTypeId() == null) {
             throw new RuleException("لطفا شناسه ی انواع شماره گذاری سند مالی را وارد نمایید.");
         }
-        if(financialDocumentReportRequest.getSummarizingType()==null){
+        if (financialDocumentReportRequest.getSummarizingType() == null) {
             throw new RuleException("لطفا نوع جمع بندی را وارد نمایید.");
         }
-        if(financialDocumentReportRequest.getOrganizationId()==null){
+        if (financialDocumentReportRequest.getOrganizationId() == null) {
             throw new RuleException("لطفا شناسه ی واحد سازمانی را وارد نمایید.");
         }
-        if(financialDocumentReportRequest.getDateFilterFlg()==null){
+        if (financialDocumentReportRequest.getDateFilterFlg() == null) {
             throw new RuleException("لطفا فیلتر بر اساس تاریخ یا شماره را انتخاب نمایید.");
         }
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
@@ -96,11 +100,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             setFromNumberAndToNumber(financialDocumentReportRequest);
         }
 
-        Date startDate = financialDocumentReportRequest.getFromDate();
-        Date periodStartDate;
+        LocalDateTime startDate = financialDocumentReportRequest.getFromDate();
+        LocalDateTime periodStartDate;
         periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization(100L);
 
-        if (startDate.before(periodStartDate)) {
+        if (startDate.isBefore(periodStartDate)) {
             periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganizationStartDate(100L, startDate);
         }
 
@@ -126,11 +130,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     }
 
     private void setFromDateAndToDate(FinancialDocumentReportRequest financialDocumentReportRequest) {
-        Date fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
+        LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
                 , financialDocumentReportRequest.getFromNumber(), 100L);
         financialDocumentReportRequest.setFromDate(fromDate);
 
-        Date toDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
+        LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
                 , financialDocumentReportRequest.getToNumber(), 100L);
         financialDocumentReportRequest.setToDate(toDate);
     }
@@ -146,13 +150,17 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                     break;
                 case "fromDate":
                     if (item.getValue() != null) {
-                        financialDocumentReportRequest.setFromDate(DateUtil.convertStringToDate(item.getValue().toString()));
+//                        financialDocumentReportRequest.setFromDate(DateUtil.convertStringToDate(item.getValue().toString()));
+                        financialDocumentReportRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+
                     }
                     break;
 
                 case "toDate":
                     if (item.getValue() != null) {
-                        financialDocumentReportRequest.setToDate(DateUtil.convertStringToDate(item.getValue().toString()));
+//                        financialDocumentReportRequest.setToDate(DateUtil.convertStringToDate(item.getValue().toString()));
+                        financialDocumentReportRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+
                     }
                     break;
 
@@ -227,6 +235,27 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
 
         return financialDocumentReportRequest;
+    }
+
+    private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
+        if (input instanceof String) {
+            try {
+//                Date date = ISO8601Utils.parse((String) input);
+                Date date = ISO8601Utils.parse((String) input, new ParsePosition(0));
+                LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
+            } catch (Exception var4) {
+                if (((String) input).equalsIgnoreCase("current_date")) {
+                    return truncateDate ? DateUtil.truncate(LocalDateTime.now()) : LocalDateTime.now();
+                } else {
+                    return ((String) input).equalsIgnoreCase("current_timestamp") ? LocalDateTime.now() : LocalDateTime.parse((String) input);
+                }
+            }
+        } else if (input instanceof LocalDateTime) {
+            return truncateDate ? DateUtil.truncate((LocalDateTime) input) : (LocalDateTime) input;
+        } else {
+            throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
+        }
     }
 }
 

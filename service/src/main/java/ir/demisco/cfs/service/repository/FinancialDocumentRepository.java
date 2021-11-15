@@ -235,7 +235,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       AND DN.DOCUMENT_NUMBER = :fromNumber " +
             "       AND DN.DELETED_DATE IS NULL "
             , nativeQuery = true)
-    Date findByFinancialDocumentByNumberingTypeAndFromNumber(Long documentNumberingTypeId, String fromNumber, Long organizationId);
+    LocalDateTime findByFinancialDocumentByNumberingTypeAndFromNumber(Long documentNumberingTypeId, String fromNumber, Long organizationId);
 
 
     @Query(value = " SELECT MIN(DN.DOCUMENT_NUMBER) " +
@@ -248,7 +248,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       AND FD.DOCUMENT_DATE = :fromDate" +
             "       AND FD.ORGANIZATION_ID = :organizationId"
             , nativeQuery = true)
-    String findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(Long documentNumberingTypeId, Date fromDate, Long organizationId);
+    String findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(Long documentNumberingTypeId, LocalDateTime fromDate, Long organizationId);
 
 
 }
