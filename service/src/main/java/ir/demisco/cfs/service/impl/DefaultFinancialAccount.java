@@ -11,6 +11,7 @@ import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -59,7 +60,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             throw new RuleException("لطفا فیلتر بر اساس تاریخ یا شماره را انتخاب نمایید.");
         }
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
-        Page<Object[]> list = financialPeriodRepository.findByFinancialPeriodByParam(100L,
+        Page<Object[]> list = financialPeriodRepository.findByFinancialPeriodByParam(SecurityHelper.getCurrentUser().getOrganizationId(),
                 financialDocumentReportRequest.getLedgerTypeId(),
                 financialDocumentReportRequest.getPeriodStartDate(),
                 financialDocumentReportRequest.getDateFilterFlg(),
@@ -107,10 +108,10 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization(100L);
 
         if (startDate.isBefore(periodStartDate)) {
-            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganizationStartDate(100L, startDate);
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganizationStartDate(SecurityHelper.getCurrentUser().getOrganizationId(), startDate);
         }
         if (periodStartDate == null) {
-            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization2(100L);
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization2(SecurityHelper.getCurrentUser().getOrganizationId());
         }
 
         if (periodStartDate == null) {
@@ -122,11 +123,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void setFromNumberAndToNumber(FinancialDocumentReportRequest financialDocumentReportRequest) {
         String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
-                financialDocumentReportRequest.getFromDate(), 100L);
+                financialDocumentReportRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setFromNumber(fromNumber);
 
         String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
-                financialDocumentReportRequest.getToDate(), 100L);
+                financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setToNumber(toNumber);
 
         if (fromNumber == null || toNumber == null) {
