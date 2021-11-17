@@ -1,14 +1,17 @@
 package ir.demisco.cfs.service.impl;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import ir.demisco.cfs.model.dto.request.FinancialDocumentCentricTurnOverRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentReportRequest;
 import ir.demisco.cfs.model.dto.response.FinancialAccountReportResponse;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentCentricTurnOverResponse;
 import ir.demisco.cfs.service.api.FinancialAccountService;
 import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -57,7 +60,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             throw new RuleException("لطفا فیلتر بر اساس تاریخ یا شماره را انتخاب نمایید.");
         }
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
-        Page<Object[]> list = financialPeriodRepository.findByFinancialPeriodByParam(100L,
+        Page<Object[]> list = financialPeriodRepository.findByFinancialPeriodByParam(SecurityHelper.getCurrentUser().getOrganizationId(),
                 financialDocumentReportRequest.getLedgerTypeId(),
                 financialDocumentReportRequest.getPeriodStartDate(),
                 financialDocumentReportRequest.getDateFilterFlg(),
@@ -92,6 +95,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         return dataSourceResult;
     }
 
+
     private void getFinancialDocumentByNumberingTypeAndFromNumber(FinancialDocumentReportRequest financialDocumentReportRequest) {
 
         if (financialDocumentReportRequest.getDateFilterFlg() == 0) {
@@ -99,17 +103,15 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         } else {
             setFromNumberAndToNumber(financialDocumentReportRequest);
         }
-
         LocalDateTime startDate = financialDocumentReportRequest.getFromDate();
         LocalDateTime periodStartDate;
-        periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization(100L);
+        periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization(SecurityHelper.getCurrentUser().getOrganizationId());
 
         if (startDate.isBefore(periodStartDate)) {
-            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganizationStartDate(100L, startDate);
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganizationStartDate(SecurityHelper.getCurrentUser().getOrganizationId(), startDate);
         }
-
         if (periodStartDate == null) {
-            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization2(100L);
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization2(SecurityHelper.getCurrentUser().getOrganizationId());
         }
 
         if (periodStartDate == null) {
@@ -121,22 +123,29 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void setFromNumberAndToNumber(FinancialDocumentReportRequest financialDocumentReportRequest) {
         String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
-                financialDocumentReportRequest.getFromDate(), 100L);
+                financialDocumentReportRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setFromNumber(fromNumber);
 
-        String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
-                financialDocumentReportRequest.getToDate(), 100L);
-        financialDocumentReportRequest.setFromNumber(toNumber);
+        String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
+                financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+        financialDocumentReportRequest.setToNumber(toNumber);
+
+        if (fromNumber == null || toNumber == null) {
+            throw new RuleException("اشکال در یافتن سند در تاریخ های وارد شده");
+        }
     }
 
     private void setFromDateAndToDate(FinancialDocumentReportRequest financialDocumentReportRequest) {
         LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
-                , financialDocumentReportRequest.getFromNumber(), 100L);
+                , financialDocumentReportRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setFromDate(fromDate);
-
         LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
-                , financialDocumentReportRequest.getToNumber(), 100L);
+                , financialDocumentReportRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setToDate(toDate);
+        if (fromDate == null || toDate == null) {
+            throw new RuleException("از/ تا شماره سند وارد شده صحیح نمیباشد");
+        }
+
     }
 
     private FinancialDocumentReportRequest setParameter(List<DataSourceRequest.FilterDescriptor> filters) {
@@ -256,6 +265,196 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         } else {
             throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
         }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DataSourceResult getFinancialDocumentCentricTurnOver(DataSourceRequest dataSourceRequest) {
+        List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
+        FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest = setParameterCentricTurnOver(filters);
+        getFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentCentricTurnOverRequest);
+        if (financialDocumentCentricTurnOverRequest.getFinancialAccountId() == null) {
+            throw new RuleException("لطفا شناسه ی حساب مالی را وارد نمایید.");
+        }
+        if (financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId() == null) {
+            throw new RuleException("لطفا شناسه ی انواع شماره گذاری سند مالی را وارد نمایید.");
+        }
+        if (financialDocumentCentricTurnOverRequest.getDateFilterFlg() == null) {
+            throw new RuleException("لطفا فیلتر بر اساس تاریخ یا شماره را انتخاب نمایید.");
+        }
+        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
+        Page<Object[]> list = financialPeriodRepository.findByFinancialAccountCentricTurnOver(SecurityHelper.getCurrentUser().getOrganizationId(),
+                financialDocumentCentricTurnOverRequest.getLedgerTypeId(),
+                financialDocumentCentricTurnOverRequest.getPeriodStartDate(),
+                financialDocumentCentricTurnOverRequest.getDateFilterFlg(),
+                financialDocumentCentricTurnOverRequest.getFromDate(),
+                financialDocumentCentricTurnOverRequest.getToDate(),
+                financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
+                financialDocumentCentricTurnOverRequest.getFromNumber(),
+                financialDocumentCentricTurnOverRequest.getCentricAccount1(),
+                financialDocumentCentricTurnOverRequest.getCentricAccountId1(),
+                financialDocumentCentricTurnOverRequest.getCentricAccount2(),
+                financialDocumentCentricTurnOverRequest.getCentricAccountId2(),
+                financialDocumentCentricTurnOverRequest.getReferenceNumberObject(),
+                financialDocumentCentricTurnOverRequest.getReferenceNumber(),
+                financialDocumentCentricTurnOverRequest.getToNumber(),
+                financialDocumentCentricTurnOverRequest.getFinancialAccountId(),
+                pageable);
+        List<FinancialDocumentCentricTurnOverResponse> financialDocumentCentricTurnOverResponse = list.stream().map(item ->
+                FinancialDocumentCentricTurnOverResponse.builder()
+                        .accountDescription(item[0] == null ? null : item[0].toString())
+//                                .centricAccountDes1()
+//                        .documentDate((item[0] == null ? null : DateUtil.convertStringToDate(item[0].toString())))
+//                        .documentNumber(item[1] == null ? null : item[1].toString())
+//                        .description(item[2] == null ? null : item[2].toString())
+//                        .debitAmount(item[3] == null ? null : ((BigDecimal) item[3]).doubleValue())
+//                        .creditAmount(item[4] == null ? null : ((BigDecimal) item[4]).doubleValue())
+//                        .remainDebit(item[5] == null ? null : ((BigDecimal) item[5]).doubleValue())
+//                        .remainCredit(item[6] == null ? null : ((BigDecimal) item[6]).doubleValue())
+//                        .remainAmount(item[7] == null ? null : ((BigDecimal) item[7]).doubleValue())
+                        .build()).collect(Collectors.toList());
+        DataSourceResult dataSourceResult = new DataSourceResult();
+        dataSourceResult.setData(financialDocumentCentricTurnOverResponse);
+        dataSourceResult.setTotal(list.getTotalElements());
+        return dataSourceResult;
+    }
+
+    private FinancialDocumentCentricTurnOverRequest setParameterCentricTurnOver(List<DataSourceRequest.FilterDescriptor> filters) {
+        FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest = new FinancialDocumentCentricTurnOverRequest();
+        for (DataSourceRequest.FilterDescriptor item : filters) {
+            switch (item.getField()) {
+                case "financialAccountId":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setFinancialAccountId(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+                case "fromDate":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+
+                    }
+                    break;
+
+                case "toDate":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+
+                    }
+                    break;
+
+                case "documentNumberingTypeId":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setDocumentNumberingTypeId(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+
+                case "centricAccountId1":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setCentricAccountId1(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+                case "centricAccountId2":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setCentricAccountId2(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+
+                case "fromNumber":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setFromNumber(item.getValue().toString());
+                    }
+                    break;
+                case "toNumber":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setToNumber(item.getValue().toString());
+                    }
+                    break;
+
+                case "ledgerTypeId":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+
+                case "dateFilterFlg":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setDateFilterFlg(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+                case "flgHasRemind":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setFlgHasRemind((Boolean) (item.getValue()));
+                    }
+                    break;
+                case "flgRelatedOther":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setFlgRelatedOther((Boolean) (item.getValue()));
+                    }
+                    break;
+
+                case "flgWithParentLevel":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setFlgWithParentLevel((Boolean) (item.getValue()));
+                    }
+                    break;
+            }
+        }
+
+        if (financialDocumentCentricTurnOverRequest.getCentricAccountId1() == null) {
+            financialDocumentCentricTurnOverRequest.setCentricAccount1(null);
+            financialDocumentCentricTurnOverRequest.setCentricAccountId1(0L);
+        }
+        if (financialDocumentCentricTurnOverRequest.getCentricAccountId2() == null) {
+            financialDocumentCentricTurnOverRequest.setCentricAccount2(null);
+            financialDocumentCentricTurnOverRequest.setCentricAccountId2(0L);
+        }
+        return financialDocumentCentricTurnOverRequest;
+    }
+
+    private void getFinancialDocumentByNumberingTypeAndFromNumber(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest) {
+
+        if (financialDocumentCentricTurnOverRequest.getDateFilterFlg() == 0) {
+            setFromDateAndToDateCentricTurnOver(financialDocumentCentricTurnOverRequest);
+        } else {
+            setFromNumberAndToNumberCentricTurnOver(financialDocumentCentricTurnOverRequest);
+        }
+
+        LocalDateTime startDate = financialDocumentCentricTurnOverRequest.getFromDate();
+        LocalDateTime periodStartDate;
+        periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization(SecurityHelper.getCurrentUser().getOrganizationId());
+
+        if (startDate.isBefore(periodStartDate)) {
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganizationStartDate(SecurityHelper.getCurrentUser().getOrganizationId(), startDate);
+        }
+        if (periodStartDate == null) {
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization2(SecurityHelper.getCurrentUser().getOrganizationId());
+        }
+
+        if (periodStartDate == null) {
+            throw new RuleException("هیچ دوره ی مالی در سازمان یافت نشد.");
+        }
+
+        financialDocumentCentricTurnOverRequest.setPeriodStartDate(periodStartDate);
+    }
+
+    private void setFromDateAndToDateCentricTurnOver(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest) {
+        LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId()
+                , financialDocumentCentricTurnOverRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
+        financialDocumentCentricTurnOverRequest.setFromDate(fromDate);
+        LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId()
+                , financialDocumentCentricTurnOverRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
+        financialDocumentCentricTurnOverRequest.setToDate(toDate);
+
+    }
+
+    private void setFromNumberAndToNumberCentricTurnOver(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest) {
+        String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
+                financialDocumentCentricTurnOverRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+        financialDocumentCentricTurnOverRequest.setFromNumber(fromNumber);
+
+        String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
+                financialDocumentCentricTurnOverRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+        financialDocumentCentricTurnOverRequest.setToNumber(toNumber);
     }
 }
 

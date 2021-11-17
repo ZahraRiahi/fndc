@@ -246,9 +246,21 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       AND DN.DELETED_DATE IS NULL " +
             "     WHERE FD.DELETED_DATE IS NULL " +
             "       AND FD.DOCUMENT_DATE = :fromDate" +
-            "       AND FD.ORGANIZATION_ID = :organizationId"
+            "       AND FD.ORGANIZATION_ID = :organizationId "
             , nativeQuery = true)
     String findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(Long documentNumberingTypeId, LocalDateTime fromDate, Long organizationId);
 
+
+    @Query(value = " SELECT MAX(DN.DOCUMENT_NUMBER) " +
+            "      FROM FNDC.FINANCIAL_DOCUMENT FD " +
+            "     INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER DN " +
+            "        ON FD.ID = DN.FINANCIAL_DOCUMENT_ID " +
+            "       AND DN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
+            "       AND DN.DELETED_DATE IS NULL " +
+            "     WHERE FD.DELETED_DATE IS NULL " +
+            "       AND FD.DOCUMENT_DATE = NVL(:toDate, FD.DOCUMENT_DATE) " +
+            "       AND FD.ORGANIZATION_ID = :organizationId "
+            , nativeQuery = true)
+    String findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long documentNumberingTypeId, LocalDateTime toDate, Long organizationId);
 
 }
