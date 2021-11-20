@@ -404,22 +404,22 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     equalCurrency.setMessage("نوع ارز انتخاب شده در ردیفهای ارزی سند ، با نوع ارز یکسان نمیباشد");
                     financialDocumentErrorDtoList.add(equalCurrency);
                 }
-                List<AccountDefaultValue> accountDefaultValueList = accountDefaultValueRepository.getAccountDefaultValueByDocumentItemId(documentItem.getId());
-                accountDefaultValueList.forEach(defaultValue -> {
-                    if ((documentItem.getCentricAccountId1() != defaultValue.getCentricAccount()) ||
-                            (documentItem.getCentricAccountId2() != defaultValue.getCentricAccount()) ||
-                            (documentItem.getCentricAccountId3() != defaultValue.getCentricAccount()) ||
-                            (documentItem.getCentricAccountId4() != defaultValue.getCentricAccount()) ||
-                            (documentItem.getCentricAccountId5() != defaultValue.getCentricAccount()) ||
-                            (documentItem.getCentricAccountId6() != defaultValue.getCentricAccount())) {
-                        FinancialDocumentErrorDto centricAccount = new FinancialDocumentErrorDto();
-                        centricAccount.setFinancialDocumentId(financialDocument.getId());
-                        centricAccount.setFinancialDocumentItemId(documentItem.getId());
-                        centricAccount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-                        centricAccount.setMessage("کد / کدهای تمرکز با تمرکز های حساب ، همخوانی ندارد");
-                        financialDocumentErrorDtoList.add(centricAccount);
-                    }
-                });
+//                List<AccountDefaultValue> accountDefaultValueList = accountDefaultValueRepository.getAccountDefaultValueByDocumentItemId(documentItem.getId());
+//                accountDefaultValueList.forEach(defaultValue -> {
+//                    if ((documentItem.getCentricAccountId1() != defaultValue.getCentricAccount()) ||
+//                            (documentItem.getCentricAccountId2() != defaultValue.getCentricAccount()) ||
+//                            (documentItem.getCentricAccountId3() != defaultValue.getCentricAccount()) ||
+//                            (documentItem.getCentricAccountId4() != defaultValue.getCentricAccount()) ||
+//                            (documentItem.getCentricAccountId5() != defaultValue.getCentricAccount()) ||
+//                            (documentItem.getCentricAccountId6() != defaultValue.getCentricAccount())) {
+//                        FinancialDocumentErrorDto centricAccount = new FinancialDocumentErrorDto();
+//                        centricAccount.setFinancialDocumentId(financialDocument.getId());
+//                        centricAccount.setFinancialDocumentItemId(documentItem.getId());
+//                        centricAccount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+//                        centricAccount.setMessage("کد / کدهای تمرکز با تمرکز های حساب ، همخوانی ندارد");
+//                        financialDocumentErrorDtoList.add(centricAccount);
+//                    }
+//                });
                 FinancialDocument document = financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocument.getId());
                 if (document == null) {
                     FinancialDocumentErrorDto activeMountStatus = new FinancialDocumentErrorDto();
