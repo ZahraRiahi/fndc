@@ -288,7 +288,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialDocumentCentricTurnOverRequest.getPeriodStartDate(),
                 financialDocumentCentricTurnOverRequest.getDateFilterFlg(),
                 financialDocumentCentricTurnOverRequest.getFromDate(),
-                financialDocumentCentricTurnOverRequest.getToDate(),
                 financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
                 financialDocumentCentricTurnOverRequest.getFromNumber(),
                 financialDocumentCentricTurnOverRequest.getCentricAccount1(),
@@ -297,21 +296,33 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialDocumentCentricTurnOverRequest.getCentricAccountId2(),
                 financialDocumentCentricTurnOverRequest.getReferenceNumberObject(),
                 financialDocumentCentricTurnOverRequest.getReferenceNumber(),
-                financialDocumentCentricTurnOverRequest.getToNumber(),
                 financialDocumentCentricTurnOverRequest.getFinancialAccountId(),
+                financialDocumentCentricTurnOverRequest.getToDate(),
+                financialDocumentCentricTurnOverRequest.getToNumber(),
+
                 pageable);
+
         List<FinancialDocumentCentricTurnOverResponse> financialDocumentCentricTurnOverResponse = list.stream().map(item ->
                 FinancialDocumentCentricTurnOverResponse.builder()
-                        .accountDescription(item[0] == null ? null : item[0].toString())
-//                                .centricAccountDes1()
-//                        .documentDate((item[0] == null ? null : DateUtil.convertStringToDate(item[0].toString())))
-//                        .documentNumber(item[1] == null ? null : item[1].toString())
-//                        .description(item[2] == null ? null : item[2].toString())
-//                        .debitAmount(item[3] == null ? null : ((BigDecimal) item[3]).doubleValue())
-//                        .creditAmount(item[4] == null ? null : ((BigDecimal) item[4]).doubleValue())
-//                        .remainDebit(item[5] == null ? null : ((BigDecimal) item[5]).doubleValue())
-//                        .remainCredit(item[6] == null ? null : ((BigDecimal) item[6]).doubleValue())
-//                        .remainAmount(item[7] == null ? null : ((BigDecimal) item[7]).doubleValue())
+                        .accountId(Long.parseLong(item[0] == null ? null : item[0].toString()))
+                        .accountCode(item[1] == null ? "" : item[1].toString())
+                        .accountDescription(item[2] == null ? "" : item[2].toString())
+                        .centricAccountId1(Long.parseLong(item[3] == null ? "0" : item[3].toString()))
+                        .centricAccountId2(Long.parseLong(item[4] == null ? "0" : item[4].toString()))
+                        .centricAccountId3(Long.parseLong(item[5] == null ? "0" : item[5].toString()))
+                        .centricAccountId4(Long.parseLong(item[6] == null ? "0" : item[6].toString()))
+                        .centricAccountId5(Long.parseLong(item[7] == null ? "0" : item[7].toString()))
+                        .centricAccountId6(Long.parseLong(item[8] == null ? "0" : item[8].toString()))
+                        .centricAccountDes1(item[9] == null ? "" : item[9].toString())
+                        .centricAccountDes2(item[10] == null ? "" : item[10].toString())
+                        .centricAccountDes3(item[11] == null ? "" : item[11].toString())
+                        .centricAccountDes4(item[12] == null ? "" : item[12].toString())
+                        .centricAccountDes5(item[13] == null ? "" : item[13].toString())
+                        .centricAccountDes6(item[14] == null ? "" : item[14].toString())
+                        .debitAmount(item[15] == null ? null : ((BigDecimal) item[15]).doubleValue())
+                        .creditAmount(item[16] == null ? null : ((BigDecimal) item[16]).doubleValue())
+                        .remainDebit(item[17] == null ? null : ((BigDecimal) item[17]).doubleValue())
+                        .remainCredit(item[18] == null ? null : ((BigDecimal) item[18]).doubleValue())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialDocumentCentricTurnOverResponse);
@@ -351,11 +362,17 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 case "centricAccountId1":
                     if (item.getValue() != null) {
                         financialDocumentCentricTurnOverRequest.setCentricAccountId1(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialDocumentCentricTurnOverRequest.setCentricAccountId1(0L);
+                        financialDocumentCentricTurnOverRequest.setCentricAccount1(null);
                     }
                     break;
                 case "centricAccountId2":
                     if (item.getValue() != null) {
                         financialDocumentCentricTurnOverRequest.setCentricAccountId2(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialDocumentCentricTurnOverRequest.setCentricAccountId2(0L);
+                        financialDocumentCentricTurnOverRequest.setCentricAccount2(null);
                     }
                     break;
 
@@ -395,6 +412,14 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 case "flgWithParentLevel":
                     if (item.getValue() != null) {
                         financialDocumentCentricTurnOverRequest.setFlgWithParentLevel((Boolean) (item.getValue()));
+                    }
+                    break;
+                case "referenceNumber":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricTurnOverRequest.setReferenceNumber(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialDocumentCentricTurnOverRequest.setReferenceNumber(0L);
+                        financialDocumentCentricTurnOverRequest.setReferenceNumberObject(null);
                     }
                     break;
             }
@@ -444,6 +469,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId()
                 , financialDocumentCentricTurnOverRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentCentricTurnOverRequest.setToDate(toDate);
+        if (fromDate == null || toDate == null) {
+            throw new RuleException("از/ تا شماره سند وارد شده صحیح نمیباشد");
+        }
 
     }
 
@@ -455,6 +483,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
                 financialDocumentCentricTurnOverRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentCentricTurnOverRequest.setToNumber(toNumber);
+        if (fromNumber == null || toNumber == null) {
+            throw new RuleException("اشکال در یافتن سند در تاریخ های وارد شده");
+        }
     }
 }
 
