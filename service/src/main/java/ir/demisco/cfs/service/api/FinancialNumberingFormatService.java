@@ -9,9 +9,11 @@ public interface FinancialNumberingFormatService {
 
     DataSourceResult getNumberingFormatByOrganizationId(Long organizationId, DataSourceRequest dataSourceRequest);
 
-    ResponseFinancialNumberingFormatDto save(FinancialNumberingFormatDto financialNumberingFormatDto);
+    //    ResponseFinancialNumberingFormatDto save(FinancialNumberingFormatDto financialNumberingFormatDto);
+    Boolean save(FinancialNumberingFormatDto financialNumberingFormatDto);
 
-    ResponseFinancialNumberingFormatDto upDate(FinancialNumberingFormatDto financialNumberingFormatDto);
+    //    ResponseFinancialNumberingFormatDto upDate(FinancialNumberingFormatDto financialNumberingFormatDto);
+    Boolean upDate(FinancialNumberingFormatDto financialNumberingFormatDto);
 
     boolean deleteNumberingFormatById(Long numberingFormatId);
 }
