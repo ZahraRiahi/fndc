@@ -1,8 +1,10 @@
 package ir.demisco.cfs.service.impl;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import ir.demisco.cfs.model.dto.request.FinancialAccountBalanceRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentCentricTurnOverRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentReportRequest;
+import ir.demisco.cfs.model.dto.response.FinancialAccountBalanceResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountReportResponse;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentCentricTurnOverResponse;
 import ir.demisco.cfs.service.api.FinancialAccountService;
@@ -159,7 +161,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                     break;
                 case "fromDate":
                     if (item.getValue() != null) {
-//                        financialDocumentReportRequest.setFromDate(DateUtil.convertStringToDate(item.getValue().toString()));
                         financialDocumentReportRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
 
                     }
@@ -167,7 +168,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
                 case "toDate":
                     if (item.getValue() != null) {
-//                        financialDocumentReportRequest.setToDate(DateUtil.convertStringToDate(item.getValue().toString()));
                         financialDocumentReportRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
 
                     }
@@ -483,6 +483,213 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
                 financialDocumentCentricTurnOverRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentCentricTurnOverRequest.setToNumber(toNumber);
+        if (fromNumber == null || toNumber == null) {
+            throw new RuleException("اشکال در یافتن سند در تاریخ های وارد شده");
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DataSourceResult getFinancialDocumentBalanceReport(DataSourceRequest dataSourceRequest) {
+        List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
+        FinancialAccountBalanceRequest financialAccountBalanceRequest = setParameterBalanceReport(filters);
+        int length = 0 ;
+        if(financialAccountBalanceRequest.getFromFinancialAccountCode()==null || financialAccountBalanceRequest.getToFinancialAccountCode()==null){
+            throw new RuleException("ورود پارامتر های از / تا کد حساب اجباری میباشد");
+        }
+        if (financialAccountBalanceRequest.getFromFinancialAccountCode() != null || financialAccountBalanceRequest.getToFinancialAccountCode()!=null){
+            if (financialAccountBalanceRequest.getFromFinancialAccountCode()  == null) {
+                financialAccountBalanceRequest.setFromFinancialAccountCode("");
+            }
+            if (financialAccountBalanceRequest.getToFinancialAccountCode() == null) {
+                financialAccountBalanceRequest.setToFinancialAccountCode("");
+            }
+            if (financialAccountBalanceRequest.getFromFinancialAccountCode().length() != financialAccountBalanceRequest.getToFinancialAccountCode().length()) {
+                throw new RuleException("طول کد های حساب میبایست مساوی باشد");
+            }
+           length = financialAccountBalanceRequest.getFromFinancialAccountCode().length();
+        }
+
+
+        getFinancialDocumentByNumberingTypeAndFromNumberBalance(financialAccountBalanceRequest);
+//        if (financialAccountBalanceRequest.getFinancialAccountId() == null) {
+//            throw new RuleException("لطفا شناسه ی حساب مالی را وارد نمایید.");
+//        }
+        if (financialAccountBalanceRequest.getDocumentNumberingTypeId() == null) {
+            throw new RuleException("لطفا شناسه ی انواع شماره گذاری سند مالی را وارد نمایید.");
+        }
+//        if (financialAccountBalanceRequest.getSummarizingType() == null) {
+//            throw new RuleException("لطفا نوع جمع بندی را وارد نمایید.");
+//        }
+        if (financialAccountBalanceRequest.getOrganizationId() == null) {
+            throw new RuleException("لطفا شناسه ی واحد سازمانی را وارد نمایید.");
+        }
+        if (financialAccountBalanceRequest.getDateFilterFlg() == null) {
+            throw new RuleException("لطفا فیلتر بر اساس تاریخ یا شماره را انتخاب نمایید.");
+        }
+        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
+        Page<Object[]> list = financialPeriodRepository.findByFinancialPeriodByBalanceReport(financialAccountBalanceRequest.getFromDate(),
+                financialAccountBalanceRequest.getToDate(),
+                financialAccountBalanceRequest.getFromNumber(),
+                financialAccountBalanceRequest.getToNumber(),
+                financialAccountBalanceRequest.getDocumentNumberingTypeId(),
+                financialAccountBalanceRequest.getLedgerTypeId(),
+                financialAccountBalanceRequest.getStructureLevel(),
+                financialAccountBalanceRequest.getShowHigherLevels(),
+                financialAccountBalanceRequest.getPeriodStartDate(),
+                length,
+                financialAccountBalanceRequest.getFromFinancialAccountCode(),
+                financialAccountBalanceRequest.getToFinancialAccountCode(),
+                financialAccountBalanceRequest.getOrganizationId(),
+                financialAccountBalanceRequest.getHasRemain(),
+                pageable);
+
+        List<FinancialAccountBalanceResponse> financialAccountBalanceResponse = list.stream().map(item ->
+                FinancialAccountBalanceResponse.builder()
+                        .financialAccountParentId(Long.parseLong(item[0] == null ? null : item[0].toString()))
+                        .financialAccountId(Long.parseLong(item[1] == null ? null : item[1].toString()))
+                        .financialAccountCode(item[2] == null ? null : item[2].toString())
+                        .financialAccountDescription(item[3] == null ? null : item[3].toString())
+                        .financialAccountLevel(Long.parseLong(item[4] == null ? null : item[4].toString()))
+                        .sumDebit(item[5] == null ? null : ((BigDecimal) item[5]).doubleValue())
+                        .sumCredit(item[6] == null ? null : ((BigDecimal) item[6]).doubleValue())
+                        .befDebit(item[7] == null ? null : ((BigDecimal) item[7]).doubleValue())
+                        .befCredit(item[8] == null ? null : ((BigDecimal) item[8]).doubleValue())
+                        .remDebit(item[9] == null ? null : ((BigDecimal) item[9]).doubleValue())
+                        .remCredit(item[10] == null ? null : ((BigDecimal) item[10]).doubleValue())
+                        .build()).collect(Collectors.toList());
+        DataSourceResult dataSourceResult = new DataSourceResult();
+        dataSourceResult.setData(financialAccountBalanceResponse);
+        dataSourceResult.setTotal(list.getTotalElements());
+        return dataSourceResult;
+    }
+
+    private FinancialAccountBalanceRequest setParameterBalanceReport(List<DataSourceRequest.FilterDescriptor> filters) {
+        FinancialAccountBalanceRequest financialAccountBalanceRequest = new FinancialAccountBalanceRequest();
+        for (DataSourceRequest.FilterDescriptor item : filters) {
+            switch (item.getField()) {
+                case "fromDate":
+                    if (item.getValue() != null) {
+                        financialAccountBalanceRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+                    }
+                    break;
+                case "toDate":
+                    if (item.getValue() != null) {
+                        financialAccountBalanceRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+                    }
+                    break;
+
+                case "fromNumber":
+                    if (item.getValue() != null) {
+                        financialAccountBalanceRequest.setFromNumber(item.getValue().toString());
+                    }
+                    break;
+                case "toNumber":
+                    if (item.getValue() != null) {
+                        financialAccountBalanceRequest.setToNumber(item.getValue().toString());
+                    }
+                    break;
+                case "documentNumberingTypeId":
+                    if (item.getValue() != null) {
+                        financialAccountBalanceRequest.setDocumentNumberingTypeId(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+                case "ledgerTypeId":
+                    if (item.getValue() != null) {
+                        financialAccountBalanceRequest.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+                case "structureLevel":
+                    if (item.getValue() != null) {
+                        financialAccountBalanceRequest.setStructureLevel(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+                case "hasRemain":
+                    if (item.getValue() != null) {
+                        financialAccountBalanceRequest.setHasRemain((Boolean) item.getValue());
+                    }
+                    break;
+                case "showHigherLevels":
+                    if (item.getValue() != null) {
+                        financialAccountBalanceRequest.setShowHigherLevels((Boolean) item.getValue());
+                    }
+                    break;
+                case "organizationId":
+                    if (item.getValue() != null) {
+                        financialAccountBalanceRequest.setOrganizationId(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+
+                case "fromFinancialAccountCode":
+                    if (item.getValue() != null) {
+                        financialAccountBalanceRequest.setFromFinancialAccountCode(item.getValue().toString());
+                    }
+                    break;
+                case "toFinancialAccountCode":
+                    if (item.getValue() != null) {
+                        financialAccountBalanceRequest.setToFinancialAccountCode(item.getValue().toString());
+                    }
+                    break;
+                case "dateFilterFlg":
+                    if (item.getValue() != null) {
+                        financialAccountBalanceRequest.setDateFilterFlg(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+
+            }
+        }
+
+        return financialAccountBalanceRequest;
+
+    }
+
+    private void getFinancialDocumentByNumberingTypeAndFromNumberBalance(FinancialAccountBalanceRequest financialAccountBalanceRequest) {
+
+        if (financialAccountBalanceRequest.getDateFilterFlg() == 0) {
+            setFromDateAndToDateCentricTurnOverBalance(financialAccountBalanceRequest);
+        } else {
+            setFromNumberAndToNumberCentricTurnOverBalance(financialAccountBalanceRequest);
+        }
+
+        LocalDateTime startDate = financialAccountBalanceRequest.getFromDate();
+        LocalDateTime periodStartDate;
+        periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization(SecurityHelper.getCurrentUser().getOrganizationId());
+
+        if (startDate.isBefore(periodStartDate)) {
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganizationStartDate(SecurityHelper.getCurrentUser().getOrganizationId(), startDate);
+        }
+        if (periodStartDate == null) {
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization2(SecurityHelper.getCurrentUser().getOrganizationId());
+        }
+
+        if (periodStartDate == null) {
+            throw new RuleException("هیچ دوره ی مالی در سازمان یافت نشد.");
+        }
+
+        financialAccountBalanceRequest.setPeriodStartDate(periodStartDate);
+    }
+
+    private void setFromDateAndToDateCentricTurnOverBalance(FinancialAccountBalanceRequest financialAccountBalanceRequest) {
+        LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialAccountBalanceRequest.getDocumentNumberingTypeId()
+                , financialAccountBalanceRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
+        financialAccountBalanceRequest.setFromDate(fromDate);
+        LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialAccountBalanceRequest.getDocumentNumberingTypeId()
+                , financialAccountBalanceRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
+        financialAccountBalanceRequest.setToDate(toDate);
+        if (fromDate == null || toDate == null) {
+            throw new RuleException("از/ تا شماره سند وارد شده صحیح نمیباشد");
+        }
+
+    }
+
+    private void setFromNumberAndToNumberCentricTurnOverBalance(FinancialAccountBalanceRequest financialAccountBalanceRequest) {
+        String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialAccountBalanceRequest.getDocumentNumberingTypeId(),
+                financialAccountBalanceRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+        financialAccountBalanceRequest.setFromNumber(fromNumber);
+
+        String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialAccountBalanceRequest.getDocumentNumberingTypeId(),
+                financialAccountBalanceRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+        financialAccountBalanceRequest.setToNumber(toNumber);
         if (fromNumber == null || toNumber == null) {
             throw new RuleException("اشکال در یافتن سند در تاریخ های وارد شده");
         }
