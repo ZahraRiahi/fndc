@@ -7,4 +7,6 @@ public interface FinancialAccountService {
     DataSourceResult getFinancialDocument(DataSourceRequest dataSourceRequest);
 
     DataSourceResult getFinancialDocumentCentricTurnOver(DataSourceRequest dataSourceRequest);
+
+    DataSourceResult getFinancialDocumentBalanceReport(DataSourceRequest dataSourceRequest);
 }

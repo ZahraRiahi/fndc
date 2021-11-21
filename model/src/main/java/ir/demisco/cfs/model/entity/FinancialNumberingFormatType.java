@@ -12,6 +12,7 @@ public class FinancialNumberingFormatType extends AuditModel<Long> {
 
     private String    description;
     private LocalDateTime deletedDate;
+    private String    code;
 
     @Override
     @Id
@@ -36,5 +37,14 @@ public class FinancialNumberingFormatType extends AuditModel<Long> {
 
     public void setDeletedDate(LocalDateTime deletedDate) {
         this.deletedDate = deletedDate;
+    }
+
+    @Column(name = "CODE")
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

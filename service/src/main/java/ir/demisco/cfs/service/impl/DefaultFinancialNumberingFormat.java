@@ -68,7 +68,8 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
                     financialNumberingFormatDto.getId()).orElse(new FinancialNumberingFormat());
             numberingFormat.setOrganization(organizationRepository.getOne(organizationId));
             numberingFormat.setDescription(financialNumberingFormatDto.getDescription());
-            numberingFormat.setFinancialNumberingFormatType(financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()));
+            numberingFormat.setFinancialNumberingFormatType(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()!=null ?
+                            financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()):null);
             numberingFormat.setFinancialNumberingType(financialNumberingTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingTypeId()));
             financialNumberingFormatRepository.save(numberingFormat);
             return convertNumberingFormatToDto(numberingFormat);
@@ -99,8 +100,10 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
         return ResponseFinancialNumberingFormatDto.builder()
                 .id(updateFormat.getId())
                 .description(updateFormat.getDescription())
-                .financialNumberingFormatTypeId(updateFormat.getFinancialNumberingFormatType().getId())
-                .financialNumberingFormatTypeDescription(updateFormat.getFinancialNumberingFormatType().getDescription())
+                .financialNumberingFormatTypeId(updateFormat.getFinancialNumberingFormatType() != null ?
+                         updateFormat.getFinancialNumberingFormatType().getId() :null)
+                .financialNumberingFormatTypeDescription(updateFormat.getFinancialNumberingFormatType()!= null ?
+                        updateFormat.getFinancialNumberingFormatType().getDescription() :null)
                 .financialNumberingTypeId(updateFormat.getFinancialNumberingType().getId())
                 .message("عملیات موفقیت آمیز بود")
                 .build();
