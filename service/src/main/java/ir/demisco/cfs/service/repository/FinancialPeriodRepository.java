@@ -512,4 +512,103 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
                                                          Object centricAccount2, Long centricAccountId2, Object referenceNumberObject,
                                                          Long referenceNumber, Long financialAccountId, LocalDateTime toDate, String toNumber,
                                                          Pageable pageable);
+
+
+    @Query(value = " SELECT FINANCIAL_ACCOUNT_PARENT_ID, " +
+            "       FINANCIAL_ACCOUNT_ID, " +
+            "       FINANCIAL_ACCOUNT_code, " +
+            "       FINANCIAL_ACCOUNT_DESCRIPTION, " +
+            "       FINANCIAL_ACCOUNT_Level, " +
+            "       SUM_DEBIT, " +
+            "       SUM_CREDIT, " +
+            "       BEF_DEBIT, " +
+            "       BEF_CREDIT, " +
+            "       DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT), " +
+            "              1, " +
+            "              SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT, " +
+            "              0) REM_DEBIT, " +
+            "       DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT), " +
+            "              -1, " +
+            "              ABS(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT), " +
+            "              0) REM_CREDIT " +
+            "  FROM (SELECT FA2.FINANCIAL_ACCOUNT_PARENT_ID, " +
+            "               FA2.ID FINANCIAL_ACCOUNT_ID, " +
+            "               FA2.CODE FINANCIAL_ACCOUNT_code, " +
+            "               FA2.DESCRIPTION FINANCIAL_ACCOUNT_DESCRIPTION, " +
+            "               fas.sequence FINANCIAL_ACCOUNT_Level, " +
+            "               SUM(CASE " +
+            "                     WHEN (FD.DOCUMENT_DATE BETWEEN :fromDate AND :toDate) AND " +
+            "                          (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND " +
+            "                          :toNumber) THEN " +
+            "                      FDI.DEBIT_AMOUNT " +
+            "                     ELSE " +
+            "                      0 " +
+            "                   END) SUM_DEBIT, " +
+            "               SUM(CASE" +
+            "                     WHEN (FD.DOCUMENT_DATE BETWEEN :fromDate AND :toDate) AND " +
+            "                          (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND " +
+            "                          :toNumber) THEN " +
+            "                      FDI.CREDIT_AMOUNT " +
+            "                     ELSE " +
+            "                      0 " +
+            "                   END) SUM_CREDIT, " +
+            "               SUM(CASE " +
+            "                     WHEN FD.DOCUMENT_DATE <= :fromDate AND " +
+            "                          FDN.DOCUMENT_NUMBER < :fromNumber THEN " +
+            "                      FDI.DEBIT_AMOUNT " +
+            "                     ELSE " +
+            "                      0 " +
+            "                   END) BEF_DEBIT, " +
+            "               SUM(CASE " +
+            "                     WHEN FD.DOCUMENT_DATE <= :fromDate AND " +
+            "                          FDN.DOCUMENT_NUMBER < :fromNumber THEN " +
+            "                      FDI.CREDIT_AMOUNT " +
+            "                     ELSE " +
+            "                      0 " +
+            "                   END) BEF_CREDIT " +
+            "          FROM FNDC.FINANCIAL_DOCUMENT FD " +
+            "         INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FDI " +
+            "            ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID " +
+            "           AND FDI.DELETED_DATE IS NULL " +
+            "         INNER JOIN FNAC.FINANCIAL_ACCOUNT FA " +
+            "            ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID " +
+            "         INNER JOIN FINANCIAL_DOCUMENT_NUMBER FDN " +
+            "            ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID " +
+            "           AND FDN.DELETED_DATE IS NULL " +
+            "           AND FDN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
+            "         INNER JOIN FNAC.ACCOUNT_STRUCTURE_LEVEL ASL " +
+            "            ON ASL.FINANCIAL_ACCOUNT_ID = FA.ID " +
+            "           AND ASL.DELETED_DATE IS NULL " +
+            "         INNER JOIN FNAC.FINANCIAL_ACCOUNT FA2 " +
+            "            ON FA2.ID = ASL.RELATED_ACCOUNT_ID " +
+            "         INNER JOIN fnac.financial_account_structure fas " +
+            "            ON fa2.financial_account_structure_id = fas.id " +
+            "         WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
+            "           AND ((fas.sequence = :structureLevel AND :showHigherLevels = 0) OR " +
+            "               (fas.sequence <= :structureLevel AND " +
+            "               :showHigherLevels = 1)) " +
+            "           AND FD.DOCUMENT_DATE BETWEEN :periodStartDate AND :toDate " +
+            "           AND (FDN.DOCUMENT_NUMBER <= :toNumber OR :toNumber IS NULL) " +
+            "           and ((SUBSTR(fa.code, 1, :length) >= :fromFinancialAccountCode) or " +
+            "               :fromFinancialAccountCode is null) " +
+            "           and ((SUBSTR(fa.code, 1, :length) <= :toFinancialAccountCode) or " +
+            "               :toFinancialAccountCode is null) " +
+            "           AND FD.DELETED_DATE IS NULL " +
+            "           AND FD.ORGANIZATION_ID = :organizationId " +
+            "         GROUP BY FA2.FINANCIAL_ACCOUNT_PARENT_ID, " +
+            "                  FA2.ID, " +
+            "                  FA2.CODE, " +
+            "                  FA2.DESCRIPTION, " +
+            "                  fas.sequence " +
+            "        )" +
+            "  WHERE (:hasRemain = 1 AND :showHigherLevels= 0 AND " +
+            "       (SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT) <> 0) " +
+            "    OR (:hasRemain = 0) " +
+            "    OR :showHigherLevels= 1 " +
+            " ORDER BY FINANCIAL_ACCOUNT_code "
+            , nativeQuery = true)
+    Page<Object[]> findByFinancialPeriodByBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId,
+                                                 Long structureLevel, Boolean showHigherLevels, LocalDateTime periodStartDate, int length, String fromFinancialAccountCode,
+                                                 String toFinancialAccountCode, Long organizationId, Boolean hasRemain, Pageable pageable);
+
 }
