@@ -493,12 +493,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     public DataSourceResult getFinancialDocumentBalanceReport(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialAccountBalanceRequest financialAccountBalanceRequest = setParameterBalanceReport(filters);
-        int length = 0 ;
-        if(financialAccountBalanceRequest.getFromFinancialAccountCode()==null || financialAccountBalanceRequest.getToFinancialAccountCode()==null){
+        int length = 0;
+        if (financialAccountBalanceRequest.getFromFinancialAccountCode() == null || financialAccountBalanceRequest.getToFinancialAccountCode() == null) {
             throw new RuleException("ورود پارامتر های از / تا کد حساب اجباری میباشد");
         }
-        if (financialAccountBalanceRequest.getFromFinancialAccountCode() != null || financialAccountBalanceRequest.getToFinancialAccountCode()!=null){
-            if (financialAccountBalanceRequest.getFromFinancialAccountCode()  == null) {
+        if (financialAccountBalanceRequest.getFromFinancialAccountCode() != null || financialAccountBalanceRequest.getToFinancialAccountCode() != null) {
+            if (financialAccountBalanceRequest.getFromFinancialAccountCode() == null) {
                 financialAccountBalanceRequest.setFromFinancialAccountCode("");
             }
             if (financialAccountBalanceRequest.getToFinancialAccountCode() == null) {
@@ -507,7 +507,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             if (financialAccountBalanceRequest.getFromFinancialAccountCode().length() != financialAccountBalanceRequest.getToFinancialAccountCode().length()) {
                 throw new RuleException("طول کد های حساب میبایست مساوی باشد");
             }
-           length = financialAccountBalanceRequest.getFromFinancialAccountCode().length();
+            length = financialAccountBalanceRequest.getFromFinancialAccountCode().length();
         }
 
 
@@ -686,7 +686,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialAccountBalanceRequest.getDocumentNumberingTypeId(),
                 financialAccountBalanceRequest.getFromDate(), 100L);
         financialAccountBalanceRequest.setFromNumber(fromNumber);
-
         String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialAccountBalanceRequest.getDocumentNumberingTypeId(),
                 financialAccountBalanceRequest.getToDate(), 100L);
         financialAccountBalanceRequest.setToNumber(toNumber);
