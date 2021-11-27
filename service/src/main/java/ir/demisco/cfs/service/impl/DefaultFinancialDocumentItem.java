@@ -58,8 +58,8 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                         .sequenceNumber(Long.parseLong(item[4].toString()))
                         .financialAccountDescription(item[5].toString())
                         .financialAccountId(Long.parseLong(item[6].toString()))
-                        .debitAmount(Long.parseLong(item[7].toString()))
-                        .creditAmount(Long.parseLong(item[8].toString()))
+                        .debitAmount(Long.parseLong(String.format("%.0f",Double.parseDouble(item[7].toString()))))
+                        .creditAmount(Long.parseLong(String.format("%.0f",Double.parseDouble(item[8].toString()))))
                         .fullDescription(item[9].toString())
                         .centricAccountDescription(item[10].toString())
                         .financialDocumentId(((BigDecimal) item[11]).longValue())
@@ -129,11 +129,11 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                     if (item.getValue() != null) {
                         map.put("fromAccount", "fromAccount");
                         responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFromAccountCode(item.getValue().toString());
+                        responseFinancialDocumentDto.setFromAccountCode(Long.parseLong(item.getValue().toString()));
                     } else {
                         map.put("fromAccount", null);
                         responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFromAccountCode("");
+                        responseFinancialDocumentDto.setFromAccountCode(0L);
                     }
                     break;
 
@@ -141,11 +141,11 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                     if (item.getValue() != null) {
                         map.put("toAccount", "toAccount");
                         responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setToAccountCode(item.getValue().toString());
+                        responseFinancialDocumentDto.setToAccountCode(Long.parseLong(item.getValue().toString()));
                     } else {
                         map.put("toAccount", null);
                         responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setToAccountCode("");
+                        responseFinancialDocumentDto.setToAccountCode(0L);
                     }
                     break;
 

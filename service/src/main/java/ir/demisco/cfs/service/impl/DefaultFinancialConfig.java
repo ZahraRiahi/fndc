@@ -54,6 +54,8 @@ public class DefaultFinancialConfig implements FinancialConfigService {
     public Boolean saveOrUpdateFinancialConfig(FinancialConfigRequest financialConfigRequest) {
         FinancialConfig financialConfig = financialConfigRepository.findById(financialConfigRequest.getId() == null ? 0 : financialConfigRequest.getId()).orElse(new FinancialConfig());
 
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+
         if (financialConfig.getId() != null) {
             financialConfig.setDeletedDate(LocalDateTime.now());
         }
@@ -62,13 +64,23 @@ public class DefaultFinancialConfig implements FinancialConfigService {
             throw new RuleException("برای این کاربر در این سازمان قبلا رکوردی ثبت شده است");
         }
         FinancialConfig financialConfigNew = new FinancialConfig();
-        financialConfigNew.setOrganization(organizationRepository.getOne(100L));
-        financialConfigNew.setFinancialDepartment(financialDepartmentRepository.getOne(financialConfigRequest.getFinancialDepartmentId()));
-        financialConfigNew.setUser(applicationUserRepository.getOne(financialConfigRequest.getUserId()));
-        financialConfigNew.setFinancialDocumentType(financialDocumentTypeRepository.getOne(financialConfigRequest.getFinancialDocumentTypeId()));
+        financialConfigNew.setOrganization(organizationRepository.getOne(organizationId));
+        if(financialConfigRequest.getFinancialDepartmentId()!=null) {
+            financialConfigNew.setFinancialDepartment(financialDepartmentRepository.getOne(financialConfigRequest.getFinancialDepartmentId()));
+        }
+        if(financialConfigRequest.getUserId()!= null) {
+            financialConfigNew.setUser(applicationUserRepository.getOne(financialConfigRequest.getUserId()));
+        }
+        if(financialConfigRequest.getFinancialDocumentTypeId()!=null) {
+            financialConfigNew.setFinancialDocumentType(financialDocumentTypeRepository.getOne(financialConfigRequest.getFinancialDocumentTypeId()));
+        }
         financialConfigNew.setDocumentDescription(financialConfigRequest.getDocumentDescription());
-        financialConfigNew.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialConfigRequest.getFinancialLedgerTypeId()));
-        financialConfigNew.setFinancialPeriod(financialPeriodRepository.getOne(financialConfigRequest.getFinancialPeriodId()));
+        if(financialConfigRequest.getFinancialLedgerTypeId()!= null) {
+            financialConfigNew.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialConfigRequest.getFinancialLedgerTypeId()));
+        }
+        if(financialConfigRequest.getFinancialPeriodId()!=null) {
+            financialConfigNew.setFinancialPeriod(financialPeriodRepository.getOne(financialConfigRequest.getFinancialPeriodId()));
+        }
         financialConfigRepository.save(financialConfigNew);
         return true;
     }

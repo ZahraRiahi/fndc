@@ -17,6 +17,8 @@ public class FinancialAccountStructure extends AuditModel<Long> {
     private FinancialCodingType financialCodingType;
     private String color;
     private LocalDateTime deletedDate;
+    private Boolean flagShowInAcc;
+    private Boolean flgPermanentStatus;
 
     @Id
     @SequenceGenerator(schema = "fnac", name = "financial_account_structure_generator", sequenceName = "sq_financial_account_structure", allocationSize = 50)
@@ -91,5 +93,23 @@ public class FinancialAccountStructure extends AuditModel<Long> {
 
     public void setDeletedDate(LocalDateTime deletedDate) {
         this.deletedDate = deletedDate;
+    }
+
+    @Column(name = "FLG_SHOW_IN_ACC")
+    public Boolean getFlagShowInAcc() {
+        return flagShowInAcc;
+    }
+
+    public void setFlagShowInAcc(Boolean flagShowInAcc) {
+        this.flagShowInAcc = flagShowInAcc;
+    }
+
+    @Column(name = "FLG_PERMANENT_STATUS")
+    public Boolean getFlgPermanentStatus() {
+        return flgPermanentStatus;
+    }
+
+    public void setFlgPermanentStatus(Boolean flgPermanentStatus) {
+        this.flgPermanentStatus = flgPermanentStatus;
     }
 }

@@ -4,6 +4,7 @@ package ir.demisco.cfs.model.entity;
 import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
 
 import javax.persistence.*;
+import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "financial_month_type", schema = "fnpr")
@@ -13,6 +14,8 @@ public class FinancialMonthType extends AuditModel<Long> {
     private FinancialPeriodType financialPeriodType;
     private String description;
     private Long monthNumber;
+    private LocalDateTime deletedDate;
+
 
     @Id
     public Long getId() {
@@ -49,5 +52,13 @@ public class FinancialMonthType extends AuditModel<Long> {
 
     public void setMonthNumber(Long monthNumber) {
         this.monthNumber = monthNumber;
+    }
+
+    public LocalDateTime getDeletedDate() {
+        return deletedDate;
+    }
+
+    public void setDeletedDate(LocalDateTime deletedDate) {
+        this.deletedDate = deletedDate;
     }
 }

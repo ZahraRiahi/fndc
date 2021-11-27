@@ -90,8 +90,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         .financialDocumentTypeId(Long.parseLong(item[4].toString()))
                         .financialDocumentTypeDescription(item[5].toString())
                         .fullDescription(item[6].toString())
-                        .debitAmount(((BigDecimal) item[7]).doubleValue())
-                        .creditAmount(((BigDecimal) item[8]).doubleValue())
+                        .debitAmount(Long.parseLong(String.format("%.0f",Double.parseDouble(item[7].toString()))))
+                        .creditAmount(Long.parseLong(String.format("%.0f",Double.parseDouble(item[8].toString()))))
                         .userId(Long.parseLong(item[9].toString()))
                         .userName(item[10].toString())
                         .build()).collect(Collectors.toList());
@@ -159,11 +159,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     if (item.getValue() != null) {
                         map.put("fromAccount", "fromAccount");
                         responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFromAccountCode(item.getValue().toString());
+                        responseFinancialDocumentDto.setFromAccountCode(Long.parseLong(item.getValue().toString()));
                     } else {
                         map.put("fromAccount", null);
                         responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFromAccountCode("");
+                        responseFinancialDocumentDto.setFromAccountCode(0L);
                     }
                     break;
 
@@ -171,11 +171,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     if (item.getValue() != null) {
                         map.put("toAccount", "toAccount");
                         responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setToAccountCode(item.getValue().toString());
+                        responseFinancialDocumentDto.setToAccountCode(Long.parseLong(item.getValue().toString()));
                     } else {
                         map.put("toAccount", null);
                         responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setToAccountCode("");
+                        responseFinancialDocumentDto.setToAccountCode(0L);
                     }
                     break;
 
@@ -420,16 +420,16 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 //                        financialDocumentErrorDtoList.add(centricAccount);
 //                    }
 //                });
-                FinancialDocument document = financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocument.getId());
-                if (document == null) {
-                    FinancialDocumentErrorDto activeMountStatus = new FinancialDocumentErrorDto();
-                    activeMountStatus.setFinancialDocumentId(financialDocument.getId());
-                    activeMountStatus.setFinancialDocumentItemId(documentItem.getId());
-                    activeMountStatus.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-                    activeMountStatus.setMessage("نوع ارز انتخاب شده در ردیفهای ارزی سند ، با نوع ارز یکسان نمیباشد");
-                    financialDocumentErrorDtoList.add(activeMountStatus);
-                }
+
             });
+        }
+
+        FinancialDocument document = financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocument.getId());
+        if (document == null) {
+            FinancialDocumentErrorDto activeMountStatus = new FinancialDocumentErrorDto();
+            activeMountStatus.setFinancialDocumentId(financialDocument.getId());
+            activeMountStatus.setMessage("دوره / ماه عملیاتی میبایست در وضعیت باز باشد");
+            financialDocumentErrorDtoList.add(activeMountStatus);
         }
 
         Long cost = financialDocumentItemRepository.getCostDocument(financialDocument.getId());
