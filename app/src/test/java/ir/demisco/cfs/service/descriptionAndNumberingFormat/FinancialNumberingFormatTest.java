@@ -48,9 +48,9 @@ public class FinancialNumberingFormatTest {
         financialNumberingFormatDto.setOrganizationId(1L);
         financialNumberingFormatDto.setFinancialNumberingTypeId(4L);
         financialNumberingFormatDto.setFinancialNumberingFormatTypeId(null);
-        numberingFormatDto=financialNumberingFormatService.save(financialNumberingFormatDto);
-        Assertions.assertEquals(null, numberingFormatDto.getFinancialNumberingFormatTypeId());
-        Assertions.assertEquals(4, numberingFormatDto.getFinancialNumberingTypeId());
+        Boolean dto=financialNumberingFormatService.save(financialNumberingFormatDto);
+        Assertions.assertEquals(true, dto);
+
     }
 
     @Test
@@ -61,7 +61,7 @@ public class FinancialNumberingFormatTest {
         financialNumberingFormatDto.setFinancialNumberingTypeId(4L);
         financialNumberingFormatDto.setFinancialNumberingFormatTypeId(1L);
         try {
-            numberingFormatDto = financialNumberingFormatService.save(financialNumberingFormatDto);
+            Boolean dto = financialNumberingFormatService.save(financialNumberingFormatDto);
             Assertions.fail();
         }catch (RuleException e) {
             if (e.getMessage() == null) {
@@ -79,10 +79,11 @@ public class FinancialNumberingFormatTest {
         financialNumberingFormatDto.setFinancialNumberingTypeId(4L);
         financialNumberingFormatDto.setFinancialNumberingFormatTypeId(5L);
         financialNumberingFormatDto.setDescription("100-H");
-        numberingFormatDto=financialNumberingFormatService.upDate(financialNumberingFormatDto);
-        Assertions.assertEquals(5, numberingFormatDto.getFinancialNumberingFormatTypeId());
-        Assertions.assertEquals(4, numberingFormatDto.getFinancialNumberingTypeId());
-        Assertions.assertEquals("100-H", numberingFormatDto.getDescription());
+        Boolean dto=financialNumberingFormatService.upDate(financialNumberingFormatDto);
+        Assertions.assertEquals(true, dto);
+//        Assertions.assertEquals(5, numberingFormatDto.getFinancialNumberingFormatTypeId());
+//        Assertions.assertEquals(4, numberingFormatDto.getFinancialNumberingTypeId());
+//        Assertions.assertEquals("100-H", numberingFormatDto.getDescription());
     }
 
     @Test

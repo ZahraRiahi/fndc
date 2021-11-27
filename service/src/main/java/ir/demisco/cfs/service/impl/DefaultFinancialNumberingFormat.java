@@ -58,7 +58,7 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     @Transactional(rollbackOn = Throwable.class)
 //    public ResponseFinancialNumberingFormatDto save(FinancialNumberingFormatDto financialNumberingFormatDto) {
     public Boolean save(FinancialNumberingFormatDto financialNumberingFormatDto) {
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         Object formatType;
         if (financialNumberingFormatDto.getFinancialNumberingFormatTypeId() != null) {
             formatType = "formatType";
