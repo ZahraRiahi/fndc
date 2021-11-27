@@ -5,6 +5,7 @@ import ir.demisco.cloud.basic.model.entity.org.Organization;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "financial_account", schema = "fnac")
@@ -27,6 +28,7 @@ public class FinancialAccount extends AuditModel<Long> {
     private FinancialAccount accountAdjustment;
     private LocalDateTime deletedDate;
     private Boolean hasChild;
+    private Date disableDate;
     private AccountPermanentStatus accountPermanentStatus;
 
     @Id
@@ -196,6 +198,15 @@ public class FinancialAccount extends AuditModel<Long> {
 
     public void setAccountPermanentStatus(AccountPermanentStatus accountPermanentStatus) {
         this.accountPermanentStatus = accountPermanentStatus;
+    }
+
+    @Column(name = "DISABLE_DATE")
+    public Date getDisableDate() {
+        return disableDate;
+    }
+
+    public void setDisableDate(Date disableDate) {
+        this.disableDate = disableDate;
     }
 
     @Transient
