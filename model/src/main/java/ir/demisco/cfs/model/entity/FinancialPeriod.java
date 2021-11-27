@@ -17,6 +17,7 @@ public class FinancialPeriod extends AuditModel<Long> {
     private FinancialPeriodTypeAssign financialPeriodTypeAssign;
     private String description;
     private LocalDateTime deletedDate;
+    private String code;
 
     @Id
     @SequenceGenerator(schema = "fnpr", name = "financial_period_generator", sequenceName = "sq_financial_period")
@@ -94,5 +95,14 @@ public class FinancialPeriod extends AuditModel<Long> {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    @Column(name = "CODE")
+    public String getCode() {
+        return code;
+    }
+
+    public void setCode(String code) {
+        this.code = code;
     }
 }

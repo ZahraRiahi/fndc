@@ -24,7 +24,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <basic-Service-version>2.2.5</basic-Service-version>
+        <basic-Service-version>3.2.3</basic-Service-version>
     </properties>
 
     <dependencies>

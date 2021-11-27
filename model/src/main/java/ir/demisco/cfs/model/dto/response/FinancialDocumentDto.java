@@ -14,8 +14,8 @@ public class FinancialDocumentDto {
     private LocalDateTime deletedDate;
     private Long userId;
     private String userName;
-    private Double  debitAmount;
-    private Double  creditAmount;
+    private Long  debitAmount;
+    private Long  creditAmount;
     private String fullDescription;
 
     public Long getId() {
@@ -91,19 +91,19 @@ public class FinancialDocumentDto {
         this.userName = userName;
     }
 
-    public Double getDebitAmount() {
+    public Long getDebitAmount() {
         return debitAmount;
     }
 
-    public void setDebitAmount(Double debitAmount) {
+    public void setDebitAmount(Long debitAmount) {
         this.debitAmount = debitAmount;
     }
 
-    public Double getCreditAmount() {
+    public Long getCreditAmount() {
         return creditAmount;
     }
 
-    public void setCreditAmount(Double creditAmount) {
+    public void setCreditAmount(Long creditAmount) {
         this.creditAmount = creditAmount;
     }
 
@@ -176,12 +176,12 @@ public class FinancialDocumentDto {
             return this;
         }
 
-        public Builder debitAmount(Double debitAmount) {
+        public Builder debitAmount(Long debitAmount) {
             financialDocumentDto.setDebitAmount(debitAmount);
             return this;
         }
 
-        public Builder creditAmount(Double creditAmount) {
+        public Builder creditAmount(Long creditAmount) {
             financialDocumentDto.setCreditAmount(creditAmount);
             return this;
         }

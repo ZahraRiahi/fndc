@@ -15,8 +15,8 @@ public class ResponseFinancialDocumentDto {
     private String description;
     private Long FromAccountId;
     private Long toAccountId;
-    private String FromAccountCode;
-    private String toAccountCode;
+    private Long FromAccountCode;
+    private Long toAccountCode;
     private Long centricAccountId;
     private Long centricAccountTypeId;
     private Long userId;
@@ -90,19 +90,19 @@ public class ResponseFinancialDocumentDto {
         this.toAccountId = toAccountId;
     }
 
-    public String getFromAccountCode() {
+    public Long getFromAccountCode() {
         return FromAccountCode;
     }
 
-    public void setFromAccountCode(String fromAccountCode) {
+    public void setFromAccountCode(Long fromAccountCode) {
         FromAccountCode = fromAccountCode;
     }
 
-    public String getToAccountCode() {
+    public Long getToAccountCode() {
         return toAccountCode;
     }
 
-    public void setToAccountCode(String toAccountCode) {
+    public void setToAccountCode(Long toAccountCode) {
         this.toAccountCode = toAccountCode;
     }
 
@@ -234,12 +234,12 @@ public class ResponseFinancialDocumentDto {
             return this;
         }
 
-        public Builder FromAccountCode(String FromAccountCode) {
+        public Builder FromAccountCode(Long FromAccountCode) {
             responseFinancialDocumentDto.setFromAccountCode(FromAccountCode);
             return this;
         }
 
-        public Builder toAccountCode(String toAccountCode) {
+        public Builder toAccountCode(Long toAccountCode) {
             responseFinancialDocumentDto.setToAccountCode(toAccountCode);
             return this;
         }
