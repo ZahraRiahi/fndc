@@ -653,13 +653,13 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
         LocalDateTime startDate = financialAccountBalanceRequest.getFromDate();
         LocalDateTime periodStartDate;
-        periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization(SecurityHelper.getCurrentUser().getOrganizationId());
+        periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization(100L);
 
         if (startDate.isBefore(periodStartDate)) {
-            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganizationStartDate(SecurityHelper.getCurrentUser().getOrganizationId(), startDate);
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganizationStartDate(100L, startDate);
         }
         if (periodStartDate == null) {
-            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization2(SecurityHelper.getCurrentUser().getOrganizationId());
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization2(100L);
         }
 
         if (periodStartDate == null) {
@@ -671,10 +671,10 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void setFromDateAndToDateCentricTurnOverBalance(FinancialAccountBalanceRequest financialAccountBalanceRequest) {
         LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialAccountBalanceRequest.getDocumentNumberingTypeId()
-                , financialAccountBalanceRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
+                , financialAccountBalanceRequest.getFromNumber(), 100L);
         financialAccountBalanceRequest.setFromDate(fromDate);
         LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialAccountBalanceRequest.getDocumentNumberingTypeId()
-                , financialAccountBalanceRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
+                , financialAccountBalanceRequest.getToNumber(), 100L);
         financialAccountBalanceRequest.setToDate(toDate);
         if (fromDate == null || toDate == null) {
             throw new RuleException("از/ تا شماره سند وارد شده صحیح نمیباشد");
@@ -684,11 +684,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void setFromNumberAndToNumberCentricTurnOverBalance(FinancialAccountBalanceRequest financialAccountBalanceRequest) {
         String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialAccountBalanceRequest.getDocumentNumberingTypeId(),
-                financialAccountBalanceRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+                financialAccountBalanceRequest.getFromDate(), 100L);
         financialAccountBalanceRequest.setFromNumber(fromNumber);
 
         String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialAccountBalanceRequest.getDocumentNumberingTypeId(),
-                financialAccountBalanceRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+                financialAccountBalanceRequest.getToDate(), 100L);
         financialAccountBalanceRequest.setToNumber(toNumber);
         if (fromNumber == null || toNumber == null) {
             throw new RuleException("اشکال در یافتن سند در تاریخ های وارد شده");
