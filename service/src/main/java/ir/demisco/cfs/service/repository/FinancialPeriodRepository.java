@@ -572,7 +572,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           AND FDI.DELETED_DATE IS NULL " +
             "         INNER JOIN FNAC.FINANCIAL_ACCOUNT FA " +
             "            ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID " +
-            "         INNER JOIN FINANCIAL_DOCUMENT_NUMBER FDN " +
+            "         INNER JOIN fndc.FINANCIAL_DOCUMENT_NUMBER FDN " +
             "            ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID " +
             "           AND FDN.DELETED_DATE IS NULL " +
             "           AND FDN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
