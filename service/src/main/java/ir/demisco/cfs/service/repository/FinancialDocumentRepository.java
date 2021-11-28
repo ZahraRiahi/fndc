@@ -320,4 +320,9 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     String findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long documentNumberingTypeId, LocalDateTime toDate, Long organizationId);
 
+@Query("select fd.id from FinancialDocument  fd " +
+       " join FinancialDepartmentLedger fdl on fdl.financialLedgerType.id=fd.financialLedgerType.id " +
+        " and fdl.financialDepartment.id=fd.financialDepartment.id and fdl.deletedDate is null " +
+        " where fdl.id=:financialDepartmentLedgerId and fd.deletedDate is null")
+    List<Long> usedInFinancialDocument(Long financialDepartmentLedgerId);
 }

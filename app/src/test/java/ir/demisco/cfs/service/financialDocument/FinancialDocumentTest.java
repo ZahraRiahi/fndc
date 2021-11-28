@@ -514,33 +514,29 @@ public class FinancialDocumentTest {
                     financialDocumentService.changeStatus(financialDocumentStatusDto);
             Assertions.assertNotNull(documentSetStatusDto.getBody().getFinancialDocumentErrorDtoList());
         }catch(RuleException e){
+            if(e.getMessage()==null){
+                Assertions.fail();
+            }
+        }
+    }
 
+    @Test
+    public void financialDocumentSetStatusSuccess(){
+
+        ResponseFinancialDocumentStatusDto  financialDocumentStatusDto=new ResponseFinancialDocumentStatusDto();
+        financialDocumentStatusDto.setId(8257L);
+        financialDocumentStatusDto.setFinancialDocumentStatusCode("20");
+        try {
+            ResponseEntity<ResponseFinancialDocumentSetStatusDto> documentSetStatusDto =
+                    financialDocumentService.changeStatus(financialDocumentStatusDto);
+            Assertions.assertNotNull(documentSetStatusDto);
+        }catch(RuleException e){
             if(e.getMessage()==null){
                 Assertions.fail();
             }
 
         }
     }
-
-//    @Test
-//    public void financialDocumentSetStatusSuccess(){
-//
-//
-//        ResponseFinancialDocumentStatusDto  financialDocumentStatusDto=new ResponseFinancialDocumentStatusDto();
-//        financialDocumentStatusDto.setId(8257L);
-//        financialDocumentStatusDto.setFinancialDocumentStatusCode("20");
-//        try {
-//            ResponseEntity<ResponseFinancialDocumentSetStatusDto> documentSetStatusDto =
-//                    financialDocumentService.changeStatus(financialDocumentStatusDto);
-//            Assertions.assertNotNull(documentSetStatusDto.getBody().getFinancialDocumentErrorDtoList());
-//        }catch(RuleException e){
-//
-//            if(e.getMessage()==null){
-//                Assertions.fail();
-//            }
-//
-//        }
-//    }
 
 
 }
