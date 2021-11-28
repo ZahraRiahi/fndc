@@ -44,8 +44,8 @@ QCbuild:
     artifacts:
         paths:
             - app*.jar
-			- model	*.jar
-			- service*.jar
+            - model*.jar 
+            - service*.jar
         expire_in: 1 days
 QCsonar:
   stage: build
@@ -68,9 +68,9 @@ QCsonar:
     - echo "curl --insecure --location --request POST  --header \"$gitlabAuthHeader\" https://gitlab.demisco.com/api/v4/projects/${CI_MERGE_REQUEST_PROJECT_ID}/merge_requests/${CI_MERGE_REQUEST_IID}/notes --header \"$ContentType\" --data-urlencode \"body=$value2\"" >> curl2.txt
     - ls
     - a=$(find . -name 'app*.jar')
-	- b=$(find . -name 'model*.jar')
-	- c=$(find . -name 'service*.jar')
-    - if [[ $a ]]; then echo Build is ok; else sh curl2.txt;sh curlClose.txt; exit 1; fi
+    - b=$(find . -name 'model*.jar')
+    - c=$(find . -name 'service*.jar')
+    - if [[ $a && $b && $c ]]; then echo Build is ok; else sh curl2.txt;sh curlClose.txt; exit 1; fi
     - echo "curl --insecure --location --request GET --header \"$gitlabAuthHeader\" https://gitlab.demisco.com/api/v4/projects/${CI_MERGE_REQUEST_PROJECT_ID}/protected_branches" >> curl3.txt
     - a=$(sh curl3.txt)
     - b=$(echo $a | jq '.[].name')
