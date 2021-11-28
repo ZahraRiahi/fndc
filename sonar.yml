@@ -48,7 +48,7 @@ QCbuild:
             - service*.jar
         expire_in: 1 days
 QCsonar:
-  stage: build
+  stage: .post
   tags:
     - QC  
   image: 192.168.25.203:8080/library/sonarsource/sonar-scanner-cli:jq-version
