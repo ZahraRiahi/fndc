@@ -1,7 +1,7 @@
 image: 192.168.25.203:8080/library/docker:19.03.12 
 
 stages:
-  - build
+  - dev
   - .post
 variables:
   MAVEN_CLI_OPTS: "-s settings.xml --batch-mode"
@@ -25,7 +25,7 @@ cache:
     - .m2/repository/
     - .sonar/cache
 QCbuild:
-    stage: build
+    stage: dev
     tags:
     - QC  
     image: 192.168.25.203:8080/library/maven:3.3.9-jdk-8
