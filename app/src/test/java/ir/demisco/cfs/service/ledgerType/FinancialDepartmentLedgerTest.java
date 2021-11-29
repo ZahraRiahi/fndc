@@ -19,46 +19,65 @@ import java.util.List;
 public class FinancialDepartmentLedgerTest {
 
     @Autowired
-    private  FinancialDepartmentLedgerService financialDepartmentLedgerService;
+    private FinancialDepartmentLedgerService financialDepartmentLedgerService;
 
     @Test
-    public void financialDepartmentLedgerSave(){
-        FinancialDepartmentLedgerRequest financialDepartmentLedgerRequest=new FinancialDepartmentLedgerRequest();
-        List<FinancialDepartmentLedgerRequest> departmentLedgerRequests=new ArrayList<>();
+    public void financialDepartmentLedgerSave() {
+        FinancialDepartmentLedgerRequest financialDepartmentLedgerRequest = new FinancialDepartmentLedgerRequest();
+        List<FinancialDepartmentLedgerRequest> departmentLedgerRequests = new ArrayList<>();
         financialDepartmentLedgerRequest.setFinancialDepartmentId(5L);
         financialDepartmentLedgerRequest.setFinancialLedgerTypeId(2L);
         departmentLedgerRequests.add(financialDepartmentLedgerRequest);
-        Boolean financialDepartmentLedger=financialDepartmentLedgerService.saveFinancialDepartmentLedger(departmentLedgerRequests);
+        Boolean financialDepartmentLedgerSave = financialDepartmentLedgerService.saveFinancialDepartmentLedger(departmentLedgerRequests);
+        Assertions.assertEquals(true, financialDepartmentLedgerSave);
+    }
+
+    @Test
+    public void financialDepartmentLedgerSaveError(){
+        FinancialDepartmentLedgerRequest financialDepartmentLedgerRequest=new FinancialDepartmentLedgerRequest();
+        List<FinancialDepartmentLedgerRequest> departmentLedgerRequests=new ArrayList<>();
+        financialDepartmentLedgerRequest.setFinancialDepartmentId(1L);
+        financialDepartmentLedgerRequest.setFinancialLedgerTypeId(2L);
+        departmentLedgerRequests.add(financialDepartmentLedgerRequest);
+        try {
+            Boolean financialDepartmentLedger = financialDepartmentLedgerService.saveFinancialDepartmentLedger(departmentLedgerRequests);
+            Assertions.assertNotNull(financialDepartmentLedger);
+            Assertions.fail();
+        } catch (RuleException e) {
+            if (e.getMessage() == null) {
+                Assertions.fail();
+            }
+        }
+    }
+
+    @Test
+    public void financialDepartmentLedgerSaveDeleteSuccess() {
+        FinancialDepartmentLedgerRequest financialDepartmentLedgerRequest = new FinancialDepartmentLedgerRequest();
+        List<FinancialDepartmentLedgerRequest> departmentLedgerRequests = new ArrayList<>();
+        financialDepartmentLedgerRequest.setFinancialDepartmentLedgerId(3506L);
+        financialDepartmentLedgerRequest.setFinancialDepartmentId(1L);
+        financialDepartmentLedgerRequest.setFinancialLedgerTypeId(null);
+        departmentLedgerRequests.add(financialDepartmentLedgerRequest);
+        Boolean financialDepartmentLedger = financialDepartmentLedgerService.saveFinancialDepartmentLedger(departmentLedgerRequests);
         Assertions.assertEquals(true, financialDepartmentLedger);
     }
 
-//    @Test
-//    public void financialDepartmentLedgerSaveError(){
-//        FinancialDepartmentLedgerRequest financialDepartmentLedgerRequest=new FinancialDepartmentLedgerRequest();
-//        List<FinancialDepartmentLedgerRequest> departmentLedgerRequests=new ArrayList<>();
-//        financialDepartmentLedgerRequest.setFinancialDepartmentId(1L);
-//        financialDepartmentLedgerRequest.setFinancialLedgerTypeId(null);
-//        departmentLedgerRequests.add(financialDepartmentLedgerRequest);
-//        try {
-//            Boolean financialDepartmentLedger = financialDepartmentLedgerService.saveFinancialDepartmentLedger(departmentLedgerRequests);
-//            Assertions.assertNotNull(financialDepartmentLedger);
-//            Assertions.fail();
-//        } catch (RuleException e) {
-//            if (e.getMessage() == null) {
-//                Assertions.fail();
-//            }
-//        }
-//    }
 
     @Test
-    public void financialDepartmentLedgerSaveDelete() {
+    public void financialDepartmentLedgerSaveDeleteError() {
         FinancialDepartmentLedgerRequest financialDepartmentLedgerRequest = new FinancialDepartmentLedgerRequest();
         List<FinancialDepartmentLedgerRequest> departmentLedgerRequests = new ArrayList<>();
         financialDepartmentLedgerRequest.setFinancialDepartmentLedgerId(4102L);
         financialDepartmentLedgerRequest.setFinancialDepartmentId(1L);
         financialDepartmentLedgerRequest.setFinancialLedgerTypeId(null);
         departmentLedgerRequests.add(financialDepartmentLedgerRequest);
-        Boolean financialDepartmentLedger = financialDepartmentLedgerService.saveFinancialDepartmentLedger(departmentLedgerRequests);
-        Assertions.assertNotNull(financialDepartmentLedger);
+        try {
+            Boolean financialDepartmentLedger = financialDepartmentLedgerService.saveFinancialDepartmentLedger(departmentLedgerRequests);
+            Assertions.fail();
+        } catch (RuleException e) {
+            if (e.getMessage() == null) {
+                Assertions.fail();
+            }
+        }
     }
 }

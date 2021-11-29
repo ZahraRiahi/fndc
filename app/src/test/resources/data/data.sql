@@ -84,6 +84,7 @@ insert into fndc.financial_ledger_type (ID, DESCRIPTION, FINANCIAL_CODING_TYPE_I
 
 insert into fndc.financial_ledger_type (ID, DESCRIPTION, FINANCIAL_CODING_TYPE_ID, ORGANIZATION_ID, ACTIVE_FLAG, CREATOR_ID, LAST_MODIFIER_ID, CREATION_DATE, LAST_MODIFICATION_DATE, VERSION, DELETED_DATE, CODE) values (2, 'دفتر مرکزی', 7001, 1, 1, 1000, 1000, to_date('02-08-2021', 'dd-mm-yyyy'), to_date('02-08-2021', 'dd-mm-yyyy'), 1, null, '01');
 
+insert into fndc.financial_ledger_type (ID, DESCRIPTION, FINANCIAL_CODING_TYPE_ID, ORGANIZATION_ID, ACTIVE_FLAG, CREATOR_ID, LAST_MODIFIER_ID, CREATION_DATE, LAST_MODIFICATION_DATE, VERSION, DELETED_DATE, CODE) values (5, 'دفتر اصلی', 4101, 1, 1, 1000, 1000, to_date('20-07-2021', 'dd-mm-yyyy'), to_date('20-07-2021', 'dd-mm-yyyy'), 1, null, '21');
 
 
 --------------------------------------------------------------------------------
@@ -91,6 +92,8 @@ insert into fndc.financial_ledger_type (ID, DESCRIPTION, FINANCIAL_CODING_TYPE_I
 insert into fndc.financial_department (ID, CODE, NAME, CREATOR_ID, LAST_MODIFIER_ID, CREATION_DATE, LAST_MODIFICATION_DATE, VERSION, DELETED_DATE, ORGANIZATION_ID) values (1, '1', 'شعبه 1', 1000, 1000, to_date('20-06-2021', 'dd-mm-yyyy'), to_date('20-07-2021', 'dd-mm-yyyy'), 1, null, 1);
 
 insert into fndc.financial_department (ID, CODE, NAME, CREATOR_ID, LAST_MODIFIER_ID, CREATION_DATE, LAST_MODIFICATION_DATE, VERSION, DELETED_DATE, ORGANIZATION_ID) values (5, '5', 'واحد مالی 4', 1000, 1000, to_date('20-07-2021', 'dd-mm-yyyy'), to_date('20-07-2021', 'dd-mm-yyyy'), 1, null, 1);
+
+insert into fndc.financial_department (ID, CODE, NAME, CREATOR_ID, LAST_MODIFIER_ID, CREATION_DATE, LAST_MODIFICATION_DATE, VERSION, DELETED_DATE, ORGANIZATION_ID) values (4, '4', 'واحد مالی 3', 1000, 1000, to_date('20-10-2021', 'dd-mm-yyyy'), to_date('20-07-2021', 'dd-mm-yyyy'), 1, null, 1);
 
 -------------------------------------------------------------------------------------------
 insert into fnpr.financial_period_type (ID, DESCRIPTION, CALENDAR_TYPE_ID, FROM_MONTH, TO_MONTH, CURRENT_YEAR_FLAG, CREATOR_ID, LAST_MODIFIER_ID, CREATION_DATE, LAST_MODIFICATION_DATE, VERSION, DELETED_DATE) values (1, 'سالیانه شمسی از مهر ماه جاری تا شهریور سال بعد', 1, 7, 6, 0,1000, 1000, to_date('01-05-2021', 'dd-mm-yyyy'), to_date('01-05-2021', 'dd-mm-yyyy'), 1, null);
@@ -426,6 +429,8 @@ insert into fndc.FINANCIAL_CONFIG (ID, ORGANIZATION_ID, FINANCIAL_DEPARTMENT_ID,
 --------------------------------------------------------
 
 insert into fndc.Financial_Department_Ledger (ID, FINANCIAL_DEPARTMENT_ID, FINANCIAL_LEDGER_TYPE_ID, CREATOR_ID, LAST_MODIFIER_ID, CREATION_DATE, LAST_MODIFICATION_DATE, VERSION, DELETED_DATE) values (4102, 1, 2, 1000, 1000, to_date('21-09-2021 15:26:01', 'dd-mm-yyyy hh24:mi:ss'), to_date('21-09-2021 15:26:01', 'dd-mm-yyyy hh24:mi:ss'), 0, null);
+
+insert into fndc.financial_department_ledger (ID, FINANCIAL_DEPARTMENT_ID, FINANCIAL_LEDGER_TYPE_ID, CREATOR_ID, LAST_MODIFIER_ID, CREATION_DATE, LAST_MODIFICATION_DATE, VERSION, DELETED_DATE) values (3506, 4, 5, 1000, 1000, to_date('30-08-2021 10:05:52', 'dd-mm-yyyy hh24:mi:ss'), to_date('28-11-2021 10:21:50', 'dd-mm-yyyy hh24:mi:ss'), 4, null);
 
 ----------------------------------------------------------
 

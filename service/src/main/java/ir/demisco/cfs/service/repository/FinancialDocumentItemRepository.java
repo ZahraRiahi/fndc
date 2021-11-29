@@ -155,12 +155,13 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
 
     @Query(" select 1 from FinancialDocumentItem fdi " +
             " join FinancialAccount  fa on fa.id=fdi.financialAccount.id " +
-            " join FinancialAccountStructure fs on fs.id=fa.financialAccountStructure.id and fs.id in(" +
-            " select fs_inner.id from FinancialAccountStructure  fs_inner  " +
-            "  where fs_inner.financialCodingType.id=fs.financialCodingType.id" +
-            " and fs_inner.sequence != (select max(fs_inner2.sequence) from FinancialAccountStructure fs_inner2" +
-            " where fs_inner2.financialCodingType.id=fs.financialCodingType.id))" +
-            " where fdi.financialDocument.id=:FinancialDocumentId")
+            " join FinancialAccountStructure fs on fs.id=fa.financialAccountStructure.id " +
+            " where fdi.financialDocument.id= :FinancialDocumentId " +
+            " and not exists (select 1 from FinancialAccount fa2 where fa2.financialAccountParent.id=fa.id and fa2.deletedDate is null) " +
+            " and fs.flagShowInAcc=1 " +
+            " and fa.disableDate is null"
+
+    )
     Long getFinancialAccount(Long FinancialDocumentId);
 
     @Query(" select 1 from FinancialDocumentItem fdi" +
@@ -193,12 +194,18 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
 
     @Query("select 1 from FinancialDocumentItem fdi " +
             " left join CentricAccount cn on cn.id=fdi.centricAccountId1.id " +
-            " left join CentricAccount cn on cn.id=fdi.centricAccountId2.id " +
-            " left join CentricAccount cn on cn.id=fdi.centricAccountId3.id " +
-            " left join CentricAccount cn on cn.id=fdi.centricAccountId4.id " +
-            " left join CentricAccount cn on cn.id=fdi.centricAccountId5.id " +
-            " left join CentricAccount cn on cn.id=fdi.centricAccountId6.id " +
-            " where fdi.financialDocument.id =:FinancialDocumentId ")
+            " left join CentricAccount cn2 on cn2.id=fdi.centricAccountId2.id " +
+            " left join CentricAccount cn3 on cn3.id=fdi.centricAccountId3.id " +
+            " left join CentricAccount cn4 on cn4.id=fdi.centricAccountId4.id " +
+            " left join CentricAccount cn5 on cn5.id=fdi.centricAccountId5.id " +
+            " left join CentricAccount cn6 on cn6.id=fdi.centricAccountId6.id " +
+            " where fdi.financialDocument.id =:FinancialDocumentId " +
+            " and ((fdi.centricAccountId1 is not null and fdi.centricAccountId2 is not null and fdi.centricAccountId1 <> nvl (cn2.parentCentricAccount,0)) or " +
+            "      (fdi.centricAccountId2 is not null and fdi.centricAccountId3 is not null and fdi.centricAccountId2<> nvl (cn3.parentCentricAccount,0))  or " +
+            "      (fdi.centricAccountId3 is not null and fdi.centricAccountId4 is not null and fdi.centricAccountId3<> nvl (cn4.parentCentricAccount,0))  or " +
+            "      (fdi.centricAccountId4 is not null and fdi.centricAccountId5 is not null and fdi.centricAccountId4<> nvl (cn5.parentCentricAccount,0))  or " +
+            "      (fdi.centricAccountId5 is not null and fdi.centricAccountId6 is not null and fdi.centricAccountId5<> nvl (cn6.parentCentricAccount,0))) "
+    )
     Long referenceCode(Long FinancialDocumentId);
 
 
