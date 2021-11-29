@@ -28,6 +28,12 @@ public interface FinancialDepartmentLedgerRepository extends JpaRepository<Finan
             " and fdl.deletedDate is null")
     List<Long> getDLByLedgerTypeIdAndDepartmentIdAndDeleteDate(Long financialDepartmentId, Long financialLedgerTypeId);
 
+    @Query("select fdl from FinancialDepartmentLedger fdl where fdl.financialDepartment.id=:financialDepartmentId" +
+            " and  fdl.financialLedgerType.id=:financialLedgerTypeId and (:financialDepartmentLedgerTypeId is null or fdl.id <> :financialDepartmentLedgerTypeId ) " +
+            " and fdl.deletedDate is null")
+    FinancialDepartmentLedger getByLedgerTypeIdAndDepartmentIdAndDeleteDate(Long financialDepartmentId,Long financialLedgerTypeId,
+                                                                            Long financialDepartmentLedgerTypeId);
+
 
     @Query("select fdl.financialLedgerType.id,flt.description from  FinancialDepartmentLedger fdl  join fdl.financialLedgerType flt where fdl.financialDepartment.id=:financialDepartmentId  and fdl.deletedDate is null")
     List<Object[]> findByFinancialDepartmentId(Long financialDepartmentId);

@@ -299,11 +299,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 financialDocument.setFinancialDocumentStatus(financialDocumentStatus);
                 financialDocumentRepository.save(financialDocument);
                 responseFinancialDocumentSetStatusDto = convertFinancialDocumentToDto(financialDocument);
+                return  ResponseEntity.ok(responseFinancialDocumentSetStatusDto);
             } else {
                 responseFinancialDocumentSetStatusDto.setFinancialDocumentErrorDtoList(financialDocumentErrorDtoList);
                 responseFinancialDocumentSetStatusDto.setErrorFoundFlag(true);
+                return ResponseEntity.status(HttpStatus.CONFLICT).body(responseFinancialDocumentSetStatusDto);
             }
-            return ResponseEntity.status(HttpStatus.CONFLICT).body(responseFinancialDocumentSetStatusDto);
+//            return ResponseEntity.status(HttpStatus.CONFLICT).body(responseFinancialDocumentSetStatusDto);
         } else {
 
             financialDocument.setFinancialDocumentStatus(financialDocumentStatus);
@@ -449,7 +451,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
 
         Long financialDocumentItemAccount = financialDocumentItemRepository.getFinancialAccount(financialDocument.getId());
-        if (financialDocumentItemAccount != null) {
+        if (financialDocumentItemAccount == null) {
             FinancialDocumentErrorDto financialAccount = new FinancialDocumentErrorDto();
             financialAccount.setFinancialDocumentId(financialDocument.getId());
             financialAccount.setMessage(" حساب انتخاب شده  روی یک / چند ردیف از سند ، آخرین سطح حساب نمی باشد");
@@ -493,8 +495,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 .userId(financialDocument.getCreator().getId())
                 .userName(financialDocument.getCreator().getUsername())
                 .description(financialDocument.getDescription())
-                .debitAmount(((BigDecimal) objects.get(0)[0]).doubleValue())
-                .creditAmount(((BigDecimal) objects.get(0)[1]).doubleValue())
+                .debitAmount((Double) objects.get(0)[0])
+                .creditAmount((Double) objects.get(0)[1])
                 .fullDescription(objects.get(0)[2] == null ? null : objects.get(0)[2].toString())
                 .build();
     }
