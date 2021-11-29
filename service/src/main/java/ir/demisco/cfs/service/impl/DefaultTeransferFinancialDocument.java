@@ -76,7 +76,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
         if (financialDocumentTransferDto.getDocumentNumber() != null) {
             financialDocument = financialDocumentRepository.getFinancialDocumentByDocumentNumber(financialDocumentTransferDto.getDocumentNumber());
             if (financialDocument == null) {
-                throw new RuleException("شماره سند وارد شده در سیستم وجود ندارد.");
+                throw new RuleException("fin.financialDocument.notExistDocumentInOrgan");
             } else {
                 getDocumentIdList(financialDocumentTransferDto)
                 .forEach(documentItemId -> {
@@ -89,7 +89,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
 
             }
         } else {
-            throw new RuleException("شماره سند انتخاب نشده.");
+            throw new RuleException("fin.financialDocument.noSelectDocumentNumber");
         }
 
     }
@@ -97,7 +97,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
     private List<Long> getDocumentIdList(FinancialDocumentTransferDto financialDocumentTransferDto) {
         if(!financialDocumentTransferDto.getAllItemFlag() &&
                 financialDocumentTransferDto.getFinancialDocumentItemIdList().isEmpty()){
-            throw new RuleException("هیچ ردیفی انتخاب نشده");
+            throw new RuleException("fin.financialDocument.noSelectDocumentItem");
         }
         return financialDocumentTransferDto.getAllItemFlag() ?
                 financialDocumentItemRepository.findByFinancialDocumentIdByDocumentId(financialDocumentTransferDto.getId()) :
@@ -109,7 +109,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
         if (financialDocumentTransferDto.getDocumentNumber() != null) {
             FinancialDocument financialDocument = financialDocumentRepository.getFinancialDocumentByDocumentNumber(financialDocumentTransferDto.getDocumentNumber());
             if (financialDocument == null) {
-                throw new RuleException("شماره سند وارد شده در سیستم وجود ندارد.");
+                throw new RuleException("fin.financialDocument.notExistDocumentNumberInOrgan");
             } else {
               getDocumentIdList(financialDocumentTransferDto)
                 .forEach(documentItemId -> {
@@ -123,7 +123,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
                 deleteDocument(financialDocumentTransferDto);
             }
         }else {
-            throw new RuleException("شماره سند انتخاب نشده.");
+            throw new RuleException("fin.financialDocument.noSelectDocumentNumber");
         }
     }
 
@@ -161,7 +161,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
                 financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocumentTransferDto.getId());
         if(financialDocumentItem.isEmpty()){
             FinancialDocument oldFinancialDocument=financialDocumentRepository.findById(financialDocumentTransferDto.getId())
-                    .orElseThrow(() -> new RuleException("سندی یافت نشد"));
+                    .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
             oldFinancialDocument.setDeletedDate(LocalDateTime.now());
             financialDocumentRepository.save(oldFinancialDocument);
         }
@@ -170,17 +170,17 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
     private void changDate(FinancialDocumentTransferDto financialDocumentTransferDto) {
 
         FinancialDocument  updateFinancialDocument=financialDocumentRepository.findById(financialDocumentTransferDto.getId())
-                .orElseThrow(() -> new RuleException("سندی یافت نشد"));
+                .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocumentTransferDto.getId());
         if (financialDocument == null) {
-            throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
+            throw new RuleException("fin.financialDocument.openStatusPeriod");
         } else {
             LocalDate dateTime=financialDocumentTransferDto.getDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate();
             List<FinancialPeriod> financialPeriodList=financialPeriodRepository
                     .getPeriodByParam(dateTime.toString(),organizationId);
             if(financialPeriodList.isEmpty()){
-                throw new RuleException("دوره / ماه عملیاتی در تاریخ انتخاب شده  میبایست در وضعیت باز باشد.");
+                throw new RuleException("fin.financialDocument.openStatusPeriodInDate");
             }else{
                 FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
                 financialDocumentNumberDto.setFinancialDocumentId(updateFinancialDocument.getId());
@@ -199,15 +199,15 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
         if (financialDocumentTransferDto.getDocumentNumber() != null) {
             FinancialDocument findFinancialDocument = financialDocumentRepository.getFinancialDocumentByDocumentNumber(financialDocumentTransferDto.getDocumentNumber());
             if (findFinancialDocument == null) {
-                throw new RuleException("شماره سند وارد شده در سیستم وجود ندارد.");
+                throw new RuleException("fin.financialDocument.notExistDocumentInOrgan");
             } else {
                 FinancialDocument activeFinancialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocumentTransferDto.getId());
                 if ((activeFinancialDocument == null)) {
-                    throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
+                    throw new RuleException("fin.financialDocument.openStatusPeriod");
                 } else {
                     FinancialDocument newFinancialDocument= financialDocumentRepository.getActivePeriodAndMontInDocument(findFinancialDocument.getId());
                     if ((newFinancialDocument == null)) {
-                        throw new RuleException("دوره / ماه عملیاتی سند مقصد  میبایست در وضعیت باز باشد.");
+                        throw new RuleException("fin.financialDocument.openStatusPeriodDestinationDocument");
                     } else {
                         FinancialDocument financialDocumentMove = (FinancialDocument) SerializationHelper.clone(activeFinancialDocument);
                         activeFinancialDocument.setDocumentNumber(newFinancialDocument.getDocumentNumber());
@@ -237,14 +237,14 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
 
         });
         FinancialDocument oldFinancialDocument=financialDocumentRepository.findById(financialDocumentTransferDto.getId())
-                .orElseThrow(() -> new RuleException("سندی یافت نشد"));
+                .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         oldFinancialDocument.setDeletedDate(LocalDateTime.now());
         financialDocumentRepository.save(oldFinancialDocument);
     }
 
     private FinancialDocumentItem saveFinancialDocumentItem(Long documentItemId, FinancialDocument financialDocument) {
         FinancialDocumentItem oldFinancialDocumentItem = financialDocumentItemRepository.findById(documentItemId).
-                orElseThrow(() -> new RuleException("ردیفی یافت نشد."));
+                orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocumentItem"));
         return getFinancialDocumentItem(financialDocument, oldFinancialDocumentItem);
     }
 
@@ -288,7 +288,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
 
     private FinancialDocumentItem saveTransferFinancialDocumentItem(Long documentItemId, FinancialDocument financialDocument) {
         FinancialDocumentItem oldFinancialDocumentItem = financialDocumentItemRepository.findById(documentItemId).
-                orElseThrow(() -> new RuleException("ردیفی یافت نشد."));
+                orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocumentItem"));
         oldFinancialDocumentItem.setDeletedDate(LocalDateTime.now());
         financialDocumentItemRepository.save(oldFinancialDocumentItem);
         return getFinancialDocumentItem(financialDocument, oldFinancialDocumentItem);
@@ -320,7 +320,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
 
     private FinancialDocument saveNewFinancialDocument(FinancialDocumentTransferDto financialDocumentTransferDto) {
         FinancialDocument oldFinancialDocument=financialDocumentRepository.findById(financialDocumentTransferDto.getId())
-                .orElseThrow(() -> new RuleException("سندی یافت نشد"));
+                .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         FinancialDocument financialDocument=new FinancialDocument();
         financialDocument.setDocumentDate(financialDocumentTransferDto.getDate());
         financialDocument.setDescription(oldFinancialDocument.getDescription());

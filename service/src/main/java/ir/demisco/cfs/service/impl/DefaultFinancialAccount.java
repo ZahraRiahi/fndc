@@ -47,19 +47,19 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         FinancialDocumentReportRequest financialDocumentReportRequest = setParameter(filters);
         getFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest);
         if (financialDocumentReportRequest.getFinancialAccountId() == null) {
-            throw new RuleException("لطفا شناسه ی حساب مالی را وارد نمایید.");
+            throw new RuleException("fin.financialAccount.insertFinancialAccount");
         }
         if (financialDocumentReportRequest.getDocumentNumberingTypeId() == null) {
-            throw new RuleException("لطفا شناسه ی انواع شماره گذاری سند مالی را وارد نمایید.");
+            throw new RuleException("fin.financialAccount.insertDocumentNumberingType");
         }
         if (financialDocumentReportRequest.getSummarizingType() == null) {
-            throw new RuleException("لطفا نوع جمع بندی را وارد نمایید.");
+            throw new RuleException("fin.financialAccount.insertSummarizingType");
         }
         if (financialDocumentReportRequest.getOrganizationId() == null) {
-            throw new RuleException("لطفا شناسه ی واحد سازمانی را وارد نمایید.");
+            throw new RuleException("fin.financialAccount.insertOrganization");
         }
         if (financialDocumentReportRequest.getDateFilterFlg() == null) {
-            throw new RuleException("لطفا فیلتر بر اساس تاریخ یا شماره را انتخاب نمایید.");
+            throw new RuleException("fin.financialAccount.selectDateFilterFlg");
         }
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         Page<Object[]> list = financialPeriodRepository.findByFinancialPeriodByParam(SecurityHelper.getCurrentUser().getOrganizationId(),
@@ -117,7 +117,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
 
         if (periodStartDate == null) {
-            throw new RuleException("هیچ دوره ی مالی در سازمان یافت نشد.");
+            throw new RuleException("fin.financialAccount.notExistPeriod");
         }
 
         financialDocumentReportRequest.setPeriodStartDate(periodStartDate);
@@ -133,7 +133,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         financialDocumentReportRequest.setToNumber(toNumber);
 
         if (fromNumber == null || toNumber == null) {
-            throw new RuleException("اشکال در یافتن سند در تاریخ های وارد شده");
+            throw new RuleException("fin.financialAccount.notExistDocumentInDate");
         }
     }
 
@@ -145,7 +145,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 , financialDocumentReportRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setToDate(toDate);
         if (fromDate == null || toDate == null) {
-            throw new RuleException("از/ تا شماره سند وارد شده صحیح نمیباشد");
+            throw new RuleException("fin.financialAccount.notCorrectDocumentNumber");
         }
 
     }
@@ -274,13 +274,13 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest = setParameterCentricTurnOver(filters);
         getFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentCentricTurnOverRequest);
         if (financialDocumentCentricTurnOverRequest.getFinancialAccountId() == null) {
-            throw new RuleException("لطفا شناسه ی حساب مالی را وارد نمایید.");
+            throw new RuleException("fin.financialAccount.insertFinancialAccount");
         }
         if (financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId() == null) {
-            throw new RuleException("لطفا شناسه ی انواع شماره گذاری سند مالی را وارد نمایید.");
+            throw new RuleException("fin.financialAccount.insertDocumentNumberingType");
         }
         if (financialDocumentCentricTurnOverRequest.getDateFilterFlg() == null) {
-            throw new RuleException("لطفا فیلتر بر اساس تاریخ یا شماره را انتخاب نمایید.");
+            throw new RuleException("fin.financialAccount.selectDateFilterFlg");
         }
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         Page<Object[]> list = financialPeriodRepository.findByFinancialAccountCentricTurnOver(100L,
@@ -456,7 +456,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
 
         if (periodStartDate == null) {
-            throw new RuleException("هیچ دوره ی مالی در سازمان یافت نشد.");
+            throw new RuleException("fin.financialAccount.notExistPeriod");
         }
 
         financialDocumentCentricTurnOverRequest.setPeriodStartDate(periodStartDate);
@@ -470,7 +470,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 , financialDocumentCentricTurnOverRequest.getToNumber(), 100L);
         financialDocumentCentricTurnOverRequest.setToDate(toDate);
         if (fromDate == null || toDate == null) {
-            throw new RuleException("از/ تا شماره سند وارد شده صحیح نمیباشد");
+            throw new RuleException("fin.financialAccount.notCorrectDocumentNumber");
         }
 
     }
@@ -484,7 +484,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialDocumentCentricTurnOverRequest.getToDate(), 100L);
         financialDocumentCentricTurnOverRequest.setToNumber(toNumber);
         if (fromNumber == null || toNumber == null) {
-            throw new RuleException("اشکال در یافتن سند در تاریخ های وارد شده");
+            throw new RuleException("fin.financialAccount.notExistDocumentInDate");
         }
     }
 
@@ -495,7 +495,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         FinancialAccountBalanceRequest financialAccountBalanceRequest = setParameterBalanceReport(filters);
         int length = 0;
         if (financialAccountBalanceRequest.getFromFinancialAccountCode() == null || financialAccountBalanceRequest.getToFinancialAccountCode() == null) {
-            throw new RuleException("ورود پارامتر های از / تا کد حساب اجباری میباشد");
+            throw new RuleException("fin.financialAccount.mandatoryFinancialAccountCode");
         }
         if (financialAccountBalanceRequest.getFromFinancialAccountCode() != null || financialAccountBalanceRequest.getToFinancialAccountCode() != null) {
             if (financialAccountBalanceRequest.getFromFinancialAccountCode() == null) {
@@ -505,7 +505,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialAccountBalanceRequest.setToFinancialAccountCode("");
             }
             if (financialAccountBalanceRequest.getFromFinancialAccountCode().length() != financialAccountBalanceRequest.getToFinancialAccountCode().length()) {
-                throw new RuleException("طول کد های حساب میبایست مساوی باشد");
+                throw new RuleException("fin.financialAccount.financialAccountBalance");
             }
             length = financialAccountBalanceRequest.getFromFinancialAccountCode().length();
         }
@@ -516,16 +516,16 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 //            throw new RuleException("لطفا شناسه ی حساب مالی را وارد نمایید.");
 //        }
         if (financialAccountBalanceRequest.getDocumentNumberingTypeId() == null) {
-            throw new RuleException("لطفا شناسه ی انواع شماره گذاری سند مالی را وارد نمایید.");
+            throw new RuleException("fin.financialAccount.insertDocumentNumberingType");
         }
 //        if (financialAccountBalanceRequest.getSummarizingType() == null) {
 //            throw new RuleException("لطفا نوع جمع بندی را وارد نمایید.");
 //        }
         if (financialAccountBalanceRequest.getOrganizationId() == null) {
-            throw new RuleException("لطفا شناسه ی واحد سازمانی را وارد نمایید.");
+            throw new RuleException("fin.financialAccount.insertOrganization");
         }
         if (financialAccountBalanceRequest.getDateFilterFlg() == null) {
-            throw new RuleException("لطفا فیلتر بر اساس تاریخ یا شماره را انتخاب نمایید.");
+            throw new RuleException("fin.financialAccount.selectDateFilterFlg");
         }
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         Page<Object[]> list = financialPeriodRepository.findByFinancialPeriodByBalanceReport(financialAccountBalanceRequest.getFromDate(),
@@ -663,7 +663,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
 
         if (periodStartDate == null) {
-            throw new RuleException("هیچ دوره ی مالی در سازمان یافت نشد.");
+            throw new RuleException("fin.financialAccount.notExistPeriod");
         }
 
         financialAccountBalanceRequest.setPeriodStartDate(periodStartDate);
@@ -677,7 +677,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 , financialAccountBalanceRequest.getToNumber(), 100L);
         financialAccountBalanceRequest.setToDate(toDate);
         if (fromDate == null || toDate == null) {
-            throw new RuleException("از/ تا شماره سند وارد شده صحیح نمیباشد");
+            throw new RuleException("fin.financialAccount.notCorrectDocumentNumber");
         }
 
     }
@@ -690,7 +690,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialAccountBalanceRequest.getToDate(), 100L);
         financialAccountBalanceRequest.setToNumber(toNumber);
         if (fromNumber == null || toNumber == null) {
-            throw new RuleException("اشکال در یافتن سند در تاریخ های وارد شده");
+            throw new RuleException("fin.financialAccount.notExistDocumentInDate");
         }
     }
 }

@@ -1,7 +1,6 @@
 package ir.demisco.cfs.model.dto.response;
 
 import ir.demisco.cloud.basic.model.entity.org.Organization;
-import org.bouncycastle.asn1.cms.TimeStampedData;
 
 import java.time.LocalDateTime;
 

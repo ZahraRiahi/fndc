@@ -59,15 +59,15 @@ public class DefaultLedgerNumberingType implements LedgerNumberingTypeService {
         Long financialNumberingTypeRequest = ledgerNumberingTypeDto.getFinancialNumberingTypeId();
         Long financialLedgerTypeRequest = ledgerNumberingTypeDto.getFinancialLedgerTypeId();
         if (financialLedgerTypeRequest == null) {
-            throw new RuleException("لطفا  شناسه نوع دفتر مالی خود را وارد نمایید.");
+            throw new RuleException("fin.ledgerNumberingType.insertLedgerType");
         }
         if (financialNumberingTypeRequest == null) {
-            throw new RuleException("لطفا شناسه نوع شماره گذاری خود را وارد نمایید.");
+            throw new RuleException("fin.ledgerNumberingType.insertNumberingType");
         }
         Long countByLedgerTypeIdAndNumberingTypeIdAndDeleteDate = ledgerNumberingTypeRepository.getCountByLedgerTypeIdAndNumberingTypeIdAndDeleteDate(ledgerNumberingTypeDto.getFinancialLedgerTypeId()
                 , ledgerNumberingTypeDto.getFinancialNumberingTypeId());
         if (countByLedgerTypeIdAndNumberingTypeIdAndDeleteDate > 0) {
-            throw new RuleException("نوع شماره گذاری، برای این نوع دفتر مالی، قبلا ثبت شده است.");
+            throw new RuleException("fin.financialLedgerType.existNumberingTypeInDepartment");
         }
         if (ledgerNumberingTypeDto.getId() == null) {
             insertLedgerNumberingType(financialNumberingTypeRequest, financialLedgerTypeRequest);
@@ -96,7 +96,7 @@ public class DefaultLedgerNumberingType implements LedgerNumberingTypeService {
             if (financialNumberingTypeDifferent.isPresent()) {
                 ledgerNumberingType.setFinancialNumberingType(financialNumberingTypeDifferent.get());
             } else {
-                throw new RuleException("شناسه انواع شماره گذاری  وجود ندارد");
+                throw new RuleException("fin.financialLedgerType.notValidNumberingType");
             }
         }
         Long financialLedgerTypeIdPresent = ledgerNumberingType.getFinancialLedgerType().getId();
@@ -108,7 +108,7 @@ public class DefaultLedgerNumberingType implements LedgerNumberingTypeService {
             if (financialLedgerTypeDifferent.isPresent()) {
                 ledgerNumberingType.setFinancialLedgerType(financialLedgerTypeDifferent.get());
             } else {
-                throw new RuleException("شناسه انواع دفتر مالی سازمان وجود ندارد");
+                throw new RuleException("fin.ledgerNumberingType.notExistfinancialDepartmentLedgerType");
             }
         }
         ledgerNumberingTypeRepository.save(ledgerNumberingType);
@@ -119,20 +119,20 @@ public class DefaultLedgerNumberingType implements LedgerNumberingTypeService {
         LedgerNumberingType ledgerNumberingTypeNew = new LedgerNumberingType();
         Optional<FinancialLedgerType> financialLedgerTypeTbl = financialLedgerTypeRepository.findById(financialLedgerTypeRequest);
         if (!financialLedgerTypeTbl.isPresent()) {
-            throw new RuleException(" نوع دفتر مالی  یافت نشد.");
+            throw new RuleException("fin.ledgerNumberingType.notfoundLedgerType");
         } else {
             ledgerNumberingTypeNew.setFinancialLedgerType(financialLedgerTypeTbl.get());
         }
         Optional<FinancialNumberingType> financialNumberingTypeTbl = financialNumberingTypeRepository.findById(financialNumberingTypeRequest);
         if (!financialNumberingTypeTbl.isPresent()) {
-            throw new RuleException(" نوع  شماره گذاری یافت نشد.");
+            throw new RuleException("fin.ledgerNumberingType.notfoundNumberingType");
         } else {
             ledgerNumberingTypeNew.setFinancialNumberingType(financialNumberingTypeTbl.get());
         }
         try {
             ledgerNumberingTypeRepository.save(ledgerNumberingTypeNew);
         } catch (Exception e) {
-            throw new RuleException("عملیات با موفقیت ثبت نشد.");
+            throw new RuleException("fin.ledgerNumberingType.operationFailed");
         }
         return true;
     }

@@ -351,10 +351,10 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
 
         if (financialDocumentSaveDto.getFinancialDocumentItemDtoList().isEmpty()) {
-            throw new RuleException("لطفا یک ردیف وارد کنید.");
+            throw new RuleException("fin.financialDocument.insertDocumentItem");
         }
         if(financialDocumentSaveDto.getFinancialDocumentStatusId() !=1){
-            throw new RuleException("وضعیت سند باید ایجاد باشد.");
+            throw new RuleException("fin.financialDocument.documentStatusCreat");
         }
         FinancialDocument financialDocument = financialDocumentRepository.
                 findById(financialDocumentSaveDto.getFinancialDocumentId() == null ? 0L : financialDocumentSaveDto.getFinancialDocumentId()).orElse(new FinancialDocument());
@@ -375,7 +375,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         FinancialDocument financialDocument = financialDocumentRepository.
-                findById(requestFinancialDocumentSaveDto.getFinancialDocumentId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+                findById(requestFinancialDocumentSaveDto.getFinancialDocumentId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         financialDocument.setDocumentDate(requestFinancialDocumentSaveDto.getDocumentDate());
         financialDocument.setDescription(requestFinancialDocumentSaveDto.getDescription());
         financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDocumentStatusId()));
@@ -463,7 +463,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     public FinancialDocumentSaveDto getFinancialDocumentInfo(FinancialDocumentDto financialDocumentDto) {
         FinancialDocumentSaveDto responseDocumentSaveDto;
         List<ResponseFinancialDocumentItemDto>  financialDocumentItemDtoList=new ArrayList<>();
-        FinancialDocument financialDocument=financialDocumentRepository.findById(financialDocumentDto.getId()).orElseThrow(() -> new RuleException("سند یافت نشد"));
+        FinancialDocument financialDocument=financialDocumentRepository.findById(financialDocumentDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         responseDocumentSaveDto = convertDocumentToDto(financialDocument);
         List<FinancialDocumentItem>  financialDocumentItemList=financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocument.getId());
         financialDocumentItemList.forEach(documentItem ->{
