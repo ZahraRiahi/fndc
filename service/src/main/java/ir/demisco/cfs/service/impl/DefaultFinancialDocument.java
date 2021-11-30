@@ -10,7 +10,6 @@ import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.core.utils.DateUtil;
-//import org.codehaus.jackson.map.util.ISO8601Utils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -289,7 +288,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Transactional(rollbackOn = Throwable.class)
     public ResponseEntity<ResponseFinancialDocumentSetStatusDto> changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
         ResponseFinancialDocumentSetStatusDto responseFinancialDocumentSetStatusDto = new ResponseFinancialDocumentSetStatusDto();
-        FinancialDocument financialDocument = financialDocumentRepository.findById(responseFinancialDocumentStatusDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        FinancialDocument financialDocument = financialDocumentRepository.findById(responseFinancialDocumentStatusDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         FinancialDocumentStatus financialDocumentStatus =
                 documentStatusRepository.findFinancialDocumentStatusByCode(responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode());
         if (responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode().equals("20") ||
@@ -512,7 +511,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (!list.isEmpty()) {
             list.forEach(objects -> {
                 FinancialNumberingFormat financialNumberingFormat =
-                        financialNumberingFormatRepository.findById(Long.parseLong(objects[0].toString())).orElseThrow(() -> new RuleException("فرمت شماره گذاری یافت نشد"));
+                        financialNumberingFormatRepository.findById(Long.parseLong(objects[0].toString())).orElseThrow(() -> new RuleException("fin.financialDocument.notExistFinancialNumberingFormat"));
                 NumberingFormatSerial searchNumberingFormatSerial = numberingFormatSerialRepository.findByNumberingFormatAndDeletedDate(financialNumberingFormat.getId());
                 if (searchNumberingFormatSerial == null) {
                     NumberingFormatSerial numberingFormatSerial = new NumberingFormatSerial();
@@ -563,11 +562,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     public String changeDescription(FinancialDocumentChengDescriptionDto financialDocumentDto) {
         FinancialDocument financialDocument = financialDocumentRepository.getActiveDocumentById(financialDocumentDto.getId());
         if (financialDocument == null) {
-            throw new RuleException("سند یافت نشد.");
+            throw new RuleException("fin.financialDocument.notExistDocument");
         }
         List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentDescription(financialDocumentDto.getFinancialDocumentItemIdList(), financialDocumentDto.getOldDescription());
         if (financialDocumentItemList.isEmpty()) {
-            throw new RuleException("ردیفی با پارامترهای ارسالی یافت نشد");
+            throw new RuleException("fin.financialDocument.notFoundRecordWithParam");
         }
         entityManager.createNativeQuery(" update fndc.financial_document_item " +
                 "   set description = replace(description,:description,:newDescription) " +
@@ -584,10 +583,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public boolean deleteFinancialDocumentById(Long financialDocumentId) {
-        FinancialDocument document = financialDocumentRepository.findById(financialDocumentId).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        FinancialDocument document = financialDocumentRepository.findById(financialDocumentId).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
         if (financialDocument == null) {
-            throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
+            throw new RuleException("fin.financialDocument.openStatusPeriod");
         } else {
             financialDocument.setDeletedDate(LocalDateTime.now());
             financialDocumentRepository.save(financialDocument);
@@ -614,10 +613,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public List<FinancialDocumentAccountMessageDto> changeAccountDocument(FinancialDocumentAccountDto financialDocumentAccountDto) {
-        FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentAccountDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         List<FinancialDocumentAccountMessageDto> financialDocumentAccountMessageDtoList = new ArrayList<>();
         if (financialDocumentAccountDto.getFinancialAccountId().equals(financialDocumentAccountDto.getNewFinancialAccountId())) {
-            throw new RuleException("حساب های ارسالی یکسان است.");
+            throw new RuleException("fin.financialDocument.sameDocumentAccount");
         }
         List<FinancialDocumentItem> financialDocumentItemList =
                 financialDocumentItemRepository.getItemByDocumentItemIdListAndAccountId(financialDocumentAccountDto.getFinancialDocumentItemIdList(),
@@ -652,14 +651,14 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Transactional(rollbackOn = Throwable.class)
     public String changeCentricAccount(FinancialCentricAccountDto financialCentricAccountDto) {
 
-        FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
-        CentricAccount centricAccount = centricAccountRepository.findById(financialCentricAccountDto.getCentricAccountId()).orElseThrow(() -> new RuleException("کد تمرکز یافت نشد."));
-        CentricAccount newCentricAccount = centricAccountRepository.findById(financialCentricAccountDto.getNewCentricAccountId()).orElseThrow(() -> new RuleException("کد تمرکز یافت نشد."));
+        FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
+        CentricAccount centricAccount = centricAccountRepository.findById(financialCentricAccountDto.getCentricAccountId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistCentricAccount"));
+        CentricAccount newCentricAccount = centricAccountRepository.findById(financialCentricAccountDto.getNewCentricAccountId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistCentricAccount"));
         if (centricAccount.getCentricAccountType().getId().equals(newCentricAccount.getCentricAccountType().getId())) {
             List<FinancialDocumentItem> financialDocumentItemList =
                     financialDocumentItemRepository.getByDocumentIdAndCentricAccount(financialCentricAccountDto.getFinancialDocumentItemIdList(), financialCentricAccountDto.getNewCentricAccountId(), financialCentricAccountDto.getFinancialAccountId());
             if (financialDocumentItemList.isEmpty()) {
-                throw new RuleException("ردیفی یافت نشد.");
+                throw new RuleException("fin.financialDocument.notExistDocumentItem");
             }
             Long centricAccountId = financialCentricAccountDto.getCentricAccountId();
             financialDocumentItemList.forEach(documentItem -> {
@@ -695,7 +694,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             });
 
         } else {
-            throw new RuleException("نوع کد تمرکز جدید و قبلی یکسان نیست.");
+            throw new RuleException("fin.financialDocument.notExistCentricAccountType");
         }
         document.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
         financialDocumentRepository.save(document);
@@ -707,10 +706,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Transactional(rollbackOn = Throwable.class)
     public Boolean changeAmountDocument(FinancialCentricAccountDto financialCentricAccountDto) {
         FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId())
-                .orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+                .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
         if (financialDocument == null) {
-            throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
+            throw new RuleException("fin.financialDocument.openStatusPeriod");
         } else {
             List<FinancialDocumentItem> financialDocumentItemList =
                     financialDocumentItemRepository.findByFinancialDocumentItemIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
@@ -730,10 +729,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public Boolean setAmountDocument(FinancialCentricAccountDto financialCentricAccountDto) {
-        FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
         if (financialDocument == null) {
-            throw new RuleException("دوره / ماه عملیاتی میبایست در وضعیت باز باشد.");
+            throw new RuleException("fin.financialDocument.openStatusPeriod");
         } else {
             List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentItemIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
             financialDocumentItemList.forEach(documentItem -> {
@@ -751,7 +750,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public Boolean setArrangeSequence(FinancialDocumentDto financialDocumentDto) {
-        FinancialDocument document = financialDocumentRepository.findById(financialDocumentDto.getId()).orElseThrow(() -> new RuleException("هیچ سندی یافت نشد."));
+        FinancialDocument document = financialDocumentRepository.findById(financialDocumentDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         entityManager.createNativeQuery("update fndc.financial_document_item  fndi_outer " +
                 "   set fndi_outer.sequence_number = " +
                 "       (select rn " +

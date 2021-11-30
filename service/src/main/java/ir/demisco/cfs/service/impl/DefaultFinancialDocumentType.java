@@ -52,7 +52,7 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     @Transactional(rollbackOn = Throwable.class)
     public Boolean deleteFinancialDocumentTypeById(Long financialDocumentTypeId) {
         FinancialDocumentType financialDocumentType = financialDocumentTypeRepository.findById(financialDocumentTypeId)
-                .orElseThrow(() -> new RuleException("سند یافت نشد"));
+                .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         financialDocumentType.setDeletedDate(LocalDateTime.now());
         financialDocumentTypeRepository.save(financialDocumentType);
         return true;
@@ -87,7 +87,7 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
 
 
         FinancialDocumentType financialDocumentType=financialDocumentTypeRepository.
-                findById(financialDocumentTypeDto.getId()).orElseThrow(() -> new RuleException("سند یافت نشد"));
+                findById(financialDocumentTypeDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         if(!financialDocumentType.getAutomaticFlag()) {
             financialDocumentType.setDescription(financialDocumentTypeDto.getDescription());
             financialDocumentType.setActiveFlag(financialDocumentTypeDto.getActiveFlag());
@@ -95,7 +95,7 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
             financialDocumentTypeRepository.save(financialDocumentType);
             return convertToDto(financialDocumentType);
         }else{
-            throw new RuleException("این سند قابل ویرایش نیست.");
+            throw new RuleException("fin.financialDocumentType.notEditDocument");
         }
     }
 

@@ -61,7 +61,7 @@ public class DefaultFinancialConfig implements FinancialConfigService {
         }
         Long financialAccountStructureCount = financialConfigRepository.getCountByFinancialConfigAndOrganizationAndUser(financialConfigRequest.getOrganizationId(), financialConfigRequest.getUserId());
         if (financialAccountStructureCount > 0) {
-            throw new RuleException("برای این کاربر در این سازمان قبلا رکوردی ثبت شده است");
+            throw new RuleException("fin.financialConfig.existAccountStructure");
         }
         FinancialConfig financialConfigNew = new FinancialConfig();
         financialConfigNew.setOrganization(organizationRepository.getOne(organizationId));
