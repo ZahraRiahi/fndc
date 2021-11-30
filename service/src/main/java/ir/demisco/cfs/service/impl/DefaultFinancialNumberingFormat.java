@@ -70,7 +70,7 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
                 financialNumberingFormatRepository.getFormatByType(formatType,financialNumberingFormatDto.getFinancialNumberingFormatTypeId(),
                         financialNumberingFormatDto.getFinancialNumberingTypeId(), organizationId);
         if (financialNumberingFormat != null) {
-            throw new RuleException("سند با این فرمت درج شده است.");
+            throw new RuleException("fin.financialNumberingFormat.existNumberingFormat");
         } else {
             FinancialNumberingFormat numberingFormat = financialNumberingFormatRepository.findById(financialNumberingFormatDto.getId() == null ? 0L :
                     financialNumberingFormatDto.getId()).orElse(new FinancialNumberingFormat());
@@ -92,14 +92,14 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     @Transactional(rollbackOn = Throwable.class)
 //    public ResponseFinancialNumberingFormatDto upDate(FinancialNumberingFormatDto financialNumberingFormatDto) {
     public Boolean upDate(FinancialNumberingFormatDto financialNumberingFormatDto) {
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         FinancialNumberingFormat financialNumberingFormat =
                 financialNumberingFormatRepository.getFormatByTypeForEdit(financialNumberingFormatDto.getFinancialNumberingFormatTypeId(),
                         financialNumberingFormatDto.getFinancialNumberingTypeId(), organizationId, financialNumberingFormatDto.getId());
         if (financialNumberingFormat != null) {
-            throw new RuleException("سند با این فرمت درج شده است.");
+            throw new RuleException("fin.financialNumberingFormat.existNumberingFormat");
         } else {
-            FinancialNumberingFormat updateFormat = financialNumberingFormatRepository.findById(financialNumberingFormatDto.getId()).orElseThrow(() -> new RuleException("سند یافت نشد"));
+            FinancialNumberingFormat updateFormat = financialNumberingFormatRepository.findById(financialNumberingFormatDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
             updateFormat.setDescription(financialNumberingFormatDto.getDescription());
 //            updateFormat.setFinancialNumberingFormatType(financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()));
             updateFormat.setFinancialNumberingFormatType(financialNumberingFormatDto.getFinancialNumberingFormatTypeId() != 0 ?
@@ -132,7 +132,7 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     @Transactional(rollbackOn = Throwable.class)
     public boolean deleteNumberingFormatById(Long numberingFormatId) {
         FinancialNumberingFormat deleteNumberingFormat = financialNumberingFormatRepository.findById(numberingFormatId)
-                .orElseThrow(() -> new RuleException("سند یافت نشد"));
+                .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         deleteNumberingFormat.setDeletedDate(LocalDateTime.now());
         financialNumberingFormatRepository.save(deleteNumberingFormat);
         return true;

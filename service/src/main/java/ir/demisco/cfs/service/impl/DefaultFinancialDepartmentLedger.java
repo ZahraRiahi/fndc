@@ -111,12 +111,12 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
     private void saveFinancialDepartmentLedgerType(FinancialDepartmentLedgerRequest financialDepartmentLedgerObject) {
 
         FinancialDepartment financialDepartment = financialDepartmentRepository.findById(financialDepartmentLedgerObject.getFinancialDepartmentId())
-                .orElseThrow(() -> new RuleException("لطفا شناسه شعبه، مورد نظر خود را وارد نمایید."));
+                .orElseThrow(() -> new RuleException("fin.financialDepartmentLedger.insertDepartmentNumber"));
         FinancialDepartmentLedger departmentLedger =
                 financialDepartmentLedgerRepository.getByLedgerTypeIdAndDepartmentIdAndDeleteDate(financialDepartment.getId(),
                         financialDepartmentLedgerObject.getFinancialLedgerTypeId(), financialDepartmentLedgerObject.getFinancialDepartmentLedgerId());
         if (departmentLedger != null) {
-            throw new RuleException("این نوع دفتر مالی، برای این شعبه، قبلا ثبت شده است.");
+            throw new RuleException("fin.financialDepartmentLedger.departmentLedgerExist");
         }
 
         if (financialDepartmentLedgerObject.getFinancialDepartmentLedgerId() == null) {
@@ -126,11 +126,11 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
             financialDepartmentLedgerRepository.save(financialDepartmentLedger);
         } else if (financialDocumentRepository.usedInFinancialDocument(financialDepartmentLedgerObject.getFinancialDepartmentLedgerId()).size() == 0) {
             FinancialDepartmentLedger financialDepartmentLedger = financialDepartmentLedgerRepository.findById(financialDepartmentLedgerObject.getFinancialDepartmentLedgerId())
-                    .orElseThrow(() -> new RuleException("هیچ موردی یافت نشد"));
+                    .orElseThrow(() -> new RuleException("fin.financialDepartmentLedger.notExistDepartmentLedger"));
             financialDepartmentLedger.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialDepartmentLedgerObject.getFinancialLedgerTypeId()));
             financialDepartmentLedgerRepository.save(financialDepartmentLedger);
         } else {
-            throw new RuleException("از این دفتر مالی و شعبه ، در اسناد مالی استفاده شده است");
+            throw new RuleException("fin.financialDepartmentLedger.usedDepartmentLedger");
         }
 
     }
@@ -140,12 +140,12 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
         if (financialDepartmentLedgerObject.getFinancialDepartmentLedgerId() != null &&
                 financialDocumentRepository.usedInFinancialDocument(financialDepartmentLedgerObject.getFinancialDepartmentLedgerId()).size() == 0) {
             FinancialDepartmentLedger financialDepartmentLedger = financialDepartmentLedgerRepository.findById(financialDepartmentLedgerObject.getFinancialDepartmentLedgerId())
-                    .orElseThrow(() -> new RuleException("هیچ موردی یافت نشد"));
+                    .orElseThrow(() -> new RuleException("fin.financialDepartmentLedger.notExistDepartmentLedger"));
             financialDepartmentLedger.setDeletedDate(LocalDateTime.now());
             financialDepartmentLedgerRepository.save(financialDepartmentLedger);
 
         } else {
-            throw new RuleException("امکان حذف دفتر مالی برای این شعبه وجود ندارد.");
+            throw new RuleException("fin.financialDepartmentLedger.notPossibleDeleteDepartmentLedger");
         }
     }
 
@@ -156,7 +156,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
         if (financialDepartmentRepositoryById.isPresent()) {
             financialDepartmentLedgerNew.setFinancialDepartment(financialDepartmentRepositoryById.get());
         } else {
-            throw new RuleException("شناسه شعبه، وارد شده معتبر نمی باشد.");
+            throw new RuleException("fin.financialDepartmentLedger.notExistDepartmentNumber");
         }
         if (financialDepartmentLedgerRequestListId.getFinancialLedgerTypeId() == null) {
             financialDepartmentLedgerNew.setFinancialLedgerType(null);
@@ -166,7 +166,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
         if (financialLedgerTypeRepositoryById.isPresent()) {
             financialDepartmentLedgerNew.setFinancialLedgerType(financialLedgerTypeRepositoryById.get());
         } else {
-            throw new RuleException("شناسه نوع دفتر مالی، وارد شده معتبر نمی باشد.");
+            throw new RuleException("fin.financialDepartmentLedger.notExistLedgerType");
         }
         saveNewFinancialDepartmentLedger(financialDepartmentLedgerRequestListId, financialDepartmentRepositoryById, financialLedgerTypeRepositoryById, financialDepartmentLedgerNew);
     }
@@ -184,7 +184,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
         if (hasInFinancialDepartmentLedger) {
             financialDepartmentLedgerRepository.save(financialDepartmentLedgerNew);
         } else {
-            throw new RuleException("این نوع دفتر مالی، برای این شعبه، قبلا ثبت شده است.");
+            throw new RuleException("fin.financialDepartmentLedger.departmentLedgerExist");
         }
     }
 
@@ -201,16 +201,16 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
                     if (hasInFinancialDepartmentLedger) {
                         financialDepartmentLedgerRepository.save(financialDepartmentLedgerForUpdate);
                     } else {
-                        throw new RuleException("این نوع دفتر مالی، برای این شعبه، قبلا ثبت شده است.");
+                        throw new RuleException("fin.financialDepartmentLedger.departmentLedgerExist");
                     }
                 } else {
-                    throw new RuleException(" شعبه و نوع دفترمالی در سندی ثبت شده است امکان ویرایش آن وجود ندارد ");
+                    throw new RuleException("fin.financialDepartmentLedger.usedDepartmentLedger");
                 }
             } else {
-                throw new RuleException("شناسه نوع دفتر مالی، وارد شده معتبر نمی باشد.");
+                throw new RuleException("fin.financialDepartmentLedger.notExistLedgerType");
             }
         } else {
-            throw new RuleException("شناسه دفتر مالی شعبه، وارد شده معتبر نمی باشد.");
+            throw new RuleException("fin.financialDepartmentLedger.notCorrectDepartmentLedger");
         }
     }
 
@@ -222,7 +222,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
                 financialDepartmentLedgerRepository.save(financialDepartmentLedgerForUpdate);
             }
         } else {
-            throw new RuleException("شناسه دفتر مالی شعبه، وارد شده معتبر نمی باشد.");
+            throw new RuleException("fin.financialDepartmentLedger.notCorrectDepartmentLedger");
         }
     }
 
