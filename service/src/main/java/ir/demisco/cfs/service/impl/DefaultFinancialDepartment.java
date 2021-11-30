@@ -35,6 +35,7 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialDepartmentResponses);
+        dataSourceResult.setTotal(financialDocumentItemList.size());
         return dataSourceResult;
 
     }
