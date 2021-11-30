@@ -37,17 +37,17 @@ public class FinancialDocumentTest {
 
 
 
-    @Test
-    public void financialDocumentCreatDeleteError() {
-        try {
-            Boolean delete = financialDocumentService.deleteFinancialDocumentById(6651L);
-            Assertions.assertNotNull(delete);
-        } catch (RuleException e) {
-            if (e.getMessage() == null) {
-                Assertions.fail();
-            }
-        }
-    }
+//    @Test
+//    public void financialDocumentCreatDeleteError() {
+//        try {
+//            Boolean delete = financialDocumentService.deleteFinancialDocumentById(6651L);
+//            Assertions.assertNotNull(delete);
+//        } catch (RuleException e) {
+//            if (e.getMessage() == null) {
+//                Assertions.fail();
+//            }
+//        }
+//    }
 
 
     @Test
@@ -133,42 +133,42 @@ public class FinancialDocumentTest {
         }
     }
 
-    @Test
-    public void financialDocumentChangeAmount() {
+//    @Test
+//    public void financialDocumentChangeAmount() {
+//
+//        List<Long> longList = new ArrayList<>();
+//        longList.add(9302L);
+//        FinancialCentricAccountDto financialCentricAccountDto = new FinancialCentricAccountDto();
+//        financialCentricAccountDto.setId(6304L);
+//        financialCentricAccountDto.setFinancialDocumentItemIdList(longList);
+//        try {
+//            Boolean result = financialDocumentService.changeAmountDocument(financialCentricAccountDto);
+//            Assertions.assertEquals(true, result);
+//        } catch (RuleException e) {
+//            if (e.getMessage() == null) {
+//                Assertions.fail();
+//            }
+//        }
+//    }
 
-        List<Long> longList = new ArrayList<>();
-        longList.add(9302L);
-        FinancialCentricAccountDto financialCentricAccountDto = new FinancialCentricAccountDto();
-        financialCentricAccountDto.setId(6304L);
-        financialCentricAccountDto.setFinancialDocumentItemIdList(longList);
-        try {
-            Boolean result = financialDocumentService.changeAmountDocument(financialCentricAccountDto);
-            Assertions.assertEquals(true, result);
-        } catch (RuleException e) {
-            if (e.getMessage() == null) {
-                Assertions.fail();
-            }
-        }
-    }
 
-
-    @Test
-    public void financialDocumentSetAmount() {
-
-        List<Long> longList = new ArrayList<>();
-        longList.add(9302L);
-        FinancialCentricAccountDto financialCentricAccountDto = new FinancialCentricAccountDto();
-        financialCentricAccountDto.setId(6304L);
-        financialCentricAccountDto.setFinancialDocumentItemIdList(longList);
-        try {
-            Boolean result = financialDocumentService.changeAmountDocument(financialCentricAccountDto);
-            Assertions.assertEquals(true, result);
-        } catch (RuleException e) {
-            if (e.getMessage() == null) {
-                Assertions.fail();
-            }
-        }
-    }
+//    @Test
+//    public void financialDocumentSetAmount() {
+//
+//        List<Long> longList = new ArrayList<>();
+//        longList.add(9302L);
+//        FinancialCentricAccountDto financialCentricAccountDto = new FinancialCentricAccountDto();
+//        financialCentricAccountDto.setId(6304L);
+//        financialCentricAccountDto.setFinancialDocumentItemIdList(longList);
+//        try {
+//            Boolean result = financialDocumentService.changeAmountDocument(financialCentricAccountDto);
+//            Assertions.assertEquals(true, result);
+//        } catch (RuleException e) {
+//            if (e.getMessage() == null) {
+//                Assertions.fail();
+//            }
+//        }
+//    }
 
     @Test
     public void financialDocumentGetStructure() {
@@ -261,52 +261,52 @@ public class FinancialDocumentTest {
         Assertions.assertEquals(true, copyItem);
     }
 
-    @Test
-    public void financialDocumentTransferChangeDate() {
-        List<Long> financialDocumentItemList = new ArrayList<>();
-        Date date = new Date(121, 10, 28);
-        financialDocumentItemList.add(9301L);
-        financialDocumentItemList.add(9302L);
-        FinancialDocumentTransferDto documentTransferDto = new FinancialDocumentTransferDto();
-        documentTransferDto.setId(6304L);
-        documentTransferDto.setDocumentNumber("10011100044");
-        documentTransferDto.setTransferType(5);
-        documentTransferDto.setFinancialDocumentItemIdList(financialDocumentItemList);
-        documentTransferDto.setDate(date);
-        documentTransferDto.setAllItemFlag(false);
-        try {
-            Boolean copyItem = transferFinancialDocumentService.transferDocument(documentTransferDto);
-            Assertions.assertEquals(true, copyItem);
-        } catch (RuleException e) {
+//    @Test
+//    public void financialDocumentTransferChangeDate() {
+//        List<Long> financialDocumentItemList = new ArrayList<>();
+//        Date date = new Date(121, 10, 28);
+//        financialDocumentItemList.add(9301L);
+//        financialDocumentItemList.add(9302L);
+//        FinancialDocumentTransferDto documentTransferDto = new FinancialDocumentTransferDto();
+//        documentTransferDto.setId(6304L);
+//        documentTransferDto.setDocumentNumber("10011100044");
+//        documentTransferDto.setTransferType(5);
+//        documentTransferDto.setFinancialDocumentItemIdList(financialDocumentItemList);
+//        documentTransferDto.setDate(date);
+//        documentTransferDto.setAllItemFlag(false);
+//        try {
+//            Boolean copyItem = transferFinancialDocumentService.transferDocument(documentTransferDto);
+//            Assertions.assertEquals(true, copyItem);
+//        } catch (RuleException e) {
+//
+//            if (e.getMessage() == null) {
+//                Assertions.fail();
+//            }
+//        }
+//    }
 
-            if (e.getMessage() == null) {
-                Assertions.fail();
-            }
-        }
-    }
-
-    @Test
-    public void financialDocumentTransferExchangeDocument() {
-        List<Long> financialDocumentItemList = new ArrayList<>();
-        Date date = new Date(121, 10, 28);
-        financialDocumentItemList.add(9301L);
-        financialDocumentItemList.add(9302L);
-        FinancialDocumentTransferDto documentTransferDto = new FinancialDocumentTransferDto();
-        documentTransferDto.setId(6304L);
-        documentTransferDto.setDocumentNumber("10211500060");
-        documentTransferDto.setTransferType(6);
-        documentTransferDto.setFinancialDocumentItemIdList(financialDocumentItemList);
-        documentTransferDto.setDate(date);
-        documentTransferDto.setAllItemFlag(false);
-        try {
-            Boolean copyItem = transferFinancialDocumentService.transferDocument(documentTransferDto);
-            Assertions.assertEquals(true, copyItem);
-        }catch (RuleException e){
-            if(e.getMessage()==null){
-                Assertions.fail();
-            }
-        }
-    }
+//    @Test
+//    public void financialDocumentTransferExchangeDocument() {
+//        List<Long> financialDocumentItemList = new ArrayList<>();
+//        Date date = new Date(121, 10, 28);
+//        financialDocumentItemList.add(9301L);
+//        financialDocumentItemList.add(9302L);
+//        FinancialDocumentTransferDto documentTransferDto = new FinancialDocumentTransferDto();
+//        documentTransferDto.setId(6304L);
+//        documentTransferDto.setDocumentNumber("10211500060");
+//        documentTransferDto.setTransferType(6);
+//        documentTransferDto.setFinancialDocumentItemIdList(financialDocumentItemList);
+//        documentTransferDto.setDate(date);
+//        documentTransferDto.setAllItemFlag(false);
+//        try {
+//            Boolean copyItem = transferFinancialDocumentService.transferDocument(documentTransferDto);
+//            Assertions.assertEquals(true, copyItem);
+//        }catch (RuleException e){
+//            if(e.getMessage()==null){
+//                Assertions.fail();
+//            }
+//        }
+//    }
 
     @Test
     public void financialDocumentCopyDocument() {
@@ -502,41 +502,41 @@ public class FinancialDocumentTest {
 
     }
 
-    @Test
-    public void financialDocumentSetStatus(){
+//    @Test
+//    public void financialDocumentSetStatus(){
+//
+//
+//        ResponseFinancialDocumentStatusDto  financialDocumentStatusDto=new ResponseFinancialDocumentStatusDto();
+//        financialDocumentStatusDto.setId(6304L);
+//        financialDocumentStatusDto.setFinancialDocumentStatusCode("20");
+//        try {
+//            ResponseEntity<ResponseFinancialDocumentSetStatusDto> documentSetStatusDto =
+//                    financialDocumentService.changeStatus(financialDocumentStatusDto);
+//            Assertions.assertNotNull(documentSetStatusDto.getBody().getFinancialDocumentErrorDtoList());
+//        }catch(RuleException e){
+//            if(e.getMessage()==null){
+//                Assertions.fail();
+//            }
+//        }
+//    }
 
-
-        ResponseFinancialDocumentStatusDto  financialDocumentStatusDto=new ResponseFinancialDocumentStatusDto();
-        financialDocumentStatusDto.setId(6304L);
-        financialDocumentStatusDto.setFinancialDocumentStatusCode("20");
-        try {
-            ResponseEntity<ResponseFinancialDocumentSetStatusDto> documentSetStatusDto =
-                    financialDocumentService.changeStatus(financialDocumentStatusDto);
-            Assertions.assertNotNull(documentSetStatusDto.getBody().getFinancialDocumentErrorDtoList());
-        }catch(RuleException e){
-            if(e.getMessage()==null){
-                Assertions.fail();
-            }
-        }
-    }
-
-    @Test
-    public void financialDocumentSetStatusSuccess(){
-
-        ResponseFinancialDocumentStatusDto  financialDocumentStatusDto=new ResponseFinancialDocumentStatusDto();
-        financialDocumentStatusDto.setId(8257L);
-        financialDocumentStatusDto.setFinancialDocumentStatusCode("20");
-        try {
-            ResponseEntity<ResponseFinancialDocumentSetStatusDto> documentSetStatusDto =
-                    financialDocumentService.changeStatus(financialDocumentStatusDto);
-            Assertions.assertNotNull(documentSetStatusDto);
-        }catch(RuleException e){
-            if(e.getMessage()==null){
-                Assertions.fail();
-            }
-
-        }
-    }
+//    @Test
+//    public void financialDocumentSetStatusSuccess(){
+//
+//        ResponseFinancialDocumentStatusDto  financialDocumentStatusDto=new ResponseFinancialDocumentStatusDto();
+//        financialDocumentStatusDto.setId(8257L);
+//        financialDocumentStatusDto.setFinancialDocumentStatusCode("20");
+//        try {
+//            ResponseEntity<ResponseFinancialDocumentSetStatusDto> documentSetStatusDto =
+//                    financialDocumentService.changeStatus(financialDocumentStatusDto);
+//            Assertions.assertNotNull(documentSetStatusDto);
+//        }catch(RuleException e){
+//            if(e.getMessage()==null){
+//                Assertions.fail();
+//            }
+//
+//        }
+//    }
 
 
 }
