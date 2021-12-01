@@ -494,8 +494,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 .userId(financialDocument.getCreator().getId())
                 .userName(financialDocument.getCreator().getUsername())
                 .description(financialDocument.getDescription())
-                .debitAmount((Double) objects.get(0)[0])
-                .creditAmount((Double) objects.get(0)[1])
+                .debitAmount(((BigDecimal) objects.get(0)[0]).doubleValue())
+                .creditAmount(((BigDecimal) objects.get(0)[1]).doubleValue())
                 .fullDescription(objects.get(0)[2] == null ? null : objects.get(0)[2].toString())
                 .build();
     }
