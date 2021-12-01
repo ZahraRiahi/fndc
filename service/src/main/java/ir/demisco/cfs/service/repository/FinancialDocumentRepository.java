@@ -174,11 +174,11 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "            where fd.id=:FinancialDocumentId " +
             "                  and fm.financialMonthStatus.id=1" +
             "                  and case fpt.calendarTypeId when 2 then extract(month from TO_DATE(TO_char(fd.documentDate,'mm/dd/yyyy'),'mm/dd/yyyy'))" +
-            "                                              when 1 then substr(TO_CHAR(TO_DATE(TO_char(fd.documentDate,'mm/dd/yyyy'),'mm/dd/yyyy'),'yyyy/mm/dd','NLS_CALENDAR=persian'),6,2) " +
-            "                       end = to_char(case when fpt.calendarYearFlag = 1 then (fpt.fromMonth + (fmt.monthNumber-1)) " +
+            "                                              when 1 then TO_NUMBER(substr(TO_CHAR(TO_DATE(TO_char(fd.documentDate,'mm/dd/yyyy'),'mm/dd/yyyy'),'yyyy/mm/dd','NLS_CALENDAR=persian'),6,2)) " +
+            "                       end = case when fpt.calendarYearFlag = 1 then (fpt.fromMonth + (fmt.monthNumber-1)) " +
             "                       else  " +
             "                       case when (fpt.fromMonth + (fmt.monthNumber-1)) > 12 then (fpt.fromMonth + (fmt.monthNumber-13)) else (fpt.fromMonth+(fmt.monthNumber-1)) end" +
-            "                       end)" +
+            "                       end" +
             "                     )")
     FinancialDocument getActivePeriodAndMontInDocument(Long FinancialDocumentId);
 
