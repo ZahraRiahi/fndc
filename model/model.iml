@@ -31,7 +31,7 @@
     </content>
     <orderEntry type="inheritedJdk" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="library" name="Maven: ir.demisco.cloud.core:dms-basic-model:3.2.3" level="project" />
+    <orderEntry type="library" name="Maven: ir.demisco.cloud.core:dms-basic-model:3.2.5" level="project" />
     <orderEntry type="library" name="Maven: ir.demisco.cloud.core:basic-validation:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.11" level="project" />
     <orderEntry type="library" name="Maven: ir.demisco.cloud.core:hibernate-envers:1.2.1-snapshot" level="project" />
