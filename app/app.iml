@@ -15,7 +15,9 @@
       <configuration>
         <setting name="validation-enabled" value="true" />
         <setting name="provider-name" value="Hibernate" />
-        <datasource-mapping />
+        <datasource-mapping>
+          <factory-entry name="entityManagerFactory" />
+        </datasource-mapping>
         <naming-strategy-map />
       </configuration>
     </facet>
@@ -44,7 +46,7 @@
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-web:5.4.5" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: org.assertj:assertj-core:3.18.1" level="project" />
     <orderEntry type="library" scope="TEST" name="Maven: com.h2database:h2:1.4.200" level="project" />
-    <orderEntry type="library" name="Maven: ir.demisco.cloud.core:dms-audit:3.2.3" level="project" />
+    <orderEntry type="library" name="Maven: ir.demisco.cloud.core:dms-audit:3.2.5" level="project" />
     <orderEntry type="library" name="Maven: com.oracle.database.jdbc:ojdbc8:19.8.0.0" level="project" />
     <orderEntry type="library" name="Maven: ir.demisco.core:dms-utils:1.1.0" level="project" />
     <orderEntry type="library" name="Maven: org.apache.commons:commons-lang3:3.11" level="project" />
@@ -237,7 +239,7 @@
     <orderEntry type="library" name="Maven: io.github.classgraph:classgraph:4.8.69" level="project" />
     <orderEntry type="library" name="Maven: org.webjars:swagger-ui:3.49.0" level="project" />
     <orderEntry type="library" name="Maven: org.webjars:webjars-locator-core:0.46" level="project" />
-    <orderEntry type="library" name="Maven: ir.demisco.cloud.core:dms-basic-model:3.2.3" level="project" />
+    <orderEntry type="library" name="Maven: ir.demisco.cloud.core:dms-basic-model:3.2.5" level="project" />
     <orderEntry type="library" name="Maven: ir.demisco.cloud.core:basic-validation:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: ir.demisco.cloud.core:hibernate-envers:1.2.1-snapshot" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-envers:2.4.6" level="project" />

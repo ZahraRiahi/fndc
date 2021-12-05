@@ -223,7 +223,7 @@
     <orderEntry type="library" name="Maven: com.nimbusds:content-type:2.1" level="project" />
     <orderEntry type="library" name="Maven: com.nimbusds:lang-tag:1.4.4" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.security:spring-security-oauth2-core:5.4.5" level="project" />
-    <orderEntry type="library" name="Maven: ir.demisco.cloud.core:dms-basic-model:3.2.3" level="project" />
+    <orderEntry type="library" name="Maven: ir.demisco.cloud.core:dms-basic-model:3.2.5" level="project" />
     <orderEntry type="library" name="Maven: ir.demisco.cloud.core:basic-validation:1.0.0" level="project" />
     <orderEntry type="library" name="Maven: ir.demisco.cloud.core:hibernate-envers:1.2.1-snapshot" level="project" />
     <orderEntry type="library" name="Maven: org.springframework.data:spring-data-envers:2.4.6" level="project" />
