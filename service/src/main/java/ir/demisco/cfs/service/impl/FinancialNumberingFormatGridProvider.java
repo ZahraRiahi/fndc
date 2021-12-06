@@ -29,6 +29,9 @@ public class FinancialNumberingFormatGridProvider implements GridDataProvider {
                 filterContext.getPath("financialNumberingType.id"),
                 filterContext.getPath("financialNumberingType.description"),
                 filterContext.getPath("description"),
+                filterContext.getPath("reseter"),
+                filterContext.getPath("serialLength"),
+                filterContext.getPath("firstSerial"),
                 filterContext.getPath("deletedDate")
         );
     }
@@ -45,6 +48,9 @@ public class FinancialNumberingFormatGridProvider implements GridDataProvider {
                     .financialNumberingTypeId((Long) array[4])
                     .financialNumberingTypeDescription((String) array[5])
                     .description((String) array[6])
+                    .reseter((String) array[7])
+                    .serialLength((Integer) array[8])
+                    .firstSerial((Long) array[9])
                     .build();
         }).collect(Collectors.toList());
     }
