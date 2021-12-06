@@ -22,6 +22,5 @@ public class FinancialNumberingTypeController {
     @PostMapping("/list")
     public ResponseEntity<DataSourceResult> responseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
         return ResponseEntity.ok(financialNumberingTypeService.getNumberingType(dataSourceRequest));
-
     }
 }
