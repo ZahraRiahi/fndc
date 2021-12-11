@@ -67,7 +67,7 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
             formatType = null;
         }
         FinancialNumberingFormat financialNumberingFormat =
-                financialNumberingFormatRepository.getFormatByType(formatType,financialNumberingFormatDto.getFinancialNumberingFormatTypeId(),
+                financialNumberingFormatRepository.getFormatByType(formatType, financialNumberingFormatDto.getFinancialNumberingFormatTypeId(),
                         financialNumberingFormatDto.getFinancialNumberingTypeId(), organizationId);
         if (financialNumberingFormat != null) {
             throw new RuleException("fin.financialNumberingFormat.existNumberingFormat");
@@ -92,26 +92,27 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     @Transactional(rollbackOn = Throwable.class)
 //    public ResponseFinancialNumberingFormatDto upDate(FinancialNumberingFormatDto financialNumberingFormatDto) {
     public Boolean upDate(FinancialNumberingFormatDto financialNumberingFormatDto) {
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        FinancialNumberingFormat financialNumberingFormat =
-                financialNumberingFormatRepository.getFormatByTypeForEdit(financialNumberingFormatDto.getFinancialNumberingFormatTypeId(),
-                        financialNumberingFormatDto.getFinancialNumberingTypeId(), organizationId, financialNumberingFormatDto.getId());
-        if (financialNumberingFormat != null) {
-            throw new RuleException("fin.financialNumberingFormat.existNumberingFormat");
-        } else {
-            FinancialNumberingFormat updateFormat = financialNumberingFormatRepository.findById(financialNumberingFormatDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
-            updateFormat.setDescription(financialNumberingFormatDto.getDescription());
-//            updateFormat.setFinancialNumberingFormatType(financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()));
-            updateFormat.setFinancialNumberingFormatType(financialNumberingFormatDto.getFinancialNumberingFormatTypeId() != 0 ?
-                    financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()) : null);
-            updateFormat.setFinancialNumberingType(financialNumberingTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingTypeId()));
-            updateFormat.setReseter(financialNumberingFormatDto.getReseter());
-            updateFormat.setSerialLength(financialNumberingFormatDto.getSerialLength());
-            updateFormat.setFirstSerial(financialNumberingFormatDto.getFirstSerial());
-            financialNumberingFormatRepository.save(updateFormat);
-//            return convertNumberingFormatToDto(updateFormat);
-            return true;
-        }
+        throw new RuleException("fin.financialNumberingFormat.update");
+//
+//        FinancialNumberingFormat financialNumberingFormat =
+//                financialNumberingFormatRepository.getFormatByTypeForEdit(financialNumberingFormatDto.getFinancialNumberingFormatTypeId(),
+//                        financialNumberingFormatDto.getFinancialNumberingTypeId(), organizationId, financialNumberingFormatDto.getId());
+//        if (financialNumberingFormat != null) {
+//            throw new RuleException("fin.financialNumberingFormat.existNumberingFormat");
+//        } else {
+//            FinancialNumberingFormat updateFormat = financialNumberingFormatRepository.findById(financialNumberingFormatDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
+//            updateFormat.setDescription(financialNumberingFormatDto.getDescription());
+////            updateFormat.setFinancialNumberingFormatType(financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()));
+//            updateFormat.setFinancialNumberingFormatType(financialNumberingFormatDto.getFinancialNumberingFormatTypeId() != 0 ?
+//                    financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()) : null);
+//            updateFormat.setFinancialNumberingType(financialNumberingTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingTypeId()));
+//            updateFormat.setReseter(financialNumberingFormatDto.getReseter());
+//            updateFormat.setSerialLength(financialNumberingFormatDto.getSerialLength());
+//            updateFormat.setFirstSerial(financialNumberingFormatDto.getFirstSerial());
+//            financialNumberingFormatRepository.save(updateFormat);
+////            return convertNumberingFormatToDto(updateFormat);
+//            return true;
+//        }
     }
 
     private ResponseFinancialNumberingFormatDto convertNumberingFormatToDto(FinancialNumberingFormat updateFormat) {
