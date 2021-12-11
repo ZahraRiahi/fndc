@@ -1,11 +1,12 @@
 package ir.demisco.cfs.model.dto.response;
 
 
-
 public class FinancialNumberingFormatTypeDto {
 
     private Long id;
-    private String    description;
+    private String description;
+    private String format;
+    private String defaultReset;
 
 
     public Long getId() {
@@ -24,7 +25,23 @@ public class FinancialNumberingFormatTypeDto {
         this.description = description;
     }
 
-    public static Builder builder(){
+    public String getFormat() {
+        return format;
+    }
+
+    public void setFormat(String format) {
+        this.format = format;
+    }
+
+    public String getDefaultReset() {
+        return defaultReset;
+    }
+
+    public void setDefaultReset(String defaultReset) {
+        this.defaultReset = defaultReset;
+    }
+
+    public static Builder builder() {
         return new Builder();
     }
 
@@ -46,6 +63,16 @@ public class FinancialNumberingFormatTypeDto {
 
         public Builder description(String description) {
             financialNumberingFormatTypeDto.setDescription(description);
+            return this;
+        }
+
+        public Builder format(String format) {
+            financialNumberingFormatTypeDto.setFormat(format);
+            return this;
+        }
+
+        public Builder defaultReset(String defaultReset) {
+            financialNumberingFormatTypeDto.setDefaultReset(defaultReset);
             return this;
         }
 

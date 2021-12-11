@@ -20,7 +20,7 @@ public class DefaultFinancialDocumentStatus implements FinancialDocumentStatusSe
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
-    public List<FinancialDocumentStatusListDto> getStatusList() {
+        public List<FinancialDocumentStatusListDto> getStatusList() {
         return documentStatusRepository.getFinancialDocumentStatusList().stream().map(documentStatus -> FinancialDocumentStatusListDto.builder()
         .id(documentStatus.getId())
          .Code(documentStatus.getCode())
