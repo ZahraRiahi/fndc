@@ -19,6 +19,7 @@ public interface NumberingFormatSerialRepository extends JpaRepository<Numbering
             "   and fd.deletedDate is null ")
     List<NumberingFormatSerial> findNumberingFormatSerialByParam(Long organizationId, Long FinancialDocumentId, Long numberingType);
 
-    @Query("select nf from NumberingFormatSerial nf where nf.financialNumberingFormat.id=:numberingFormatId and nf.deletedDate is null")
-    NumberingFormatSerial findByNumberingFormatAndDeletedDate(Long numberingFormatId);
+    @Query("select nf from NumberingFormatSerial nf " +
+            " where nf.financialNumberingFormat.id=:numberingFormatId  and nf.serialReseter=:serialReseter and nf.serialLength=:serialLength and nf.deletedDate is null")
+    NumberingFormatSerial findByNumberingFormatAndDeletedDate(Long numberingFormatId,String serialReseter,Long serialLength);
 }
