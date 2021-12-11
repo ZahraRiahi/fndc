@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.impl;
 
+import ir.demisco.cfs.model.dto.response.FinancialNumberingFormatTypeDto;
 import ir.demisco.cfs.service.api.FinancialNumberingFormatTypeService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -7,6 +8,7 @@ import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.List;
 
 @Service
 public class DefaultFinancialNumberingFormatType  implements FinancialNumberingFormatTypeService {
@@ -24,6 +26,12 @@ public class DefaultFinancialNumberingFormatType  implements FinancialNumberingF
     public DataSourceResult getNumberingFormatType(DataSourceRequest dataSourceRequest) {
         dataSourceRequest.getFilter().setLogic("and");
         dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("deletedDate", null, DataSourceRequest.Operators.IS_NULL));
-        return gridFilterService.filter(dataSourceRequest, financialNumberingFormatTypeGridProvider);
+        DataSourceResult dataSourceResult = gridFilterService.filter(dataSourceRequest, financialNumberingFormatTypeGridProvider);
+        List<FinancialNumberingFormatTypeDto> formatTypeDtos =  (List<FinancialNumberingFormatTypeDto>) dataSourceResult.getData();
+        formatTypeDtos.forEach(financialNumberingFormatTypeDto -> {
+            financialNumberingFormatTypeDto.setDefaultReset( financialNumberingFormatTypeDto.getFormat().replace("$SRL",""));
+        });
+        dataSourceResult.setData(formatTypeDtos);
+        return dataSourceResult;
     }
 }
