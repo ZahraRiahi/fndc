@@ -331,115 +331,115 @@ public class FinancialDocumentTest {
         }
     }
 
-    @Test
-    public void financialDocumentSave() {
+//    @Test
+//    public void financialDocumentSave() {
+//
+//        Date date = new Date(121, 11, 28);
+//        FinancialDocumentSaveDto documentSaveDto=new FinancialDocumentSaveDto();
+//        List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList=new ArrayList<>();
+//        ResponseFinancialDocumentItemDto responseFinancialDocumentItemDto=new ResponseFinancialDocumentItemDto();
+//        List<FinancialDocumentReferenceDto> list=new ArrayList<>();
+//        FinancialDocumentReferenceDto referenceDt0=new FinancialDocumentReferenceDto();
+//        List<FinancialDocumentItemCurrencyDto>  itemCurrencyDtos=new ArrayList<>();
+//        FinancialDocumentItemCurrencyDto itemCurrencyDto=new FinancialDocumentItemCurrencyDto();
+//        itemCurrencyDto.setForeignDebitAmount(new BigDecimal(40000));
+//        itemCurrencyDto.setForeignCreditAmount(new BigDecimal(1000));
+//        itemCurrencyDto.setExchangeRate(2000L);
+//        itemCurrencyDto.setMoneyTypeId(1L);
+//        itemCurrencyDto.setMoneyPricingReferenceId(4L);
+//        itemCurrencyDtos.add(itemCurrencyDto);
+//        referenceDt0.setReferenceNumber(888777L);
+//        referenceDt0.setReferenceDate(date);
+//        referenceDt0.setReferenceDescription("تست سند1");
+//        list.add(referenceDt0);
+//
+//        responseFinancialDocumentItemDto.setSequenceNumber(525L);
+//        responseFinancialDocumentItemDto.setFinancialAccountId(7005L);
+//        responseFinancialDocumentItemDto.setCreditAmount(10000D);
+//        responseFinancialDocumentItemDto.setDebitAmount(0D);
+//        responseFinancialDocumentItemDto.setDescription("ردیف سند");
+//        responseFinancialDocumentItemDto.setCentricAccountId1(6151L);
+//        responseFinancialDocumentItemDto.setCentricAccountId2(5L);
+//        responseFinancialDocumentItemDto.setCentricAccountId3(null);
+//        responseFinancialDocumentItemDto.setCentricAccountId4(null);
+//        responseFinancialDocumentItemDto.setCentricAccountId5(null);
+//        responseFinancialDocumentItemDto.setCentricAccountId6(6109L);
+//        responseFinancialDocumentItemDto.setDocumentReferenceList(list);
+//        responseFinancialDocumentItemDto.setDocumentItemCurrencyList(itemCurrencyDtos);
+//        financialDocumentItemDtoList.add(responseFinancialDocumentItemDto);
+//        documentSaveDto.setDocumentDate(date);
+//        documentSaveDto.setDocumentNumber("555555");
+//        documentSaveDto.setFinancialDocumentTypeId(6L);
+//        documentSaveDto.setFinancialDocumentStatusId(1L);
+//        documentSaveDto.setFinancialPeriodId(13172L);
+//        documentSaveDto.setFinancialLedgerTypeId(10L);
+//        documentSaveDto.setDepartmentId(1L);
+//        documentSaveDto.setDescription("سند پرداخت");
+//        documentSaveDto.setAutomaticFlag(true);
+//        documentSaveDto.setFinancialDocumentItemDtoList(financialDocumentItemDtoList);
+//        documentSaveDto=saveFinancialDocumentService.saveDocument(documentSaveDto);
+//        Assertions.assertNotNull(documentSaveDto);
+//        Assertions.assertTrue(documentSaveDto.getFinancialDocumentItemDtoList().size()==1);
+//        Assertions.assertTrue(documentSaveDto.getFinancialDocumentItemDtoList().get(0).getDocumentItemCurrencyList().size()==1);
+//        Assertions.assertTrue(documentSaveDto.getFinancialDocumentItemDtoList().get(0).getDocumentReferenceList().size()==1);
+//    }
 
-        Date date = new Date(121, 11, 28);
-        FinancialDocumentSaveDto documentSaveDto=new FinancialDocumentSaveDto();
-        List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList=new ArrayList<>();
-        ResponseFinancialDocumentItemDto responseFinancialDocumentItemDto=new ResponseFinancialDocumentItemDto();
-        List<FinancialDocumentReferenceDto> list=new ArrayList<>();
-        FinancialDocumentReferenceDto referenceDt0=new FinancialDocumentReferenceDto();
-        List<FinancialDocumentItemCurrencyDto>  itemCurrencyDtos=new ArrayList<>();
-        FinancialDocumentItemCurrencyDto itemCurrencyDto=new FinancialDocumentItemCurrencyDto();
-        itemCurrencyDto.setForeignDebitAmount(new BigDecimal(40000));
-        itemCurrencyDto.setForeignCreditAmount(new BigDecimal(1000));
-        itemCurrencyDto.setExchangeRate(2000L);
-        itemCurrencyDto.setMoneyTypeId(1L);
-        itemCurrencyDto.setMoneyPricingReferenceId(4L);
-        itemCurrencyDtos.add(itemCurrencyDto);
-        referenceDt0.setReferenceNumber(888777L);
-        referenceDt0.setReferenceDate(date);
-        referenceDt0.setReferenceDescription("تست سند1");
-        list.add(referenceDt0);
-
-        responseFinancialDocumentItemDto.setSequenceNumber(525L);
-        responseFinancialDocumentItemDto.setFinancialAccountId(7005L);
-        responseFinancialDocumentItemDto.setCreditAmount(10000D);
-        responseFinancialDocumentItemDto.setDebitAmount(0D);
-        responseFinancialDocumentItemDto.setDescription("ردیف سند");
-        responseFinancialDocumentItemDto.setCentricAccountId1(6151L);
-        responseFinancialDocumentItemDto.setCentricAccountId2(5L);
-        responseFinancialDocumentItemDto.setCentricAccountId3(null);
-        responseFinancialDocumentItemDto.setCentricAccountId4(null);
-        responseFinancialDocumentItemDto.setCentricAccountId5(null);
-        responseFinancialDocumentItemDto.setCentricAccountId6(6109L);
-        responseFinancialDocumentItemDto.setDocumentReferenceList(list);
-        responseFinancialDocumentItemDto.setDocumentItemCurrencyList(itemCurrencyDtos);
-        financialDocumentItemDtoList.add(responseFinancialDocumentItemDto);
-        documentSaveDto.setDocumentDate(date);
-        documentSaveDto.setDocumentNumber("555555");
-        documentSaveDto.setFinancialDocumentTypeId(6L);
-        documentSaveDto.setFinancialDocumentStatusId(1L);
-        documentSaveDto.setFinancialPeriodId(13172L);
-        documentSaveDto.setFinancialLedgerTypeId(10L);
-        documentSaveDto.setDepartmentId(1L);
-        documentSaveDto.setDescription("سند پرداخت");
-        documentSaveDto.setAutomaticFlag(true);
-        documentSaveDto.setFinancialDocumentItemDtoList(financialDocumentItemDtoList);
-        documentSaveDto=saveFinancialDocumentService.saveDocument(documentSaveDto);
-        Assertions.assertNotNull(documentSaveDto);
-        Assertions.assertTrue(documentSaveDto.getFinancialDocumentItemDtoList().size()==1);
-        Assertions.assertTrue(documentSaveDto.getFinancialDocumentItemDtoList().get(0).getDocumentItemCurrencyList().size()==1);
-        Assertions.assertTrue(documentSaveDto.getFinancialDocumentItemDtoList().get(0).getDocumentReferenceList().size()==1);
-    }
-
-    @Test
-    public void financialDocumentSaveDocument() {
-
-        Date date = new Date(121, 11, 28);
-        FinancialDocumentSaveDto documentSaveDto=new FinancialDocumentSaveDto();
-        List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList=new ArrayList<>();
-        ResponseFinancialDocumentItemDto responseFinancialDocumentItemDto=new ResponseFinancialDocumentItemDto();
-        List<FinancialDocumentReferenceDto> list=new ArrayList<>();
-        FinancialDocumentReferenceDto referenceDt0=new FinancialDocumentReferenceDto();
-        FinancialDocumentReferenceDto referenceDt1=new FinancialDocumentReferenceDto();
-        List<FinancialDocumentItemCurrencyDto>  itemCurrencyDtos=new ArrayList<>();
-        FinancialDocumentItemCurrencyDto itemCurrencyDto=new FinancialDocumentItemCurrencyDto();
-        itemCurrencyDto.setForeignDebitAmount(new BigDecimal(50000));
-        itemCurrencyDto.setForeignCreditAmount(new BigDecimal(1000));
-        itemCurrencyDto.setExchangeRate(2000L);
-        itemCurrencyDto.setMoneyTypeId(1L);
-        itemCurrencyDto.setMoneyPricingReferenceId(4L);
-        itemCurrencyDtos.add(itemCurrencyDto);
-        referenceDt0.setReferenceNumber(888777L);
-        referenceDt0.setReferenceDate(date);
-        referenceDt0.setReferenceDescription("تست سند1");
-        referenceDt1.setReferenceNumber(88887444L);
-        referenceDt1.setReferenceDate(date);
-        referenceDt1.setReferenceDescription("تست سند1");
-        list.add(referenceDt0);
-        list.add(referenceDt1);
-        responseFinancialDocumentItemDto.setSequenceNumber(525L);
-        responseFinancialDocumentItemDto.setFinancialAccountId(7005L);
-        responseFinancialDocumentItemDto.setCreditAmount(10000D);
-        responseFinancialDocumentItemDto.setDebitAmount(500D);
-        responseFinancialDocumentItemDto.setDescription("ردیف سند");
-        responseFinancialDocumentItemDto.setCentricAccountId1(6151L);
-        responseFinancialDocumentItemDto.setCentricAccountId2(5L);
-        responseFinancialDocumentItemDto.setCentricAccountId3(null);
-        responseFinancialDocumentItemDto.setCentricAccountId4(null);
-        responseFinancialDocumentItemDto.setCentricAccountId5(null);
-        responseFinancialDocumentItemDto.setCentricAccountId6(6109L);
-        responseFinancialDocumentItemDto.setDocumentReferenceList(list);
-        responseFinancialDocumentItemDto.setDocumentItemCurrencyList(itemCurrencyDtos);
-        financialDocumentItemDtoList.add(responseFinancialDocumentItemDto);
-        documentSaveDto.setDocumentDate(date);
-        documentSaveDto.setDocumentNumber("555555");
-        documentSaveDto.setFinancialDocumentTypeId(6L);
-        documentSaveDto.setFinancialDocumentStatusId(1L);
-        documentSaveDto.setFinancialPeriodId(13172L);
-        documentSaveDto.setFinancialLedgerTypeId(10L);
-        documentSaveDto.setDepartmentId(1L);
-        documentSaveDto.setDescription("سند پرداخت");
-        documentSaveDto.setAutomaticFlag(true);
-        documentSaveDto.setFinancialDocumentItemDtoList(financialDocumentItemDtoList);
-        documentSaveDto=saveFinancialDocumentService.saveDocument(documentSaveDto);
-        Assertions.assertNotNull(documentSaveDto);
-        Assertions.assertTrue(documentSaveDto.getFinancialDocumentItemDtoList().size()==1);
-        Assertions.assertTrue(documentSaveDto.getFinancialDocumentItemDtoList().get(0).getDocumentItemCurrencyList().size()==1);
-        Assertions.assertTrue(documentSaveDto.getFinancialDocumentItemDtoList().get(0).getDocumentReferenceList().size()==2);
-    }
+//    @Test
+//    public void financialDocumentSaveDocument() {
+//
+//        Date date = new Date(121, 11, 28);
+//        FinancialDocumentSaveDto documentSaveDto=new FinancialDocumentSaveDto();
+//        List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList=new ArrayList<>();
+//        ResponseFinancialDocumentItemDto responseFinancialDocumentItemDto=new ResponseFinancialDocumentItemDto();
+//        List<FinancialDocumentReferenceDto> list=new ArrayList<>();
+//        FinancialDocumentReferenceDto referenceDt0=new FinancialDocumentReferenceDto();
+//        FinancialDocumentReferenceDto referenceDt1=new FinancialDocumentReferenceDto();
+//        List<FinancialDocumentItemCurrencyDto>  itemCurrencyDtos=new ArrayList<>();
+//        FinancialDocumentItemCurrencyDto itemCurrencyDto=new FinancialDocumentItemCurrencyDto();
+//        itemCurrencyDto.setForeignDebitAmount(new BigDecimal(50000));
+//        itemCurrencyDto.setForeignCreditAmount(new BigDecimal(1000));
+//        itemCurrencyDto.setExchangeRate(2000L);
+//        itemCurrencyDto.setMoneyTypeId(1L);
+//        itemCurrencyDto.setMoneyPricingReferenceId(4L);
+//        itemCurrencyDtos.add(itemCurrencyDto);
+//        referenceDt0.setReferenceNumber(888777L);
+//        referenceDt0.setReferenceDate(date);
+//        referenceDt0.setReferenceDescription("تست سند1");
+//        referenceDt1.setReferenceNumber(88887444L);
+//        referenceDt1.setReferenceDate(date);
+//        referenceDt1.setReferenceDescription("تست سند1");
+//        list.add(referenceDt0);
+//        list.add(referenceDt1);
+//        responseFinancialDocumentItemDto.setSequenceNumber(525L);
+//        responseFinancialDocumentItemDto.setFinancialAccountId(7005L);
+//        responseFinancialDocumentItemDto.setCreditAmount(10000D);
+//        responseFinancialDocumentItemDto.setDebitAmount(500D);
+//        responseFinancialDocumentItemDto.setDescription("ردیف سند");
+//        responseFinancialDocumentItemDto.setCentricAccountId1(6151L);
+//        responseFinancialDocumentItemDto.setCentricAccountId2(5L);
+//        responseFinancialDocumentItemDto.setCentricAccountId3(null);
+//        responseFinancialDocumentItemDto.setCentricAccountId4(null);
+//        responseFinancialDocumentItemDto.setCentricAccountId5(null);
+//        responseFinancialDocumentItemDto.setCentricAccountId6(6109L);
+//        responseFinancialDocumentItemDto.setDocumentReferenceList(list);
+//        responseFinancialDocumentItemDto.setDocumentItemCurrencyList(itemCurrencyDtos);
+//        financialDocumentItemDtoList.add(responseFinancialDocumentItemDto);
+//        documentSaveDto.setDocumentDate(date);
+//        documentSaveDto.setDocumentNumber("555555");
+//        documentSaveDto.setFinancialDocumentTypeId(6L);
+//        documentSaveDto.setFinancialDocumentStatusId(1L);
+//        documentSaveDto.setFinancialPeriodId(13172L);
+//        documentSaveDto.setFinancialLedgerTypeId(10L);
+//        documentSaveDto.setDepartmentId(1L);
+//        documentSaveDto.setDescription("سند پرداخت");
+//        documentSaveDto.setAutomaticFlag(true);
+//        documentSaveDto.setFinancialDocumentItemDtoList(financialDocumentItemDtoList);
+//        documentSaveDto=saveFinancialDocumentService.saveDocument(documentSaveDto);
+//        Assertions.assertNotNull(documentSaveDto);
+//        Assertions.assertTrue(documentSaveDto.getFinancialDocumentItemDtoList().size()==1);
+//        Assertions.assertTrue(documentSaveDto.getFinancialDocumentItemDtoList().get(0).getDocumentItemCurrencyList().size()==1);
+//        Assertions.assertTrue(documentSaveDto.getFinancialDocumentItemDtoList().get(0).getDocumentReferenceList().size()==2);
+//    }
 
     @Test
     public void financialDocumentUpdate() {

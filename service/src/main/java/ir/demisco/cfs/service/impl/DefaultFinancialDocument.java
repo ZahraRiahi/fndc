@@ -512,7 +512,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             list.forEach(objects -> {
                 FinancialNumberingFormat financialNumberingFormat =
                         financialNumberingFormatRepository.findById(Long.parseLong(objects[0].toString())).orElseThrow(() -> new RuleException("fin.financialDocument.notExistFinancialNumberingFormat"));
-                NumberingFormatSerial searchNumberingFormatSerial = numberingFormatSerialRepository.findByNumberingFormatAndDeletedDate(financialNumberingFormat.getId());
+                NumberingFormatSerial searchNumberingFormatSerial = numberingFormatSerialRepository.findByNumberingFormatAndDeletedDate(financialNumberingFormat.getId(),objects[2].toString(),Long.parseLong(objects[3].toString()));
                 if (searchNumberingFormatSerial == null) {
                     NumberingFormatSerial numberingFormatSerial = new NumberingFormatSerial();
                     numberingFormatSerial.setFinancialNumberingFormat(financialNumberingFormat);
@@ -520,6 +520,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     numberingFormatSerial.setSerialReseter(objects[2].toString());
                     numberingFormatSerial.setSerialLength(Long.parseLong(objects[3].toString()));
                     numberingFormatSerialRepository.save(numberingFormatSerial);
+                }else{
+                    throw new RuleException("fin.financialDocument.serialNumber");
                 }
 
             });
