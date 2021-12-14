@@ -509,7 +509,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
         List<Object[]> list = financialDocumentRepository.getSerialNumber(financialDocumentNumberDto.getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         if (!list.isEmpty()) {
-            list.forEach(objects -> {
+             list.forEach(objects -> {
                 FinancialNumberingFormat financialNumberingFormat =
                         financialNumberingFormatRepository.findById(Long.parseLong(objects[0].toString())).orElseThrow(() -> new RuleException("fin.financialDocument.notExistFinancialNumberingFormat"));
                 NumberingFormatSerial searchNumberingFormatSerial = numberingFormatSerialRepository.findByNumberingFormatAndDeletedDate(financialNumberingFormat.getId(),objects[2].toString(),Long.parseLong(objects[3].toString()));
