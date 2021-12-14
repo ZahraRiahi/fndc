@@ -107,6 +107,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                          LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT_REFRENCE FDR  " +
             "                            ON FDI.ID = FDR.FINANCIAL_DOCUMENT_ITEM_ID  " +
             "                           AND FDR.DELETED_DATE IS NULL  " +
+            "         INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS " +
+            "            ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
+            "           AND FDS.DELETED_DATE IS NULL " +
             "                         WHERE FD.ORGANIZATION_ID = :organizationId  " +
             "                           AND FD.DELETED_DATE IS NULL  " +
             "                           AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  " +
@@ -136,6 +139,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                                         WHERE ASL.FINANCIAL_ACCOUNT_ID = FA.ID  " +
             "                                           AND ASL.RELATED_ACCOUNT_ID = :financialAccountId  " +
             "                                           AND ASL.DELETED_DATE IS NULL))  " +
+            "           AND FDS.CODE > 10 " +
             "                        UNION  " +
             "                        select all2.FINANCIAL_DOCUMENT_ID,  " +
             "                               sum(all2.CREDIT_AMOUNT) as CREDIT_AMOUNT,  " +
@@ -204,7 +208,10 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                                   AND FDN.DELETED_DATE IS NULL  " +
             "                                  LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT_REFRENCE FDR  " +
             "                                    ON FDI.ID = FDR.FINANCIAL_DOCUMENT_ITEM_ID  " +
-            "                                   AND FDR.DELETED_DATE IS NULL  " +
+            "                                   AND FDR.DELETED_DATE IS NULL " +
+            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS " +
+            "            ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
+            "           AND FDS.DELETED_DATE IS NULL  " +
             "                                 WHERE FD.ORGANIZATION_ID = :organizationId  " +
             "                                   AND FD.DELETED_DATE IS NULL  " +
             "                                   AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  " +
@@ -239,6 +246,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                                          WHERE ASL.FINANCIAL_ACCOUNT_ID = FA.ID  " +
             "                                            AND ASL.RELATED_ACCOUNT_ID = :financialAccountId  " +
             "                                            AND ASL.DELETED_DATE IS NULL))  " +
+            " AND FDS.CODE > 10 " +
             "                                ) all2  " +
             "                         group by all2.FINANCIAL_DOCUMENT_ID,  " +
             "                                  all2.DOCUMENT_NUMBER,  " +
@@ -374,6 +382,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "            ON CNAC5.ID = FDI.CENTRIC_ACCOUNT_ID_5  " +
             "          LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6  " +
             "            ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6  " +
+            "          INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS " +
+            "            ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
+            "           AND FDS.DELETED_DATE IS NULL " +
             "         WHERE FD.ORGANIZATION_ID = :organizationId  " +
             "           AND FD.DELETED_DATE IS NULL  " +
             "           AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  " +
@@ -402,7 +413,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                          FROM FNAC.ACCOUNT_STRUCTURE_LEVEL ASL  " +
             "                         WHERE ASL.FINANCIAL_ACCOUNT_ID = FA.ID  " +
             "                           AND ASL.RELATED_ACCOUNT_ID = :financialAccountId  " +
-            "                           AND ASL.DELETED_DATE IS NULL))  " +
+            "                           AND ASL.DELETED_DATE IS NULL)) " +
+            " AND FDS.CODE > 10 " +
             "        UNION  " +
             "        SELECT FDI.CENTRIC_ACCOUNT_ID_1, " +
             "               FDI.CENTRIC_ACCOUNT_ID_2, " +
@@ -452,6 +464,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "            ON CNAC5.ID = FDI.CENTRIC_ACCOUNT_ID_5 " +
             "          LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6 " +
             "            ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6 " +
+            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS " +
+            "            ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
+            "           AND FDS.DELETED_DATE IS NULL " +
             "         WHERE FD.ORGANIZATION_ID = :organizationId " +
             "           AND FD.DELETED_DATE IS NULL " +
             "           AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
@@ -483,6 +498,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                         WHERE ASL.FINANCIAL_ACCOUNT_ID = FA.ID " +
             "                           AND ASL.RELATED_ACCOUNT_ID = :financialAccountId " +
             "                           AND ASL.DELETED_DATE IS NULL)) " +
+            " AND FDS.CODE > 10 " +
             "        GROUP BY FA.ID, " +
             "                  FA.CODE, " +
             "                  FA.DESCRIPTION, " +
@@ -583,6 +599,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "            ON FA2.ID = ASL.RELATED_ACCOUNT_ID " +
             "         INNER JOIN fnac.financial_account_structure fas " +
             "            ON fa2.financial_account_structure_id = fas.id " +
+            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS " +
+            "            ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
+            "           AND FDS.DELETED_DATE IS NULL  " +
             "         WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
             "           AND ((fas.sequence = :structureLevel AND :showHigherLevels = 0) OR " +
             "               (fas.sequence <= :structureLevel AND " +
@@ -594,7 +613,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           and ((SUBSTR(fa.code, 1, :length) <= :toFinancialAccountCode) or " +
             "               :toFinancialAccountCode is null) " +
             "           AND FD.DELETED_DATE IS NULL " +
-            "           AND FD.ORGANIZATION_ID = :organizationId " +
+            "           AND FD.ORGANIZATION_ID = :organizationId" +
+            " AND FDS.CODE > 10 " +
             "         GROUP BY FA2.FINANCIAL_ACCOUNT_PARENT_ID, " +
             "                  FA2.ID, " +
             "                  FA2.CODE, " +
@@ -608,7 +628,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " ORDER BY FINANCIAL_ACCOUNT_code "
             , nativeQuery = true)
     Page<Object[]> findByFinancialPeriodByBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId,
-                                                 Long structureLevel, Boolean showHigherLevels, LocalDateTime periodStartDate, int length, String fromFinancialAccountCode,
-                                                 String toFinancialAccountCode, Long organizationId, Boolean hasRemain, Pageable pageable);
+                                                        Long structureLevel, Boolean showHigherLevels, LocalDateTime periodStartDate, int length, String fromFinancialAccountCode,
+                                                        String toFinancialAccountCode, Long organizationId, Boolean hasRemain, Pageable pageable);
 
 }

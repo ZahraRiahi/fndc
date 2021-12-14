@@ -70,21 +70,21 @@ public class FinancialNumberingFormatTest {
         }
     }
 
-    @Test
-    public void financialNumberingFormatUpdateSuccess(){
-        FinancialNumberingFormatDto financialNumberingFormatDto=new FinancialNumberingFormatDto();
-        ResponseFinancialNumberingFormatDto numberingFormatDto;
-        financialNumberingFormatDto.setId(3001L);
-        financialNumberingFormatDto.setOrganizationId(1L);
-        financialNumberingFormatDto.setFinancialNumberingTypeId(4L);
-        financialNumberingFormatDto.setFinancialNumberingFormatTypeId(5L);
-        financialNumberingFormatDto.setDescription("100-H");
-        Boolean dto=financialNumberingFormatService.upDate(financialNumberingFormatDto);
-        Assertions.assertEquals(true, dto);
-//        Assertions.assertEquals(5, numberingFormatDto.getFinancialNumberingFormatTypeId());
-//        Assertions.assertEquals(4, numberingFormatDto.getFinancialNumberingTypeId());
-//        Assertions.assertEquals("100-H", numberingFormatDto.getDescription());
-    }
+//    @Test
+//    public void financialNumberingFormatUpdateSuccess(){
+//        FinancialNumberingFormatDto financialNumberingFormatDto=new FinancialNumberingFormatDto();
+//        ResponseFinancialNumberingFormatDto numberingFormatDto;
+//        financialNumberingFormatDto.setId(3001L);
+//        financialNumberingFormatDto.setOrganizationId(1L);
+//        financialNumberingFormatDto.setFinancialNumberingTypeId(4L);
+//        financialNumberingFormatDto.setFinancialNumberingFormatTypeId(5L);
+//        financialNumberingFormatDto.setDescription("100-H");
+//        Boolean dto=financialNumberingFormatService.upDate(financialNumberingFormatDto);
+//        Assertions.assertEquals(true, dto);
+////        Assertions.assertEquals(5, numberingFormatDto.getFinancialNumberingFormatTypeId());
+////        Assertions.assertEquals(4, numberingFormatDto.getFinancialNumberingTypeId());
+////        Assertions.assertEquals("100-H", numberingFormatDto.getDescription());
+//    }
 
     @Test
     public void financialNumberingFormatDelete() {

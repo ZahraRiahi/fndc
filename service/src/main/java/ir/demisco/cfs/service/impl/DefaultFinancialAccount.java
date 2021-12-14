@@ -446,13 +446,13 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
         LocalDateTime startDate = financialDocumentCentricTurnOverRequest.getFromDate();
         LocalDateTime periodStartDate;
-        periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization( SecurityHelper.getCurrentUser().getOrganizationId());
+        periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization(SecurityHelper.getCurrentUser().getOrganizationId());
 
         if (startDate.isBefore(periodStartDate)) {
-            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganizationStartDate( SecurityHelper.getCurrentUser().getOrganizationId(), startDate);
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganizationStartDate(SecurityHelper.getCurrentUser().getOrganizationId(), startDate);
         }
         if (periodStartDate == null) {
-            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization2( SecurityHelper.getCurrentUser().getOrganizationId());
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization2(SecurityHelper.getCurrentUser().getOrganizationId());
         }
 
         if (periodStartDate == null) {
@@ -499,10 +499,10 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
         if (financialAccountBalanceRequest.getFromFinancialAccountCode() != null || financialAccountBalanceRequest.getToFinancialAccountCode() != null) {
             if (financialAccountBalanceRequest.getFromFinancialAccountCode() == null) {
-                financialAccountBalanceRequest.setFromFinancialAccountCode("");
+                financialAccountBalanceRequest.setFromFinancialAccountCode("fin.financialAccount.fromOrToFinancialAccountCode");
             }
             if (financialAccountBalanceRequest.getToFinancialAccountCode() == null) {
-                financialAccountBalanceRequest.setToFinancialAccountCode("");
+                financialAccountBalanceRequest.setToFinancialAccountCode("fin.financialAccount.fromOrToFinancialAccountCode");
             }
             if (financialAccountBalanceRequest.getFromFinancialAccountCode().length() != financialAccountBalanceRequest.getToFinancialAccountCode().length()) {
                 throw new RuleException("fin.financialAccount.financialAccountBalance");
