@@ -183,7 +183,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         List<FinancialDocumentItemCurrencyDto> responseDocumentItemCurrencyList = new ArrayList<>();
         FinancialDocument updateFinancialDocument = updateFinancialDocument(requestFinancialDocumentSaveDto);
         responseDocumentSaveDto = convertDocumentToDto(updateFinancialDocument);
-        if(requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList() != null) {
+        if(!requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().isEmpty()) {
             requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().forEach(e -> {
                 if (e.getId() != null) {
                     updateFinancialDocumentItemDto.add(e);
@@ -348,7 +348,8 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private FinancialDocument saveFinancialDocument(FinancialDocumentSaveDto financialDocumentSaveDto) {
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId = 100L;
+//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
 
         if (financialDocumentSaveDto.getFinancialDocumentItemDtoList().isEmpty()) {
             throw new RuleException("fin.financialDocument.insertDocumentItem");
@@ -373,7 +374,8 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
     private FinancialDocument updateFinancialDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto) {
 
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId = 100L;
         FinancialDocument financialDocument = financialDocumentRepository.
                 findById(requestFinancialDocumentSaveDto.getFinancialDocumentId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         financialDocument.setDocumentDate(requestFinancialDocumentSaveDto.getDocumentDate());
