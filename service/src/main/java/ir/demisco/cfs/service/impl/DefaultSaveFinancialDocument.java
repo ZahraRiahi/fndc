@@ -109,6 +109,15 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
     private FinancialDocumentItemCurrency saveDocumentItemCurrency(FinancialDocumentItem finalFinancialDocumentItem, FinancialDocumentItemCurrencyDto itemCurrency) {
         FinancialDocumentItemCurrency documentItemCurrency = new FinancialDocumentItemCurrency();
+        if (itemCurrency.getForeignCreditAmount().doubleValue() < 0) {
+            throw new RuleException("fin.financialDocument.saveDocument.foreignCreditAmountNegative");
+        }
+        if (itemCurrency.getForeignDebitAmount().doubleValue() < 0) {
+            throw new RuleException("fin.financialDocument.saveDocument.foreignDebitAmountNegative");
+        }
+        if (itemCurrency.getExchangeRate().doubleValue() < 0) {
+            throw new RuleException("fin.financialDocument.saveDocument.exchangeRateNegative");
+        }
         documentItemCurrency.setFinancialDocumentItem(finalFinancialDocumentItem);
         documentItemCurrency.setForeignCreditAmount(itemCurrency.getForeignCreditAmount().doubleValue());
         documentItemCurrency.setForeignDebitAmount(itemCurrency.getForeignDebitAmount().doubleValue());
@@ -135,6 +144,13 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         FinancialDocumentItem financialDocumentItem = new FinancialDocumentItem();
         financialDocumentItem.setFinancialDocument(financialDocument);
         financialDocumentItem.setSequenceNumber(documentItem.getSequenceNumber());
+
+        if (documentItem.getCreditAmount() < 0) {
+            throw new RuleException("fin.financialDocument.saveDocument.creditAmountNegative");
+        }
+        if (documentItem.getDebitAmount() < 0) {
+            throw new RuleException("fin.financialDocument.saveDocument.deditAmountNegative");
+        }
         if ((creditAmount != 000)) {
             financialDocumentItem.setCreditAmount(Math.ceil(documentItem.getCreditAmount()));
         } else {
@@ -348,7 +364,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private FinancialDocument saveFinancialDocument(FinancialDocumentSaveDto financialDocumentSaveDto) {
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId = 100L;
 
         if (financialDocumentSaveDto.getFinancialDocumentItemDtoList().isEmpty()) {
             throw new RuleException("fin.financialDocument.insertDocumentItem");
