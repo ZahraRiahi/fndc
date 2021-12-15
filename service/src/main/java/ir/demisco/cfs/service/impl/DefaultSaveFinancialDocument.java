@@ -310,6 +310,15 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private void updateDocumentItemCurrency(FinancialDocumentItemCurrency itemCurrency, FinancialDocumentItemCurrencyDto financialItemCurrency) {
+        if (financialItemCurrency.getForeignCreditAmount().doubleValue() < 0) {
+            throw new RuleException("fin.financialDocument.saveDocument.foreignCreditAmountNegative");
+        }
+        if (financialItemCurrency.getForeignDebitAmount().doubleValue() < 0) {
+            throw new RuleException("fin.financialDocument.saveDocument.foreignDebitAmountNegative");
+        }
+        if (financialItemCurrency.getExchangeRate().doubleValue() < 0) {
+            throw new RuleException("fin.financialDocument.saveDocument.exchangeRateNegative");
+        }
         itemCurrency.setForeignCreditAmount(financialItemCurrency.getForeignCreditAmount().doubleValue());
         itemCurrency.setForeignDebitAmount(financialItemCurrency.getForeignDebitAmount().doubleValue());
         itemCurrency.setExchangeRate(financialItemCurrency.getExchangeRate());
@@ -327,7 +336,12 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
         double creditAmount = responseFinancialDocumentItemDto.getCreditAmount() % 1;
         double debitAmount = responseFinancialDocumentItemDto.getDebitAmount() % 1;
-
+        if (responseFinancialDocumentItemDto.getCreditAmount() < 0) {
+            throw new RuleException("fin.financialDocument.saveDocument.creditAmountNegative");
+        }
+        if (responseFinancialDocumentItemDto.getDebitAmount() < 0) {
+            throw new RuleException("fin.financialDocument.saveDocument.deditAmountNegative");
+        }
         financialDocumentItem.setSequenceNumber(responseFinancialDocumentItemDto.getSequenceNumber());
 
         if ((creditAmount != 000)) {
@@ -364,7 +378,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private FinancialDocument saveFinancialDocument(FinancialDocumentSaveDto financialDocumentSaveDto) {
-        Long organizationId =  SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
 
         if (financialDocumentSaveDto.getFinancialDocumentItemDtoList().isEmpty()) {
             throw new RuleException("fin.financialDocument.insertDocumentItem");
