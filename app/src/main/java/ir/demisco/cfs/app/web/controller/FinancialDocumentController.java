@@ -18,7 +18,7 @@ public class FinancialDocumentController {
 
     private final FinancialDocumentService financialDocumentService;
     private final TransferFinancialDocumentService transferFinancialDocumentService;
-    private final SaveFinancialDocumentService  saveFinancialDocumentService;
+    private final SaveFinancialDocumentService saveFinancialDocumentService;
 
     public FinancialDocumentController(FinancialDocumentService financialDocumentService, TransferFinancialDocumentService transferFinancialDocumentService, SaveFinancialDocumentService saveFinancialDocumentService) {
         this.financialDocumentService = financialDocumentService;
@@ -27,28 +27,27 @@ public class FinancialDocumentController {
     }
 
     @PostMapping("/list")
-    public ResponseEntity<DataSourceResult> financialDocumentList(@RequestBody DataSourceRequest dataSourceRequest){
+    public ResponseEntity<DataSourceResult> financialDocumentList(@RequestBody DataSourceRequest dataSourceRequest) {
 
         return ResponseEntity.ok(financialDocumentService.getFinancialDocumentList(dataSourceRequest));
     }
 
     @PostMapping("/SetStatus")
-    public ResponseEntity<ResponseFinancialDocumentSetStatusDto> responseEntitySetStatus(@RequestBody ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto)
-    {
+    public ResponseEntity<ResponseFinancialDocumentSetStatusDto> responseEntitySetStatus(@RequestBody ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
         return financialDocumentService.changeStatus(responseFinancialDocumentStatusDto);
     }
 
     @PostMapping("/CreateNumber")
-    public ResponseEntity<String> creatNumber(@RequestBody FinancialDocumentNumberDto financialDocumentNumberDto){
+    public ResponseEntity<String> creatNumber(@RequestBody FinancialDocumentNumberDto financialDocumentNumberDto) {
         String result;
         result = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/ChangeDescription")
-    public ResponseEntity<FinancialDocumentAccountMessageDto> changeDescription(@RequestBody FinancialDocumentChengDescriptionDto financialDocumentDto){
+    public ResponseEntity<FinancialDocumentAccountMessageDto> changeDescription(@RequestBody FinancialDocumentChengDescriptionDto financialDocumentDto) {
         String result;
-        FinancialDocumentAccountMessageDto financialDocumentAccountMessageDto=new FinancialDocumentAccountMessageDto();
+        FinancialDocumentAccountMessageDto financialDocumentAccountMessageDto = new FinancialDocumentAccountMessageDto();
         result = financialDocumentService.changeDescription(financialDocumentDto);
         financialDocumentAccountMessageDto.setMessage(result);
         return ResponseEntity.ok(financialDocumentAccountMessageDto);
@@ -62,76 +61,74 @@ public class FinancialDocumentController {
     }
 
     @PostMapping("/ChangeAccount")
-    public ResponseEntity<List<FinancialDocumentAccountMessageDto>>  changeAccount(@RequestBody FinancialDocumentAccountDto financialDocumentAccountDto){
-     return  ResponseEntity.ok(financialDocumentService.changeAccountDocument(financialDocumentAccountDto));
+    public ResponseEntity<List<FinancialDocumentAccountMessageDto>> changeAccount(@RequestBody FinancialDocumentAccountDto financialDocumentAccountDto) {
+        return ResponseEntity.ok(financialDocumentService.changeAccountDocument(financialDocumentAccountDto));
     }
 
     @PostMapping("/ChangeCentricAccount")
-    public ResponseEntity<FinancialDocumentAccountMessageDto> changeCentricAccount(@RequestBody FinancialCentricAccountDto financialCentricAccountDto){
+    public ResponseEntity<FinancialDocumentAccountMessageDto> changeCentricAccount(@RequestBody FinancialCentricAccountDto financialCentricAccountDto) {
         String result;
-        FinancialDocumentAccountMessageDto financialDocumentAccountMessageDto=new FinancialDocumentAccountMessageDto();
+        FinancialDocumentAccountMessageDto financialDocumentAccountMessageDto = new FinancialDocumentAccountMessageDto();
         result = financialDocumentService.changeCentricAccount(financialCentricAccountDto);
         financialDocumentAccountMessageDto.setMessage(result);
         return ResponseEntity.ok(financialDocumentAccountMessageDto);
     }
 
     @PostMapping("/ChangeAmount")
-    public ResponseEntity<Boolean> changeAmount(@RequestBody FinancialCentricAccountDto financialCentricAccountDto){
+    public ResponseEntity<Boolean> changeAmount(@RequestBody FinancialCentricAccountDto financialCentricAccountDto) {
 
         Boolean result;
-        result=financialDocumentService.changeAmountDocument(financialCentricAccountDto);
+        result = financialDocumentService.changeAmountDocument(financialCentricAccountDto);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/SetAmount")
-    public ResponseEntity<Boolean> setAmount(@RequestBody FinancialCentricAccountDto financialCentricAccountDto){
+    public ResponseEntity<Boolean> setAmount(@RequestBody FinancialCentricAccountDto financialCentricAccountDto) {
 
         Boolean result;
-        result=financialDocumentService.setAmountDocument(financialCentricAccountDto);
+        result = financialDocumentService.setAmountDocument(financialCentricAccountDto);
         return ResponseEntity.ok(result);
     }
 
     @PostMapping("/Save")
-    public ResponseEntity<FinancialDocumentSaveDto> saveFinancialDocument(@RequestBody FinancialDocumentSaveDto requestFinancialDocumentSaveDto){
-        if(requestFinancialDocumentSaveDto.getFinancialDocumentId()==null) {
+    public ResponseEntity<FinancialDocumentSaveDto> saveFinancialDocument(@RequestBody FinancialDocumentSaveDto requestFinancialDocumentSaveDto) {
+        if (requestFinancialDocumentSaveDto.getFinancialDocumentId() == null) {
             return ResponseEntity.ok(saveFinancialDocumentService.saveDocument(requestFinancialDocumentSaveDto));
-        }else{
+        } else {
             return ResponseEntity.ok(saveFinancialDocumentService.updateDocument(requestFinancialDocumentSaveDto));
         }
 
     }
 
     @PostMapping("/ArrangeSequence")
-    public ResponseEntity<Boolean> arrangeSequence(@RequestBody FinancialDocumentDto financialDocumentDto){
+    public ResponseEntity<Boolean> arrangeSequence(@RequestBody FinancialDocumentDto financialDocumentDto) {
         boolean result;
-        result=financialDocumentService.setArrangeSequence(financialDocumentDto);
+        result = financialDocumentService.setArrangeSequence(financialDocumentDto);
         return ResponseEntity.ok(result);
 
     }
 
     @PostMapping("/TransferDocument")
-    public ResponseEntity<Boolean> transferDocument(@RequestBody  FinancialDocumentTransferDto  financialDocumentTransferDto){
+    public ResponseEntity<Boolean> transferDocument(@RequestBody FinancialDocumentTransferDto financialDocumentTransferDto) {
         boolean result;
-        result=transferFinancialDocumentService.transferDocument(financialDocumentTransferDto);
+        result = transferFinancialDocumentService.transferDocument(financialDocumentTransferDto);
         return ResponseEntity.ok(result);
 
     }
 
     @PostMapping("/Get")
-    public ResponseEntity<FinancialDocumentSaveDto> getFinancialDocumentInfo(@RequestBody FinancialDocumentDto financialDocumentDto){
+    public ResponseEntity<FinancialDocumentSaveDto> getFinancialDocumentInfo(@RequestBody FinancialDocumentDto financialDocumentDto) {
         return ResponseEntity.ok(saveFinancialDocumentService.getFinancialDocumentInfo(financialDocumentDto));
     }
 
 
     @PostMapping("/DocumentByStructure")
-    public ResponseEntity<DataSourceResult> responseDocumentByStructure(@RequestBody DataSourceRequest dataSourceRequest)
-    {
+    public ResponseEntity<DataSourceResult> responseDocumentByStructure(@RequestBody DataSourceRequest dataSourceRequest) {
         return ResponseEntity.ok(financialDocumentService.documentByStructure(dataSourceRequest));
     }
 
     @PostMapping("/GetStructure")
-    public ResponseEntity<List<ResponseFinancialDocumentStructureDto>> responseDocumentByStructure(@RequestBody RequestDocumentStructureDto requestDocumentStructureDto)
-    {
+    public ResponseEntity<List<ResponseFinancialDocumentStructureDto>> responseDocumentByStructure(@RequestBody RequestDocumentStructureDto requestDocumentStructureDto) {
         return ResponseEntity.ok(financialDocumentService.getDocumentStructure(requestDocumentStructureDto));
     }
 }
