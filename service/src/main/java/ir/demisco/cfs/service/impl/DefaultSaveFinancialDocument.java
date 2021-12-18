@@ -378,7 +378,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private FinancialDocument saveFinancialDocument(FinancialDocumentSaveDto financialDocumentSaveDto) {
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
 
         if (financialDocumentSaveDto.getFinancialDocumentItemDtoList().isEmpty()) {
             throw new RuleException("fin.financialDocument.insertDocumentItem");

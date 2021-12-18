@@ -4,6 +4,7 @@ public class FinancialDocumentTypeGetDto {
 
     private Long id;
     private String description;
+    private Boolean activeFlag;
 
     public Long getId() {
         return id;
@@ -21,9 +22,18 @@ public class FinancialDocumentTypeGetDto {
         this.description = description;
     }
 
-    public static Builder  builder(){
+    public Boolean getActiveFlag() {
+        return activeFlag;
+    }
+
+    public void setActiveFlag(Boolean activeFlag) {
+        this.activeFlag = activeFlag;
+    }
+
+    public static Builder builder() {
         return new Builder();
     }
+
     public static final class Builder {
         private FinancialDocumentTypeGetDto financialDocumentTypeGetDto;
 
@@ -44,7 +54,10 @@ public class FinancialDocumentTypeGetDto {
             financialDocumentTypeGetDto.setDescription(description);
             return this;
         }
-
+        public Builder activeFlag(Boolean activeFlag) {
+            financialDocumentTypeGetDto.setActiveFlag(activeFlag);
+            return this;
+        }
         public FinancialDocumentTypeGetDto build() {
             return financialDocumentTypeGetDto;
         }

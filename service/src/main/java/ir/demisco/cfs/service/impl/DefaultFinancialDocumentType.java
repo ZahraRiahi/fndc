@@ -45,6 +45,7 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
                 .stream().map(financialDocumentType -> FinancialDocumentTypeGetDto.builder()
                         .id(financialDocumentType.getId())
                         .description(financialDocumentType.getDescription())
+                        .activeFlag(financialDocumentType.getActiveFlag())
                         .build()).collect(Collectors.toList());
     }
 
@@ -71,8 +72,8 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     public ResponseFinancialDocumentTypeDto save(FinancialDocumentTypeDto financialDocumentTypeDto) {
 
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        FinancialDocumentType financialDocumentType=financialDocumentTypeRepository.
-                findById(financialDocumentTypeDto.getId()==null ? 0L: financialDocumentTypeDto.getId()).orElse(new FinancialDocumentType());
+        FinancialDocumentType financialDocumentType = financialDocumentTypeRepository.
+                findById(financialDocumentTypeDto.getId() == null ? 0L : financialDocumentTypeDto.getId()).orElse(new FinancialDocumentType());
         financialDocumentType.setDescription(financialDocumentTypeDto.getDescription());
         financialDocumentType.setOrganization(organizationRepository.getOne(organizationId));
         financialDocumentType.setActiveFlag(financialDocumentTypeDto.getActiveFlag());
@@ -86,22 +87,22 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     public ResponseFinancialDocumentTypeDto update(FinancialDocumentTypeDto financialDocumentTypeDto) {
 
 
-        FinancialDocumentType financialDocumentType=financialDocumentTypeRepository.
+        FinancialDocumentType financialDocumentType = financialDocumentTypeRepository.
                 findById(financialDocumentTypeDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
-        if(!financialDocumentType.getAutomaticFlag()) {
+        if (!financialDocumentType.getAutomaticFlag()) {
             financialDocumentType.setDescription(financialDocumentTypeDto.getDescription());
             financialDocumentType.setActiveFlag(financialDocumentTypeDto.getActiveFlag());
             financialDocumentType.setFinancialSystem(financialSystemRepository.getOne(financialDocumentTypeDto.getFinancialSystemId()));
             financialDocumentTypeRepository.save(financialDocumentType);
             return convertToDto(financialDocumentType);
-        }else{
+        } else {
             throw new RuleException("fin.financialDocumentType.notEditDocument");
         }
     }
 
-    private ResponseFinancialDocumentTypeDto convertToDto(FinancialDocumentType financialDocumentType){
+    private ResponseFinancialDocumentTypeDto convertToDto(FinancialDocumentType financialDocumentType) {
 
-        return  ResponseFinancialDocumentTypeDto.builder()
+        return ResponseFinancialDocumentTypeDto.builder()
                 .id(financialDocumentType.getId())
                 .description(financialDocumentType.getDescription())
                 .activeFlag(financialDocumentType.getActiveFlag())
