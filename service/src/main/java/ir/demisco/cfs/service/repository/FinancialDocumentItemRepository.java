@@ -79,7 +79,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "   and   (:toPrice is null  or " +
             "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
             "  order by  fndi.sequence_number "
-            ,countQuery = "  select count(fidc.id) "+
+            , countQuery = "  select count(fidc.id) " +
             "  from fndc.financial_document fidc " +
             " inner join fndc.financial_document_item fndi " +
             "    on fidc.id = fndi.financial_document_id" +
@@ -286,4 +286,21 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " and fd.deletedDate is null" +
             " order by fs_final.sequence ")
     List<Object[]> getDocumentStructurList(Long financialDocumentId);
+
+    @Query(value = "select count(fdi.id) as RECORDS_COUNT," +
+            " sum(fdi.debitAmount) as SUM_DEBIT_AMOUNT," +
+            " sum (fdi.creditAmount) as SUM_CREDIT_AMOUNT," +
+            " coalesce(sum (fdi.debitAmount),0) - coalesce(sum(fdi.creditAmount) , 0) as REMAIN_AMOUNT" +
+            " from FinancialDocumentItem fdi where fdi.financialDocument.id =:financialDocumentId and fdi.deletedDate is null ")
+    List<Object[]> findFinancialDocumentItemByFinancialDocumentId(Long financialDocumentId);
+
+    @Query(value = "select count(fdi.id) as SELECTED_RECORDS_COUNT," +
+            " sum(fdi.debitAmount) as SELECTED_SUM_DEBIT_AMOUNT," +
+            " sum (fdi.creditAmount) as SELECTED_SUM_CREDIT_AMOUNT," +
+            " coalesce(sum (fdi.debitAmount),0) - coalesce(sum(fdi.creditAmount) , 0) as SELECTED_REMAIN_AMOUNT" +
+            " from FinancialDocumentItem fdi where fdi.financialDocument.id =:financialDocumentId and fdi.id in (:financialDocumentItemIdList) " +
+            " and fdi.deletedDate is null ")
+    List<Object[]> findFinancialDocumentItemByFinancialDocumentIdList(Long financialDocumentId, List financialDocumentItemIdList);
+
+
 }
