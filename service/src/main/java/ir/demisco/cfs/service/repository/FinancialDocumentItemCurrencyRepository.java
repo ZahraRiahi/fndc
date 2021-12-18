@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.repository;
 
+import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import ir.demisco.cfs.model.entity.FinancialDocumentItemCurrency;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -12,4 +13,7 @@ public interface FinancialDocumentItemCurrencyRepository  extends JpaRepository<
     FinancialDocumentItemCurrency getByDocumentItemId(Long documentItemId);
 
     List<FinancialDocumentItemCurrency> findByFinancialDocumentItemIdAndDeletedDateIsNull(Long documentItemId);
+
+    @Query("select dic from FinancialDocumentItemCurrency dic where dic.financialDocumentItem.id in (:documentItemIdList)  and dic.deletedDate is null")
+    List<FinancialDocumentItemCurrency> findByFinancialDocumentItemCurrencyIdList(List<Long> documentItemIdList);
 }
