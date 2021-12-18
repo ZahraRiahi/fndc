@@ -237,7 +237,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "             AND NFS.SERIAL_LENGTH = NF_SERIAL_LENGTH) ", nativeQuery = true)
     List<Object[]> getSerialNumber(Long organizationId, Long FinancialDocumentId, Long numberingType);
 
-    @Query(value = "SELECT NUMBERING_TYPE_ID," +
+    @Query(value = " SELECT NUMBERING_TYPE_ID," +
             "         REPLACE(GENERATED_COD,'$SRL'," +
             " LPAD(TO_CHAR(LAST_SERIAL), SERIAL_LENGTH,'0')) Final_Document_Number " +
             "    FROM (SELECT NFS.ID NUMBERING_FORMAT_SERIAL_ID, " +
@@ -249,7 +249,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                 NF.SERIAL_LENGTH, " +
             "                 LAST_SERIAL, " +
             "                 NFT.CODE FORMAT_CODE," +
-            " NFS.SERIAL_RESETER  " +
+            " NFS.SERIAL_RESETER,  " +
             "                 REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(NFT.CODE,'$DAT', " +
             "                         TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE, 'mm/dd/yyyy')," +
             "                                'mm/dd/yyyy'),'yyyymmdd','NLS_CALENDAR=persian')),'$LEG', " +
