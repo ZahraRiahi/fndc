@@ -44,12 +44,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final NumberingFormatSerialRepository numberingFormatSerialRepository;
     private final FinancialDocumentNumberRepository financialDocumentNumberRepository;
     private final FinancialNumberingTypeRepository financialNumberingTypeRepository;
+    private final FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository;
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
                                     FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                     FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
-                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository) {
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -63,6 +64,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.numberingFormatSerialRepository = numberingFormatSerialRepository;
         this.financialDocumentNumberRepository = financialDocumentNumberRepository;
         this.financialNumberingTypeRepository = financialNumberingTypeRepository;
+        this.financialDocumentItemCurrencyRepository = financialDocumentItemCurrencyRepository;
     }
 
 
@@ -89,8 +91,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         .financialDocumentTypeId(Long.parseLong(item[4].toString()))
                         .financialDocumentTypeDescription(item[5].toString())
                         .fullDescription(item[6].toString())
-                        .debitAmount(Long.parseLong(String.format("%.0f",Double.parseDouble(item[7].toString()))))
-                        .creditAmount(Long.parseLong(String.format("%.0f",Double.parseDouble(item[8].toString()))))
+                        .debitAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[7].toString()))))
+                        .creditAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[8].toString()))))
                         .userId(Long.parseLong(item[9].toString()))
                         .userName(item[10].toString())
                         .build()).collect(Collectors.toList());
@@ -298,7 +300,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 financialDocument.setFinancialDocumentStatus(financialDocumentStatus);
                 financialDocumentRepository.save(financialDocument);
                 responseFinancialDocumentSetStatusDto = convertFinancialDocumentToDto(financialDocument);
-                return  ResponseEntity.ok(responseFinancialDocumentSetStatusDto);
+                return ResponseEntity.ok(responseFinancialDocumentSetStatusDto);
             } else {
                 responseFinancialDocumentSetStatusDto.setFinancialDocumentErrorDtoList(financialDocumentErrorDtoList);
                 responseFinancialDocumentSetStatusDto.setErrorFoundFlag(true);
@@ -509,10 +511,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
         List<Object[]> list = financialDocumentRepository.getSerialNumber(financialDocumentNumberDto.getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         if (!list.isEmpty()) {
-             list.forEach(objects -> {
+            list.forEach(objects -> {
                 FinancialNumberingFormat financialNumberingFormat =
                         financialNumberingFormatRepository.findById(Long.parseLong(objects[0].toString())).orElseThrow(() -> new RuleException("fin.financialDocument.notExistFinancialNumberingFormat"));
-                NumberingFormatSerial searchNumberingFormatSerial = numberingFormatSerialRepository.findByNumberingFormatAndDeletedDate(financialNumberingFormat.getId(),objects[2].toString(),Long.parseLong(objects[3].toString()));
+                NumberingFormatSerial searchNumberingFormatSerial = numberingFormatSerialRepository.findByNumberingFormatAndDeletedDate(financialNumberingFormat.getId(), objects[2].toString(), Long.parseLong(objects[3].toString()));
                 if (searchNumberingFormatSerial == null) {
                     NumberingFormatSerial numberingFormatSerial = new NumberingFormatSerial();
                     numberingFormatSerial.setFinancialNumberingFormat(financialNumberingFormat);
@@ -520,7 +522,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     numberingFormatSerial.setSerialReseter(objects[2].toString());
                     numberingFormatSerial.setSerialLength(Long.parseLong(objects[3].toString()));
                     numberingFormatSerialRepository.save(numberingFormatSerial);
-                }else{
+                } else {
                     throw new RuleException("fin.financialDocument.serialNumber");
                 }
 
@@ -721,6 +723,14 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 documentItem.setDebitAmount(newAmount);
                 financialDocumentItemRepository.save(documentItem);
             });
+            List<FinancialDocumentItemCurrency> financialDocumentItemCurrencyList =
+                    financialDocumentItemCurrencyRepository.findByFinancialDocumentItemCurrencyIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
+            financialDocumentItemCurrencyList.forEach(documentItem -> {
+                Double newAmount2 = documentItem.getForeignCreditAmount();
+                documentItem.setForeignCreditAmount(documentItem.getForeignDebitAmount());
+                documentItem.setForeignDebitAmount(newAmount2);
+                financialDocumentItemCurrencyRepository.save(documentItem);
+            });
             financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
             financialDocumentRepository.save(financialDocument);
 
@@ -741,6 +751,14 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 documentItem.setCreditAmount(0D);
                 documentItem.setDebitAmount(0D);
                 financialDocumentItemRepository.save(documentItem);
+            });
+
+            List<FinancialDocumentItemCurrency> financialDocumentItemCurrencyList =
+                    financialDocumentItemCurrencyRepository.findByFinancialDocumentItemCurrencyIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
+            financialDocumentItemCurrencyList.forEach(documentItem -> {
+                documentItem.setForeignDebitAmount(0D);
+                documentItem.setForeignCreditAmount(0D);
+                financialDocumentItemCurrencyRepository.save(documentItem);
             });
             financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
             financialDocumentRepository.save(financialDocument);
@@ -803,7 +821,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         return dataSourceResult;
     }
 
-    private RequestDocumentStructureDto setParamDocumentStructure(List<DataSourceRequest.FilterDescriptor> filters) {
+    private RequestDocumentStructureDto setParamDocumentStructure
+            (List<DataSourceRequest.FilterDescriptor> filters) {
         RequestDocumentStructureDto requestDocumentStructureDto = new RequestDocumentStructureDto();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
@@ -820,7 +839,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
-    public List<ResponseFinancialDocumentStructureDto> getDocumentStructure(RequestDocumentStructureDto requestDocumentStructureDto) {
+    public List<ResponseFinancialDocumentStructureDto> getDocumentStructure(RequestDocumentStructureDto
+                                                                                    requestDocumentStructureDto) {
         List<Object[]> documentStructure = financialDocumentItemRepository.getDocumentStructurList(requestDocumentStructureDto.getFinancialDocumentId());
         return documentStructure.stream().map(objects ->
                 ResponseFinancialDocumentStructureDto.builder()
