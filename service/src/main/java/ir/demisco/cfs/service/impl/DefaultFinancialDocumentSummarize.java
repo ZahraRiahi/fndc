@@ -8,8 +8,6 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Service
 public class DefaultFinancialDocumentSummarize implements FinancialDocumentSummarizeService {
