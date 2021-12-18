@@ -79,7 +79,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "   and   (:toPrice is null  or " +
             "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description "
-            ,countQuery=" select count(fidc.id) " +
+            , countQuery = " select count(fidc.id) " +
             "  from fndc.financial_document fidc " +
             "  inner join fndc.financial_document_type fndt " +
             "    on fidc.financial_document_type_id = fndt.id " +
@@ -248,7 +248,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                 NFT.CODE, " +
             "                 NF.SERIAL_LENGTH, " +
             "                 LAST_SERIAL, " +
-            "                 NFT.CODE FORMAT_CODE, " +
+            "                 NFT.CODE FORMAT_CODE," +
+            " NFS.SERIAL_RESETER  " +
             "                 REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(NFT.CODE,'$DAT', " +
             "                         TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE, 'mm/dd/yyyy')," +
             "                                'mm/dd/yyyy'),'yyyymmdd','NLS_CALENDAR=persian')),'$LEG', " +
@@ -279,7 +280,9 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "              ON NFS.NUMBERING_FORMAT_ID = NF.ID " +
             "             AND NFS.DELETED_DATE IS NULL " +
             "           WHERE FD.ID = :FinancialDocumentId " +
-            "             AND FD.DELETED_DATE IS NULL) ", nativeQuery = true)
+            "             AND FD.DELETED_DATE IS NULL) " +
+            " WHERE SERIAL_RESETER = REPLACE(GENERATED_COD,'$SRL','') "
+            , nativeQuery = true)
     List<Object[]> findDocumentNumber(Long organizationId, Long FinancialDocumentId, Long numberingType);
 
     @Query(value = "SELECT FD.DOCUMENT_DATE " +
@@ -320,9 +323,9 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     String findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long documentNumberingTypeId, LocalDateTime toDate, Long organizationId);
 
-@Query("select fd.id from FinancialDocument  fd " +
-       " join FinancialDepartmentLedger fdl on fdl.financialLedgerType.id=fd.financialLedgerType.id " +
-        " and fdl.financialDepartment.id=fd.financialDepartment.id and fdl.deletedDate is null " +
-        " where fdl.id=:financialDepartmentLedgerId and fd.deletedDate is null")
+    @Query("select fd.id from FinancialDocument  fd " +
+            " join FinancialDepartmentLedger fdl on fdl.financialLedgerType.id=fd.financialLedgerType.id " +
+            " and fdl.financialDepartment.id=fd.financialDepartment.id and fdl.deletedDate is null " +
+            " where fdl.id=:financialDepartmentLedgerId and fd.deletedDate is null")
     List<Long> usedInFinancialDocument(Long financialDepartmentLedgerId);
 }
