@@ -7,16 +7,19 @@ public class FinancialDocumentDto {
 
     private Long id;
     private Date documentDate;
-    private String    description;
+    private String description;
     private Long financialDocumentTypeId;
     private String financialDocumentTypeDescription;
     private String documentNumber;
     private LocalDateTime deletedDate;
     private Long userId;
     private String userName;
-    private Long  debitAmount;
-    private Long  creditAmount;
+    private Long debitAmount;
+    private Long creditAmount;
     private String fullDescription;
+    private Long financialDocumentStatusId;
+    private String financialDocumentStatusName;
+    private String financialDocumentStatusCode;
 
     public Long getId() {
         return id;
@@ -115,8 +118,32 @@ public class FinancialDocumentDto {
         this.fullDescription = fullDescription;
     }
 
-    public static Builder builder(){
-      return new Builder();
+    public Long getFinancialDocumentStatusId() {
+        return financialDocumentStatusId;
+    }
+
+    public void setFinancialDocumentStatusId(Long financialDocumentStatusId) {
+        this.financialDocumentStatusId = financialDocumentStatusId;
+    }
+
+    public String getFinancialDocumentStatusName() {
+        return financialDocumentStatusName;
+    }
+
+    public void setFinancialDocumentStatusName(String financialDocumentStatusName) {
+        this.financialDocumentStatusName = financialDocumentStatusName;
+    }
+
+    public String getFinancialDocumentStatusCode() {
+        return financialDocumentStatusCode;
+    }
+
+    public void setFinancialDocumentStatusCode(String financialDocumentStatusCode) {
+        this.financialDocumentStatusCode = financialDocumentStatusCode;
+    }
+
+    public static Builder builder() {
+        return new Builder();
     }
 
 
@@ -188,6 +215,21 @@ public class FinancialDocumentDto {
 
         public Builder fullDescription(String fullDescription) {
             financialDocumentDto.setFullDescription(fullDescription);
+            return this;
+        }
+
+        public Builder financialDocumentStatusId(Long financialDocumentStatusId) {
+            financialDocumentDto.setFinancialDocumentStatusId(financialDocumentStatusId);
+            return this;
+        }
+
+        public Builder financialDocumentStatusName(String financialDocumentStatusName) {
+            financialDocumentDto.setFinancialDocumentStatusName(financialDocumentStatusName);
+            return this;
+        }
+
+        public Builder financialDocumentStatusCode(String financialDocumentStatusCode) {
+            financialDocumentDto.setFinancialDocumentStatusCode(financialDocumentStatusCode);
             return this;
         }
 

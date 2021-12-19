@@ -22,7 +22,10 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "        sum(fndi.debit_amount) as sum_debit_amount," +
             "        sum(fndi.credit_amount) as sum_cdebit_amount," +
             "        usr.id as userId, " +
-            "        usr.nick_name as userName " +
+            "        usr.nick_name as userName, " +
+            "  FIDC.FINANCIAL_DOCUMENT_STATUS_ID, " +
+            " DS.NAME as  DOCUMENT_STATUS_NAME, " +
+            " DS.CODE as DOCUMENT_STATUS_CODE " +
             "  from fndc.financial_document fidc " +
             "  inner join fndc.financial_document_type fndt " +
             "    on fidc.financial_document_type_id = fndt.id " +
@@ -38,6 +41,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "   and fc.deleted_date is null " +
             "  left outer join sec.application_user usr" +
             "    on usr.id = fidc.creator_id " +
+            " INNER JOIN fndc.FINANCIAL_DOCUMENT_STATUS DS " +
+            "    ON DS.ID = FINANCIAL_DOCUMENT_STATUS_ID " +
             " where fidc.document_date >= :startDate " +
             "   And fidc.document_date <= :endDate " +
             "   and fidc.deleted_date is null " +
@@ -78,7 +83,10 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
             "   and   (:toPrice is null  or " +
             "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
-            "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description "
+            "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description," +
+            " FINANCIAL_DOCUMENT_STATUS_ID, " +
+            "          DS.NAME , " +
+            "          DS.CODE   "
             , countQuery = " select count(fidc.id) " +
             "  from fndc.financial_document fidc " +
             "  inner join fndc.financial_document_type fndt " +
@@ -95,6 +103,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "   and fc.deleted_date is null " +
             "  left outer join sec.application_user usr" +
             "    on usr.id = fidc.creator_id " +
+            " INNER JOIN fndc.FINANCIAL_DOCUMENT_STATUS DS " +
+            "    ON DS.ID = FINANCIAL_DOCUMENT_STATUS_ID " +
             " where fidc.document_date >= :startDate " +
             "   And fidc.document_date <= :endDate " +
             "   and fidc.deleted_date is null " +
@@ -135,7 +145,10 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
             "   and   (:toPrice is null  or " +
             "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
-            "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description "
+            "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description, " +
+            "   FINANCIAL_DOCUMENT_STATUS_ID, " +
+            "                      DS.NAME , " +
+            "                     DS.CODE  "
             , nativeQuery = true)
     Page<Object[]> getFinancialDocumentList(LocalDateTime startDate, LocalDateTime endDate, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
             , Object toNumber, Long toNumberId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
