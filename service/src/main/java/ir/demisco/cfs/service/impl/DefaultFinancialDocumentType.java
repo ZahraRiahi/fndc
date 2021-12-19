@@ -5,6 +5,7 @@ import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeGetDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentTypeDto;
 import ir.demisco.cfs.model.entity.FinancialDocumentType;
 import ir.demisco.cfs.service.api.FinancialDocumentTypeService;
+import ir.demisco.cfs.service.repository.FinancialConfigRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentTypeRepository;
 import ir.demisco.cfs.service.repository.FinancialSystemRepository;
 import ir.demisco.cfs.service.repository.OrganizationRepository;
@@ -28,13 +29,15 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     private final FinancialDocumentTypeProvider financialDocumentTypeProvider;
     private final OrganizationRepository organizationRepository;
     private final FinancialSystemRepository financialSystemRepository;
+    private final FinancialConfigRepository financialConfigRepository;
 
-    public DefaultFinancialDocumentType(FinancialDocumentTypeRepository financialDocumentTypeRepository, GridFilterService gridFilterService, FinancialDocumentTypeProvider financialDocumentTypeProvider, OrganizationRepository organizationRepository, FinancialSystemRepository financialSystemRepository) {
+    public DefaultFinancialDocumentType(FinancialDocumentTypeRepository financialDocumentTypeRepository, GridFilterService gridFilterService, FinancialDocumentTypeProvider financialDocumentTypeProvider, OrganizationRepository organizationRepository, FinancialSystemRepository financialSystemRepository, FinancialConfigRepository financialConfigRepository) {
         this.financialDocumentTypeRepository = financialDocumentTypeRepository;
         this.gridFilterService = gridFilterService;
         this.financialDocumentTypeProvider = financialDocumentTypeProvider;
         this.organizationRepository = organizationRepository;
         this.financialSystemRepository = financialSystemRepository;
+        this.financialConfigRepository = financialConfigRepository;
     }
 
     @Override
@@ -85,11 +88,15 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
 
     @Override
     public ResponseFinancialDocumentTypeDto update(FinancialDocumentTypeDto financialDocumentTypeDto) {
-
-
         FinancialDocumentType financialDocumentType = financialDocumentTypeRepository.
                 findById(financialDocumentTypeDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         if (!financialDocumentType.getAutomaticFlag()) {
+            if (!financialDocumentType.getActiveFlag()) {
+                List<Long> financialConfigCount = financialConfigRepository.findByFinancialConfigByFinancialDocumentTypeId(financialDocumentTypeDto.getId());
+                if (financialConfigCount.size() != 0) {
+                    throw new RuleException("fin.financialDocumentType.update");
+                }
+            }
             financialDocumentType.setDescription(financialDocumentTypeDto.getDescription());
             financialDocumentType.setActiveFlag(financialDocumentTypeDto.getActiveFlag());
             financialDocumentType.setFinancialSystem(financialSystemRepository.getOne(financialDocumentTypeDto.getFinancialSystemId()));
