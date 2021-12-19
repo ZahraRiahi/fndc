@@ -95,6 +95,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         .creditAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[8].toString()))))
                         .userId(Long.parseLong(item[9].toString()))
                         .userName(item[10].toString())
+                        .financialDocumentStatusId(Long.parseLong(item[11].toString()))
+                        .financialDocumentStatusName(item[12].toString())
+                        .financialDocumentStatusCode(item[13].toString())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(documentDtoList);
