@@ -4,9 +4,7 @@ import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.request.FinancialAccountBalanceRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentCentricTurnOverRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentReportRequest;
-import ir.demisco.cfs.model.dto.response.FinancialAccountBalanceResponse;
-import ir.demisco.cfs.model.dto.response.FinancialAccountReportResponse;
-import ir.demisco.cfs.model.dto.response.FinancialDocumentCentricTurnOverResponse;
+import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.service.api.FinancialAccountService;
 import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
@@ -26,6 +24,7 @@ import java.math.BigDecimal;
 import java.text.ParsePosition;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -80,19 +79,42 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialDocumentReportRequest.getSummarizingType(),
                 financialDocumentReportRequest.getToDate(),
                 pageable);
-        List<FinancialAccountReportResponse> financialAccountReportResponse = list.stream().map(item ->
-                FinancialAccountReportResponse.builder()
-                        .documentDate((item[0] == null ? null : DateUtil.convertStringToDate(item[0].toString())))
-                        .documentNumber(item[1] == null ? null : item[1].toString())
-                        .description(item[2] == null ? null : item[2].toString())
-                        .debitAmount(item[3] == null ? null : ((BigDecimal) item[3]).doubleValue())
-                        .creditAmount(item[4] == null ? null : ((BigDecimal) item[4]).doubleValue())
-                        .remainDebit(item[5] == null ? null : ((BigDecimal) item[5]).doubleValue())
-                        .remainCredit(item[6] == null ? null : ((BigDecimal) item[6]).doubleValue())
-                        .remainAmount(item[7] == null ? null : ((BigDecimal) item[7]).doubleValue())
-                        .build()).collect(Collectors.toList());
+        List<FinancialAccountTurnOverOutputResponse> financialAccountTurnOverOutputResponses = new ArrayList<>();
+        financialDocumentReportRequest.setSummarizingType(financialDocumentReportRequest.getSummarizingType() == null ? 1 : financialDocumentReportRequest.getSummarizingType());
+        if (financialDocumentReportRequest.getSummarizingType() == 1 || financialDocumentReportRequest.getSummarizingType() == 2) {
+            FinancialAccountTurnOverOutputResponse response = new FinancialAccountTurnOverOutputResponse();
+            List<FinancialAccountTurnOverRecordsResponse> recordsResponseList = new ArrayList<>();
+            list.forEach(item -> {
+                FinancialAccountTurnOverRecordsResponse recordsResponse = new FinancialAccountTurnOverRecordsResponse();
+                recordsResponse.setDocumentDate(item[0] == null ? null : DateUtil.convertStringToDate(item[0].toString()));
+                recordsResponse.setDocumentNumber(item[1] == null ? null : item[1].toString());
+                recordsResponse.setDescription(item[2] == null ? null : item[2].toString());
+                recordsResponse.setDebitAmount(item[3] == null ? null : Double.parseDouble(item[3].toString()));
+                recordsResponse.setCreditAmount(item[4] == null ? null : Double.parseDouble(item[4].toString()));
+                recordsResponse.setRemainDebit(item[5] == null ? null : Double.parseDouble(item[5].toString()));
+                recordsResponse.setRemainCredit(item[6] == null ? null : Double.parseDouble(item[6].toString()));
+                recordsResponse.setRemainAmount(item[7] == null ? null : Double.parseDouble(item[7].toString()));
+                recordsResponse.setRecordType(item[13] == null ? null : Long.parseLong(item[13].toString()));
+                recordsResponseList.add(recordsResponse);
+            });
+            response.setFinancialAccountTurnOverRecordsResponseModel(recordsResponseList);
+            financialAccountTurnOverOutputResponses.add(response);
+        } else {
+            list.forEach(item -> {
+                FinancialAccountTurnOverSummarizeResponse accountTurnOverSummarizeResponse = new FinancialAccountTurnOverSummarizeResponse();
+                FinancialAccountTurnOverOutputResponse outputResponse = new FinancialAccountTurnOverOutputResponse();
+                accountTurnOverSummarizeResponse.setSumDebit(item[8] == null ? null : Double.parseDouble(item[8].toString()));
+                accountTurnOverSummarizeResponse.setSumCredit(item[9] == null ? null : Double.parseDouble(item[9].toString()));
+                accountTurnOverSummarizeResponse.setSummarizeDebit(item[10] == null ? null : Double.parseDouble(item[10].toString()));
+                accountTurnOverSummarizeResponse.setSummarizeCredit(item[11] == null ? null : Double.parseDouble(item[11].toString()));
+                accountTurnOverSummarizeResponse.setSummarizeAmount(item[12] == null ? null : Double.parseDouble(item[12].toString()));
+                accountTurnOverSummarizeResponse.setRecordType(item[13] == null ? null : Long.parseLong(item[13].toString()));
+                outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
+                financialAccountTurnOverOutputResponses.add(outputResponse);
+            });
+        }
         DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(financialAccountReportResponse);
+        dataSourceResult.setData(financialAccountTurnOverOutputResponses);
         dataSourceResult.setTotal(list.getTotalElements());
         return dataSourceResult;
     }
