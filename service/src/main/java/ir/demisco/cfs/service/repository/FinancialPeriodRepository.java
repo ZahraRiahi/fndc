@@ -618,8 +618,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 NULL AS DOCUMENT_NUMBER," +
             "                 " +
             "                 NULL AS DOCUMENT_DATE," +
-            "                 " +
-            "                 '??? ?? ????' AS DESCRIPTION," +
+            "   'قبل از دوره' AS DESCRIPTION , " +
             "                 0 AS ID," +
             "                 NULL AS CODE," +
             "                 1 AS RECORD_TYP" +
@@ -630,7 +629,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA" +
             "              ON FA.ID = FDI.FINANCIAL_ACCOUNT_ID" +
             "             AND FA.DELETED_DATE IS NULL" +
-            "          " +
             "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER FDN" +
             "              ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID" +
             "             AND FDN.DELETED_DATE IS NULL" +
@@ -656,14 +654,12 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                       AND INER_NUM.DOCUMENT_NUMBER = :fromNumber" +
             "                     WHERE INER_DOC.DELETED_DATE IS NULL" +
             "                       AND INER_NUM.DELETED_DATE IS NULL)))" +
-            "                " +
             "             AND FDN.FINANCIAL_NUMBERING_TYPE_ID =" +
             "                 :documentNumberingTypeId" +
             "                 AND ( :centricAccount1 IS NULL OR FDI.CENTRIC_ACCOUNT_ID_1 = :centricAccountId1 )   " +
             "                 AND ( :centricAccount2 IS NULL OR FDI.CENTRIC_ACCOUNT_ID_2 = :centricAccountId2 )   " +
             "                 AND (:referenceNumberObject IS NULL OR FDR.REFRENCE_NUMBER = :referenceNumber)   " +
             "             AND ((:dateFilterFlg = 0 AND" +
-            "                 " +
             "                 FDN.DOCUMENT_NUMBER <" +
             "                 NVL(:fromNumber, FDN.DOCUMENT_NUMBER)) OR" +
             "                 :dateFilterFlg = 1)" +
@@ -674,7 +670,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                             AND ASL.DELETED_DATE IS NULL))" +
             "             AND FDS.CODE > 10" +
             "          UNION" +
-            "          " +
             "          select alll.FINANCIAL_DOCUMENT_ID," +
             "                 alll.FINANCIAL_DOCUMENT_ITEM_ID," +
             "                 sum(alll.CREDIT_AMOUNT) as CREDIT_AMOUNT," +
@@ -713,7 +708,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                   ELSE" +
             "                    NULL" +
             "                 END AS DOCUMENT_NUMBER," +
-            "                 " +
             "                 CASE" +
             "                   WHEN :summarizingType IN (1, 2, 3) THEN" +
             "                    TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE, 'mm/dd/yyyy')," +
@@ -726,14 +720,12 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                            'YYYY/MM'," +
             "                            'NLS_CALENDAR=persian')" +
             "                 END" +
-            "                 " +
             "                 AS DOCUMENT_DATE," +
-            "                 " +
             "                 CASE" +
             "                   WHEN :summarizingType = 1 THEN" +
             "                    FDI.DESCRIPTION" +
             "                   ELSE" +
-            "                    '?? ??? ???'" +
+            "                    'به شرح سند' " +
             "                 END AS DESCRIPTION," +
             "                 CASE" +
             "                   WHEN :summarizingType IN (1, 2) THEN" +
@@ -741,7 +733,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                   ELSE" +
             "                    NULL" +
             "                 END ID," +
-            "                 " +
             "                 CASE" +
             "                   WHEN :summarizingType IN (1, 2) THEN" +
             "                    FA.CODE" +
@@ -756,7 +747,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA" +
             "              ON FA.ID = FDI.FINANCIAL_ACCOUNT_ID" +
             "             AND FA.DELETED_DATE IS NULL" +
-            "          " +
             "           INNER JOIN fndc.FINANCIAL_DOCUMENT_NUMBER FDN" +
             "              ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID" +
             "             AND FDN.DELETED_DATE IS NULL" +
@@ -800,7 +790,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                             AND ASL.RELATED_ACCOUNT_ID = :financialAccountId" +
             "                             AND ASL.DELETED_DATE IS NULL))" +
             "             AND FDS.CODE > 10" +
-            "             " +
             "             )alll" +
             "             group by " +
             "             alll.FINANCIAL_DOCUMENT_ID," +
@@ -842,7 +831,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               END AS SUMMERIZE_CREDIT," +
             "               SUM(MAIN_QRY.CREDIT_AMOUNT) - SUM(MAIN_QRY.DEBIT_AMOUNT) AS SUMMERIZE_AMOUNT," +
             "               3 AS RECORD_TYP" +
-            "        " +
             "          FROM MAIN_QRY)" +
             " ORDER BY RECORD_TYP," +
             "          DOCUMENT_DATE," +
