@@ -12,8 +12,6 @@ import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
-
 @Service
 public class DefaultFinancialConfig implements FinancialConfigService {
     private final GridFilterService gridFilterService;
@@ -53,11 +51,11 @@ public class DefaultFinancialConfig implements FinancialConfigService {
     @Transactional(rollbackFor = Throwable.class)
     public Boolean saveOrUpdateFinancialConfig(FinancialConfigRequest financialConfigRequest) {
         FinancialConfig financialConfig = financialConfigRepository.findById(financialConfigRequest.getId() == null ? 0 : financialConfigRequest.getId()).orElse(new FinancialConfig());
-
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-
-        if (financialConfig.getId() != null) {
-            financialConfig.setDeletedDate(LocalDateTime.now());
+        FinancialConfig financialConfigUpdate = financialConfigRepository.findById(financialConfigRequest.getId()).orElseThrow(() -> new RuleException("fin.ruleException.notFoundId"));
+        if (financialConfigUpdate.getId() != null) {
+//            financialConfig.setDeletedDate(LocalDateTime.now());
+            financialConfigRepository.deleteById(financialConfigRequest.getId());
         }
         Long financialAccountStructureCount = financialConfigRepository.getCountByFinancialConfigAndOrganizationAndUser(financialConfigRequest.getOrganizationId(), financialConfigRequest.getUserId());
         if (financialAccountStructureCount > 0) {
@@ -65,20 +63,20 @@ public class DefaultFinancialConfig implements FinancialConfigService {
         }
         FinancialConfig financialConfigNew = new FinancialConfig();
         financialConfigNew.setOrganization(organizationRepository.getOne(organizationId));
-        if(financialConfigRequest.getFinancialDepartmentId()!=null) {
+        if (financialConfigRequest.getFinancialDepartmentId() != null) {
             financialConfigNew.setFinancialDepartment(financialDepartmentRepository.getOne(financialConfigRequest.getFinancialDepartmentId()));
         }
-        if(financialConfigRequest.getUserId()!= null) {
+        if (financialConfigRequest.getUserId() != null) {
             financialConfigNew.setUser(applicationUserRepository.getOne(financialConfigRequest.getUserId()));
         }
-        if(financialConfigRequest.getFinancialDocumentTypeId()!=null) {
+        if (financialConfigRequest.getFinancialDocumentTypeId() != null) {
             financialConfigNew.setFinancialDocumentType(financialDocumentTypeRepository.getOne(financialConfigRequest.getFinancialDocumentTypeId()));
         }
         financialConfigNew.setDocumentDescription(financialConfigRequest.getDocumentDescription());
-        if(financialConfigRequest.getFinancialLedgerTypeId()!= null) {
+        if (financialConfigRequest.getFinancialLedgerTypeId() != null) {
             financialConfigNew.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialConfigRequest.getFinancialLedgerTypeId()));
         }
-        if(financialConfigRequest.getFinancialPeriodId()!=null) {
+        if (financialConfigRequest.getFinancialPeriodId() != null) {
             financialConfigNew.setFinancialPeriod(financialPeriodRepository.getOne(financialConfigRequest.getFinancialPeriodId()));
         }
         financialConfigRepository.save(financialConfigNew);
