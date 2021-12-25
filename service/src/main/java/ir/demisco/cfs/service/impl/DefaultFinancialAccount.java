@@ -44,6 +44,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     public DataSourceResult getFinancialDocument(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialDocumentReportRequest financialDocumentReportRequest = setParameter(filters);
+        financialDocumentReportRequest.setSummarizingType(financialDocumentReportRequest.getSummarizingType() == null ? 1 : financialDocumentReportRequest.getSummarizingType());
         getFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest);
         if (financialDocumentReportRequest.getFinancialAccountId() == null) {
             throw new RuleException("fin.financialAccount.insertFinancialAccount");
@@ -80,11 +81,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialDocumentReportRequest.getToDate(),
                 pageable);
         List<FinancialAccountTurnOverOutputResponse> financialAccountTurnOverOutputResponses = new ArrayList<>();
-        financialDocumentReportRequest.setSummarizingType(financialDocumentReportRequest.getSummarizingType() == null ? 1 : financialDocumentReportRequest.getSummarizingType());
-        if (financialDocumentReportRequest.getSummarizingType() == 1 || financialDocumentReportRequest.getSummarizingType() == 2) {
-            FinancialAccountTurnOverOutputResponse response = new FinancialAccountTurnOverOutputResponse();
-            List<FinancialAccountTurnOverRecordsResponse> recordsResponseList = new ArrayList<>();
-            list.forEach(item -> {
+        List<FinancialAccountTurnOverRecordsResponse> recordsResponseList = new ArrayList<>();
+        FinancialAccountTurnOverOutputResponse response = new FinancialAccountTurnOverOutputResponse();
+
+        list.forEach(item -> {
+
+            if (item[13] != null && (Long.parseLong(item[13].toString()) == 1 || Long.parseLong(item[13].toString()) == 2)) {
                 FinancialAccountTurnOverRecordsResponse recordsResponse = new FinancialAccountTurnOverRecordsResponse();
                 recordsResponse.setDocumentDate(item[0] == null ? null : DateUtil.convertStringToDate(item[0].toString()));
                 recordsResponse.setDocumentNumber(item[1] == null ? null : item[1].toString());
@@ -96,11 +98,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 recordsResponse.setRemainAmount(item[7] == null ? null : Double.parseDouble(item[7].toString()));
                 recordsResponse.setRecordType(item[13] == null ? null : Long.parseLong(item[13].toString()));
                 recordsResponseList.add(recordsResponse);
-            });
-            response.setFinancialAccountTurnOverRecordsResponseModel(recordsResponseList);
-            financialAccountTurnOverOutputResponses.add(response);
-        } else {
-            list.forEach(item -> {
+                response.setFinancialAccountTurnOverRecordsResponseModel(recordsResponseList);
+            } else {
                 FinancialAccountTurnOverSummarizeResponse accountTurnOverSummarizeResponse = new FinancialAccountTurnOverSummarizeResponse();
                 FinancialAccountTurnOverOutputResponse outputResponse = new FinancialAccountTurnOverOutputResponse();
                 accountTurnOverSummarizeResponse.setSumDebit(item[8] == null ? null : Double.parseDouble(item[8].toString()));
@@ -110,9 +109,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 accountTurnOverSummarizeResponse.setSummarizeAmount(item[12] == null ? null : Double.parseDouble(item[12].toString()));
                 accountTurnOverSummarizeResponse.setRecordType(item[13] == null ? null : Long.parseLong(item[13].toString()));
                 outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
-                financialAccountTurnOverOutputResponses.add(outputResponse);
-            });
-        }
+                response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
+            }
+        });
+        financialAccountTurnOverOutputResponses.add(response);
+
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialAccountTurnOverOutputResponses);
         dataSourceResult.setTotal(list.getTotalElements());
@@ -155,7 +156,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         financialDocumentReportRequest.setToNumber(toNumber);
 
         if (fromNumber == null || toNumber == null) {
-            throw new RuleException("fin.financialAccount.notExistDocumentInDate");
+            throw new RuleException("fin.financialAccount.notInformation");
         }
     }
 
@@ -167,7 +168,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 , financialDocumentReportRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setToDate(toDate);
         if (fromDate == null || toDate == null) {
-            throw new RuleException("fin.financialAccount.notCorrectDocumentNumber");
+            throw new RuleException("fin.financialAccount.notInformation");
         }
 
     }
