@@ -90,8 +90,8 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     public ResponseFinancialDocumentTypeDto update(FinancialDocumentTypeDto financialDocumentTypeDto) {
         FinancialDocumentType financialDocumentType = financialDocumentTypeRepository.
                 findById(financialDocumentTypeDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
-        if (!financialDocumentType.getAutomaticFlag()) {
-            if (!financialDocumentType.getActiveFlag()) {
+        if (!financialDocumentTypeDto.getAutomaticFlag()) {
+            if (!financialDocumentTypeDto.getActiveFlag()) {
                 List<Long> financialConfigCount = financialConfigRepository.findByFinancialConfigByFinancialDocumentTypeId(financialDocumentTypeDto.getId());
                 if (financialConfigCount.size() != 0) {
                     throw new RuleException("fin.financialDocumentType.update");
