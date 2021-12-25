@@ -12,8 +12,7 @@ public interface FinancialConfigRepository extends JpaRepository<FinancialConfig
 
     @Query(value = "   SELECT 1 " +
             "    FROM FNDC.FINANCIAL_CONFIG T " +
-            "   WHERE T.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId " +
-            "   and T.deleted_date is null  "
+            "   WHERE T.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId "
             , nativeQuery = true)
     List<Long> findByFinancialConfigByFinancialDocumentTypeId(Long financialDocumentTypeId);
 }
