@@ -58,6 +58,7 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
         FinancialDocumentType financialDocumentType = financialDocumentTypeRepository.findById(financialDocumentTypeId)
                 .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         financialDocumentType.setDeletedDate(LocalDateTime.now());
+//        financialDocumentTypeRepository.deleteById(financialDocumentTypeId);
         financialDocumentTypeRepository.save(financialDocumentType);
         return true;
     }
