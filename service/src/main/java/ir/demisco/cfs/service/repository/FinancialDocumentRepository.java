@@ -305,7 +305,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "     WHERE FD.DELETED_DATE IS NULL " +
             "       AND FD.ORGANIZATION_ID = :organizationId" +
             "       AND DN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
-            "       AND DN.DOCUMENT_NUMBER = :fromNumber " +
+            "       AND DN.DOCUMENT_NUMBER = NVL(:fromNumber, DN.DOCUMENT_NUMBER) " +
             "       AND DN.DELETED_DATE IS NULL "
             , nativeQuery = true)
     LocalDateTime findByFinancialDocumentByNumberingTypeAndFromNumber(Long documentNumberingTypeId, String fromNumber, Long organizationId);
@@ -318,7 +318,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       AND DN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
             "       AND DN.DELETED_DATE IS NULL " +
             "     WHERE FD.DELETED_DATE IS NULL " +
-            "       AND FD.DOCUMENT_DATE = :fromDate" +
+            "       AND FD.DOCUMENT_DATE >= NVL(:fromDate, FD.DOCUMENT_DATE) " +
             "       AND FD.ORGANIZATION_ID = :organizationId "
             , nativeQuery = true)
     String findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(Long documentNumberingTypeId, LocalDateTime fromDate, Long organizationId);
@@ -331,7 +331,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       AND DN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
             "       AND DN.DELETED_DATE IS NULL " +
             "     WHERE FD.DELETED_DATE IS NULL " +
-            "       AND FD.DOCUMENT_DATE = NVL(:toDate, FD.DOCUMENT_DATE) " +
+            "       AND FD.DOCUMENT_DATE <= NVL(:toDate, FD.DOCUMENT_DATE) " +
             "       AND FD.ORGANIZATION_ID = :organizationId "
             , nativeQuery = true)
     String findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long documentNumberingTypeId, LocalDateTime toDate, Long organizationId);

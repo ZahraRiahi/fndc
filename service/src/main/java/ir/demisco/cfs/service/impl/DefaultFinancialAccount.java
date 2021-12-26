@@ -88,7 +88,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
             if (item[13] != null && (Long.parseLong(item[13].toString()) == 1 || Long.parseLong(item[13].toString()) == 2)) {
                 FinancialAccountTurnOverRecordsResponse recordsResponse = new FinancialAccountTurnOverRecordsResponse();
-                recordsResponse.setDocumentDate(item[0] == null ? null : DateUtil.jalaliToGregorian(item[0].toString()));
+                recordsResponse.setDocumentDate(item[0] == null ? null : convertDate(item[0].toString()));
                 recordsResponse.setDocumentNumber(item[1] == null ? null : item[1].toString());
                 recordsResponse.setDescription(item[2] == null ? null : item[2].toString());
                 recordsResponse.setDebitAmount(item[3] == null ? null : Double.parseDouble(item[3].toString()));
@@ -118,6 +118,14 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         dataSourceResult.setData(financialAccountTurnOverOutputResponses);
         dataSourceResult.setTotal(list.getTotalElements());
         return dataSourceResult;
+    }
+
+    private Date convertDate(String date){
+       if (date.length() == 7) {
+          return DateUtil.jalaliToGregorian(date,"yyyy/MM");
+       } else {
+           return DateUtil.jalaliToGregorian(date);
+       }
     }
 
 
@@ -165,7 +173,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 , financialDocumentReportRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setFromDate(fromDate);
         LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
-                , financialDocumentReportRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
+                , financialDocumentReportRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setToDate(toDate);
         if (fromDate == null || toDate == null) {
             throw new RuleException("fin.financialAccount.notInformation");
