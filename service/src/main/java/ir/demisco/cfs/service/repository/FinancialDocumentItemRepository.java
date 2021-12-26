@@ -22,7 +22,12 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "  fndi.debit_amount, " +
             "  fndi.credit_amount, " +
             "  fndi.description  || '-' ||  fiac.full_description as full_description, " +
-            "  cnac.code|| '-' || cnac.name as centricAccountDescription," +
+            "  NVL(CN1.CODE, '') || NVL(CN1.NAME, '') ||   " +
+            "     NVL('-' || CN2.CODE,'') || NVL(CN2.NAME, ’’) || " +
+            "     NVL('-' ||CN3.CODE, '') || NVL(CN3.NAME, '') ||   " +
+            "     NVL('-' ||CN4.CODE, '') || NVL(CN4.NAME, '') || " +
+            "     NVL('-' ||CN5.CODE, '') || NVL(CN5.NAME, '') ||    " +
+            "     NVL('-' ||CN6.CODE, '') || NVL(CN6.NAME, '') as centricAccountDescription," +
             "  fidc.id  as FinancialDocumenyId " +
             "  from fndc.financial_document fidc " +
             " inner join fndc.financial_document_item fndi " +
