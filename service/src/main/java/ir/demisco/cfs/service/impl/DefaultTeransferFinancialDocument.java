@@ -83,7 +83,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
                     FinancialDocumentItem financialDocumentItem = saveFinancialDocumentItem(documentItemId, financialDocument);
                     documentItemCurrencyRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItemId)
                             .forEach(documentItemCurrency -> saveFinancialDocumentItemCurrency(documentItemCurrency, financialDocumentItem));
-                    financialDocumentReferenceRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItemId)
+                    financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItemId)
                             .forEach(documentReference -> saveFinancialReference(documentReference, financialDocumentItem));
                 });
 
@@ -116,7 +116,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
                     FinancialDocumentItem financialDocumentItem = saveTransferFinancialDocumentItem(documentItemId, financialDocument);
                     documentItemCurrencyRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItemId)
                             .forEach(documentItemCurrency -> saveTransferFinancialDocumentItemCurrency(documentItemCurrency, financialDocumentItem));
-                    financialDocumentReferenceRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItemId)
+                    financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItemId)
                             .forEach(documentReference -> saveTransferFinancialReference(documentReference, financialDocumentItem));
 
                 });
@@ -134,7 +134,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
             FinancialDocumentItem financialDocumentItem = saveFinancialDocumentItem(documentItemId, newFinancialDocument);
             documentItemCurrencyRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItemId)
                     .forEach(documentItemCurrency -> saveFinancialDocumentItemCurrency(documentItemCurrency, financialDocumentItem));
-            financialDocumentReferenceRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItemId)
+            financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItemId)
                     .forEach(documentReference -> saveFinancialReference(documentReference, financialDocumentItem));
 
         });
@@ -149,7 +149,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
             FinancialDocumentItem financialDocumentItem = saveTransferFinancialDocumentItem(documentItemId, newFinancialDocument);
             documentItemCurrencyRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItemId)
                     .forEach(documentItemCurrency -> saveTransferFinancialDocumentItemCurrency(documentItemCurrency, financialDocumentItem));
-            financialDocumentReferenceRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItemId)
+            financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItemId)
                     .forEach(documentReference -> saveTransferFinancialReference(documentReference, financialDocumentItem));
 
         });
@@ -232,7 +232,7 @@ public class DefaultTeransferFinancialDocument  implements TransferFinancialDocu
             FinancialDocumentItem financialDocumentItem = saveTransferFinancialDocumentItem(documentItemId, newFinancialDocument);
             documentItemCurrencyRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItemId)
                     .forEach(documentItemCurrency -> saveTransferFinancialDocumentItemCurrency(documentItemCurrency, financialDocumentItem));
-            financialDocumentReferenceRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItemId)
+            financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItemId)
                     .forEach(documentReference -> saveTransferFinancialReference(documentReference, financialDocumentItem));
 
         });

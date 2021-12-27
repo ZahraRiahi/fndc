@@ -12,10 +12,12 @@ public interface FinancialDocumentReferenceRepository extends JpaRepository<Fina
     @Query(" select fdr from FinancialDocumentReference fdr where fdr.financialDocumentItem.id=:documentItemId ")
     FinancialDocumentReference getByDocumentItemId(Long documentItemId);
 
-    List<FinancialDocumentReference> findByFinancialDocumentItemIdAndDeletedDateIsNull(Long documentItemId);
+    List<FinancialDocumentReference> findByFinancialDocumentItemId(Long financialDocumentItemId);
 
     @Query(" select 1 from FinancialDocumentReference fr " +
             " where fr.financialDocumentItem.id = :FinancialDocumentItemId " +
             " and ((fr.referenceDate is null) or (fr.referenceDescription is null))")
     Long getDocumentReference(Long FinancialDocumentItemId);
+
+
 }
