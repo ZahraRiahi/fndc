@@ -23,7 +23,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "  fndi.credit_amount, " +
             "  fndi.description  || '-' ||  fiac.full_description as full_description, " +
             "  NVL(CN1.CODE, '') || NVL(CN1.NAME, '') ||   " +
-            "     NVL('-' || CN2.CODE,'') || NVL(CN2.NAME, ’’) || " +
+            "     NVL('-' || CN2.CODE,'') || NVL(CN2.NAME, '') || " +
             "     NVL('-' ||CN3.CODE, '') || NVL(CN3.NAME, '') ||   " +
             "     NVL('-' ||CN4.CODE, '') || NVL(CN4.NAME, '') || " +
             "     NVL('-' ||CN5.CODE, '') || NVL(CN5.NAME, '') ||    " +
@@ -36,12 +36,27 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " inner join fnac.financial_account fiac " +
             "    on fiac.id = fndi.financial_account_id " +
             "   and fiac.deleted_date is null " +
-            " inner join fnac.centric_account cnac " +
-            "    on cnac.id = fndi.centric_account_id_1 " +
-            "   and cnac.deleted_date is null " +
             " inner join fndc.financial_document_number fndn " +
             "    on fndn.financial_document_id = fidc.id " +
             "   and fndn.deleted_date is null " +
+            " LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN1 " +
+            "    ON CN1.ID = FNDI.CENTRIC_ACCOUNT_ID_1 " +
+            "   AND CN1.DELETED_DATE IS NULL " +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN2 " +
+            "    ON CN2.ID = FNDI.CENTRIC_ACCOUNT_ID_2 " +
+            "   AND CN2.DELETED_DATE IS NULL " +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN3 " +
+            "    ON CN3.ID = FNDI.CENTRIC_ACCOUNT_ID_3 " +
+            "   AND CN3.DELETED_DATE IS NULL" +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN4" +
+            "    ON CN4.ID = FNDI.CENTRIC_ACCOUNT_ID_4" +
+            "   AND CN4.DELETED_DATE IS NULL" +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN5" +
+            "    ON CN5.ID = FNDI.CENTRIC_ACCOUNT_ID_5" +
+            "   AND CN5.DELETED_DATE IS NULL" +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN6" +
+            "    ON CN6.ID = FNDI.CENTRIC_ACCOUNT_ID_6" +
+            "   AND CN6.DELETED_DATE IS NULL" +
             " where fidc.document_date >= :startDate " +
             "   And fidc.document_date <= :endDate " +
             "   and fidc.deleted_date is null " +
@@ -91,12 +106,27 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " inner join fnac.financial_account fiac " +
             "    on fiac.id = fndi.financial_account_id " +
             "   and fiac.deleted_date is null " +
-            " inner join fnac.centric_account cnac " +
-            "    on cnac.id = fndi.centric_account_id_1 " +
-            "   and cnac.deleted_date is null " +
             " inner join fndc.financial_document_number fndn " +
             "    on fndn.financial_document_id = fidc.id " +
             "   and fndn.deleted_date is null " +
+            " LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN1 " +
+            "    ON CN1.ID = FNDI.CENTRIC_ACCOUNT_ID_1 " +
+            "   AND CN1.DELETED_DATE IS NULL " +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN2 " +
+            "    ON CN2.ID = FNDI.CENTRIC_ACCOUNT_ID_2 " +
+            "   AND CN2.DELETED_DATE IS NULL " +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN3 " +
+            "    ON CN3.ID = FNDI.CENTRIC_ACCOUNT_ID_3 " +
+            "   AND CN3.DELETED_DATE IS NULL" +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN4" +
+            "    ON CN4.ID = FNDI.CENTRIC_ACCOUNT_ID_4" +
+            "   AND CN4.DELETED_DATE IS NULL" +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN5" +
+            "    ON CN5.ID = FNDI.CENTRIC_ACCOUNT_ID_5" +
+            "   AND CN5.DELETED_DATE IS NULL" +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN6" +
+            "    ON CN6.ID = FNDI.CENTRIC_ACCOUNT_ID_6" +
+            "   AND CN6.DELETED_DATE IS NULL" +
             " where fidc.document_date >= :startDate " +
             "   And fidc.document_date <= :endDate " +
             "   and fidc.deleted_date is null " +
@@ -352,6 +382,6 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " WHERE FNDI.FINANCIAL_DOCUMENT_ID = :financialDocumentId " +
             " and  ( :financialDocumentItem is null or FNDI.ID = :financialDocumentItemId)",
             nativeQuery = true)
-    List<Object[]> findByFinancialDocumentItemId(Long financialDocumentId,Object financialDocumentItem,Long financialDocumentItemId);
+    List<Object[]> findByFinancialDocumentItemId(Long financialDocumentId, Object financialDocumentItem, Long financialDocumentItemId);
 
 }
