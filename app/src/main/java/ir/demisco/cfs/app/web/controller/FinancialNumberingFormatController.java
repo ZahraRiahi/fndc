@@ -2,7 +2,6 @@ package ir.demisco.cfs.app.web.controller;
 
 
 import ir.demisco.cfs.model.dto.response.FinancialNumberingFormatDto;
-import ir.demisco.cfs.model.dto.response.ResponseFinancialNumberingFormatDto;
 import ir.demisco.cfs.service.api.FinancialNumberingFormatService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -28,8 +27,19 @@ public class FinancialNumberingFormatController {
 
     }
 
+//    @PostMapping("/save")
+//    public ResponseEntity<ResponseFinancialNumberingFormatDto> financialNumberingFormatSave(@RequestBody FinancialNumberingFormatDto financialNumberingFormatDto) {
+//        if (financialNumberingFormatDto.getId() == null) {
+//            return ResponseEntity.ok(financialNumberingFormatService.save(financialNumberingFormatDto));
+//        } else {
+//            return ResponseEntity.ok(financialNumberingFormatService.upDate(financialNumberingFormatDto));
+//        }
+//    }
+
+
     @PostMapping("/save")
-    public ResponseEntity<ResponseFinancialNumberingFormatDto> financialNumberingFormatSave(@RequestBody FinancialNumberingFormatDto financialNumberingFormatDto) {
+    public ResponseEntity<Boolean> financialNumberingFormatSave(@RequestBody FinancialNumberingFormatDto financialNumberingFormatDto) {
+        boolean result;
         if (financialNumberingFormatDto.getId() == null) {
             return ResponseEntity.ok(financialNumberingFormatService.save(financialNumberingFormatDto));
         } else {

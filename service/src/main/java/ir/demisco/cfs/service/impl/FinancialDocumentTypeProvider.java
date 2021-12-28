@@ -59,7 +59,6 @@ public class FinancialDocumentTypeProvider implements GridDataProvider {
                 case "financialSystem.id":
                 case "organization.id":
                 case "id":
-
                     if (filter.getValue() == null) {
                         filter.setDisable(true);
                     }

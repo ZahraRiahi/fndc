@@ -1,7 +1,6 @@
 package ir.demisco.cfs.model.dto.response;
 
 
-
 import java.time.LocalDateTime;
 
 public class FinancialNumberingFormatDto {
@@ -12,7 +11,10 @@ public class FinancialNumberingFormatDto {
     private String financialNumberingFormatTypeDescription;
     private Long financialNumberingTypeId;
     private String financialNumberingTypeDescription;
-    private String    description;
+    private String description;
+    private String reseter;
+    private int serialLength;
+    private Long firstSerial;
     private LocalDateTime deletedDate;
 
     public Long getId() {
@@ -79,9 +81,34 @@ public class FinancialNumberingFormatDto {
         this.deletedDate = deletedDate;
     }
 
-    public  static Builder builder() {
-        return new Builder();
+    public String getReseter() {
+        return reseter;
     }
+
+    public void setReseter(String reseter) {
+        this.reseter = reseter;
+    }
+
+    public int getSerialLength() {
+        return serialLength;
+    }
+
+    public void setSerialLength(int serialLength) {
+        this.serialLength = serialLength;
+    }
+
+    public Long getFirstSerial() {
+        return firstSerial;
+    }
+
+    public void setFirstSerial(Long firstSerial) {
+        this.firstSerial = firstSerial;
+    }
+
+    public static FinancialNumberingFormatDto.Builder builder() {
+        return new FinancialNumberingFormatDto.Builder();
+    }
+
     public static final class Builder {
         private FinancialNumberingFormatDto financialNumberingFormatDto;
 
@@ -125,6 +152,21 @@ public class FinancialNumberingFormatDto {
 
         public Builder description(String description) {
             financialNumberingFormatDto.setDescription(description);
+            return this;
+        }
+
+        public Builder reseter(String reseter) {
+            financialNumberingFormatDto.setReseter(reseter);
+            return this;
+        }
+
+        public Builder serialLength(int serialLength) {
+            financialNumberingFormatDto.setSerialLength(serialLength);
+            return this;
+        }
+
+        public Builder firstSerial(Long firstSerial) {
+            financialNumberingFormatDto.setFirstSerial(firstSerial);
             return this;
         }
 

@@ -1,6 +1,7 @@
 package ir.demisco.cfs.model.entity;
 
 import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
+import ir.demisco.cloud.basic.model.entity.org.Organization;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -11,7 +12,8 @@ public class FinancialDepartment  extends AuditModel<Long> {
 
     private String code;
     private String name;
-    private LocalDateTime DeletedDate;
+    private LocalDateTime deletedDate;
+    private Organization organization;
 
     @Override
     @Id
@@ -38,10 +40,20 @@ public class FinancialDepartment  extends AuditModel<Long> {
     }
 
     public LocalDateTime getDeletedDate() {
-        return DeletedDate;
+        return deletedDate;
     }
 
     public void setDeletedDate(LocalDateTime deletedDate) {
-        DeletedDate = deletedDate;
+        this.deletedDate = deletedDate;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ORGANIZATION_ID")
+    public Organization getOrganization() {
+        return organization;
+    }
+
+    public void setOrganization(Organization organization) {
+        this.organization = organization;
     }
 }

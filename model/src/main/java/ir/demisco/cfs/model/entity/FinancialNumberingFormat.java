@@ -15,7 +15,9 @@ public class FinancialNumberingFormat extends AuditModel<Long> {
     private FinancialNumberingType        financialNumberingType;
     private String   description;
     private LocalDateTime deletedDate;
-
+    private String reseter;
+    private int serialLength;
+    private Long firstSerial;
 
     @Override
     @Id
@@ -36,7 +38,7 @@ public class FinancialNumberingFormat extends AuditModel<Long> {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FINANCIAL_NUMBERING_FORMAT_TYPE_ID")
+    @JoinColumn(name = "NUMBERING_FORMAT_TYPE_ID")
     public FinancialNumberingFormatType getFinancialNumberingFormatType() {
         return financialNumberingFormatType;
     }
@@ -62,6 +64,7 @@ public class FinancialNumberingFormat extends AuditModel<Long> {
     public void setDescription(String description) {
         this.description = description;
     }
+
     @Column(name = "DELETED_DATE")
     public LocalDateTime getDeletedDate() {
         return deletedDate;
@@ -69,5 +72,32 @@ public class FinancialNumberingFormat extends AuditModel<Long> {
 
     public void setDeletedDate(LocalDateTime deletedDate) {
         this.deletedDate = deletedDate;
+    }
+
+    @Column(name = "RESETER")
+    public String getReseter() {
+        return reseter;
+    }
+
+    public void setReseter(String reseter) {
+        this.reseter = reseter;
+    }
+
+    @Column(name = "SERIAL_LENGTH")
+    public int getSerialLength() {
+        return serialLength;
+    }
+
+    public void setSerialLength(int serialLength) {
+        this.serialLength = serialLength;
+    }
+
+    @Column(name = "FIRST_SERIAL")
+    public Long getFirstSerial() {
+        return firstSerial;
+    }
+
+    public void setFirstSerial(Long firstSerial) {
+        this.firstSerial = firstSerial;
     }
 }

@@ -56,42 +56,63 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
-    public ResponseFinancialNumberingFormatDto save(FinancialNumberingFormatDto financialNumberingFormatDto) {
+//    public ResponseFinancialNumberingFormatDto save(FinancialNumberingFormatDto financialNumberingFormatDto) {
+    public Boolean save(FinancialNumberingFormatDto financialNumberingFormatDto) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        Object formatType;
+        if (financialNumberingFormatDto.getFinancialNumberingFormatTypeId() != null) {
+            formatType = "formatType";
+        } else {
+            financialNumberingFormatDto.setFinancialNumberingFormatTypeId(0L);
+            formatType = null;
+        }
         FinancialNumberingFormat financialNumberingFormat =
-                financialNumberingFormatRepository.getFormatByType(financialNumberingFormatDto.getFinancialNumberingFormatTypeId(),
+                financialNumberingFormatRepository.getFormatByType(formatType, financialNumberingFormatDto.getFinancialNumberingFormatTypeId(),
                         financialNumberingFormatDto.getFinancialNumberingTypeId(), organizationId);
         if (financialNumberingFormat != null) {
-            throw new RuleException("سند با این فرمت درج شده است.");
+            throw new RuleException("fin.financialNumberingFormat.existNumberingFormat");
         } else {
             FinancialNumberingFormat numberingFormat = financialNumberingFormatRepository.findById(financialNumberingFormatDto.getId() == null ? 0L :
                     financialNumberingFormatDto.getId()).orElse(new FinancialNumberingFormat());
             numberingFormat.setOrganization(organizationRepository.getOne(organizationId));
             numberingFormat.setDescription(financialNumberingFormatDto.getDescription());
-            numberingFormat.setFinancialNumberingFormatType(financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()));
+            numberingFormat.setFinancialNumberingFormatType(financialNumberingFormatDto.getFinancialNumberingFormatTypeId() != 0 ?
+                    financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()) : null);
             numberingFormat.setFinancialNumberingType(financialNumberingTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingTypeId()));
+            numberingFormat.setReseter(financialNumberingFormatDto.getReseter());
+            numberingFormat.setSerialLength(financialNumberingFormatDto.getSerialLength());
+            numberingFormat.setFirstSerial(financialNumberingFormatDto.getFirstSerial());
             financialNumberingFormatRepository.save(numberingFormat);
-            return convertNumberingFormatToDto(numberingFormat);
+            return true;
+//            return convertNumberingFormatToDto(numberingFormat);
         }
     }
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
-    public ResponseFinancialNumberingFormatDto upDate(FinancialNumberingFormatDto financialNumberingFormatDto) {
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        FinancialNumberingFormat financialNumberingFormat =
-                financialNumberingFormatRepository.getFormatByTypeForEdit(financialNumberingFormatDto.getFinancialNumberingFormatTypeId(),
-                        financialNumberingFormatDto.getFinancialNumberingTypeId(), organizationId, financialNumberingFormatDto.getId());
-        if (financialNumberingFormat != null) {
-            throw new RuleException("سند با این فرمت درج شده است.");
-        } else {
-            FinancialNumberingFormat updateFormat = financialNumberingFormatRepository.findById(financialNumberingFormatDto.getId()).orElseThrow(() -> new RuleException("سند یافت نشد"));
-            updateFormat.setDescription(financialNumberingFormatDto.getDescription());
-            updateFormat.setFinancialNumberingFormatType(financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()));
-            updateFormat.setFinancialNumberingType(financialNumberingTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingTypeId()));
-            financialNumberingFormatRepository.save(updateFormat);
-            return convertNumberingFormatToDto(updateFormat);
-        }
+//    public ResponseFinancialNumberingFormatDto upDate(FinancialNumberingFormatDto financialNumberingFormatDto) {
+    public Boolean upDate(FinancialNumberingFormatDto financialNumberingFormatDto) {
+        throw new RuleException("fin.financialNumberingFormat.update");
+//
+//        FinancialNumberingFormat financialNumberingFormat =
+//                financialNumberingFormatRepository.getFormatByTypeForEdit(financialNumberingFormatDto.getFinancialNumberingFormatTypeId(),
+//                        financialNumberingFormatDto.getFinancialNumberingTypeId(), organizationId, financialNumberingFormatDto.getId());
+//        if (financialNumberingFormat != null) {
+//            throw new RuleException("fin.financialNumberingFormat.existNumberingFormat");
+//        } else {
+//            FinancialNumberingFormat updateFormat = financialNumberingFormatRepository.findById(financialNumberingFormatDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
+//            updateFormat.setDescription(financialNumberingFormatDto.getDescription());
+////            updateFormat.setFinancialNumberingFormatType(financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()));
+//            updateFormat.setFinancialNumberingFormatType(financialNumberingFormatDto.getFinancialNumberingFormatTypeId() != 0 ?
+//                    financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()) : null);
+//            updateFormat.setFinancialNumberingType(financialNumberingTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingTypeId()));
+//            updateFormat.setReseter(financialNumberingFormatDto.getReseter());
+//            updateFormat.setSerialLength(financialNumberingFormatDto.getSerialLength());
+//            updateFormat.setFirstSerial(financialNumberingFormatDto.getFirstSerial());
+//            financialNumberingFormatRepository.save(updateFormat);
+////            return convertNumberingFormatToDto(updateFormat);
+//            return true;
+//        }
     }
 
     private ResponseFinancialNumberingFormatDto convertNumberingFormatToDto(FinancialNumberingFormat updateFormat) {
@@ -99,8 +120,10 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
         return ResponseFinancialNumberingFormatDto.builder()
                 .id(updateFormat.getId())
                 .description(updateFormat.getDescription())
-                .financialNumberingFormatTypeId(updateFormat.getFinancialNumberingFormatType().getId())
-                .financialNumberingFormatTypeDescription(updateFormat.getFinancialNumberingFormatType().getDescription())
+                .financialNumberingFormatTypeId(updateFormat.getFinancialNumberingFormatType() != null ?
+                        updateFormat.getFinancialNumberingFormatType().getId() : null)
+                .financialNumberingFormatTypeDescription(updateFormat.getFinancialNumberingFormatType() != null ?
+                        updateFormat.getFinancialNumberingFormatType().getDescription() : null)
                 .financialNumberingTypeId(updateFormat.getFinancialNumberingType().getId())
                 .message("عملیات موفقیت آمیز بود")
                 .build();
@@ -110,7 +133,7 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     @Transactional(rollbackOn = Throwable.class)
     public boolean deleteNumberingFormatById(Long numberingFormatId) {
         FinancialNumberingFormat deleteNumberingFormat = financialNumberingFormatRepository.findById(numberingFormatId)
-                .orElseThrow(() -> new RuleException("سند یافت نشد"));
+                .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         deleteNumberingFormat.setDeletedDate(LocalDateTime.now());
         financialNumberingFormatRepository.save(deleteNumberingFormat);
         return true;

@@ -13,6 +13,7 @@ public class FinancialNumberingType  extends AuditModel<Long> {
 
     private String   description;
     private LocalDateTime deletedDate;
+    private Long typeStatus;
 
     @Override
     @Id
@@ -28,6 +29,14 @@ public class FinancialNumberingType  extends AuditModel<Long> {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getTypeStatus() {
+        return typeStatus;
+    }
+
+    public void setTypeStatus(Long typeStatus) {
+        this.typeStatus = typeStatus;
     }
 
     @Column(name = "DELETED_DATE")

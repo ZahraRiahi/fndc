@@ -5,23 +5,24 @@ import ir.demisco.cloud.basic.model.entity.org.Organization;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "FINANCIAL_DOCUMENT" , schema = "fndc")
 public class FinancialDocument  extends AuditModel<Long> {
 
     private Long id;
-    private LocalDateTime documentDate;
+    private Date documentDate;
     private String    description;
     private FinancialDocumentStatus  financialDocumentStatus;
-    private Long permanentDocumentNumber;
+    private String permanentDocumentNumber;
     private Boolean automaticFlag;
     private Organization organization;
     private FinancialDocumentType financialDocumentType;
-    private Long financialPeriodId;
+    private FinancialPeriod financialPeriod;
     private FinancialLedgerType financialLedgerType;
     private FinancialDepartment financialDepartment;
-    private Long documentNumber;
+    private String documentNumber;
     private LocalDateTime DeletedDate;
 
 
@@ -37,11 +38,11 @@ public class FinancialDocument  extends AuditModel<Long> {
         this.id = id;
     }
 
-    public LocalDateTime getDocumentDate() {
+    public Date getDocumentDate() {
         return documentDate;
     }
 
-    public void setDocumentDate(LocalDateTime documentDate) {
+    public void setDocumentDate(Date documentDate) {
         this.documentDate = documentDate;
     }
 
@@ -63,11 +64,11 @@ public class FinancialDocument  extends AuditModel<Long> {
         this.financialDocumentStatus = financialDocumentStatus;
     }
 
-    public Long getPermanentDocumentNumber() {
+    public String getPermanentDocumentNumber() {
         return permanentDocumentNumber;
     }
 
-    public void setPermanentDocumentNumber(Long permanentDocumentNumber) {
+    public void setPermanentDocumentNumber(String permanentDocumentNumber) {
         this.permanentDocumentNumber = permanentDocumentNumber;
     }
 
@@ -98,13 +99,14 @@ public class FinancialDocument  extends AuditModel<Long> {
     public void setFinancialDocumentType(FinancialDocumentType financialDocumentType) {
         this.financialDocumentType = financialDocumentType;
     }
-
-    public Long getFinancialPeriodId() {
-        return financialPeriodId;
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FINANCIAL_PERIOD_ID")
+    public FinancialPeriod getFinancialPeriod() {
+        return financialPeriod;
     }
 
-    public void setFinancialPeriodId(Long financialPeriodId) {
-        this.financialPeriodId = financialPeriodId;
+    public void setFinancialPeriod(FinancialPeriod financialPeriod) {
+        this.financialPeriod = financialPeriod;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
@@ -127,11 +129,11 @@ public class FinancialDocument  extends AuditModel<Long> {
         this.financialDepartment = financialDepartment;
     }
 
-    public Long getDocumentNumber() {
+    public String getDocumentNumber() {
         return documentNumber;
     }
 
-    public void setDocumentNumber(Long documentNumber) {
+    public void setDocumentNumber(String documentNumber) {
         this.documentNumber = documentNumber;
     }
 

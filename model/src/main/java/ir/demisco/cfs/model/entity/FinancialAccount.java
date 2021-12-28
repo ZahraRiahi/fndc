@@ -5,6 +5,7 @@ import ir.demisco.cloud.basic.model.entity.org.Organization;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
+import java.util.Date;
 
 @Entity
 @Table(name = "financial_account", schema = "fnac")
@@ -15,10 +16,8 @@ public class FinancialAccount extends AuditModel<Long> {
     private String fullDescription;
     private String code;
     private String description;
-    private Boolean activeFlag;
     private String latinDescription;
     private AccountNatureType accountNatureType;
-    private Boolean permanentFlag;
     private Boolean relatedToOthersFlag;
     private AccountRelationType accountRelationType;
     private FinancialAccount financialAccountParent;
@@ -29,6 +28,8 @@ public class FinancialAccount extends AuditModel<Long> {
     private FinancialAccount accountAdjustment;
     private LocalDateTime deletedDate;
     private Boolean hasChild;
+    private Date disableDate;
+    private AccountPermanentStatus accountPermanentStatus;
 
     @Id
     public Long getId() {
@@ -86,15 +87,6 @@ public class FinancialAccount extends AuditModel<Long> {
         this.description = description;
     }
 
-    @Column(name = "ACTIVE_FLAG")
-    public Boolean getActiveFlag() {
-        return activeFlag;
-    }
-
-    public void setActiveFlag(Boolean activeFlag) {
-        this.activeFlag = activeFlag;
-    }
-
     @Column(name = "LATIN_DESCRIPTION")
     public String getLatinDescription() {
         return latinDescription;
@@ -112,15 +104,6 @@ public class FinancialAccount extends AuditModel<Long> {
 
     public void setAccountNatureType(AccountNatureType accountNatureType) {
         this.accountNatureType = accountNatureType;
-    }
-
-    @Column(name = "PERMANENT_FLAG")
-    public Boolean getPermanentFlag() {
-        return permanentFlag;
-    }
-
-    public void setPermanentFlag(Boolean permanentFlag) {
-        this.permanentFlag = permanentFlag;
     }
 
     @Column(name = "RELATED_TO_OTHERS_FLAG")
@@ -205,6 +188,25 @@ public class FinancialAccount extends AuditModel<Long> {
 
     public void setDeletedDate(LocalDateTime deletedDate) {
         this.deletedDate = deletedDate;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "ACCOUNT_PERMANENT_STATUS_ID")
+    public AccountPermanentStatus getAccountPermanentStatus() {
+        return accountPermanentStatus;
+    }
+
+    public void setAccountPermanentStatus(AccountPermanentStatus accountPermanentStatus) {
+        this.accountPermanentStatus = accountPermanentStatus;
+    }
+
+    @Column(name = "DISABLE_DATE")
+    public Date getDisableDate() {
+        return disableDate;
+    }
+
+    public void setDisableDate(Date disableDate) {
+        this.disableDate = disableDate;
     }
 
     @Transient

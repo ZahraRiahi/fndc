@@ -5,6 +5,7 @@ import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeGetDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentTypeDto;
 import ir.demisco.cfs.model.entity.FinancialDocumentType;
 import ir.demisco.cfs.service.api.FinancialDocumentTypeService;
+import ir.demisco.cfs.service.repository.FinancialConfigRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentTypeRepository;
 import ir.demisco.cfs.service.repository.FinancialSystemRepository;
 import ir.demisco.cfs.service.repository.OrganizationRepository;
@@ -28,13 +29,15 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     private final FinancialDocumentTypeProvider financialDocumentTypeProvider;
     private final OrganizationRepository organizationRepository;
     private final FinancialSystemRepository financialSystemRepository;
+    private final FinancialConfigRepository financialConfigRepository;
 
-    public DefaultFinancialDocumentType(FinancialDocumentTypeRepository financialDocumentTypeRepository, GridFilterService gridFilterService, FinancialDocumentTypeProvider financialDocumentTypeProvider, OrganizationRepository organizationRepository, FinancialSystemRepository financialSystemRepository) {
+    public DefaultFinancialDocumentType(FinancialDocumentTypeRepository financialDocumentTypeRepository, GridFilterService gridFilterService, FinancialDocumentTypeProvider financialDocumentTypeProvider, OrganizationRepository organizationRepository, FinancialSystemRepository financialSystemRepository, FinancialConfigRepository financialConfigRepository) {
         this.financialDocumentTypeRepository = financialDocumentTypeRepository;
         this.gridFilterService = gridFilterService;
         this.financialDocumentTypeProvider = financialDocumentTypeProvider;
         this.organizationRepository = organizationRepository;
         this.financialSystemRepository = financialSystemRepository;
+        this.financialConfigRepository = financialConfigRepository;
     }
 
     @Override
@@ -45,6 +48,7 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
                 .stream().map(financialDocumentType -> FinancialDocumentTypeGetDto.builder()
                         .id(financialDocumentType.getId())
                         .description(financialDocumentType.getDescription())
+                        .activeFlag(financialDocumentType.getActiveFlag())
                         .build()).collect(Collectors.toList());
     }
 
@@ -52,8 +56,9 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     @Transactional(rollbackOn = Throwable.class)
     public Boolean deleteFinancialDocumentTypeById(Long financialDocumentTypeId) {
         FinancialDocumentType financialDocumentType = financialDocumentTypeRepository.findById(financialDocumentTypeId)
-                .orElseThrow(() -> new RuleException("سند یافت نشد"));
+                .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         financialDocumentType.setDeletedDate(LocalDateTime.now());
+//        financialDocumentTypeRepository.deleteById(financialDocumentTypeId);
         financialDocumentTypeRepository.save(financialDocumentType);
         return true;
     }
@@ -71,8 +76,8 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     public ResponseFinancialDocumentTypeDto save(FinancialDocumentTypeDto financialDocumentTypeDto) {
 
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        FinancialDocumentType financialDocumentType=financialDocumentTypeRepository.
-                findById(financialDocumentTypeDto.getId()==null ? 0L: financialDocumentTypeDto.getId()).orElse(new FinancialDocumentType());
+        FinancialDocumentType financialDocumentType = financialDocumentTypeRepository.
+                findById(financialDocumentTypeDto.getId() == null ? 0L : financialDocumentTypeDto.getId()).orElse(new FinancialDocumentType());
         financialDocumentType.setDescription(financialDocumentTypeDto.getDescription());
         financialDocumentType.setOrganization(organizationRepository.getOne(organizationId));
         financialDocumentType.setActiveFlag(financialDocumentTypeDto.getActiveFlag());
@@ -84,24 +89,28 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
 
     @Override
     public ResponseFinancialDocumentTypeDto update(FinancialDocumentTypeDto financialDocumentTypeDto) {
-
-
-        FinancialDocumentType financialDocumentType=financialDocumentTypeRepository.
-                findById(financialDocumentTypeDto.getId()).orElseThrow(() -> new RuleException("سند یافت نشد"));
-        if(!financialDocumentType.getAutomaticFlag()) {
+        FinancialDocumentType financialDocumentType = financialDocumentTypeRepository.
+                findById(financialDocumentTypeDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
+        if (!financialDocumentTypeDto.getAutomaticFlag()) {
+            if (!financialDocumentTypeDto.getActiveFlag()) {
+                List<Long> financialConfigCount = financialConfigRepository.findByFinancialConfigByFinancialDocumentTypeId(financialDocumentTypeDto.getId());
+                if (financialConfigCount.size() != 0) {
+                    throw new RuleException("fin.financialDocumentType.update");
+                }
+            }
             financialDocumentType.setDescription(financialDocumentTypeDto.getDescription());
             financialDocumentType.setActiveFlag(financialDocumentTypeDto.getActiveFlag());
             financialDocumentType.setFinancialSystem(financialSystemRepository.getOne(financialDocumentTypeDto.getFinancialSystemId()));
             financialDocumentTypeRepository.save(financialDocumentType);
             return convertToDto(financialDocumentType);
-        }else{
-            throw new RuleException("این سند قابل ویرایش نیست.");
+        } else {
+            throw new RuleException("fin.financialDocumentType.notEditDocument");
         }
     }
 
-    private ResponseFinancialDocumentTypeDto convertToDto(FinancialDocumentType financialDocumentType){
+    private ResponseFinancialDocumentTypeDto convertToDto(FinancialDocumentType financialDocumentType) {
 
-        return  ResponseFinancialDocumentTypeDto.builder()
+        return ResponseFinancialDocumentTypeDto.builder()
                 .id(financialDocumentType.getId())
                 .description(financialDocumentType.getDescription())
                 .activeFlag(financialDocumentType.getActiveFlag())

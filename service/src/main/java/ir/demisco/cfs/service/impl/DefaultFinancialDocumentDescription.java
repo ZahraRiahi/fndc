@@ -51,7 +51,7 @@ public class DefaultFinancialDocumentDescription implements FinancialDocumentDes
         FinancialDocumentDescription documentDescription =
                 financialDocumentDescriptionRepository.findById(documentDescriptionDto.getId() == null ? 0L : documentDescriptionDto.getId()).orElse(new FinancialDocumentDescription());
         documentDescription.setDescription(documentDescriptionDto.getDescription());
-        documentDescription.setOrganization(organizationRepository.getOne(100L));
+        documentDescription.setOrganization(organizationRepository.getOne(organizationId));
         financialDocumentDescriptionRepository.save(documentDescription);
         return convertDocumentDescription(documentDescription);
     }
@@ -60,7 +60,7 @@ public class DefaultFinancialDocumentDescription implements FinancialDocumentDes
     @Transactional(rollbackOn = Throwable.class)
     public FinancialDocumentDescriptionOrganizationDto update(FinancialDocumentDescriptionOrganizationDto documentDescriptionDto) {
         FinancialDocumentDescription documentDescription =
-                financialDocumentDescriptionRepository.findById(documentDescriptionDto.getId()).orElseThrow(() -> new RuleException("سند یافت نشد"));
+                financialDocumentDescriptionRepository.findById(documentDescriptionDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         documentDescription.setOrganization(organizationRepository.getOne(organizationId));
         documentDescription.setDescription(documentDescriptionDto.getDescription());
@@ -81,7 +81,7 @@ public class DefaultFinancialDocumentDescription implements FinancialDocumentDes
     @Transactional(rollbackOn = Throwable.class)
     public boolean deleteDocumentDescriptionById(Long documentDescriptionId) {
         FinancialDocumentDescription financialDocumentDescription =
-                financialDocumentDescriptionRepository.findById(documentDescriptionId).orElseThrow(() -> new RuleException("سند یافت نشد"));
+                financialDocumentDescriptionRepository.findById(documentDescriptionId).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         financialDocumentDescription.setDeletedDate(LocalDateTime.now());
         financialDocumentDescriptionRepository.save(financialDocumentDescription);
         return true;

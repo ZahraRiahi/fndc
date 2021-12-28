@@ -1,5 +1,8 @@
 package ir.demisco.cfs.app.web.controller;
 
+import ir.demisco.cfs.model.dto.request.FinancialLedgerTypeRequest;
+import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerDto;
+import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerResponse;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeDto;
 import ir.demisco.cfs.service.api.FinancialLedgerTypeService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
@@ -7,10 +10,7 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,4 +35,17 @@ public class FinancialLedgerTypeController {
     public ResponseEntity<DataSourceResult> financialLedgerTypeList(@RequestBody DataSourceRequest dataSourceRequest) {
         return ResponseEntity.ok(financialLedgerTypeService.financialLedgerTypeList(dataSourceRequest));
     }
+
+    @PostMapping("/Save")
+    public ResponseEntity<Boolean> saveFinancialLedgerType(@RequestBody FinancialLedgerTypeRequest financialLedgerTypeRequest) {
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        financialLedgerTypeRequest.setOrganizationId(organizationId);
+        return ResponseEntity.ok(financialLedgerTypeService.saveFinancialLedgerType(financialLedgerTypeRequest));
+    }
+
+    @PostMapping("/GetCurrent")
+    public ResponseEntity<List<FinancialDepartmentLedgerResponse>> responseEntity(@RequestBody FinancialDepartmentLedgerDto financialDepartmentLedgerDto) {
+        return ResponseEntity.ok(financialLedgerTypeService.getFinancialLedgerByDepartmentId(financialDepartmentLedgerDto));
+    }
 }
+

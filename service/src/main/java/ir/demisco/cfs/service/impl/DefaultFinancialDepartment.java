@@ -1,12 +1,8 @@
 package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.response.FinancialDepartmentResponse;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import ir.demisco.cfs.service.api.FinancialDepartmentService;
 import ir.demisco.cfs.service.repository.FinancialDepartmentRepository;
-import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
@@ -26,22 +22,21 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
     @Override
     @Transactional
     public DataSourceResult financialDepartmentList() {
-//        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
-//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        List<Object[]>  financialDocumentItemList = financialDepartmentRepository.getFinancialDocumentItemList(100L);
-        List<FinancialDepartmentResponse> financialLedgerTypeResponses = financialDocumentItemList.stream().map(item ->
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        List<Object[]> financialDocumentItemList = financialDepartmentRepository.getFinancialDocumentItemList(organizationId);
+        List<FinancialDepartmentResponse> financialDepartmentResponses = financialDocumentItemList.stream().map(item ->
                 FinancialDepartmentResponse.builder()
                         .departmentId(Long.parseLong(item[0].toString()))
                         .code(item[1].toString())
                         .name((item[2].toString()))
-                        .financialLedgerTypeId(Long.valueOf((item[3].toString())))
-                        .ledgerTypeDescription(item[4].toString())
-                        .financialDepartmentLedgerId(Long.valueOf(item[5].toString()))
+                        .financialLedgerTypeId(Long.parseLong(item[3] == null ? "0" : item[3].toString()))
+                        .ledgerTypeDescription(item[4] == null ? "" : item[4].toString())
+                        .financialDepartmentLedgerId(Long.parseLong(item[5] == null ? "0" : item[5].toString()))
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(financialLedgerTypeResponses);
-//        dataSourceResult.setTotal(financialDocumentItemList.getTotalElements());
-        return  dataSourceResult;
+        dataSourceResult.setData(financialDepartmentResponses);
+        dataSourceResult.setTotal(financialDocumentItemList.size());
+        return dataSourceResult;
 
     }
 }
