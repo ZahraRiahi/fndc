@@ -307,4 +307,51 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
     List<Object[]> findFinancialDocumentItemByFinancialDocumentIdList(Long financialDocumentId, List financialDocumentItemIdList);
 
 
+    @Query(value = " SELECT FNDI.ID, " +
+            "       FNDI.FINANCIAL_DOCUMENT_ID, " +
+            "       FNDI.SEQUENCE_NUMBER," +
+            "       FNDI.FINANCIAL_ACCOUNT_ID," +
+            "       FNC.DESCRIPTION as FINANCIAL_ACCOUNT_DESCRIPTION," +
+            "       FNDI.DEBIT_AMOUNT," +
+            "       FNDI.CREDIT_AMOUNT," +
+            "       FNDI.DESCRIPTION," +
+            "       NVL(CNAC1.CODE, '') || NVL(CNAC1.NAME, '') ||" +
+            "       NVL('-' || CNAC2.CODE, '') || NVL(CNAC2.NAME, '') ||" +
+            "       NVL('-' || CNAC3.CODE, '') || NVL(CNAC3.NAME, '') ||" +
+            "       NVL('-' || CNAC4.CODE, '') || NVL(CNAC4.NAME, '') ||" +
+            "       NVL('-' || CNAC5.CODE, '') || NVL(CNAC5.NAME, '') ||" +
+            "       NVL('-' || CNAC6.CODE, '') || NVL(CNAC6.NAME, '') AS CENTRICACCOUNTDESCRIPTION," +
+            "       FNC.ACCOUNT_RELATION_TYPE_ID," +
+            "       FNDI.CENTRIC_ACCOUNT_ID_1," +
+            "       CNAC1.NAME as CENTRIC_ACCOUNT_DESCRIPTION_1," +
+            "       FNDI.CENTRIC_ACCOUNT_ID_2," +
+            "       CNAC2.NAME as CENTRIC_ACCOUNT_DESCRIPTION_2," +
+            "       FNDI.CENTRIC_ACCOUNT_ID_3," +
+            "       CNAC3.NAME as CENTRIC_ACCOUNT_DESCRIPTION_3," +
+            "       FNDI.CENTRIC_ACCOUNT_ID_4," +
+            "       CNAC4.NAME as CENTRIC_ACCOUNT_DESCRIPTION_4," +
+            "       FNDI.CENTRIC_ACCOUNT_ID_5," +
+            "       CNAC5.NAME  as CENTRIC_ACCOUNT_DESCRIPTION_5," +
+            "       FNDI.CENTRIC_ACCOUNT_ID_6," +
+            "       CNAC6.NAME as CENTRIC_ACCOUNT_DESCRIPTION_6" +
+            "  FROM FNDC.FINANCIAL_DOCUMENT_ITEM FNDI" +
+            " INNER JOIN FNAC.FINANCIAL_ACCOUNT FNC" +
+            "    ON FNC.ID = FNDI.FINANCIAL_ACCOUNT_ID" +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC1" +
+            "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_1" +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC2" +
+            "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_2" +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC3" +
+            "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_3" +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC4" +
+            "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_4" +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC5" +
+            "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_5" +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
+            "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_6" +
+            " WHERE FNDI.FINANCIAL_DOCUMENT_ID = :financialDocumentId " +
+            " and  ( :financialDocumentItem is null or FNDI.ID = :financialDocumentItemId)",
+            nativeQuery = true)
+    List<Object[]> findByFinancialDocumentItemId(Long financialDocumentId,Object financialDocumentItem,Long financialDocumentItemId);
+
 }
