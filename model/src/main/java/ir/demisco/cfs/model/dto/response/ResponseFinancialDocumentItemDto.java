@@ -19,6 +19,7 @@ public class ResponseFinancialDocumentItemDto {
     private Long centricAccountId6;
     private List<FinancialDocumentReferenceDto> documentReferenceList;
     private List<FinancialDocumentItemCurrencyDto>  documentItemCurrencyList;
+    private Long accountRelationTypeId;
 
     public Long getId() {
         return id;
@@ -141,6 +142,14 @@ public class ResponseFinancialDocumentItemDto {
         this.financialAccountDescription = financialAccountDescription;
     }
 
+    public Long getAccountRelationTypeId() {
+        return accountRelationTypeId;
+    }
+
+    public void setAccountRelationTypeId(Long accountRelationTypeId) {
+        this.accountRelationTypeId = accountRelationTypeId;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -231,7 +240,10 @@ public class ResponseFinancialDocumentItemDto {
             responseFinancialDocumentItemDto.setDocumentItemCurrencyList(documentItemCurrencyList);
             return this;
         }
-
+        public Builder accountRelationTypeId(Long accountRelationTypeId) {
+            responseFinancialDocumentItemDto.setAccountRelationTypeId(accountRelationTypeId);
+            return this;
+        }
         public ResponseFinancialDocumentItemDto build() {
             return responseFinancialDocumentItemDto;
         }
