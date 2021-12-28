@@ -41,8 +41,8 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
         Map<String, Object> paramMap = paramSearch.getParamMap();
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
-        Page<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getStartDate(),paramSearch.getEndDate()
-                , paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),paramMap.get("toNumber"),
+        Page<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getStartDate(), paramSearch.getEndDate()
+                , paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(), paramMap.get("toNumber"),
                 paramSearch.getToNumber(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
                 paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId()
                 , paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId()
@@ -58,12 +58,11 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                         .sequenceNumber(Long.parseLong(item[4].toString()))
                         .financialAccountDescription(item[5].toString())
                         .financialAccountId(Long.parseLong(item[6].toString()))
-                        .debitAmount(Long.parseLong(String.format("%.0f",Double.parseDouble(item[7].toString()))))
-                        .creditAmount(Long.parseLong(String.format("%.0f",Double.parseDouble(item[8].toString()))))
+                        .debitAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[7].toString()))))
+                        .creditAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[8].toString()))))
                         .fullDescription(item[9].toString())
                         .centricAccountDescription(item[10].toString())
                         .financialDocumentId(((BigDecimal) item[11]).longValue())
-
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(documentItemDtoList);
@@ -237,7 +236,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
     private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
         if (input instanceof String) {
             try {
-                Date date = ISO8601Utils.parse((String)input,new ParsePosition(0));
+                Date date = ISO8601Utils.parse((String) input, new ParsePosition(0));
                 LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
                 return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
             } catch (Exception var4) {

@@ -97,7 +97,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
             "   and   (:toPrice is null  or " +
             "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
-            "  order by  fndi.sequence_number "
+            "  order by  fndi.sequence_number , fidc.document_date desc"
             , countQuery = "  select count(fidc.id) " +
             "  from fndc.financial_document fidc " +
             " inner join fndc.financial_document_item fndi " +

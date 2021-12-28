@@ -86,7 +86,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description," +
             " FINANCIAL_DOCUMENT_STATUS_ID, " +
             "          DS.NAME , " +
-            "          DS.CODE   "
+            "          DS.CODE  " +
+            " order by  fidc.document_date desc "
             , countQuery = " select count(fidc.id) " +
             "  from fndc.financial_document fidc " +
             "  inner join fndc.financial_document_type fndt " +
@@ -148,7 +149,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description, " +
             "   FINANCIAL_DOCUMENT_STATUS_ID, " +
             "                      DS.NAME , " +
-            "                     DS.CODE  "
+            "                     DS.CODE " +
+            " order by  fidc.document_date desc  "
             , nativeQuery = true)
     Page<Object[]> getFinancialDocumentList(LocalDateTime startDate, LocalDateTime endDate, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
             , Object toNumber, Long toNumberId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
