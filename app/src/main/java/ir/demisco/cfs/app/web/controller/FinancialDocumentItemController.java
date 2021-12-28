@@ -2,9 +2,7 @@ package ir.demisco.cfs.app.web.controller;
 
 
 import ir.demisco.cfs.model.dto.request.FinancialDocumentItemRequest;
-import ir.demisco.cfs.model.dto.response.FinancialDocumentDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemResponse;
-import ir.demisco.cfs.model.dto.response.FinancialDocumentSaveDto;
 import ir.demisco.cfs.service.api.FinancialDocumentItemService;
 import ir.demisco.cfs.service.api.SaveFinancialDocumentService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
@@ -14,7 +12,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 
 @RestController
