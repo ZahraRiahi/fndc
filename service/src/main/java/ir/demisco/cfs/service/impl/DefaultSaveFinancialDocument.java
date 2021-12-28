@@ -456,6 +456,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .centricAccountId4(financialDocumentItem.getCentricAccountId4() == null ? null : financialDocumentItem.getCentricAccountId4().getId())
                 .centricAccountId5(financialDocumentItem.getCentricAccountId5() == null ? null : financialDocumentItem.getCentricAccountId5().getId())
                 .centricAccountId6(financialDocumentItem.getCentricAccountId6() == null ? null : financialDocumentItem.getCentricAccountId6().getId())
+                .accountRelationTypeId(financialDocumentItem.getFinancialAccount() == null ? null : financialDocumentItem.getFinancialAccount().getAccountRelationType().getId())
                 .build();
     }
 
@@ -525,7 +526,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         } else {
             financialDocumentItemRequest.setFinancialDocumentItemId(0L);
         }
-        List<Object[]> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentItemId(financialDocumentItemRequest.getFinancialDocumentId(),financialDocumentItem, financialDocumentItemRequest.getFinancialDocumentItemId());
+        List<Object[]> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentItemId(financialDocumentItemRequest.getFinancialDocumentId(), financialDocumentItem, financialDocumentItemRequest.getFinancialDocumentItemId());
         financialDocumentItemList.forEach(documentItem -> {
             List<FinancialDocumentReferenceOutPutModel> documentReferenceList = new ArrayList<>();
             List<FinancialDocumentItemCurrencyOutPutModel> responseDocumentItemCurrencyList = new ArrayList<>();
