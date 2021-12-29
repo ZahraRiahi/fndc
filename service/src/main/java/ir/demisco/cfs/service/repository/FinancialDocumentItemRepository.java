@@ -363,7 +363,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       FNDI.CENTRIC_ACCOUNT_ID_5," +
             "       CNAC5.NAME  as CENTRIC_ACCOUNT_DESCRIPTION_5," +
             "       FNDI.CENTRIC_ACCOUNT_ID_6," +
-            "       CNAC6.NAME as CENTRIC_ACCOUNT_DESCRIPTION_6" +
+            "       CNAC6.NAME as CENTRIC_ACCOUNT_DESCRIPTION_6 " +
             "  FROM FNDC.FINANCIAL_DOCUMENT_ITEM FNDI" +
             " INNER JOIN FNAC.FINANCIAL_ACCOUNT FNC" +
             "    ON FNC.ID = FNDI.FINANCIAL_ACCOUNT_ID" +
@@ -382,6 +382,66 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " WHERE FNDI.FINANCIAL_DOCUMENT_ID = :financialDocumentId " +
             " and  ( :financialDocumentItem is null or FNDI.ID = :financialDocumentItemId)",
             nativeQuery = true)
-    List<Object[]> findByFinancialDocumentItemId(Long financialDocumentId, Object financialDocumentItem, Long financialDocumentItemId);
+    Page<Object[]> findByFinancialDocumentItemId(Long financialDocumentId, Object financialDocumentItem, Long financialDocumentItemId, Pageable pageable);
 
+    @Query(value = "WITH QRY AS " +
+            " (SELECT SUM(FDI.DEBIT_AMOUNT) SUM_DEBIT," +
+            "         SUM(FDI.CREDIT_AMOUNT) SUM_CREDIT," +
+            "         ACN.ID ACCOUNT_NATURE_TYPE_ID," +
+            "         FA.DESCRIPTION FINANCIAL_ACCOUNT_DESCRIPTION" +
+            "    FROM fndc.FINANCIAL_DOCUMENT_ITEM FDI " +
+            "   INNER JOIN fndc.FINANCIAL_DOCUMENT FD " +
+            "      ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID " +
+            "   INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FS " +
+            "      ON FS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
+            "   INNER JOIN FNAC.FINANCIAL_ACCOUNT FA " +
+            "      ON FA.ID = FDI.FINANCIAL_ACCOUNT_ID " +
+            "   INNER JOIN FNAC.ACCOUNT_NATURE_TYPE ACN " +
+            "      ON ACN.ID = FA.ACCOUNT_NATURE_TYPE_ID " +
+            "   INNER JOIN (SELECT DISTINCT FD_INER.DOCUMENT_DATE," +
+            "                              FD_INER.DOCUMENT_NUMBER," +
+            "                              FDI_INER.FINANCIAL_ACCOUNT_ID, " +
+            "                              FD_INER.FINANCIAL_LEDGER_TYPE_ID, " +
+            "                              FD_INER.FINANCIAL_DEPARTMENT_ID " +
+            "                FROM fndc.FINANCIAL_DOCUMENT_ITEM FDI_INER " +
+            "               INNER JOIN fndc.FINANCIAL_DOCUMENT FD_INER " +
+            "                  ON FD_INER.ID = FDI_INER.FINANCIAL_DOCUMENT_ID " +
+            "               WHERE FD_INER.ID = NVL(:financialDocumentId, FD_INER.ID) " +
+            "                 AND FDI_INER.ID =" +
+            "                     NVL(:financialDocumentItemId, FDI_INER.ID)) INER_DOCUMENT" +
+            "      ON INER_DOCUMENT.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID" +
+            "     AND FD.FINANCIAL_LEDGER_TYPE_ID = " +
+            "         INER_DOCUMENT.FINANCIAL_LEDGER_TYPE_ID " +
+            "     AND FD.FINANCIAL_DEPARTMENT_ID = INER_DOCUMENT.FINANCIAL_DEPARTMENT_ID " +
+            "     AND FD.DOCUMENT_DATE <= INER_DOCUMENT.DOCUMENT_DATE " +
+            "     AND FD.DOCUMENT_NUMBER <= INER_DOCUMENT.DOCUMENT_NUMBER " +
+            "   WHERE ((FS.CODE > 10 AND " +
+            "         FD.DOCUMENT_NUMBER != INER_DOCUMENT.DOCUMENT_NUMBER) OR " +
+            "         FD.DOCUMENT_NUMBER = INER_DOCUMENT.DOCUMENT_NUMBER)" +
+            "     AND FD.DOCUMENT_DATE >=" +
+            "         (SELECT MIN(FP.START_DATE) AS FINANCIALPERIODSTARTDATE " +
+            "            FROM FNPR.FINANCIAL_PERIOD FP " +
+            "           INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT " +
+            "              ON FP.FINAN_PERIOD_TYPE_ASSIGN_ID = FPT.ID " +
+            "             AND FPT.ORGANIZATION_ID = FD.ORGANIZATION_ID " +
+            "             AND FPT.ACTIVE_FLAG = 1 " +
+            "           INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY" +
+            "              ON FPT.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID " +
+            "           WHERE FP.FINANCIAL_PERIOD_STATUS_ID = 1) " +
+            "   GROUP BY FDI.FINANCIAL_ACCOUNT_ID, " +
+            "            ACN.ID," +
+            "            ACN.DESCRIPTION," +
+            "            FA.ID," +
+            "            FA.DESCRIPTION) " +
+            " SELECT SUM_DEBIT," +
+            "       SUM_CREDIT," +
+            "       ACCOUNT_NATURE_TYPE_ID, " +
+            "       FINANCIAL_ACCOUNT_DESCRIPTION, " +
+            "       'سرجمع حساب' || ' ''' || FINANCIAL_ACCOUNT_DESCRIPTION || " +
+            "       ''' با ماهیت آن همخوانی ندارد. ' RESULT_MESSAGE " +
+            "  FROM QRY" +
+            " WHERE (QRY.ACCOUNT_NATURE_TYPE_ID = 3 AND SUM_DEBIT > SUM_CREDIT) " +
+            "    OR (QRY.ACCOUNT_NATURE_TYPE_ID = 2 AND SUM_DEBIT < SUM_CREDIT) "
+            , nativeQuery = true)
+    List<Object[]> findByControlFinancialAccountNatureTypeAnd();
 }
