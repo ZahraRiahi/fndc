@@ -559,7 +559,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         FinancialDocumentItemRequest financialDocumentReportRequest = setParameter(filters);
         Object financialDocumentItem = null;
         if (financialDocumentReportRequest.getFinancialDocumentItemId() != null) {
-            financialDocumentItem = "financialDocumentItem";
+            financialDocumentItem = financialDocumentReportRequest.getFinancialDocumentItem();
         } else {
             financialDocumentReportRequest.setFinancialDocumentItemId(0L);
         }
