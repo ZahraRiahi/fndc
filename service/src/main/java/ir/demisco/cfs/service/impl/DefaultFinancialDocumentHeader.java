@@ -25,7 +25,6 @@ public class DefaultFinancialDocumentHeader implements FinancialDocumentHeaderSe
                 .documentNumber(financialDocument.getDocumentNumber())
                 .financialDocumentTypeId(financialDocument.getFinancialDocumentType().getId())
                 .financialDocumentTypeDescription(financialDocument.getFinancialDocumentType() == null ? "" : financialDocument.getFinancialDocumentType().getDescription())
-                .financialDocumentTypeDescription(financialDocument.getFinancialDocumentType().getDescription())
                 .financialDocumentStatusId(financialDocument.getFinancialDocumentStatus().getId())
                 .automaticFlag(financialDocument.getAutomaticFlag())
                 .description(financialDocument.getDescription())
