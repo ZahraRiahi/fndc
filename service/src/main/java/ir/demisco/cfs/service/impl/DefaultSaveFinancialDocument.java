@@ -10,7 +10,12 @@ import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.SaveFinancialDocumentService;
 import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.core.middle.exception.RuleException;
+import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
+import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -516,18 +521,49 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         return responseDocumentSaveDto;
     }
 
+    //    @Override
+//    @Transactional(rollbackOn = Throwable.class)
+//    public List<FinancialDocumentItemResponse> getFinancialDocumentItem(FinancialDocumentItemRequest financialDocumentItemRequest) {
+//        List<FinancialDocumentItemResponse> financialDocumentItemDtoList = new ArrayList<>();
+//        Object financialDocumentItem = null;
+//        if (financialDocumentItemRequest.getFinancialDocumentItemId() != null) {
+//            financialDocumentItem = "financialDocumentItem";
+//        } else {
+//            financialDocumentItemRequest.setFinancialDocumentItemId(0L);
+//        }
+//        List<Object[]> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentItemId(financialDocumentItemRequest.getFinancialDocumentId()
+//                , financialDocumentItem, financialDocumentItemRequest.getFinancialDocumentItemId());
+//        financialDocumentItemList.forEach(documentItem -> {
+//            List<FinancialDocumentReferenceOutPutModel> documentReferenceList = new ArrayList<>();
+//            List<FinancialDocumentItemCurrencyOutPutModel> responseDocumentItemCurrencyList = new ArrayList<>();
+//            FinancialDocumentItemResponse documentItemToList = convertDocumentItemToListUpdate(documentItem);
+//            financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItemToList.getId())
+//                    .forEach(documentReference -> {
+//                        documentReferenceList.add(convertFinancialDocumentItem(documentReference));
+//                        documentItemToList.setDocumentReferenceList(documentReferenceList);
+//                    });
+//            documentItemCurrencyRepository.findByFinancialDocumentItemCurrency(documentItemToList.getId())
+//                    .forEach(documentItemCurrency -> {
+//                        responseDocumentItemCurrencyList.add(convertDocumentItemCurrencyOutPut(documentItemCurrency));
+//                        documentItemToList.setDocumentItemCurrencyList(responseDocumentItemCurrencyList);
+//                    });
+//            financialDocumentItemDtoList.add(documentItemToList);
+//        });
+//        return financialDocumentItemDtoList;
+//    }
+
     @Override
-    @Transactional(rollbackOn = Throwable.class)
-    public List<FinancialDocumentItemResponse> getFinancialDocumentItem(FinancialDocumentItemRequest financialDocumentItemRequest) {
-        List<FinancialDocumentItemResponse> financialDocumentItemDtoList = new ArrayList<>();
-        Object financialDocumentItem = null;
-        if (financialDocumentItemRequest.getFinancialDocumentItemId() != null) {
-            financialDocumentItem = "financialDocumentItem";
-        } else {
-            financialDocumentItemRequest.setFinancialDocumentItemId(0L);
-        }
-        List<Object[]> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentItemId(financialDocumentItemRequest.getFinancialDocumentId(), financialDocumentItem, financialDocumentItemRequest.getFinancialDocumentItemId());
-        financialDocumentItemList.forEach(documentItem -> {
+    @Transactional
+    public DataSourceResult getFinancialDocumentItem(DataSourceRequest dataSourceRequest) {
+        List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
+        FinancialDocumentItemRequest financialDocumentReportRequest = setParameter(filters);
+        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
+        Page<Object[]> list = financialDocumentItemRepository.findByFinancialDocumentItemId(financialDocumentReportRequest.getFinancialDocumentId(),
+                financialDocumentReportRequest.getFinancialDocumentItem(),
+                financialDocumentReportRequest.getFinancialDocumentItemId(),
+                pageable);
+        List<FinancialDocumentItemResponse> financialDocumentItemResponses = new ArrayList<>();
+        list.forEach(documentItem -> {
             List<FinancialDocumentReferenceOutPutModel> documentReferenceList = new ArrayList<>();
             List<FinancialDocumentItemCurrencyOutPutModel> responseDocumentItemCurrencyList = new ArrayList<>();
             FinancialDocumentItemResponse documentItemToList = convertDocumentItemToListUpdate(documentItem);
@@ -541,9 +577,37 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                         responseDocumentItemCurrencyList.add(convertDocumentItemCurrencyOutPut(documentItemCurrency));
                         documentItemToList.setDocumentItemCurrencyList(responseDocumentItemCurrencyList);
                     });
-            financialDocumentItemDtoList.add(documentItemToList);
+            financialDocumentItemResponses.add(documentItemToList);
         });
-        return financialDocumentItemDtoList;
+
+        DataSourceResult dataSourceResult = new DataSourceResult();
+        dataSourceResult.setData(financialDocumentItemResponses);
+        dataSourceResult.setTotal(list.getTotalElements());
+        return dataSourceResult;
+    }
+
+    private FinancialDocumentItemRequest setParameter(List<DataSourceRequest.FilterDescriptor> filters) {
+        FinancialDocumentItemRequest financialDocumentItemRequest = new FinancialDocumentItemRequest();
+        for (DataSourceRequest.FilterDescriptor item : filters) {
+            switch (item.getField()) {
+                case "financialDocumentId":
+                    if (item.getValue() != null) {
+                        financialDocumentItemRequest.setFinancialDocumentId(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+                case "financialDocumentItemId":
+                    if (item.getValue() != null) {
+                        financialDocumentItemRequest.setFinancialDocumentItemId(Long.parseLong(item.getValue().toString()));
+
+                    }
+                    break;
+            }
+        }
+        if (financialDocumentItemRequest.getFinancialDocumentItemId() == null) {
+            financialDocumentItemRequest.setFinancialDocumentItem(null);
+            financialDocumentItemRequest.setFinancialDocumentItemId(0L);
+        }
+        return financialDocumentItemRequest;
     }
 
     private FinancialDocumentItemResponse convertDocumentItemToListUpdate(Object[] financialDocumentItem) {
@@ -573,7 +637,8 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .build();
     }
 
-    private FinancialDocumentReferenceOutPutModel convertFinancialDocumentItem(FinancialDocumentReference financialDocumentReference) {
+    private FinancialDocumentReferenceOutPutModel convertFinancialDocumentItem(FinancialDocumentReference
+                                                                                       financialDocumentReference) {
         return FinancialDocumentReferenceOutPutModel.builder()
                 .id(financialDocumentReference.getId())
                 .financialDocumentItemId(financialDocumentReference.getFinancialDocumentItem().getId())

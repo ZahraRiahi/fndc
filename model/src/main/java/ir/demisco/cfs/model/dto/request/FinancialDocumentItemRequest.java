@@ -3,7 +3,7 @@ package ir.demisco.cfs.model.dto.request;
 public class FinancialDocumentItemRequest {
     private Long financialDocumentId;
     private Long financialDocumentItemId;
-    private Object FinancialDocumentItem;
+    private Object financialDocumentItem;
 
     public Long getFinancialDocumentId() {
         return financialDocumentId;
@@ -22,10 +22,10 @@ public class FinancialDocumentItemRequest {
     }
 
     public Object getFinancialDocumentItem() {
-        return FinancialDocumentItem;
+        return financialDocumentItem;
     }
 
     public void setFinancialDocumentItem(Object financialDocumentItem) {
-        FinancialDocumentItem = financialDocumentItem;
+        this.financialDocumentItem = financialDocumentItem;
     }
 }

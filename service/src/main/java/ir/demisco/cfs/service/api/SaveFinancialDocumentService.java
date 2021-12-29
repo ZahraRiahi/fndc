@@ -1,11 +1,9 @@
 package ir.demisco.cfs.service.api;
 
-import ir.demisco.cfs.model.dto.request.FinancialDocumentItemRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentDto;
-import ir.demisco.cfs.model.dto.response.FinancialDocumentItemResponse;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentSaveDto;
-
-import java.util.List;
+import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
+import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 
 public interface SaveFinancialDocumentService {
 
@@ -15,5 +13,7 @@ public interface SaveFinancialDocumentService {
 
     FinancialDocumentSaveDto getFinancialDocumentInfo(FinancialDocumentDto financialDocumentDto);
 
-    List<FinancialDocumentItemResponse> getFinancialDocumentItem(FinancialDocumentItemRequest financialDocumentItemRequest);
+//    List<FinancialDocumentItemResponse> getFinancialDocumentItem(FinancialDocumentItemRequest financialDocumentItemRequest);
+
+    DataSourceResult getFinancialDocumentItem(DataSourceRequest dataSourceRequest);
 }
