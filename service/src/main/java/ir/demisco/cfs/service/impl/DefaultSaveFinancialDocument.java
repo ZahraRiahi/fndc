@@ -559,7 +559,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         FinancialDocumentItemRequest financialDocumentReportRequest = setParameter(filters);
         Object financialDocumentItem = null;
         if (financialDocumentReportRequest.getFinancialDocumentItemId() != null) {
-            financialDocumentItem = financialDocumentReportRequest.getFinancialDocumentItem();
+            financialDocumentItem = "financialDocumentItem";
         } else {
             financialDocumentReportRequest.setFinancialDocumentItemId(0L);
         }
@@ -611,10 +611,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                     break;
             }
         }
-        if (financialDocumentItemRequest.getFinancialDocumentItemId() == null) {
-            financialDocumentItemRequest.setFinancialDocumentItem(null);
-            financialDocumentItemRequest.setFinancialDocumentItemId(0L);
-        }
+
         return financialDocumentItemRequest;
     }
 
