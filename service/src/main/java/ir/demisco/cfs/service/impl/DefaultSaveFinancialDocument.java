@@ -557,9 +557,17 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     public DataSourceResult getFinancialDocumentItem(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialDocumentItemRequest financialDocumentReportRequest = setParameter(filters);
+        Object financialDocumentItem = null;
+        if (financialDocumentReportRequest.getFinancialDocumentItemId() != null) {
+            financialDocumentItem = "financialDocumentItem";
+        } else {
+            financialDocumentReportRequest.setFinancialDocumentItemId(0L);
+        }
+
+
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         Page<Object[]> list = financialDocumentItemRepository.findByFinancialDocumentItemId(financialDocumentReportRequest.getFinancialDocumentId(),
-                financialDocumentReportRequest.getFinancialDocumentItem(),
+                financialDocumentItem,
                 financialDocumentReportRequest.getFinancialDocumentItemId(),
                 pageable);
         List<FinancialDocumentItemResponse> financialDocumentItemResponses = new ArrayList<>();
