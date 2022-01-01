@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 
@@ -444,4 +445,46 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "    OR (QRY.ACCOUNT_NATURE_TYPE_ID = 2 AND SUM_DEBIT < SUM_CREDIT) "
             , nativeQuery = true)
     List<Object[]> findByControlFinancialAccountNatureTypeAnd();
+
+
+    @Query(value = "SELECT SUM(FDI.DEBIT_AMOUNT) SUM_DEBIT," +
+            "       SUM(FDI.CREDIT_AMOUNT) SUM_CREDIT," +
+            "       ACN.ID ACCOUNT_NATURE_TYPE_ID" +
+            "  FROM fndc.FINANCIAL_DOCUMENT_ITEM FDI" +
+            " INNER JOIN fndc.FINANCIAL_DOCUMENT FD" +
+            "    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID" +
+            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FS" +
+            "    ON FS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID" +
+            " INNER JOIN FNAC.FINANCIAL_ACCOUNT FA" +
+            "    ON FA.ID = FDI.FINANCIAL_ACCOUNT_ID" +
+            " INNER JOIN FNAC.ACCOUNT_NATURE_TYPE ACN" +
+            "    ON ACN.ID = FA.ACCOUNT_NATURE_TYPE_ID" +
+            " WHERE FS.CODE > 10" +
+            "   AND FDI.FINANCIAL_ACCOUNT_ID = :financialAccountId " +
+            "   AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId  " +
+            "   AND FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId " +
+            "   AND FD.ORGANIZATION_ID = :organizationId " +
+            "   AND FD.DOCUMENT_NUMBER <=" +
+            "       (SELECT MAX(FD_INER.DOCUMENT_NUMBER)" +
+            "          FROM fndc.FINANCIAL_DOCUMENT_ITEM FDI_INER" +
+            "         INNER JOIN fndc.FINANCIAL_DOCUMENT FD_INER" +
+            "            ON FD_INER.ID = FDI_INER.FINANCIAL_DOCUMENT_ID" +
+            "         WHERE FD_INER.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId" +
+            "           AND FD_INER.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId " +
+            "           AND FD_INER.ORGANIZATION_ID = :organizationId" +
+            "           AND FD_INER.DOCUMENT_DATE = :date)" +
+            "   AND FD.DOCUMENT_DATE <= :date " +
+            "   AND FD.DOCUMENT_DATE >=" +
+            "       (SELECT MIN(FP.START_DATE) AS FINANCIALPERIODSTARTDATE" +
+            "          FROM FNPR.FINANCIAL_PERIOD FP" +
+            "         INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT" +
+            "            ON FP.FINAN_PERIOD_TYPE_ASSIGN_ID = FPT.ID" +
+            "           AND FPT.ORGANIZATION_ID = FD.ORGANIZATION_ID" +
+            "           AND FPT.ACTIVE_FLAG = 1" +
+            "         INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY" +
+            "            ON FPT.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID" +
+            "         WHERE FP.FINANCIAL_PERIOD_STATUS_ID = 1)" +
+            " GROUP BY ACN.ID "
+            , nativeQuery = true)
+    List<Object[]> findByMoneyTypeAndFinancialAccountId(Long financialAccountId, Long financialLedgerTypeId, Long financialDepartmentId, Long organizationId, Date date);
 }
