@@ -52,8 +52,8 @@ public class DefaultFinancialConfig implements FinancialConfigService {
     public Boolean saveOrUpdateFinancialConfig(FinancialConfigRequest financialConfigRequest) {
         FinancialConfig financialConfig = financialConfigRepository.findById(financialConfigRequest.getId() == null ? 0 : financialConfigRequest.getId()).orElse(new FinancialConfig());
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        FinancialConfig financialConfigUpdate = financialConfigRepository.findById(financialConfigRequest.getId()).orElseThrow(() -> new RuleException("fin.ruleException.notFoundId"));
-        if (financialConfigUpdate.getId() != null) {
+//        FinancialConfig financialConfigUpdate = financialConfigRepository.findById(financialConfigRequest.getId()).orElseThrow(() -> new RuleException("fin.ruleException.notFoundId"));
+        if (financialConfig.getId() != null) {
 //            financialConfig.setDeletedDate(LocalDateTime.now());
             financialConfigRepository.deleteById(financialConfigRequest.getId());
         }
