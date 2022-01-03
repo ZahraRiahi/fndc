@@ -81,7 +81,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocumentNumberDto.setNumberingType(1L);
         documentNumber = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
 
-
         financialDocument.setDocumentNumber(documentNumber);
         financialDocumentRepository.save(financialDocument);
         responseDocumentSaveDto = convertDocumentToDto(financialDocument);

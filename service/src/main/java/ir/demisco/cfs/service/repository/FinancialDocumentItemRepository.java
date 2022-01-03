@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.repository;
 
+import ir.demisco.cfs.model.entity.CentricPersonRole;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -347,11 +348,11 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       FNDI.CREDIT_AMOUNT," +
             "       FNDI.DESCRIPTION," +
             "       NVL(CNAC1.CODE, '') || NVL(CNAC1.NAME, '') ||" +
-            "       NVL('-' || CNAC2.CODE, '') || NVL(CNAC2.NAME, '') ||" +
-            "       NVL('-' || CNAC3.CODE, '') || NVL(CNAC3.NAME, '') ||" +
-            "       NVL('-' || CNAC4.CODE, '') || NVL(CNAC4.NAME, '') ||" +
-            "       NVL('-' || CNAC5.CODE, '') || NVL(CNAC5.NAME, '') ||" +
-            "       NVL('-' || CNAC6.CODE, '') || NVL(CNAC6.NAME, '') AS CENTRICACCOUNTDESCRIPTION," +
+            "       NVL2(CNAC2.CODE, '-' || CNAC2.CODE, '') || NVL(CNAC2.NAME, '') ||" +
+            "       NVL2(CNAC3.CODE, '-' || CNAC3.CODE, '') || NVL(CNAC3.NAME, '')  ||" +
+            "       NVL2(CNAC4.CODE, '-' || CNAC4.CODE, '') || NVL(CNAC4.NAME, '')  ||" +
+            "       NVL2(CNAC5.CODE, '-' || CNAC5.CODE, '') || NVL(CNAC5.NAME, '')  ||" +
+            "       NVL2(CNAC6.CODE, '-' || CNAC6.CODE, '') || NVL(CNAC6.NAME, '')  AS CENTRICACCOUNTDESCRIPTION," +
             "       FNC.ACCOUNT_RELATION_TYPE_ID," +
             "       FNDI.CENTRIC_ACCOUNT_ID_1," +
             "       CNAC1.NAME as CENTRIC_ACCOUNT_DESCRIPTION_1," +
@@ -487,4 +488,9 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " GROUP BY ACN.ID "
             , nativeQuery = true)
     List<Object[]> findByMoneyTypeAndFinancialAccountId(Long financialAccountId, Long financialLedgerTypeId, Long financialDepartmentId, Long organizationId, Date date);
+
+
+    @Query("select fdi from  FinancialDocumentItem fdi where fdi.financialDocument.id=:financialDocumentId ")
+    List<FinancialDocumentItem> findByFinancialDocumentId(Long financialDocumentId);
+
 }
