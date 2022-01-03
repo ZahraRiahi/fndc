@@ -22,7 +22,7 @@ public class FinancialNumberingFormatController {
     @PostMapping("/list")
     public ResponseEntity<DataSourceResult> responseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
 
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();;
         return ResponseEntity.ok(financialNumberingFormatService.getNumberingFormatByOrganizationId(organizationId, dataSourceRequest));
 
     }
