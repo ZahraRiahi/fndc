@@ -372,15 +372,15 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC1" +
             "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_1" +
             "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC2" +
-            "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_2" +
+            "    ON CNAC2.ID = FNDI.CENTRIC_ACCOUNT_ID_2" +
             "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC3" +
-            "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_3" +
+            "    ON CNAC3.ID = FNDI.CENTRIC_ACCOUNT_ID_3" +
             "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC4" +
-            "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_4" +
+            "    ON CNAC4.ID = FNDI.CENTRIC_ACCOUNT_ID_4" +
             "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC5" +
-            "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_5" +
+            "    ON CNAC5.ID = FNDI.CENTRIC_ACCOUNT_ID_5" +
             "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
-            "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_6" +
+            "    ON CNAC6.ID = FNDI.CENTRIC_ACCOUNT_ID_6" +
             " WHERE FNDI.FINANCIAL_DOCUMENT_ID = :financialDocumentId " +
             " and  ( :financialDocumentItem is null or FNDI.ID = :financialDocumentItemId)",
             nativeQuery = true)
