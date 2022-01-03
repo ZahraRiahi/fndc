@@ -326,14 +326,14 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
     @Query(value = "select count(fdi.id) as RECORDS_COUNT," +
             " sum(fdi.debitAmount) as SUM_DEBIT_AMOUNT," +
             " sum (fdi.creditAmount) as SUM_CREDIT_AMOUNT," +
-            " coalesce(sum (fdi.debitAmount),0) - coalesce(sum(fdi.creditAmount) , 0) as REMAIN_AMOUNT" +
+            " coalesce(sum (fdi.creditAmount),0) - coalesce(sum(fdi.debitAmount) , 0) as REMAIN_AMOUNT" +
             " from FinancialDocumentItem fdi where fdi.financialDocument.id =:financialDocumentId and fdi.deletedDate is null ")
     List<Object[]> findFinancialDocumentItemByFinancialDocumentId(Long financialDocumentId);
 
     @Query(value = "select count(fdi.id) as SELECTED_RECORDS_COUNT," +
             " sum(fdi.debitAmount) as SELECTED_SUM_DEBIT_AMOUNT," +
             " sum (fdi.creditAmount) as SELECTED_SUM_CREDIT_AMOUNT," +
-            " coalesce(sum (fdi.debitAmount),0) - coalesce(sum(fdi.creditAmount) , 0) as SELECTED_REMAIN_AMOUNT" +
+            " coalesce(sum (fdi.creditAmount),0) - coalesce(sum(fdi.debitAmount) , 0) as SELECTED_REMAIN_AMOUNT" +
             " from FinancialDocumentItem fdi where fdi.financialDocument.id =:financialDocumentId and fdi.id in (:financialDocumentItemIdList) " +
             " and fdi.deletedDate is null ")
     List<Object[]> findFinancialDocumentItemByFinancialDocumentIdList(Long financialDocumentId, List financialDocumentItemIdList);
