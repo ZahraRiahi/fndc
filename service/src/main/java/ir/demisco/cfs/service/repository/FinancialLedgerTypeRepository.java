@@ -47,7 +47,7 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
     @Query(value = " SELECT to_char(nvl(max(t.code), 10) + 1) from" +
             " fndc.financial_ledger_type t where t.organization_id =:organizationId" +
             " and t.deleted_date is null", nativeQuery = true)
-   String   findFinancialLedgerTypeCodeByOrganizationId(Long organizationId) ;
+    String findFinancialLedgerTypeCodeByOrganizationId(Long organizationId);
 
 
 }

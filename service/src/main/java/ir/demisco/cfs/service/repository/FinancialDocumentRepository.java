@@ -343,4 +343,35 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " and fdl.financialDepartment.id=fd.financialDepartment.id and fdl.deletedDate is null " +
             " where fdl.id=:financialDepartmentLedgerId and fd.deletedDate is null")
     List<Long> usedInFinancialDocument(Long financialDepartmentLedgerId);
+
+    @Query("select fd.financialPeriod,fd.documentDate from FinancialDocument  fd " +
+            " where fd.id=:financialDocumentId and fd.deletedDate is null")
+    List<Object[]> financialDocumentById(Long financialDocumentId);
+
+    @Query(value = " SELECT FD.ID, FS.CODE " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FS " +
+            "    ON FS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
+            "  WHERE FD.DOCUMENT_NUMBER = :targetDocumentNumber "
+            , nativeQuery = true)
+    List<Object[]> findDocumentByDocumentNumberAndCode(String targetDocumentNumber);
+
+    @Query(value = " SELECT FS.CODE " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT FD " +
+            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FS " +
+            "    ON FS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
+            " WHERE FD.ID = :documentId "
+            , nativeQuery = true)
+    String findByFinancialDocumentByDocumentId(Long documentId);
+
+
+    @Query(value = " SELECT FNDC.Document_Date, " +
+            "       FNDC.DOCUMENT_NUMBER, " +
+            "       FNDC.FINANCIAL_PERIOD_ID, " +
+            "       FNDC.DESCRIPTION, " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT FNDC " +
+            " WHERE fndc.id = :documentId  "
+            , nativeQuery = true)
+    List<Object[]> findFinancialDocumentById(Long documentId);
+
 }

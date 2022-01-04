@@ -14,7 +14,7 @@ public class FinancialNatureControlController {
     }
 
 //    @PostMapping("/Get")
-//    public ResponseEntity<List<ControlFinancialAccountNatureTypeOutputResponse>> responseEntity(@RequestBody ControlFinancialAccountNatureTypeRequest controlFinancialAccountNatureTypeRequest) {
-//        return ResponseEntity.ok(controlFinancialAccountNatureTypeService.getControlFinancialAccountNatureType(controlFinancialAccountNatureTypeRequest));
+//    public ResponseEntity<List<ControlFinancialAccountNatureTypeOutputResponse>> responseEntity(@RequestBody ControlFinancialAccountNatureTypeInputRequest controlFinancialAccountNatureTypeInputRequest) {
+//        return ResponseEntity.ok(controlFinancialAccountNatureTypeService.getControlFinancialAccountNatureType(controlFinancialAccountNatureTypeInputRequest));
 //    }
 }

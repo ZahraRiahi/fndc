@@ -6,6 +6,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
+import java.util.Optional;
 
 public interface FinancialDocumentItemCurrencyRepository extends JpaRepository<FinancialDocumentItemCurrency, Long> {
 
@@ -33,4 +34,8 @@ public interface FinancialDocumentItemCurrencyRepository extends JpaRepository<F
             "    ON P.ID = T.MONEY_PRICING_REFRENCE_ID " +
             " where T.FINANCIAL_DOCUMENT_ITEM_ID =:documentItemId ", nativeQuery = true)
     List<Object[]> findByFinancialDocumentItemCurrency(Long documentItemId);
+
+    Optional<FinancialDocumentItemCurrency> findByFinancialDocumentItemId(Long financialDocumentItemId);
+
+
 }
