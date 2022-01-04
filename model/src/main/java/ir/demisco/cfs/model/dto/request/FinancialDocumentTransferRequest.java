@@ -1,15 +1,14 @@
-package ir.demisco.cfs.model.dto.response;
+package ir.demisco.cfs.model.dto.request;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
-public class FinancialDocumentTransferDto {
-
+public class FinancialDocumentTransferRequest {
     private Long id;
     private List<Long> financialDocumentItemIdList;
     private int transferType;
-    private Date date;
+    private LocalDateTime date;
     private String targetDocumentNumber;
     private Boolean allItemFlag;
     private Long organizationId;
@@ -38,11 +37,11 @@ public class FinancialDocumentTransferDto {
         this.transferType = transferType;
     }
 
-    public Date getDate() {
+    public LocalDateTime getDate() {
         return date;
     }
 
-    public void setDate(Date date) {
+    public void setDate(LocalDateTime date) {
         this.date = date;
     }
 
@@ -69,4 +68,5 @@ public class FinancialDocumentTransferDto {
     public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
     }
+
 }

@@ -22,6 +22,6 @@ public class FinancialNatureControlByAccountController {
 
     @PostMapping("/Get")
     public ResponseEntity<List<ControlFinancialAccountNatureTypeByAccountResponse>> responseEntity(@RequestBody ControlFinancialAccountNatureTypeByAccountRequest controlFinancialAccountNatureTypeByAccountRequest) {
-        return ResponseEntity.ok(controlFinancialAccountNatureTypeService.getControlFinancialAccountNatureType(controlFinancialAccountNatureTypeByAccountRequest));
+        return ResponseEntity.ok(controlFinancialAccountNatureTypeService.getFinancialNatureControlByAccount(controlFinancialAccountNatureTypeByAccountRequest));
     }
 }
