@@ -1,12 +1,14 @@
 package ir.demisco.cfs.app.web.controller;
 
 
+import ir.demisco.cfs.model.dto.request.FinancialDocumentTransferRequest;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.SaveFinancialDocumentService;
 import ir.demisco.cfs.service.api.TransferFinancialDocumentService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -107,13 +109,19 @@ public class FinancialDocumentController {
         return ResponseEntity.ok(result);
 
     }
+//    @PostMapping("/TransferDocument")
+//    public ResponseEntity<Boolean> transferDocument(@RequestBody FinancialDocumentTransferDto financialDocumentTransferDto) {
+//        boolean result;
+//        result = transferFinancialDocumentService.transferDocument(financialDocumentTransferDto);
+//        return ResponseEntity.ok(result);
+//
+//    }
 
     @PostMapping("/TransferDocument")
-    public ResponseEntity<Boolean> transferDocument(@RequestBody FinancialDocumentTransferDto financialDocumentTransferDto) {
-        boolean result;
-        result = transferFinancialDocumentService.transferDocument(financialDocumentTransferDto);
-        return ResponseEntity.ok(result);
-
+    public ResponseEntity<FinancialDocumentTransferOutputResponse> transferDocument(@RequestBody FinancialDocumentTransferRequest financialDocumentTransferRequest) {
+        Long organizationId = 100L;
+        financialDocumentTransferRequest.setOrganizationId(organizationId);
+        return ResponseEntity.ok(transferFinancialDocumentService.transferDocument(financialDocumentTransferRequest));
     }
 
     @PostMapping("/Get")
