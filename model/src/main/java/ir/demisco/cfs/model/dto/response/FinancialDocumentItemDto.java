@@ -8,16 +8,14 @@ public class FinancialDocumentItemDto {
     private Long financialDocumentId;
     private Date date;
     private Long documentNumber;
-    private Long  sequenceNumber;
+    private Long sequenceNumber;
     private Long financialAccountId;
-    private String  financialAccountDescription;
-    private String    description;
-    private Long  debitAmount;
-    private Long  creditAmount;
+    private String financialAccountDescription;
+    private String description;
+    private Long debitAmount;
+    private Long creditAmount;
     private String fullDescription;
     private String centricAccountDescription;
-
-
 
     public Long getId() {
         return id;
@@ -115,7 +113,7 @@ public class FinancialDocumentItemDto {
         this.financialDocumentId = financialDocumentId;
     }
 
-    public  static Builder builder(){
+    public static Builder builder() {
         return new Builder();
     }
 
