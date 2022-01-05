@@ -344,7 +344,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " where fdl.id=:financialDepartmentLedgerId and fd.deletedDate is null")
     List<Long> usedInFinancialDocument(Long financialDepartmentLedgerId);
 
-    @Query("select fd.financialPeriod,fd.documentDate from FinancialDocument  fd " +
+    @Query("select fd.financialPeriod.id,fd.documentDate from FinancialDocument  fd " +
             " where fd.id=:financialDocumentId and fd.deletedDate is null")
     List<Object[]> financialDocumentById(Long financialDocumentId);
 
@@ -368,7 +368,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
     @Query(value = " SELECT FNDC.Document_Date, " +
             "       FNDC.DOCUMENT_NUMBER, " +
             "       FNDC.FINANCIAL_PERIOD_ID, " +
-            "       FNDC.DESCRIPTION, " +
+            "       FNDC.DESCRIPTION " +
             "  FROM FNDC.FINANCIAL_DOCUMENT FNDC " +
             " WHERE fndc.id = :documentId  "
             , nativeQuery = true)
