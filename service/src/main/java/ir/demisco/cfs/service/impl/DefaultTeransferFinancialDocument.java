@@ -361,12 +361,12 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
                 throw new RuleException("اشکال در بدست آوردن اطلاعات سند مقصد");
             }
             targetDocumentId = Long.parseLong(financialDocument.get(0)[0].toString());
-            Long targetDocumentStatus = Long.parseLong(financialDocument.get(0)[1].toString());
-            if (targetDocumentStatus != 10 || targetDocumentStatus != 20) {
+            String targetDocumentStatus = financialDocument.get(0)[1].toString();
+            if (!targetDocumentStatus.equals("10") && !targetDocumentStatus.equals("20")) {
                 throw new RuleException("سند مقصد میبایست در وضعیت ایجاد یا تائید کاربر باشد");
             }
 
-            financialPeriodStatusRequest.setFinancialDocumentId((Long) financialDocument.get(0)[0]);
+            financialPeriodStatusRequest.setFinancialDocumentId(Long.parseLong(financialDocument.get(0)[0].toString()));
             FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
             if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
                 throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
@@ -377,8 +377,8 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         }
         if (financialDocumentTransferRequest.getTransferType() == 2 || financialDocumentTransferRequest.getTransferType() == 4 || financialDocumentTransferRequest.getTransferType() == 5 || financialDocumentTransferRequest.getTransferType() == 6) {
             String sourceDocumentStatus = financialDocumentRepository.findByFinancialDocumentByDocumentId(financialDocumentTransferRequest.getId());
-            Long sourceDocumentCode = Long.parseLong(sourceDocumentStatus);
-            if (sourceDocumentCode != 10 || sourceDocumentCode != 20) {
+            String sourceDocumentCode = sourceDocumentStatus.toString();
+            if (!sourceDocumentCode.equals("10") && !sourceDocumentCode.equals("20")) {
                 throw new RuleException("سند مبداء میبایست در وضعیت ایجاد یا تائید کاربر باشد");
             }
             FinancialDocument financialDocumentUpdate = financialDocumentRepository.findById(financialDocumentTransferRequest.getId())
@@ -445,6 +445,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         }
         if (financialDocumentTransferRequest.getTransferType() != 5 || financialDocumentTransferRequest.getTransferType() != 6) {
 
+            Long finalTargetDocumentId1 = targetDocumentId;
             FinancialDocumentTransferOutputResponse finalFinancialDocumentTransferOutputResponse = financialDocumentTransferOutputResponse;
             financialDocumentTransferRequest.getFinancialDocumentItemIdList().forEach(aLong -> {
                 AtomicReference<FinancialDocumentItem> documentItem = new AtomicReference<>();
@@ -453,7 +454,11 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
                             FinancialDocumentItem financialDocumentItemSave;
                             financialDocumentItemSave = (FinancialDocumentItem) SerializationHelper.clone(financialDocumentItem1);
                             financialDocumentItemSave.setId(null);
-                            financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(finalFinancialDocumentTransferOutputResponse.getDocumentId()));// todo find DocumentId ?
+                            if (financialDocumentTransferRequest.getTransferType() == 3 || financialDocumentTransferRequest.getTransferType() == 4 || financialDocumentTransferRequest.getTransferType() == 7) {
+                                financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(finalFinancialDocumentTransferOutputResponse.getDocumentId()));
+                            } else {
+                                financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(finalTargetDocumentId1));
+                            }
                             documentItem.set(financialDocumentItemRepository.save(financialDocumentItemSave));
                         });
                 documentItemCurrencyRepository.findByFinancialDocumentItemId(aLong)
@@ -519,14 +524,14 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
             List<Object[]> financialDocumentTarget = financialDocumentRepository.findFinancialDocumentById(targetDocumentId);
 
             FinancialDocument financialDocument = financialDocumentRepository.findById(targetDocumentId).orElse(new FinancialDocument());
-            financialDocument.setDocumentDate(financialDocumentSource.get(0)[0] == null ? null : DateUtil.convertStringToDate(financialDocumentSource.get(0)[0].toString()));
+            financialDocument.setDocumentDate(financialDocumentSource.get(0)[0] == null ? null : DateUtil.convertStringToDate(financialDocumentSource.get(0)[0].toString().replace('-','/')));
             financialDocument.setDocumentNumber(financialDocumentSource.get(0)[1] == null ? null : financialDocumentSource.get(0)[1].toString());
             financialDocument.setFinancialPeriod(financialPeriodRepository.getOne(Long.parseLong(financialDocumentSource.get(0)[2].toString())));
             financialDocument.setDescription(financialDocumentSource.get(0)[3] == null ? null : financialDocumentSource.get(0)[3].toString());
             financialDocumentRepository.save(financialDocument);
 
             FinancialDocument financialDocumentUpdateTarget = financialDocumentRepository.findById(financialDocumentTransferRequest.getId()).orElse(new FinancialDocument());
-            financialDocumentUpdateTarget.setDocumentDate(financialDocumentTarget.get(0)[0] == null ? null : DateUtil.convertStringToDate(financialDocumentTarget.get(0)[0].toString()));
+            financialDocumentUpdateTarget.setDocumentDate(financialDocumentTarget.get(0)[0] == null ? null : DateUtil.convertStringToDate(financialDocumentTarget.get(0)[0].toString().replace('-','/')));
             financialDocumentUpdateTarget.setDocumentNumber(financialDocumentTarget.get(0)[1] == null ? null : financialDocumentTarget.get(0)[1].toString());
             financialDocumentUpdateTarget.setFinancialPeriod(financialPeriodRepository.getOne(Long.parseLong(financialDocumentTarget.get(0)[2].toString())));
             financialDocumentUpdateTarget.setDescription(financialDocumentTarget.get(0)[3] == null ? null : financialDocumentTarget.get(0)[3].toString());

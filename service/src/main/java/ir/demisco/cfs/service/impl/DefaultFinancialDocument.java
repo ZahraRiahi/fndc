@@ -508,7 +508,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto) {
-
         List<FinancialNumberingRecordDto> financialNumberingRecordDtoList = new ArrayList<>();
         AtomicReference<String> documentNumber = new AtomicReference<>("");
 
