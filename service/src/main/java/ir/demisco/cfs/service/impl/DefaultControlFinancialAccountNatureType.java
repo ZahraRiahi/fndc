@@ -3,6 +3,7 @@ package ir.demisco.cfs.service.impl;
 import ir.demisco.cfs.model.dto.request.ControlFinancialAccountNatureTypeByAccountRequest;
 import ir.demisco.cfs.model.dto.request.ControlFinancialAccountNatureTypeInputRequest;
 import ir.demisco.cfs.model.dto.response.ControlFinancialAccountNatureTypeByAccountResponse;
+import ir.demisco.cfs.model.dto.response.ControlFinancialAccountNatureTypeOutputResponse;
 import ir.demisco.cfs.service.api.ControlFinancialAccountNatureTypeService;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
@@ -37,12 +38,30 @@ public class DefaultControlFinancialAccountNatureType implements ControlFinancia
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
-    public List<ControlFinancialAccountNatureTypeByAccountResponse> getControlFinancialAccountNatureType(ControlFinancialAccountNatureTypeInputRequest controlFinancialAccountNatureTypeInputRequest) {
-        if(controlFinancialAccountNatureTypeInputRequest.getFinancialDocumentId()==null && controlFinancialAccountNatureTypeInputRequest.getFinancialDocumentItemId()==null){
-            throw new RuleException("برای کنترل ماهیت میبایست شناسه سند یا ردیف پر شده باشد");
+    public List<ControlFinancialAccountNatureTypeOutputResponse> getControlFinancialAccountNatureType(ControlFinancialAccountNatureTypeInputRequest controlFinancialAccountNatureTypeInputRequest) {
+        if (controlFinancialAccountNatureTypeInputRequest.getFinancialDocumentId() == null && controlFinancialAccountNatureTypeInputRequest.getFinancialDocumentItemId() == null) {
+            throw new RuleException("fin.financialNatureControl.getControl");
+        }
+        Object financialDocumentItem = null;
+        if (controlFinancialAccountNatureTypeInputRequest.getFinancialDocumentItemId() != null) {
+            financialDocumentItem = "financialDocumentItem";
+        } else {
+            controlFinancialAccountNatureTypeInputRequest.setFinancialDocumentItemId(0L);
         }
 
-        return null;
+        Object financialDocument = null;
+        if (controlFinancialAccountNatureTypeInputRequest.getFinancialDocumentId() != null) {
+            financialDocument = "financialDocument";
+        } else {
+            controlFinancialAccountNatureTypeInputRequest.setFinancialDocumentId(0L);
+        }
+        List<Object[]> controlFinancialAccountObject = financialDocumentItemRepository.findByFinancialDocumentItemByIdAndFinancialDocumentId(controlFinancialAccountNatureTypeInputRequest.getFinancialDocumentId(), controlFinancialAccountNatureTypeInputRequest.getFinancialDocumentItemId(), financialDocumentItem, financialDocument);
+        return controlFinancialAccountObject.stream().map(objects -> ControlFinancialAccountNatureTypeOutputResponse.builder().sumDebit(objects[0] == null ? null : ((BigDecimal) objects[0]).doubleValue())
+                .sumCredit(objects[1] == null ? null : ((BigDecimal) objects[1]).doubleValue())
+                .accountNatureTypeId(objects[2] == null ? 0 : Long.parseLong(objects[2].toString()))
+                .financialAccountDescription(objects[3] == null ? null : objects[3].toString())
+                .resultMessage(objects[4] == null ? null : objects[4].toString())
+                .build()).collect(Collectors.toList());
     }
 
 }
