@@ -454,9 +454,9 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "                        FROM fndc.FINANCIAL_DOCUMENT_ITEM FDI_INER" +
             "               INNER JOIN fndc.FINANCIAL_DOCUMENT FD_INER" +
             "                  ON FD_INER.ID = FDI_INER.FINANCIAL_DOCUMENT_ID" +
-            "               WHERE FD_INER.ID = NVL(:financialDocumentId, FD_INER.ID)" +
-            "                 AND FDI_INER.ID =" +
-            "                     NVL(:financialDocumentItemId , FDI_INER.ID)) INER_DOCUMENT" +
+            "               WHERE (:financialDocument is null or FD_INER.ID =:financialDocumentId ) " +
+            "                 AND (:financialDocumentItem is null or FDI_INER.ID =:financialDocumentItemId )" +
+            "       ) INER_DOCUMENT" +
             "      ON INER_DOCUMENT.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID" +
             "       AND FD.FINANCIAL_LEDGER_TYPE_ID =" +
             "         INER_DOCUMENT.FINANCIAL_LEDGER_TYPE_ID" +
@@ -481,7 +481,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "            ACN.DESCRIPTION," +
             "            FA.ID," +
             "            FA.DESCRIPTION)" +
-            "SELECT SUM_DEBIT," +
+            " SELECT SUM_DEBIT," +
             "       SUM_CREDIT," +
             "       ACCOUNT_NATURE_TYPE_ID," +
             "       FINANCIAL_ACCOUNT_DESCRIPTION," +
@@ -491,5 +491,5 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " WHERE (QRY.ACCOUNT_NATURE_TYPE_ID = 3 AND SUM_DEBIT > SUM_CREDIT)" +
             "    OR (QRY.ACCOUNT_NATURE_TYPE_ID = 2 AND SUM_DEBIT < SUM_CREDIT) "
             , nativeQuery = true)
-    List<Object[]> findByFinancialDocumentItemByFinancialDocumentIdAndId(Long financialDocumentId, Long financialDocumentItemId);
+    List<Object[]> findByFinancialDocumentItemByIdAndFinancialDocumentId(Long financialDocumentId, Long financialDocumentItemId, Object financialDocumentItem,Object financialDocument);
 }
