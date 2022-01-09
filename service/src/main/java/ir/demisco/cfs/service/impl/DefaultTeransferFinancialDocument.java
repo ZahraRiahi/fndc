@@ -368,7 +368,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
 
             financialPeriodStatusRequest.setFinancialDocumentId(Long.parseLong(financialDocument.get(0)[0].toString()));
             FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
-            if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
+            if (financialPeriodStatus.getPeriodStatus() == null || financialPeriodStatus.getMonthStatus() == null) {
                 throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
             }
             FinancialDocument financialDocumentUpdate = financialDocumentRepository.findById(targetDocumentId)
