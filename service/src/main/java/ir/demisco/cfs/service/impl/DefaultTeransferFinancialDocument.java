@@ -443,7 +443,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
                     .documentNumber(newNumber)
                     .build();
         }
-        if (financialDocumentTransferRequest.getTransferType() != 5 || financialDocumentTransferRequest.getTransferType() != 6) {
+        if (financialDocumentTransferRequest.getTransferType() != 5 && financialDocumentTransferRequest.getTransferType() != 6) {
 
             Long finalTargetDocumentId1 = targetDocumentId;
             FinancialDocumentTransferOutputResponse finalFinancialDocumentTransferOutputResponse = financialDocumentTransferOutputResponse;
