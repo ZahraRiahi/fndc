@@ -286,6 +286,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       FNDI.SEQUENCE_NUMBER," +
             "       FNDI.FINANCIAL_ACCOUNT_ID," +
             "       FNC.DESCRIPTION as FINANCIAL_ACCOUNT_DESCRIPTION," +
+            " FNC.CODE AS FINANCIAL_ACCOUNT_CODE, " +
             "       FNDI.DEBIT_AMOUNT," +
             "       FNDI.CREDIT_AMOUNT," +
             "       FNDI.DESCRIPTION," +
