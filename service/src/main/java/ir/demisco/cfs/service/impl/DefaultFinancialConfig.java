@@ -57,7 +57,7 @@ public class DefaultFinancialConfig implements FinancialConfigService {
 //            financialConfig.setDeletedDate(LocalDateTime.now());
             financialConfigRepository.deleteById(financialConfigRequest.getId());
         }
-        Long financialAccountStructureCount = financialConfigRepository.getCountByFinancialConfigAndOrganizationAndUser(financialConfigRequest.getOrganizationId(), financialConfigRequest.getUserId());
+        Long financialAccountStructureCount = financialConfigRepository.getCountByFinancialConfigAndOrganizationAndUser(organizationId, financialConfigRequest.getUserId());
         if (financialAccountStructureCount > 0) {
             throw new RuleException("fin.financialConfig.existAccountStructure");
         }
