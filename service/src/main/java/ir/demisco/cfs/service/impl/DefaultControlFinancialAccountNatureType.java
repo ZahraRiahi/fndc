@@ -27,9 +27,9 @@ public class DefaultControlFinancialAccountNatureType implements ControlFinancia
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public List<ControlFinancialAccountNatureTypeByAccountResponse> getFinancialNatureControlByAccount(ControlFinancialAccountNatureTypeByAccountRequest controlFinancialAccountNatureTypeByAccountRequest) {
-        List<Object[]> controlFinancialAccountNatureTypeObject = financialDocumentItemRepository.findByMoneyTypeAndFinancialAccountId(controlFinancialAccountNatureTypeByAccountRequest.getFinancialAccountId(),
-                controlFinancialAccountNatureTypeByAccountRequest.getFinancialLedgerTypeId(), controlFinancialAccountNatureTypeByAccountRequest.getFinancialDepartmentId(), controlFinancialAccountNatureTypeByAccountRequest.getOrganizationId()
-                , DateUtil.convertStringToDate(controlFinancialAccountNatureTypeByAccountRequest.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))));
+        List<Object[]> controlFinancialAccountNatureTypeObject = financialDocumentItemRepository.findByMoneyTypeAndFinancialAccountId(controlFinancialAccountNatureTypeByAccountRequest.getOrganizationId(), controlFinancialAccountNatureTypeByAccountRequest.getFinancialLedgerTypeId(),
+                controlFinancialAccountNatureTypeByAccountRequest.getFinancialDepartmentId(), DateUtil.convertStringToDate(controlFinancialAccountNatureTypeByAccountRequest.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))), controlFinancialAccountNatureTypeByAccountRequest.getFinancialAccountId()
+        );
         return controlFinancialAccountNatureTypeObject.stream().map(objects -> ControlFinancialAccountNatureTypeByAccountResponse.builder().sumDebit(objects[0] == null ? null : ((BigDecimal) objects[0]).doubleValue())
                 .sumCredit(objects[1] == null ? null : ((BigDecimal) objects[1]).doubleValue())
                 .accountNatureTypeId(objects[2] == null ? 0 : Long.parseLong(objects[2].toString()))
