@@ -62,7 +62,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "   AND FIDC.DOCUMENT_DATE <= :endDate" +
             " AND FNDI.CREDIT_AMOUNT = CASE " +
             "         WHEN :priceTypeId = 1 THEN " +
-            "          1 " +
+            "          0 " +
             "         ELSE " +
             "          FNDI.CREDIT_AMOUNT " +
             "       END " +
