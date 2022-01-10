@@ -28,6 +28,7 @@ public class FinancialDocumentItemResponse {
     private List<FinancialDocumentReferenceOutPutModel> documentReferenceList;
     private List<FinancialDocumentItemCurrencyOutPutModel> documentItemCurrencyList;
     private Long accountRelationTypeId;
+    private String financialAccountCode;
 
     public Long getId() {
         return id;
@@ -229,6 +230,14 @@ public class FinancialDocumentItemResponse {
         this.accountRelationTypeId = accountRelationTypeId;
     }
 
+    public String getFinancialAccountCode() {
+        return financialAccountCode;
+    }
+
+    public void setFinancialAccountCode(String financialAccountCode) {
+        this.financialAccountCode = financialAccountCode;
+    }
+
     public static FinancialDocumentItemResponse.Builder builder() {
         return new FinancialDocumentItemResponse.Builder();
     }
@@ -368,7 +377,10 @@ public class FinancialDocumentItemResponse {
             financialDocumentItemResponse.setAccountRelationTypeId(accountRelationTypeId);
             return this;
         }
-
+        public Builder financialAccountCode(String financialAccountCode) {
+            financialDocumentItemResponse.setFinancialAccountCode(financialAccountCode);
+            return this;
+        }
         public FinancialDocumentItemResponse build() {
             return financialDocumentItemResponse;
         }
