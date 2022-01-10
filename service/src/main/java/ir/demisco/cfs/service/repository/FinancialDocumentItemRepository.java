@@ -114,7 +114,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       (:toPrice IS NULL OR " +
             "       (FNDI.CREDIT_AMOUNT <= " +
             "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0)))))  "
-            , countQuery =  " select count(FIDC.id)   " +
+            , countQuery = " select count(FIDC.id)   " +
             "  FROM fndc.FINANCIAL_DOCUMENT FIDC " +
             " INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FNDI " +
             "    ON FIDC.ID = FNDI.FINANCIAL_DOCUMENT_ID " +
@@ -414,46 +414,50 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             nativeQuery = true)
     Page<Object[]> findByFinancialDocumentItemId(Long financialDocumentId, Object financialDocumentItem, Long financialDocumentItemId, Pageable pageable);
 
-    @Query(value = "SELECT SUM(FDI.DEBIT_AMOUNT) SUM_DEBIT," +
-            "       SUM(FDI.CREDIT_AMOUNT) SUM_CREDIT," +
-            "       ACN.ID ACCOUNT_NATURE_TYPE_ID" +
-            "  FROM fndc.FINANCIAL_DOCUMENT_ITEM FDI" +
-            " INNER JOIN fndc.FINANCIAL_DOCUMENT FD" +
-            "    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID" +
-            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FS" +
-            "    ON FS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID" +
-            " INNER JOIN FNAC.FINANCIAL_ACCOUNT FA" +
-            "    ON FA.ID = FDI.FINANCIAL_ACCOUNT_ID" +
-            " INNER JOIN FNAC.ACCOUNT_NATURE_TYPE ACN" +
-            "    ON ACN.ID = FA.ACCOUNT_NATURE_TYPE_ID" +
-            " WHERE FS.CODE > 10 " +
-            "   AND FDI.FINANCIAL_ACCOUNT_ID = :financialAccountId " +
-            "   AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId  " +
-            "   AND FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId " +
-            "   AND FD.ORGANIZATION_ID = :organizationId " +
-            "   AND FD.DOCUMENT_NUMBER <=" +
-            "       (SELECT MAX(FD_INER.DOCUMENT_NUMBER)" +
-            "          FROM fndc.FINANCIAL_DOCUMENT_ITEM FDI_INER" +
-            "         INNER JOIN fndc.FINANCIAL_DOCUMENT FD_INER" +
-            "            ON FD_INER.ID = FDI_INER.FINANCIAL_DOCUMENT_ID" +
-            "         WHERE FD_INER.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId" +
-            "           AND FD_INER.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId " +
-            "           AND FD_INER.ORGANIZATION_ID = :organizationId" +
-            "           AND FD_INER.DOCUMENT_DATE = :date)" +
-            "   AND FD.DOCUMENT_DATE <= :date " +
-            "   AND FD.DOCUMENT_DATE >=" +
-            "       (SELECT MIN(FP.START_DATE) AS FINANCIALPERIODSTARTDATE " +
-            "          FROM FNPR.FINANCIAL_PERIOD FP" +
-            "         INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT" +
-            "            ON FP.FINAN_PERIOD_TYPE_ASSIGN_ID = FPT.ID" +
-            "           AND FPT.ORGANIZATION_ID = FD.ORGANIZATION_ID" +
-            "           AND FPT.ACTIVE_FLAG = 1 " +
-            "         INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY" +
-            "            ON FPT.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID" +
-            "         WHERE FP.FINANCIAL_PERIOD_STATUS_ID = 1)" +
-            " GROUP BY ACN.ID "
+    @Query(value = "WITH QRY AS " +
+            " (SELECT SUM(NVL(FDI.DEBIT_AMOUNT, 0)) SUM_DEBIT, " +
+            "         SUM(NVL(FDI.CREDIT_AMOUNT, 0)) SUM_CREDIT   " +
+            "    FROM fndc.FINANCIAL_DOCUMENT_ITEM FDI  " +
+            "   INNER JOIN fndc.FINANCIAL_DOCUMENT FD " +
+            "      ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID " +
+            "     AND FD.ORGANIZATION_ID = :organizationId " +
+            "     AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
+            "     AND FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId " +
+            "     AND FD.DOCUMENT_DATE <= :date " +
+            "     AND FD.DOCUMENT_DATE >= " +
+            "         (SELECT MIN(FP.START_DATE) AS FINANCIALPERIODSTARTDATE " +
+            "            FROM FNPR.FINANCIAL_PERIOD FP " +
+            "           INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT " +
+            "              ON FP.FINAN_PERIOD_TYPE_ASSIGN_ID = FPT.ID " +
+            "             AND FPT.ORGANIZATION_ID = FD.ORGANIZATION_ID " +
+            "             AND FPT.ACTIVE_FLAG = 1 " +
+            "           INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY " +
+            "              ON FPT.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID " +
+            "           WHERE FP.FINANCIAL_PERIOD_STATUS_ID = 1) " +
+            "     AND (FD.DOCUMENT_NUMBER <= " +
+            "         (SELECT MAX(FD_INER.DOCUMENT_NUMBER) " +
+            "             FROM fndc.FINANCIAL_DOCUMENT_ITEM FDI_INER " +
+            "            INNER JOIN fndc.FINANCIAL_DOCUMENT FD_INER " +
+            "               ON FD_INER.ID = FDI_INER.FINANCIAL_DOCUMENT_ID " +
+            "            WHERE FD_INER.FINANCIAL_LEDGER_TYPE_ID = " +
+            "                  :financialLedgerTypeId " +
+            "              AND FD_INER.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId " +
+            "              AND FD_INER.ORGANIZATION_ID = :organizationId " +
+            "              AND FD_INER.DOCUMENT_DATE <= :date)) " +
+            "   INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FS " +
+            "      ON FS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
+            "     AND FS.CODE > 10 " +
+            "   WHERE FDI.FINANCIAL_ACCOUNT_ID = :financialAccountId) " +
+            "SELECT NVL(SUM_CREDIT, 0) SUM_CREDIT, " +
+            "       NVL(SUM_DEBIT, 0) SUM_DEBIT, " +
+            "       (SELECT ACN.ID " +
+            "          FROM FNAC.ACCOUNT_NATURE_TYPE ACN " +
+            "         INNER JOIN FNAC.FINANCIAL_ACCOUNT FA " +
+            "            ON ACN.ID = FA.ACCOUNT_NATURE_TYPE_ID " +
+            "         WHERE FA.ID = :financialAccountId) ACCOUNT_NATURE_TYPE_ID " +
+            "  FROM QRY "
             , nativeQuery = true)
-    List<Object[]> findByMoneyTypeAndFinancialAccountId(Long financialAccountId, Long financialLedgerTypeId, Long financialDepartmentId, Long organizationId, Date date);
+    List<Object[]> findByMoneyTypeAndFinancialAccountId(Long organizationId, Long financialLedgerTypeId, Long financialDepartmentId, Date date, Long financialAccountId);
 
 
     @Query("select fdi from  FinancialDocumentItem fdi where fdi.financialDocument.id=:financialDocumentId ")
