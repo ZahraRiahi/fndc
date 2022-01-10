@@ -59,7 +59,8 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                         .debitAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[7].toString()))))
                         .creditAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[8].toString()))))
                         .fullDescription(item[9] == null ? null : item[9].toString())
-                        .centricAccountDescription(item[10] == null ? null : item[10].toString())
+                        .financialAccountCode(item[10] == null ? null : item[10].toString())
+                        .centricAccountDescription(item[11] == null ? null : item[11].toString())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(documentItemDtoList);
