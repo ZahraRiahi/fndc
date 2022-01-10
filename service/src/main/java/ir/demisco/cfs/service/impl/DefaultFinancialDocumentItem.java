@@ -7,7 +7,6 @@ import ir.demisco.cfs.service.api.FinancialDocumentItemService;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
-import ir.demisco.core.utils.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -23,6 +22,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
+
+import ir.demisco.core.utils.DateUtil;
 
 @Service
 public class DefaultFinancialDocumentItem implements FinancialDocumentItemService {
@@ -41,28 +42,24 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
         Map<String, Object> paramMap = paramSearch.getParamMap();
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
-        Page<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getStartDate(), paramSearch.getEndDate()
-                , paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(), paramMap.get("toNumber"),
-                paramSearch.getToNumber(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
-                paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId()
-                , paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId()
-                , paramMap.get("priceType"), paramSearch.getPriceTypeId(), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
-                paramSearch.getToPrice(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId(),
-                pageable);
+        Page<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getStartDate(),
+                paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
+                paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
+                paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId(), paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId(), paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
+                paramSearch.getToPrice(), paramSearch.getTolerance(), pageable);
         List<FinancialDocumentItemDto> documentItemDtoList = list.stream().map(item ->
                 FinancialDocumentItemDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
                         .date((Date) item[1])
                         .description(item[2] != null ? item[2].toString() : null)
-                        .documentNumber(Long.parseLong(item[3].toString()))
-                        .sequenceNumber(Long.parseLong(item[4].toString()))
+                        .documentNumber(Long.parseLong(item[4].toString()))
+                        .sequenceNumber(Long.parseLong(item[3].toString()))
                         .financialAccountDescription(item[5].toString())
                         .financialAccountId(Long.parseLong(item[6].toString()))
                         .debitAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[7].toString()))))
                         .creditAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[8].toString()))))
                         .fullDescription(item[9] == null ? null : item[9].toString())
                         .centricAccountDescription(item[10] == null ? null : item[10].toString())
-                        .financialDocumentId(((BigDecimal) item[11]).longValue())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(documentItemDtoList);
@@ -82,6 +79,17 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
 
                 case "endDate":
                     responseFinancialDocumentDto.setEndDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+                    break;
+                case "priceType.id":
+                    if (item.getValue() != null) {
+                        map.put("priceType", "priceType");
+                        responseFinancialDocumentDto.setParamMap(map);
+                        responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        map.put("priceType", null);
+                        responseFinancialDocumentDto.setParamMap(map);
+                        responseFinancialDocumentDto.setPriceTypeId(0L);
+                    }
                     break;
 
                 case "financialNumberingType.id":
@@ -180,18 +188,6 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                         map.put("user", null);
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setUserId(0L);
-                    }
-                    break;
-
-                case "priceType.id":
-                    if (item.getValue() != null) {
-                        map.put("priceType", "priceType");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("priceType", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setPriceTypeId(0L);
                     }
                     break;
 
