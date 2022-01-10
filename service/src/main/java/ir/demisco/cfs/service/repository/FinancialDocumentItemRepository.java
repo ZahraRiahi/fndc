@@ -14,33 +14,32 @@ import java.util.List;
 
 public interface FinancialDocumentItemRepository extends JpaRepository<FinancialDocumentItem, Long> {
 
-    @Query(value = "  select fndi.id, " +
-            "  fidc.document_date, " +
-            "  fndi.description, " +
-            "  fidc.document_number, " +
-            "  fndi.sequence_number, " +
-            "  fiac.description  as financialAccountDescription, " +
-            "  fndi.financial_account_id, " +
-            "  fndi.debit_amount, " +
-            "  fndi.credit_amount, " +
-            "  fndi.description  || '-' ||  fiac.full_description as full_description, " +
-            "  NVL(CN1.CODE, '') || NVL(CN1.NAME, '') ||  " +
-            "  NVL2(CN2.CODE, '-' || CN2.CODE, '') || NVL(CN2.NAME, '') ||  " +
-            "  NVL2(CN3.CODE, '-' || CN3.CODE, '') || NVL(CN3.NAME, '') || " +
-            "  NVL2(CN4.CODE, '-' || CN4.CODE, '') || NVL(CN4.NAME, '') || " +
-            "  NVL2(CN5.CODE, '-' || CN5.CODE, '') || NVL(CN5.NAME, '') ||  " +
-            "  NVL2(CN6.CODE, '-' || CN6.CODE, '') || NVL(CN6.NAME, '') as centricAccountDescription, " +
-            "  fidc.id  as FinancialDocumenyId " +
-            "  from fndc.financial_document fidc " +
-            " inner join fndc.financial_document_item fndi " +
-            "    on fidc.id = fndi.financial_document_id" +
-            "   and fndi.deleted_date is null " +
-            " inner join fnac.financial_account fiac " +
-            "    on fiac.id = fndi.financial_account_id " +
-            "   and fiac.deleted_date is null " +
-            " inner join fndc.financial_document_number fndn " +
-            "    on fndn.financial_document_id = fidc.id " +
-            "   and fndn.deleted_date is null " +
+    @Query(value = "  SELECT FNDI.ID, " +
+            "       FIDC.DOCUMENT_DATE, " +
+            "       FNDI.DESCRIPTION as financialDocumentItemDescription , " +
+            "       FNDI.SEQUENCE_NUMBER, " +
+            "       FIDC.DOCUMENT_NUMBER, " +
+            "       FIAC.DESCRIPTION as financialAccountDescription , " +
+            "       FNDI.FINANCIAL_ACCOUNT_ID, " +
+            "       FNDI.DEBIT_AMOUNT, " +
+            "       FNDI.CREDIT_AMOUNT, " +
+            "       FNDI.DESCRIPTION || ' ' || FIAC.FULL_DESCRIPTION AS FULL_DESCRIPTION, " +
+            "       NVL(CN1.CODE, '') || NVL(CN1.NAME, '') || " +
+            "       NVL2(CN2.CODE, '-' || CN2.CODE, '') || NVL(CN2.NAME, '') || " +
+            "       NVL2(CN3.CODE, '-' || CN3.CODE, '') || NVL(CN3.NAME, '') || " +
+            "       NVL2(CN4.CODE, '-' || CN4.CODE, '') || NVL(CN4.NAME, '') || " +
+            "       NVL2(CN5.CODE, '-' || CN5.CODE, '') || NVL(CN5.NAME, '') || " +
+            "       NVL2(CN6.CODE, '-' || CN6.CODE, '') || NVL(CN6.NAME, '') as CENTRICACCOUNTDESCRIPTION   " +
+            "  FROM fndc.FINANCIAL_DOCUMENT FIDC " +
+            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FNDI " +
+            "    ON FIDC.ID = FNDI.FINANCIAL_DOCUMENT_ID " +
+            "   AND FNDI.DELETED_DATE IS NULL " +
+            " INNER JOIN FNAC.FINANCIAL_ACCOUNT FIAC " +
+            "    ON FIAC.ID = FNDI.FINANCIAL_ACCOUNT_ID " +
+            "   AND FIAC.DELETED_DATE IS NULL " +
+            " INNER JOIN fndc.FINANCIAL_DOCUMENT_NUMBER FNDN " +
+            "    ON FIDC.ID = FNDN.FINANCIAL_DOCUMENT_ID " +
+            "   AND FNDN.DELETED_DATE IS NULL" +
             " LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN1 " +
             "    ON CN1.ID = FNDI.CENTRIC_ACCOUNT_ID_1 " +
             "   AND CN1.DELETED_DATE IS NULL " +
@@ -49,133 +48,76 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "   AND CN2.DELETED_DATE IS NULL " +
             "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN3 " +
             "    ON CN3.ID = FNDI.CENTRIC_ACCOUNT_ID_3 " +
-            "   AND CN3.DELETED_DATE IS NULL" +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN4" +
-            "    ON CN4.ID = FNDI.CENTRIC_ACCOUNT_ID_4" +
-            "   AND CN4.DELETED_DATE IS NULL" +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN5" +
-            "    ON CN5.ID = FNDI.CENTRIC_ACCOUNT_ID_5" +
-            "   AND CN5.DELETED_DATE IS NULL" +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN6" +
-            "    ON CN6.ID = FNDI.CENTRIC_ACCOUNT_ID_6" +
-            "   AND CN6.DELETED_DATE IS NULL" +
-            " where fidc.document_date >= :startDate " +
-            "   And fidc.document_date <= :endDate " +
-            "   and fidc.deleted_date is null " +
-            "   And fndn.financial_numbering_type_id = :financialNumberingTypeId " +
-            "   And (:fromNumber is null or fidc.document_number >= :fromNumberId) " +
-            "   And (:toNumber is null  or fidc.document_number <= :toNumberId) " +
-            "   And fidc.financial_document_status_id in (:documentStatusId ) " +
+            "   AND CN3.DELETED_DATE IS NULL " +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN4 " +
+            "    ON CN4.ID = FNDI.CENTRIC_ACCOUNT_ID_4 " +
+            "   AND CN4.DELETED_DATE IS NULL " +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN5 " +
+            "    ON CN5.ID = FNDI.CENTRIC_ACCOUNT_ID_5 " +
+            "   AND CN5.DELETED_DATE IS NULL " +
+            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN6 " +
+            "    ON CN6.ID = FNDI.CENTRIC_ACCOUNT_ID_6  " +
+            "    AND CN6.DELETED_DATE IS NULL " +
+            " WHERE FIDC.DOCUMENT_DATE >= :startDate " +
+            "   AND FIDC.DOCUMENT_DATE <= :endDate" +
+            " AND FNDI.CREDIT_AMOUNT = CASE " +
+            "         WHEN :priceTypeId = 1 THEN " +
+            "          1 " +
+            "         ELSE " +
+            "          FNDI.CREDIT_AMOUNT " +
+            "       END " +
+            "   AND FNDI.DEBIT_AMOUNT = CASE " +
+            "         WHEN :priceTypeId = 2 THEN " +
+            "          0 " +
+            "         ELSE " +
+            "          FNDI.DEBIT_AMOUNT " +
+            "       END  " +
+            " AND FNDN.FINANCIAL_NUMBERING_TYPE_ID = :financialNumberingTypeId " +
+            "   And (:fromNumber is null or FIDC.DOCUMENT_NUMBER >= :fromNumberId) " +
+            "   And (:toNumber is null  or FIDC.DOCUMENT_NUMBER <= :toNumberId) " +
+            " AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId) " +
             "   and (:description is null or fidc.description  like %:description%) " +
-            "   and ((:fromAccount is null or fiac.code >= :fromAccountCode  ) " +
-            "   and (:toAccount is null or fiac.code <= :toAccountCode )) " +
-            "   and (:centricAccount is null or " +
-            "       (fndi.centric_account_id_1 = :centricAccountId or " +
-            "        fndi.centric_account_id_2 = :centricAccountId  or " +
-            "        fndi.centric_account_id_3 = :centricAccountId  or " +
-            "        fndi.centric_account_id_4 = :centricAccountId  or " +
-            "        fndi.centric_account_id_5 = :centricAccountId  or " +
-            "        fndi.centric_account_id_6 = :centricAccountId ))  " +
-            "   and (:centricAccountType is null or " +
-            "       :centricAccountTypeId in " +
-            "       (select cnt.centric_account_type_id " +
-            "           from fnac.centric_account cnt " +
-            "          where fndi.centric_account_id_1 = cnt.id " +
-            "             or fndi.centric_account_id_2 = cnt.id " +
-            "             or fndi.centric_account_id_3 = cnt.id " +
-            "             or fndi.centric_account_id_4 = cnt.id " +
-            "             or fndi.centric_account_id_5 = cnt.id " +
-            "             or fndi.centric_account_id_6 = cnt.id)) " +
-            "   and (:user is null or (fidc.creator_id = :userId or " +
-            "       fidc.last_modifier_id = :userId)) " +
-            "   and ((:priceType is null or " +
-            "       (:priceTypeId = 1  " +
-            "   and (:fromPrice is null or " +
-            "       (fndi.debit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0)) " +
-            "   and (:toPrice is null or " +
-            "       (fndi.debit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))) or " +
-            "       (:priceType is null or (:priceTypeId = 2  " +
-            "   and  (:fromPrice is null or " +
-            "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
-            "   and   (:toPrice is null  or " +
-            "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
-            "  order by  fndi.sequence_number , fidc.document_date desc"
-            , countQuery = "  select count(fidc.id) " +
-            "  from fndc.financial_document fidc " +
-            " inner join fndc.financial_document_item fndi " +
-            "    on fidc.id = fndi.financial_document_id" +
-            "   and fndi.deleted_date is null " +
-            " inner join fnac.financial_account fiac " +
-            "    on fiac.id = fndi.financial_account_id " +
-            "   and fiac.deleted_date is null " +
-            " inner join fndc.financial_document_number fndn " +
-            "    on fndn.financial_document_id = fidc.id " +
-            "   and fndn.deleted_date is null " +
-            " LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN1 " +
-            "    ON CN1.ID = FNDI.CENTRIC_ACCOUNT_ID_1 " +
-            "   AND CN1.DELETED_DATE IS NULL " +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN2 " +
-            "    ON CN2.ID = FNDI.CENTRIC_ACCOUNT_ID_2 " +
-            "   AND CN2.DELETED_DATE IS NULL " +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN3 " +
-            "    ON CN3.ID = FNDI.CENTRIC_ACCOUNT_ID_3 " +
-            "   AND CN3.DELETED_DATE IS NULL" +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN4" +
-            "    ON CN4.ID = FNDI.CENTRIC_ACCOUNT_ID_4" +
-            "   AND CN4.DELETED_DATE IS NULL" +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN5" +
-            "    ON CN5.ID = FNDI.CENTRIC_ACCOUNT_ID_5" +
-            "   AND CN5.DELETED_DATE IS NULL" +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN6" +
-            "    ON CN6.ID = FNDI.CENTRIC_ACCOUNT_ID_6" +
-            "   AND CN6.DELETED_DATE IS NULL" +
-            " where fidc.document_date >= :startDate " +
-            "   And fidc.document_date <= :endDate " +
-            "   and fidc.deleted_date is null " +
-            "   And fndn.financial_numbering_type_id = :financialNumberingTypeId " +
-            "   And (:fromNumber is null or fidc.document_number >= :fromNumberId) " +
-            "   And (:toNumber is null  or fidc.document_number <= :toNumberId) " +
-            "   And fidc.financial_document_status_id in (:documentStatusId ) " +
-            "   and (:description is null or fidc.description  like %:description%) " +
-            "   and ((:fromAccount is null or fiac.code >= :fromAccountCode  ) " +
-            "   and (:toAccount is null or fiac.code <= :toAccountCode )) " +
-            "   and (:centricAccount is null or " +
-            "       (fndi.centric_account_id_1 = :centricAccountId or " +
-            "        fndi.centric_account_id_2 = :centricAccountId  or " +
-            "        fndi.centric_account_id_3 = :centricAccountId  or " +
-            "        fndi.centric_account_id_4 = :centricAccountId  or " +
-            "        fndi.centric_account_id_5 = :centricAccountId  or " +
-            "        fndi.centric_account_id_6 = :centricAccountId ))  " +
-            "   and (:centricAccountType is null or " +
-            "       :centricAccountTypeId in " +
-            "       (select cnt.centric_account_type_id " +
-            "           from fnac.centric_account cnt " +
-            "          where fndi.centric_account_id_1 = cnt.id " +
-            "             or fndi.centric_account_id_2 = cnt.id " +
-            "             or fndi.centric_account_id_3 = cnt.id " +
-            "             or fndi.centric_account_id_4 = cnt.id " +
-            "             or fndi.centric_account_id_5 = cnt.id " +
-            "             or fndi.centric_account_id_6 = cnt.id)) " +
-            "   and (:user is null or (fidc.creator_id = :userId or " +
-            "       fidc.last_modifier_id = :userId)) " +
-            "   and ((:priceType is null or " +
-            "       (:priceTypeId = 1  " +
-            "   and (:fromPrice is null or " +
-            "       (fndi.debit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0)) " +
-            "   and (:toPrice is null or " +
-            "       (fndi.debit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))) or " +
-            "       (:priceType is null or (:priceTypeId = 2  " +
-            "   and  (:fromPrice is null or " +
-            "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
-            "   and   (:toPrice is null  or " +
-            "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) "
+            "   and ((:fromAccount is null or FIAC.CODE >= :fromAccountCode  ) " +
+            "   and (:toAccount is null or FIAC.CODE <= :toAccountCode )) " +
+            "   AND (:centricAccount IS NULL OR " +
+            "       (FNDI.CENTRIC_ACCOUNT_ID_1 = :centricAccountId OR " +
+            "       FNDI.CENTRIC_ACCOUNT_ID_2 = :centricAccountId OR " +
+            "       FNDI.CENTRIC_ACCOUNT_ID_3 = :centricAccountId OR " +
+            "       FNDI.CENTRIC_ACCOUNT_ID_4 = :centricAccountId OR " +
+            "       FNDI.CENTRIC_ACCOUNT_ID_5 = :centricAccountId OR " +
+            "       FNDI.CENTRIC_ACCOUNT_ID_6 = :centricAccountId)) " +
+            "   AND FIDC.DELETED_DATE IS NULL " +
+            "AND (:centricAccountType IS NULL OR " +
+            "       :centricAccountTypeId IN " +
+            "       (SELECT CNT.CENTRIC_ACCOUNT_TYPE_ID " +
+            "           FROM FNAC.CENTRIC_ACCOUNT CNT " +
+            "          WHERE FNDI.CENTRIC_ACCOUNT_ID_1 = CNT.ID " +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_2 = CNT.ID " +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_3 = CNT.ID " +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_4 = CNT.ID " +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_5 = CNT.ID " +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_6 = CNT.ID))" +
+            "   and (:user is null or (FIDC.CREATOR_ID= :userId or " +
+            "       FIDC.LAST_MODIFIER_ID = :userId))" +
+            "    AND (:priceType IS NULL OR " +
+            "       (:priceTypeId = 1 AND " +
+            "       (:fromPrice IS NULL OR " +
+            "       (FNDI.DEBIT_AMOUNT >= " +
+            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0)) AND " +
+            "       (:toPrice IS NULL OR " +
+            "       (FNDI.DEBIT_AMOUNT <= " +
+            "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0)))) OR " +
+            "       (:priceTypeId = 2 AND " +
+            "       (:fromPrice IS NULL OR " +
+            "       (FNDI.CREDIT_AMOUNT >= " +
+            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0)) AND " +
+            "       (:toPrice IS NULL OR " +
+            "       (FNDI.CREDIT_AMOUNT <= " +
+            "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0)))))  "
             , nativeQuery = true)
-    Page<Object[]> getFinancialDocumentItemList(LocalDateTime startDate, LocalDateTime endDate, Long financialNumberingTypeId, Object fromNumber
-            , Long fromNumberId, Object toNumber, Long toNumberId, String description, Object fromAccount, Long fromAccountCode,
-                                                Object toAccount, Long toAccountCode, Object centricAccount, Long centricAccountId, Object centricAccountType,
-                                                Long centricAccountTypeId, Object user, Long userId, Object priceType, Long priceTypeId, Object fromPrice,
-                                                Long fromPriceAmount, Object toPrice, Long toPriceAmount, Double tolerance, List<Long> documentStatusId,
-                                                Pageable pageable);
+    Page<Object[]> getFinancialDocumentItemList(LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
+                                                Long toAccountCode, Object centricAccount, Long centricAccountId, Object centricAccountType, Long centricAccountTypeId, Object user, Long userId, Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
+                                                Double tolerance, Pageable pageable);
 
 
     List<FinancialDocumentItem> findByFinancialDocumentIdAndDeletedDateIsNull(Long FinancialDocumentId);
@@ -491,5 +433,5 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " WHERE (QRY.ACCOUNT_NATURE_TYPE_ID = 3 AND SUM_DEBIT > SUM_CREDIT)" +
             "    OR (QRY.ACCOUNT_NATURE_TYPE_ID = 2 AND SUM_DEBIT < SUM_CREDIT) "
             , nativeQuery = true)
-    List<Object[]> findByFinancialDocumentItemByIdAndFinancialDocumentId(Long financialDocumentId, Long financialDocumentItemId, Object financialDocumentItem,Object financialDocument);
+    List<Object[]> findByFinancialDocumentItemByIdAndFinancialDocumentId(Long financialDocumentId, Long financialDocumentItemId, Object financialDocumentItem, Object financialDocument);
 }

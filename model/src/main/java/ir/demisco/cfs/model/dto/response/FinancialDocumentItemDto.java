@@ -5,7 +5,7 @@ import java.util.Date;
 public class FinancialDocumentItemDto {
 
     private Long id;
-    private Long financialDocumentId;
+//    private Long financialDocumentId;
     private Date date;
     private Long documentNumber;
     private Long sequenceNumber;
@@ -105,13 +105,13 @@ public class FinancialDocumentItemDto {
         this.sequenceNumber = sequenceNumber;
     }
 
-    public Long getFinancialDocumentId() {
-        return financialDocumentId;
-    }
-
-    public void setFinancialDocumentId(Long financialDocumentId) {
-        this.financialDocumentId = financialDocumentId;
-    }
+//    public Long getFinancialDocumentId() {
+//        return financialDocumentId;
+//    }
+//
+//    public void setFinancialDocumentId(Long financialDocumentId) {
+//        this.financialDocumentId = financialDocumentId;
+//    }
 
     public static Builder builder() {
         return new Builder();
@@ -134,10 +134,10 @@ public class FinancialDocumentItemDto {
             return this;
         }
 
-        public Builder financialDocumentId(Long financialDocumentId) {
-            financialDocumentItemDto.setFinancialDocumentId(financialDocumentId);
-            return this;
-        }
+//        public Builder financialDocumentId(Long financialDocumentId) {
+//            financialDocumentItemDto.setFinancialDocumentId(financialDocumentId);
+//            return this;
+//        }
 
         public Builder date(Date date) {
             financialDocumentItemDto.setDate(date);

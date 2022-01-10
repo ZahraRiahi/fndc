@@ -76,11 +76,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         Map<String, Object> paramMap = paramSearch.getParamMap();
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         Page<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getStartDate(),
-                paramSearch.getEndDate(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
+                paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
                 paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
                 paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId()
                 , paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId()
-                , paramMap.get("priceType"), paramSearch.getPriceTypeId(), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
+                , paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
                 paramSearch.getToPrice(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId(), pageable);
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
@@ -121,6 +121,17 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
                 case "financialNumberingType.id":
                     responseFinancialDocumentDto.setFinancialNumberingTypeId(Long.parseLong(item.getValue().toString()));
+                    break;
+                case "priceType.id":
+                    if (item.getValue() != null) {
+                        map.put("priceType", "priceType");
+                        responseFinancialDocumentDto.setParamMap(map);
+                        responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        map.put("priceType", null);
+                        responseFinancialDocumentDto.setParamMap(map);
+                        responseFinancialDocumentDto.setPriceTypeId(0L);
+                    }
                     break;
 
                 case "fromNumber.id":
@@ -218,17 +229,17 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     }
                     break;
 
-                case "priceType.id":
-                    if (item.getValue() != null) {
-                        map.put("priceType", "priceType");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("priceType", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setPriceTypeId(0L);
-                    }
-                    break;
+//                case "priceType.id":
+//                    if (item.getValue() != null) {
+//                        map.put("priceType", "priceType");
+//                        responseFinancialDocumentDto.setParamMap(map);
+//                        responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
+//                    } else {
+//                        map.put("priceType", null);
+//                        responseFinancialDocumentDto.setParamMap(map);
+//                        responseFinancialDocumentDto.setPriceTypeId(0L);
+//                    }
+//                    break;
 
                 case "fromPriceAmount":
                     if (item.getValue() != null) {
