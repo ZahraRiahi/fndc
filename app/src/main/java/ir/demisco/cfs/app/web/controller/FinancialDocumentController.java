@@ -8,6 +8,7 @@ import ir.demisco.cfs.service.api.SaveFinancialDocumentService;
 import ir.demisco.cfs.service.api.TransferFinancialDocumentService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -117,7 +118,7 @@ public class FinancialDocumentController {
 
     @PostMapping("/TransferDocument")
     public ResponseEntity<FinancialDocumentTransferOutputResponse> transferDocument(@RequestBody FinancialDocumentTransferRequest financialDocumentTransferRequest) {
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         financialDocumentTransferRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(transferFinancialDocumentService.transferDocument(financialDocumentTransferRequest));
     }
