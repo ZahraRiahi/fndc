@@ -26,7 +26,7 @@ public class FinancialPeriodController {
 
     @PostMapping("/GetCurrent")
     public ResponseEntity<List<FinancialPeriodResponse>> responseEntity(@RequestBody FinancialPeriodRequest financialPeriodRequest) {
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         return ResponseEntity.ok(financialPeriodService.getFinancialAccountByDateAndOrgan(financialPeriodRequest, organizationId));
     }
 }
