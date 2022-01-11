@@ -2,8 +2,10 @@ package ir.demisco.cfs.service.impl;
 
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import ir.demisco.cfs.model.dto.request.ControlFinancialAccountNatureTypeInputRequest;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.*;
+import ir.demisco.cfs.service.api.ControlFinancialAccountNatureTypeService;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.core.middle.exception.RuleException;
@@ -39,18 +41,18 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialAccountRepository financialAccountRepository;
     private final EntityManager entityManager;
     private final CentricAccountRepository centricAccountRepository;
-    private final AccountDefaultValueRepository accountDefaultValueRepository;
     private final FinancialNumberingFormatRepository financialNumberingFormatRepository;
     private final NumberingFormatSerialRepository numberingFormatSerialRepository;
     private final FinancialDocumentNumberRepository financialDocumentNumberRepository;
     private final FinancialNumberingTypeRepository financialNumberingTypeRepository;
     private final FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository;
+    private final ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService;
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
                                     FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                     FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
-                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository) {
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -59,12 +61,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.financialAccountRepository = financialAccountRepository;
         this.entityManager = entityManager;
         this.centricAccountRepository = centricAccountRepository;
-        this.accountDefaultValueRepository = accountDefaultValueRepository;
         this.financialNumberingFormatRepository = financialNumberingFormatRepository;
         this.numberingFormatSerialRepository = numberingFormatSerialRepository;
         this.financialDocumentNumberRepository = financialDocumentNumberRepository;
         this.financialNumberingTypeRepository = financialNumberingTypeRepository;
         this.financialDocumentItemCurrencyRepository = financialDocumentItemCurrencyRepository;
+        this.controlFinancialAccountNatureTypeService = controlFinancialAccountNatureTypeService;
     }
 
 
@@ -334,9 +336,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     private List<FinancialDocumentErrorDto> validationSetStatus(FinancialDocument financialDocument) {
         List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = new ArrayList<>();
-
         List<FinancialDocumentItem> documentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocument.getId());
-
         if (documentItemList.isEmpty()) {
             FinancialDocumentErrorDto documentItem = new FinancialDocumentErrorDto();
             documentItem.setFinancialDocumentId(financialDocument.getId());
@@ -464,6 +464,17 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             financialDocumentCost.setMessage("وضعیت دوره مالی مربوط به سند بسته است.");
             financialDocumentErrorDtoList.add(financialDocumentCost);
         }
+
+        ControlFinancialAccountNatureTypeInputRequest controlFinancialAccountNatureTypeInputRequest = new ControlFinancialAccountNatureTypeInputRequest();
+        List<ControlFinancialAccountNatureTypeOutputResponse> controlFinancialAccountNatureTypeList = controlFinancialAccountNatureTypeService.getControlFinancialAccountNatureType(controlFinancialAccountNatureTypeInputRequest);
+
+        controlFinancialAccountNatureTypeList.forEach(e -> {
+            FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
+            financialDocumentCost.setMessage(e.getResultMessage());
+            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
+            financialDocumentErrorDtoList.add(financialDocumentCost);
+        });
+
 
         Long financialDocumentItemAccount = financialDocumentItemRepository.getFinancialAccount(financialDocument.getId());
         if (financialDocumentItemAccount == null) {
