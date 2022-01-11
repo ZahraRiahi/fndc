@@ -466,6 +466,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
 
         ControlFinancialAccountNatureTypeInputRequest controlFinancialAccountNatureTypeInputRequest = new ControlFinancialAccountNatureTypeInputRequest();
+        controlFinancialAccountNatureTypeInputRequest.setFinancialDocumentId(financialDocument.getId());
         List<ControlFinancialAccountNatureTypeOutputResponse> controlFinancialAccountNatureTypeList = controlFinancialAccountNatureTypeService.getControlFinancialAccountNatureType(controlFinancialAccountNatureTypeInputRequest);
 
         controlFinancialAccountNatureTypeList.forEach(e -> {
