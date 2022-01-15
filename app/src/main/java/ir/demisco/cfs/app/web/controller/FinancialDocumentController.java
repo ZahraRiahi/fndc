@@ -118,7 +118,7 @@ public class FinancialDocumentController {
 
     @PostMapping("/TransferDocument")
     public ResponseEntity<FinancialDocumentTransferOutputResponse> transferDocument(@RequestBody FinancialDocumentTransferRequest financialDocumentTransferRequest) {
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId =  SecurityHelper.getCurrentUser().getOrganizationId();
         financialDocumentTransferRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(transferFinancialDocumentService.transferDocument(financialDocumentTransferRequest));
     }
