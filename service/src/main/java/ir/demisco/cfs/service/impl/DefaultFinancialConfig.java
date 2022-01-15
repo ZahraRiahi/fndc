@@ -62,7 +62,7 @@ public class DefaultFinancialConfig implements FinancialConfigService {
             throw new RuleException("fin.financialConfig.existAccountStructure");
         }
         FinancialConfig financialConfigNew = new FinancialConfig();
-        financialConfigNew.setOrganization(organizationRepository.getOne(100L));
+        financialConfigNew.setOrganization(organizationRepository.getOne(organizationId));
         if (financialConfigRequest.getFinancialDepartmentId() != null) {
             financialConfigNew.setFinancialDepartment(financialDepartmentRepository.getOne(financialConfigRequest.getFinancialDepartmentId()));
         }
