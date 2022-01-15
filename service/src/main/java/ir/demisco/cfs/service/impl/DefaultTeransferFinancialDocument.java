@@ -357,7 +357,8 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         Long targetDocumentId = null;
         if (financialDocumentTransferRequest.getTransferType() == 1 || financialDocumentTransferRequest.getTransferType() == 2 || financialDocumentTransferRequest.getTransferType() == 6) {
             List<Object[]> financialDocument = financialDocumentRepository.findDocumentByDocumentNumberAndCode(financialDocumentTransferRequest.getTargetDocumentNumber());
-            if (financialDocument.get(0)[0] == null) {
+//            if (financialDocument.get(0)[0] == null) {
+            if (financialDocument.size() == 0) {
                 throw new RuleException("اشکال در بدست آوردن اطلاعات سند مقصد");
             }
             targetDocumentId = Long.parseLong(financialDocument.get(0)[0].toString());
@@ -524,14 +525,14 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
             List<Object[]> financialDocumentTarget = financialDocumentRepository.findFinancialDocumentById(targetDocumentId);
 
             FinancialDocument financialDocument = financialDocumentRepository.findById(targetDocumentId).orElse(new FinancialDocument());
-            financialDocument.setDocumentDate(financialDocumentSource.get(0)[0] == null ? null : DateUtil.convertStringToDate(financialDocumentSource.get(0)[0].toString().replace('-','/')));
+            financialDocument.setDocumentDate(financialDocumentSource.get(0)[0] == null ? null : DateUtil.convertStringToDate(financialDocumentSource.get(0)[0].toString().replace('-', '/')));
             financialDocument.setDocumentNumber(financialDocumentSource.get(0)[1] == null ? null : financialDocumentSource.get(0)[1].toString());
             financialDocument.setFinancialPeriod(financialPeriodRepository.getOne(Long.parseLong(financialDocumentSource.get(0)[2].toString())));
             financialDocument.setDescription(financialDocumentSource.get(0)[3] == null ? null : financialDocumentSource.get(0)[3].toString());
             financialDocumentRepository.save(financialDocument);
 
             FinancialDocument financialDocumentUpdateTarget = financialDocumentRepository.findById(financialDocumentTransferRequest.getId()).orElse(new FinancialDocument());
-            financialDocumentUpdateTarget.setDocumentDate(financialDocumentTarget.get(0)[0] == null ? null : DateUtil.convertStringToDate(financialDocumentTarget.get(0)[0].toString().replace('-','/')));
+            financialDocumentUpdateTarget.setDocumentDate(financialDocumentTarget.get(0)[0] == null ? null : DateUtil.convertStringToDate(financialDocumentTarget.get(0)[0].toString().replace('-', '/')));
             financialDocumentUpdateTarget.setDocumentNumber(financialDocumentTarget.get(0)[1] == null ? null : financialDocumentTarget.get(0)[1].toString());
             financialDocumentUpdateTarget.setFinancialPeriod(financialPeriodRepository.getOne(Long.parseLong(financialDocumentTarget.get(0)[2].toString())));
             financialDocumentUpdateTarget.setDescription(financialDocumentTarget.get(0)[3] == null ? null : financialDocumentTarget.get(0)[3].toString());
