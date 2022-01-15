@@ -389,20 +389,20 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         if (financialDocumentTransferRequest.getTransferType() == 2 || financialDocumentTransferRequest.getTransferType() == 4 || financialDocumentTransferRequest.getTransferType() == 6) {
             financialPeriodStatusRequest.setFinancialDocumentId(financialDocumentTransferRequest.getId());
             FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
-            if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
+            if (financialPeriodStatus.getPeriodStatus() == null || financialPeriodStatus.getMonthStatus() == null) {
                 throw new RuleException("دوره مالی و ماه عملیاتی سند مبدا میبایست در وضعیت باز باشند");
             }
         }
         if (financialDocumentTransferRequest.getTransferType() == 5) {
             financialPeriodStatusRequest.setFinancialDocumentId(financialDocumentTransferRequest.getId());
             FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
-            if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
+            if (financialPeriodStatus.getPeriodStatus() == null || financialPeriodStatus.getMonthStatus() == null) {
                 throw new RuleException("دوره مالی و ماه عملیاتی سند مبداء میبایست در وضعیت باز باشند");
             }
             financialPeriodStatusRequest.setDate(financialDocumentTransferRequest.getDate());
             financialPeriodStatusRequest.setOrganizationId(financialDocumentTransferRequest.getOrganizationId());
             FinancialPeriodStatusResponse financialPeriodStatusOutPut = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
-            if (financialPeriodStatusOutPut.getPeriodStatus() == 0L || financialPeriodStatusOutPut.getMonthStatus() == 0L) {
+            if (financialPeriodStatusOutPut.getPeriodStatus() == null || financialPeriodStatusOutPut.getMonthStatus() == null) {
                 throw new RuleException("دوره مالی و ماه عملیاتی در تاریخ انتخاب شده میبایست در وضعیت باز باشند");
             }
         }
@@ -416,7 +416,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
             financialPeriodStatusRequest.setDate(financialDocumentTransferRequest.getDate());
             financialPeriodStatusRequest.setOrganizationId(financialDocumentTransferRequest.getOrganizationId());
             FinancialPeriodStatusResponse financialPeriodStatusOutPut = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
-            if (financialPeriodStatusOutPut.getPeriodStatus() == 0L || financialPeriodStatusOutPut.getMonthStatus() == 0L) {
+            if (financialPeriodStatusOutPut.getPeriodStatus() == null || financialPeriodStatusOutPut.getMonthStatus() == null) {
                 throw new RuleException("دوره مالی و ماه عملیاتی در تاریخ انتخاب شده میبایست در وضعیت باز باشند");
             }
             FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentTransferRequest.getId() == null ? 0L : financialDocumentTransferRequest.getId()).orElse(new FinancialDocument());
