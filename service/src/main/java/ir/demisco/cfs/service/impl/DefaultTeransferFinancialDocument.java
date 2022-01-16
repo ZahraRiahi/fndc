@@ -11,6 +11,7 @@ import ir.demisco.cfs.service.api.FinancialPeriodService;
 import ir.demisco.cfs.service.api.TransferFinancialDocumentService;
 import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.core.middle.exception.RuleException;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
 import org.hibernate.internal.util.SerializationHelper;
 import org.springframework.stereotype.Service;
@@ -414,7 +415,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         }
         if (financialDocumentTransferRequest.getTransferType() == 3 || financialDocumentTransferRequest.getTransferType() == 4 || financialDocumentTransferRequest.getTransferType() == 7) {
             financialPeriodStatusRequest.setDate(financialDocumentTransferRequest.getDate());
-            financialPeriodStatusRequest.setOrganizationId(financialDocumentTransferRequest.getOrganizationId());
+            financialPeriodStatusRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
             FinancialPeriodStatusResponse financialPeriodStatusOutPut = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
             if (financialPeriodStatusOutPut.getPeriodStatus() == null || financialPeriodStatusOutPut.getMonthStatus() == null) {
                 throw new RuleException("دوره مالی و ماه عملیاتی در تاریخ انتخاب شده میبایست در وضعیت باز باشند");
@@ -425,7 +426,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
             financialDocumentSave.setId(null);
             financialDocumentSave.setDocumentDate(DateUtil.convertStringToDate(financialDocumentTransferRequest.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))));
             financialDocumentSave.setFinancialDocumentStatus(financialDocumentStatusRepository.getOne(1L));
-            financialDocumentSave.setOrganization(organizationRepository.getOne(100L));
+            financialDocumentSave.setOrganization(organizationRepository.getOne(SecurityHelper.getCurrentUser().getOrganizationId()));
             financialDocumentSave.setDocumentNumber("X9999999X");
             financialDocumentSave = financialDocumentRepository.save(financialDocumentSave);
             financialDocumentRepository.flush();
