@@ -17,6 +17,7 @@ public class FinancialDocumentItemDto {
     private String fullDescription;
     private String centricAccountDescription;
     private String financialAccountCode;
+    private Long financialDocumentId;
 
     public Long getId() {
         return id;
@@ -122,6 +123,14 @@ public class FinancialDocumentItemDto {
         this.financialAccountCode = financialAccountCode;
     }
 
+    public Long getFinancialDocumentId() {
+        return financialDocumentId;
+    }
+
+    public void setFinancialDocumentId(Long financialDocumentId) {
+        this.financialDocumentId = financialDocumentId;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -199,6 +208,11 @@ public class FinancialDocumentItemDto {
         }
         public Builder financialAccountCode(String financialAccountCode) {
             financialDocumentItemDto.setFinancialAccountCode(financialAccountCode);
+            return this;
+        }
+
+        public Builder financialDocumentId(Long financialDocumentId) {
+            financialDocumentItemDto.setFinancialDocumentId(financialDocumentId);
             return this;
         }
         public FinancialDocumentItemDto build() {

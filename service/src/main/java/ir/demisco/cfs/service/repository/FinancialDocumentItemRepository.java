@@ -23,7 +23,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       FNDI.DEBIT_AMOUNT, " +
             "       FNDI.CREDIT_AMOUNT, " +
             "       FNDI.DESCRIPTION || ' ' || FIAC.FULL_DESCRIPTION AS FULL_DESCRIPTION, " +
-            " FIAC.Code as FINANCIAL_ACCOUNT_CODE, " +
+            " FIAC.Code as FINANCIAL_ACCOUNT_CODE," +
+            "       FIDC.ID AS FINANCIAL_DOCUMENT_ID, " +
             "       NVL(CN1.CODE, '') || NVL(CN1.NAME, '') || " +
             "       NVL2(CN2.CODE, '-' || CN2.CODE, '') || NVL(CN2.NAME, '') || " +
             "       NVL2(CN3.CODE, '-' || CN3.CODE, '') || NVL(CN3.NAME, '') || " +
