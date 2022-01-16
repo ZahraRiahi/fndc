@@ -7,6 +7,7 @@ import ir.demisco.cfs.model.dto.response.ControlFinancialAccountNatureTypeOutput
 import ir.demisco.cfs.service.api.ControlFinancialAccountNatureTypeService;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +28,7 @@ public class DefaultControlFinancialAccountNatureType implements ControlFinancia
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public List<ControlFinancialAccountNatureTypeByAccountResponse> getFinancialNatureControlByAccount(ControlFinancialAccountNatureTypeByAccountRequest controlFinancialAccountNatureTypeByAccountRequest) {
-        List<Object[]> controlFinancialAccountNatureTypeObject = financialDocumentItemRepository.findByMoneyTypeAndFinancialAccountId(controlFinancialAccountNatureTypeByAccountRequest.getOrganizationId(), controlFinancialAccountNatureTypeByAccountRequest.getFinancialLedgerTypeId(),
+        List<Object[]> controlFinancialAccountNatureTypeObject = financialDocumentItemRepository.findByMoneyTypeAndFinancialAccountId(SecurityHelper.getCurrentUser().getOrganizationId(), controlFinancialAccountNatureTypeByAccountRequest.getFinancialLedgerTypeId(),
                 controlFinancialAccountNatureTypeByAccountRequest.getFinancialDepartmentId(), DateUtil.convertStringToDate(controlFinancialAccountNatureTypeByAccountRequest.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))), controlFinancialAccountNatureTypeByAccountRequest.getFinancialAccountId()
         );
         return controlFinancialAccountNatureTypeObject.stream().map(objects -> ControlFinancialAccountNatureTypeByAccountResponse.builder().sumDebit(objects[0] == null ? null : ((BigDecimal) objects[0]).doubleValue())
