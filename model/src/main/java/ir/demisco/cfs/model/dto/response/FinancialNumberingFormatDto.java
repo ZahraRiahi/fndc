@@ -13,7 +13,7 @@ public class FinancialNumberingFormatDto {
     private String financialNumberingTypeDescription;
     private String description;
     private String reseter;
-    private int serialLength;
+    private Long serialLength;
     private Long firstSerial;
     private LocalDateTime deletedDate;
 
@@ -89,11 +89,11 @@ public class FinancialNumberingFormatDto {
         this.reseter = reseter;
     }
 
-    public int getSerialLength() {
+    public Long getSerialLength() {
         return serialLength;
     }
 
-    public void setSerialLength(int serialLength) {
+    public void setSerialLength(Long serialLength) {
         this.serialLength = serialLength;
     }
 
@@ -160,7 +160,7 @@ public class FinancialNumberingFormatDto {
             return this;
         }
 
-        public Builder serialLength(int serialLength) {
+        public Builder serialLength(Long serialLength) {
             financialNumberingFormatDto.setSerialLength(serialLength);
             return this;
         }

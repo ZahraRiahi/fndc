@@ -16,7 +16,7 @@ public class FinancialNumberingFormat extends AuditModel<Long> {
     private String   description;
     private LocalDateTime deletedDate;
     private String reseter;
-    private int serialLength;
+    private Long serialLength;
     private Long firstSerial;
 
     @Override
@@ -84,11 +84,11 @@ public class FinancialNumberingFormat extends AuditModel<Long> {
     }
 
     @Column(name = "SERIAL_LENGTH")
-    public int getSerialLength() {
+    public Long getSerialLength() {
         return serialLength;
     }
 
-    public void setSerialLength(int serialLength) {
+    public void setSerialLength(Long serialLength) {
         this.serialLength = serialLength;
     }
 
