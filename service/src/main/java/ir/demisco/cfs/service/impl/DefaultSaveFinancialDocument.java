@@ -1,18 +1,22 @@
 package ir.demisco.cfs.service.impl;
 
+import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentItemRequest;
+import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.FinancialDocument;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import ir.demisco.cfs.model.entity.FinancialDocumentItemCurrency;
 import ir.demisco.cfs.model.entity.FinancialDocumentReference;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
+import ir.demisco.cfs.service.api.FinancialPeriodService;
 import ir.demisco.cfs.service.api.SaveFinancialDocumentService;
 import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
+import ir.demisco.core.utils.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -20,7 +24,12 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
+import java.text.ParsePosition;
+import java.time.LocalDateTime;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 @Service
@@ -41,6 +50,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private final FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository;
     private final FinancialDocumentStatusRepository documentStatusRepository;
     private final FinancialDocumentService financialDocumentService;
+    private final FinancialPeriodService financialPeriodService;
 
     public DefaultSaveFinancialDocument(FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository,
                                         FinancialDocumentRepository financialDocumentRepository, FinancialDocumentItemRepository financialDocumentItemRepository,
@@ -49,7 +59,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                                         FinancialPeriodRepository financialPeriodRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository,
                                         FinancialDepartmentRepository financialDepartmentRepository, MoneyPrisingReferenceRepository prisingReferenceRepository,
                                         FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialDocumentStatusRepository documentStatusRepository,
-                                        FinancialDocumentService financialDocumentService) {
+                                        FinancialDocumentService financialDocumentService, FinancialPeriodService financialPeriodService) {
         this.financialAccountRepository = financialAccountRepository;
         this.centricAccountRepository = centricAccountRepository;
         this.financialDocumentRepository = financialDocumentRepository;
@@ -65,6 +75,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         this.documentItemCurrencyRepository = documentItemCurrencyRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentService = financialDocumentService;
+        this.financialPeriodService = financialPeriodService;
     }
 
     @Override
@@ -74,6 +85,15 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         FinancialDocumentSaveDto responseDocumentSaveDto;
         List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList = new ArrayList<>();
         FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
+        FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
+        financialPeriodStatusRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        financialPeriodStatusRequest.setDate(LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/","-")+"T00:00"));
+        financialPeriodStatusRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
+        financialPeriodStatusRequest.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
+        FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
+        if (financialPeriodStatus.getPeriodStatus() == null || financialPeriodStatus.getMonthStatus() == null) {
+            throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
+        }
         String documentNumber;
         FinancialDocument financialDocument = saveFinancialDocument(requestFinancialDocumentSaveDto);
         financialDocumentNumberDto.setOrganizationId(financialDocument.getOrganization().getId());
@@ -83,7 +103,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
         financialDocument.setDocumentNumber(documentNumber);
         financialDocumentRepository.save(financialDocument);
-         responseDocumentSaveDto = convertDocumentToDto(financialDocument);
+        responseDocumentSaveDto = convertDocumentToDto(financialDocument);
         requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().forEach(documentItem -> {
             List<FinancialDocumentReferenceDto> documentReferenceList = new ArrayList<>();
             List<FinancialDocumentItemCurrencyDto> responseDocumentItemCurrencyList = new ArrayList<>();
