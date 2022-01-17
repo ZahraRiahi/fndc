@@ -5,19 +5,19 @@ import java.util.Date;
 public class FinancialDocumentItemDto {
 
     private Long id;
-    private Long financialDocumentId;
+    //    private Long financialDocumentId;
     private Date date;
     private Long documentNumber;
-    private Long  sequenceNumber;
+    private Long sequenceNumber;
     private Long financialAccountId;
-    private String  financialAccountDescription;
-    private String    description;
-    private Long  debitAmount;
-    private Long  creditAmount;
+    private String financialAccountDescription;
+    private String description;
+    private Long debitAmount;
+    private Long creditAmount;
     private String fullDescription;
     private String centricAccountDescription;
-
-
+    private String financialAccountCode;
+    private Long financialDocumentId;
 
     public Long getId() {
         return id;
@@ -107,6 +107,22 @@ public class FinancialDocumentItemDto {
         this.sequenceNumber = sequenceNumber;
     }
 
+//    public Long getFinancialDocumentId() {
+//        return financialDocumentId;
+//    }
+//
+//    public void setFinancialDocumentId(Long financialDocumentId) {
+//        this.financialDocumentId = financialDocumentId;
+//    }
+
+    public String getFinancialAccountCode() {
+        return financialAccountCode;
+    }
+
+    public void setFinancialAccountCode(String financialAccountCode) {
+        this.financialAccountCode = financialAccountCode;
+    }
+
     public Long getFinancialDocumentId() {
         return financialDocumentId;
     }
@@ -115,7 +131,7 @@ public class FinancialDocumentItemDto {
         this.financialDocumentId = financialDocumentId;
     }
 
-    public  static Builder builder(){
+    public static Builder builder() {
         return new Builder();
     }
 
@@ -136,10 +152,10 @@ public class FinancialDocumentItemDto {
             return this;
         }
 
-        public Builder financialDocumentId(Long financialDocumentId) {
-            financialDocumentItemDto.setFinancialDocumentId(financialDocumentId);
-            return this;
-        }
+//        public Builder financialDocumentId(Long financialDocumentId) {
+//            financialDocumentItemDto.setFinancialDocumentId(financialDocumentId);
+//            return this;
+//        }
 
         public Builder date(Date date) {
             financialDocumentItemDto.setDate(date);
@@ -190,7 +206,15 @@ public class FinancialDocumentItemDto {
             financialDocumentItemDto.setCentricAccountDescription(centricAccountDescription);
             return this;
         }
+        public Builder financialAccountCode(String financialAccountCode) {
+            financialDocumentItemDto.setFinancialAccountCode(financialAccountCode);
+            return this;
+        }
 
+        public Builder financialDocumentId(Long financialDocumentId) {
+            financialDocumentItemDto.setFinancialDocumentId(financialDocumentId);
+            return this;
+        }
         public FinancialDocumentItemDto build() {
             return financialDocumentItemDto;
         }

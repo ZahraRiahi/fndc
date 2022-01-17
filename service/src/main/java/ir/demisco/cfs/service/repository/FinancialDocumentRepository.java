@@ -12,40 +12,191 @@ import java.util.List;
 
 public interface FinancialDocumentRepository extends JpaRepository<FinancialDocument, Long> {
 
-    @Query(value = " select fidc.id , " +
-            "      fidc.document_date , " +
-            "        fidc.description, " +
-            "        fidc.document_number, " +
-            "        fidc.financial_document_type_id ," +
-            "        fndt.description as financial_document_type_Description, " +
-            "        fidc.description as full_description, " +
-            "        sum(fndi.debit_amount) as sum_debit_amount," +
-            "        sum(fndi.credit_amount) as sum_cdebit_amount," +
-            "        usr.id as userId, " +
-            "        usr.nick_name as userName, " +
-            "  FIDC.FINANCIAL_DOCUMENT_STATUS_ID, " +
-            " DS.NAME as  DOCUMENT_STATUS_NAME, " +
-            " DS.CODE as DOCUMENT_STATUS_CODE " +
-            "  from fndc.financial_document fidc " +
-            "  inner join fndc.financial_document_type fndt " +
-            "    on fidc.financial_document_type_id = fndt.id " +
-            "   and fndt.deleted_date is null " +
-            " inner join fndc.financial_document_item fndi " +
-            "    on fidc.id = fndi.financial_document_id" +
-            "   and fndi.deleted_date is null " +
-            "  left outer join fndc.financial_document_number fndn " +
-            "    on fndn.financial_document_id = fidc.id " +
-            "   and fndn.deleted_date is null " +
-            "  inner join fnac.financial_account fc " +
-            "    on fc.id = fndi.financial_account_id " +
-            "   and fc.deleted_date is null " +
-            "  left outer join sec.application_user usr" +
-            "    on usr.id = fidc.creator_id " +
+//    @Query(value = " select fidc.id , " +
+//            "      fidc.document_date , " +
+//            "        fidc.description, " +
+//            "        fidc.document_number, " +
+//            "        fidc.financial_document_type_id ," +
+//            "        fndt.description as financial_document_type_Description, " +
+//            "        fidc.description as full_description, " +
+//            "        sum(fndi.debit_amount) as sum_debit_amount," +
+//            "        sum(fndi.credit_amount) as sum_cdebit_amount," +
+//            "        usr.id as userId, " +
+//            "        usr.nick_name as userName, " +
+//            "  FIDC.FINANCIAL_DOCUMENT_STATUS_ID, " +
+//            " DS.NAME as  DOCUMENT_STATUS_NAME, " +
+//            " DS.CODE as DOCUMENT_STATUS_CODE " +
+//            "  from fndc.financial_document fidc " +
+//            "  inner join fndc.financial_document_type fndt " +
+//            "    on fidc.financial_document_type_id = fndt.id " +
+//            "   and fndt.deleted_date is null " +
+//            " inner join fndc.financial_document_item fndi " +
+//            "    on fidc.id = fndi.financial_document_id" +
+//            "   and fndi.deleted_date is null " +
+//            "  left outer join fndc.financial_document_number fndn " +
+//            "    on fndn.financial_document_id = fidc.id " +
+//            "   and fndn.deleted_date is null " +
+//            "  inner join fnac.financial_account fc " +
+//            "    on fc.id = fndi.financial_account_id " +
+//            "   and fc.deleted_date is null " +
+//            "  left outer join sec.application_user usr" +
+//            "    on usr.id = fidc.creator_id " +
+//            " INNER JOIN fndc.FINANCIAL_DOCUMENT_STATUS DS " +
+//            "    ON DS.ID = FINANCIAL_DOCUMENT_STATUS_ID " +
+//            " where fidc.document_date >= :startDate " +
+//            "   And fidc.document_date <= :endDate " +
+//            "   And fndn.financial_numbering_type_id = :financialNumberingTypeId " +
+//            "   And (:fromNumber is null or fidc.document_number >= :fromNumberId) " +
+//            "   And (:toNumber is null  or fidc.document_number <= :toNumberId) " +
+//            "   And fidc.financial_document_status_id in (:documentStatusId ) " +
+//            "   and (:description is null or fidc.description  like %:description%) " +
+//            "   and ((:fromAccount is null or fc.code >= :fromAccountCode  ) " +
+//            "   and (:toAccount is null or fc.code <= :toAccountCode )) " +
+//            "   and (:centricAccount is null or " +
+//            "       (fndi.centric_account_id_1 = :centricAccountId or " +
+//            "        fndi.centric_account_id_2 = :centricAccountId  or " +
+//            "        fndi.centric_account_id_3 = :centricAccountId  or " +
+//            "        fndi.centric_account_id_4 = :centricAccountId  or " +
+//            "        fndi.centric_account_id_5 = :centricAccountId  or " +
+//            "        fndi.centric_account_id_6 = :centricAccountId ))  " +
+//            "   and (:centricAccountType is null or " +
+//            "       :centricAccountTypeId in " +
+//            "       (select cnt.centric_account_type_id " +
+//            "           from fnac.centric_account cnt " +
+//            "          where fndi.centric_account_id_1 = cnt.id " +
+//            "             or fndi.centric_account_id_2 = cnt.id " +
+//            "             or fndi.centric_account_id_3 = cnt.id " +
+//            "             or fndi.centric_account_id_4 = cnt.id " +
+//            "             or fndi.centric_account_id_5 = cnt.id " +
+//            "             or fndi.centric_account_id_6 = cnt.id)) " +
+//            "   and (:user is null or (fidc.creator_id = :userId or " +
+//            "       fidc.last_modifier_id = :userId)) " +
+//            "   and ((:priceType is null or " +
+//            "       (:priceTypeId = 1  " +
+//            "   and (:fromPrice is null or " +
+//            "       (fndi.debit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0)) " +
+//            "   and (:toPrice is null or " +
+//            "       (fndi.debit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))) or " +
+//            "       (:priceType is null or (:priceTypeId = 2  " +
+//            "   and  (:fromPrice is null or " +
+//            "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
+//            "   and   (:toPrice is null  or " +
+//            "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
+//            "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description," +
+//            " FINANCIAL_DOCUMENT_STATUS_ID, " +
+//            "          DS.NAME , " +
+//            "          DS.CODE  " +
+//            " order by  fidc.document_date desc "
+//            , countQuery = " select count(fidc.id) " +
+//            "  from fndc.financial_document fidc " +
+//            "  inner join fndc.financial_document_type fndt " +
+//            "    on fidc.financial_document_type_id = fndt.id " +
+//            "   and fndt.deleted_date is null " +
+//            " inner join fndc.financial_document_item fndi " +
+//            "    on fidc.id = fndi.financial_document_id" +
+//            "   and fndi.deleted_date is null " +
+//            "  left outer join fndc.financial_document_number fndn " +
+//            "    on fndn.financial_document_id = fidc.id " +
+//            "   and fndn.deleted_date is null " +
+//            "  inner join fnac.financial_account fc " +
+//            "    on fc.id = fndi.financial_account_id " +
+//            "   and fc.deleted_date is null " +
+//            "  left outer join sec.application_user usr" +
+//            "    on usr.id = fidc.creator_id " +
+//            " INNER JOIN fndc.FINANCIAL_DOCUMENT_STATUS DS " +
+//            "    ON DS.ID = FINANCIAL_DOCUMENT_STATUS_ID " +
+//            " where fidc.document_date >= :startDate " +
+//            "   And fidc.document_date <= :endDate " +
+//            "   and fidc.deleted_date is null " +
+//            "   And fndn.financial_numbering_type_id = :financialNumberingTypeId " +
+//            "   And (:fromNumber is null or fidc.document_number >= :fromNumberId) " +
+//            "   And (:toNumber is null  or fidc.document_number <= :toNumberId) " +
+//            "   And fidc.financial_document_status_id in (:documentStatusId ) " +
+//            "   and (:description is null or fidc.description  like %:description%) " +
+//            "   and ((:fromAccount is null or fc.code >= :fromAccountCode  ) " +
+//            "   and (:toAccount is null or fc.code <= :toAccountCode )) " +
+//            "   and (:centricAccount is null or " +
+//            "       (fndi.centric_account_id_1 = :centricAccountId or " +
+//            "        fndi.centric_account_id_2 = :centricAccountId  or " +
+//            "        fndi.centric_account_id_3 = :centricAccountId  or " +
+//            "        fndi.centric_account_id_4 = :centricAccountId  or " +
+//            "        fndi.centric_account_id_5 = :centricAccountId  or " +
+//            "        fndi.centric_account_id_6 = :centricAccountId ))  " +
+//            "   and (:centricAccountType is null or " +
+//            "       :centricAccountTypeId in " +
+//            "       (select cnt.centric_account_type_id " +
+//            "           from fnac.centric_account cnt " +
+//            "          where fndi.centric_account_id_1 = cnt.id " +
+//            "             or fndi.centric_account_id_2 = cnt.id " +
+//            "             or fndi.centric_account_id_3 = cnt.id " +
+//            "             or fndi.centric_account_id_4 = cnt.id " +
+//            "             or fndi.centric_account_id_5 = cnt.id " +
+//            "             or fndi.centric_account_id_6 = cnt.id)) " +
+//            "   and (:user is null or (fidc.creator_id = :userId or " +
+//            "       fidc.last_modifier_id = :userId)) " +
+//            "   and ((:priceType is null or " +
+//            "       (:priceTypeId = 1  " +
+//            "   and (:fromPrice is null or " +
+//            "       (fndi.debit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0)) " +
+//            "   and (:toPrice is null or " +
+//            "       (fndi.debit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))) or " +
+//            "       (:priceType is null or (:priceTypeId = 2  " +
+//            "   and  (:fromPrice is null or " +
+//            "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
+//            "   and   (:toPrice is null  or " +
+//            "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
+//            "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description, " +
+//            "   FINANCIAL_DOCUMENT_STATUS_ID, " +
+//            "                      DS.NAME , " +
+//            "                     DS.CODE " +
+//            " order by  fidc.document_date desc  "
+//            , nativeQuery = true)
+
+    @Query(value = " SELECT FIDC.ID," +
+            "       FIDC.DOCUMENT_DATE," +
+            "       FIDC.DESCRIPTION," +
+            "       FIDC.DOCUMENT_NUMBER," +
+            "       FIDC.FINANCIAL_DOCUMENT_TYPE_ID," +
+            "       FNDT.DESCRIPTION AS FINANCIAL_DOCUMENT_TYPE_DESCRIPTION," +
+            "       FIDC.DESCRIPTION AS FULL_DESCRIPTION," +
+            "       SUM(FNDI.DEBIT_AMOUNT) AS SUM_DEBIT_AMOUNT," +
+            "       SUM(FNDI.CREDIT_AMOUNT) AS SUM_CREDIT_AMOUNT," +
+            "       USR.ID AS USERID," +
+            "       USR.NICK_NAME AS USERNAME," +
+            "       FIDC.FINANCIAL_DOCUMENT_STATUS_ID," +
+            "       DS.NAME DOCUMENT_STATUS_NAME," +
+            "       DS.CODE DOCUMENT_STATUS_CODE" +
+            "  FROM fndc.FINANCIAL_DOCUMENT FIDC" +
+            "  INNER JOIN FNDC.FINANCIAL_DOCUMENT_TYPE FNDT " +
+            "    ON FIDC.FINANCIAL_DOCUMENT_TYPE_ID = FNDT.ID " +
+            "   AND FNDT.DELETED_DATE IS NULL " +
+            "  INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FNDI " +
+            "    ON FIDC.ID = FNDI.FINANCIAL_DOCUMENT_ID " +
+            "   AND FNDI.DELETED_DATE IS NULL  " +
+            "  LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER FNDN " +
+            "    ON FNDN.FINANCIAL_DOCUMENT_ID = FIDC.ID " +
+            "   AND FNDN.DELETED_DATE IS NULL " +
+            "  INNER JOIN FNAC.FINANCIAL_ACCOUNT FC " +
+            "    ON FC.ID = FNDI.FINANCIAL_ACCOUNT_ID " +
+            "   AND FC.DELETED_DATE IS NULL " +
+            "  LEFT OUTER JOIN SEC.APPLICATION_USER USR " +
+            "    ON USR.ID = FIDC.CREATOR_ID " +
             " INNER JOIN fndc.FINANCIAL_DOCUMENT_STATUS DS " +
             "    ON DS.ID = FINANCIAL_DOCUMENT_STATUS_ID " +
             " where fidc.document_date >= :startDate " +
             "   And fidc.document_date <= :endDate " +
-            "   and fidc.deleted_date is null " +
+            " AND FNDI.CREDIT_AMOUNT = CASE " +
+            "         WHEN :priceTypeId = 1 THEN" +
+            "          0 " +
+            "         ELSE" +
+            "          FNDI.CREDIT_AMOUNT " +
+            "       END" +
+            "   AND FNDI.DEBIT_AMOUNT = CASE " +
+            "         WHEN :priceTypeId = 2 THEN " +
+            "          0 " +
+            "         ELSE" +
+            "          FNDI.DEBIT_AMOUNT " +
+            "       END " +
             "   And fndn.financial_numbering_type_id = :financialNumberingTypeId " +
             "   And (:fromNumber is null or fidc.document_number >= :fromNumberId) " +
             "   And (:toNumber is null  or fidc.document_number <= :toNumberId) " +
@@ -83,10 +234,11 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
             "   and   (:toPrice is null  or " +
             "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
-            "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description," +
+            "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,fidc.financial_document_type_id,fndt.description," +
             " FINANCIAL_DOCUMENT_STATUS_ID, " +
             "          DS.NAME , " +
-            "          DS.CODE   "
+            "          DS.CODE  " +
+            " order by  fidc.document_date desc "
             , countQuery = " select count(fidc.id) " +
             "  from fndc.financial_document fidc " +
             "  inner join fndc.financial_document_type fndt " +
@@ -107,7 +259,18 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "    ON DS.ID = FINANCIAL_DOCUMENT_STATUS_ID " +
             " where fidc.document_date >= :startDate " +
             "   And fidc.document_date <= :endDate " +
-            "   and fidc.deleted_date is null " +
+            " AND FNDI.CREDIT_AMOUNT = CASE " +
+            "         WHEN :priceTypeId = 1 THEN" +
+            "          0 " +
+            "         ELSE" +
+            "          FNDI.CREDIT_AMOUNT " +
+            "       END" +
+            "   AND FNDI.DEBIT_AMOUNT = CASE " +
+            "         WHEN :priceTypeId = 2 THEN " +
+            "          0 " +
+            "         ELSE" +
+            "          FNDI.DEBIT_AMOUNT " +
+            "       END " +
             "   And fndn.financial_numbering_type_id = :financialNumberingTypeId " +
             "   And (:fromNumber is null or fidc.document_number >= :fromNumberId) " +
             "   And (:toNumber is null  or fidc.document_number <= :toNumberId) " +
@@ -148,13 +311,14 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description, " +
             "   FINANCIAL_DOCUMENT_STATUS_ID, " +
             "                      DS.NAME , " +
-            "                     DS.CODE  "
+            "                     DS.CODE " +
+            " order by  fidc.document_date desc  "
             , nativeQuery = true)
-    Page<Object[]> getFinancialDocumentList(LocalDateTime startDate, LocalDateTime endDate, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
+    Page<Object[]> getFinancialDocumentList(LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
             , Object toNumber, Long toNumberId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
                                             Long toAccountCode, Object centricAccount, Long centricAccountId,
                                             Object centricAccountType, Long centricAccountTypeId, Object user, Long userId,
-                                            Object priceType, Long priceTypeId, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
+                                            Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
                                             Double tolerance, List<Long> documentStatusId, Pageable pageable);
 
     @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:FinancialDocumentId")
@@ -341,4 +505,35 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " and fdl.financialDepartment.id=fd.financialDepartment.id and fdl.deletedDate is null " +
             " where fdl.id=:financialDepartmentLedgerId and fd.deletedDate is null")
     List<Long> usedInFinancialDocument(Long financialDepartmentLedgerId);
+
+    @Query("select fd.financialPeriod.id,fd.documentDate from FinancialDocument  fd " +
+            " where fd.id=:financialDocumentId and fd.deletedDate is null")
+    List<Object[]> financialDocumentById(Long financialDocumentId);
+
+    @Query(value = " SELECT FD.ID, FS.CODE " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FS " +
+            "    ON FS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
+            "  WHERE FD.DOCUMENT_NUMBER = :targetDocumentNumber "
+            , nativeQuery = true)
+    List<Object[]> findDocumentByDocumentNumberAndCode(String targetDocumentNumber);
+
+    @Query(value = " SELECT FS.CODE " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT FD " +
+            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FS " +
+            "    ON FS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
+            " WHERE FD.ID = :documentId "
+            , nativeQuery = true)
+    String findByFinancialDocumentByDocumentId(Long documentId);
+
+
+    @Query(value = " SELECT FNDC.Document_Date, " +
+            "       FNDC.DOCUMENT_NUMBER, " +
+            "       FNDC.FINANCIAL_PERIOD_ID, " +
+            "       FNDC.DESCRIPTION " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT FNDC " +
+            " WHERE fndc.id = :documentId  "
+            , nativeQuery = true)
+    List<Object[]> findFinancialDocumentById(Long documentId);
+
 }

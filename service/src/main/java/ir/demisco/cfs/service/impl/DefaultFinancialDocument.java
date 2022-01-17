@@ -2,13 +2,16 @@ package ir.demisco.cfs.service.impl;
 
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import ir.demisco.cfs.model.dto.request.ControlFinancialAccountNatureTypeInputRequest;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.*;
+import ir.demisco.cfs.service.api.ControlFinancialAccountNatureTypeService;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -39,18 +42,18 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialAccountRepository financialAccountRepository;
     private final EntityManager entityManager;
     private final CentricAccountRepository centricAccountRepository;
-    private final AccountDefaultValueRepository accountDefaultValueRepository;
     private final FinancialNumberingFormatRepository financialNumberingFormatRepository;
     private final NumberingFormatSerialRepository numberingFormatSerialRepository;
     private final FinancialDocumentNumberRepository financialDocumentNumberRepository;
     private final FinancialNumberingTypeRepository financialNumberingTypeRepository;
     private final FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository;
+    private final ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService;
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
                                     FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                     FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
-                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository) {
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -59,12 +62,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.financialAccountRepository = financialAccountRepository;
         this.entityManager = entityManager;
         this.centricAccountRepository = centricAccountRepository;
-        this.accountDefaultValueRepository = accountDefaultValueRepository;
         this.financialNumberingFormatRepository = financialNumberingFormatRepository;
         this.numberingFormatSerialRepository = numberingFormatSerialRepository;
         this.financialDocumentNumberRepository = financialDocumentNumberRepository;
         this.financialNumberingTypeRepository = financialNumberingTypeRepository;
         this.financialDocumentItemCurrencyRepository = financialDocumentItemCurrencyRepository;
+        this.controlFinancialAccountNatureTypeService = controlFinancialAccountNatureTypeService;
     }
 
 
@@ -76,11 +79,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         Map<String, Object> paramMap = paramSearch.getParamMap();
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         Page<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getStartDate(),
-                paramSearch.getEndDate(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
+                paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
                 paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
                 paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId()
                 , paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId()
-                , paramMap.get("priceType"), paramSearch.getPriceTypeId(), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
+                , paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
                 paramSearch.getToPrice(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId(), pageable);
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
@@ -121,6 +124,17 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
                 case "financialNumberingType.id":
                     responseFinancialDocumentDto.setFinancialNumberingTypeId(Long.parseLong(item.getValue().toString()));
+                    break;
+                case "priceType.id":
+                    if (item.getValue() != null) {
+                        map.put("priceType", "priceType");
+                        responseFinancialDocumentDto.setParamMap(map);
+                        responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        map.put("priceType", null);
+                        responseFinancialDocumentDto.setParamMap(map);
+                        responseFinancialDocumentDto.setPriceTypeId(0L);
+                    }
                     break;
 
                 case "fromNumber.id":
@@ -218,17 +232,17 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     }
                     break;
 
-                case "priceType.id":
-                    if (item.getValue() != null) {
-                        map.put("priceType", "priceType");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("priceType", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setPriceTypeId(0L);
-                    }
-                    break;
+//                case "priceType.id":
+//                    if (item.getValue() != null) {
+//                        map.put("priceType", "priceType");
+//                        responseFinancialDocumentDto.setParamMap(map);
+//                        responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
+//                    } else {
+//                        map.put("priceType", null);
+//                        responseFinancialDocumentDto.setParamMap(map);
+//                        responseFinancialDocumentDto.setPriceTypeId(0L);
+//                    }
+//                    break;
 
                 case "fromPriceAmount":
                     if (item.getValue() != null) {
@@ -323,9 +337,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     private List<FinancialDocumentErrorDto> validationSetStatus(FinancialDocument financialDocument) {
         List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = new ArrayList<>();
-
         List<FinancialDocumentItem> documentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocument.getId());
-
         if (documentItemList.isEmpty()) {
             FinancialDocumentErrorDto documentItem = new FinancialDocumentErrorDto();
             documentItem.setFinancialDocumentId(financialDocument.getId());
@@ -454,6 +466,18 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             financialDocumentErrorDtoList.add(financialDocumentCost);
         }
 
+        ControlFinancialAccountNatureTypeInputRequest controlFinancialAccountNatureTypeInputRequest = new ControlFinancialAccountNatureTypeInputRequest();
+        controlFinancialAccountNatureTypeInputRequest.setFinancialDocumentId(financialDocument.getId());
+        List<ControlFinancialAccountNatureTypeOutputResponse> controlFinancialAccountNatureTypeList = controlFinancialAccountNatureTypeService.getControlFinancialAccountNatureType(controlFinancialAccountNatureTypeInputRequest);
+
+        controlFinancialAccountNatureTypeList.forEach(e -> {
+            FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
+            financialDocumentCost.setMessage(e.getResultMessage());
+            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
+            financialDocumentErrorDtoList.add(financialDocumentCost);
+        });
+
+
         Long financialDocumentItemAccount = financialDocumentItemRepository.getFinancialAccount(financialDocument.getId());
         if (financialDocumentItemAccount == null) {
             FinancialDocumentErrorDto financialAccount = new FinancialDocumentErrorDto();
@@ -508,11 +532,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto) {
-
         List<FinancialNumberingRecordDto> financialNumberingRecordDtoList = new ArrayList<>();
         AtomicReference<String> documentNumber = new AtomicReference<>("");
 
-        List<Object[]> list = financialDocumentRepository.getSerialNumber(financialDocumentNumberDto.getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
+        List<Object[]> list = financialDocumentRepository.getSerialNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         if (!list.isEmpty()) {
             list.forEach(objects -> {
                 FinancialNumberingFormat financialNumberingFormat =
@@ -533,14 +556,14 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
 
         List<NumberingFormatSerial> numberingFormatSerialList =
-                numberingFormatSerialRepository.findNumberingFormatSerialByParam(financialDocumentNumberDto.getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
+                numberingFormatSerialRepository.findNumberingFormatSerialByParam(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         numberingFormatSerialList.forEach(numberingFormatSerial -> {
             numberingFormatSerial.setLastSerial(numberingFormatSerial.getLastSerial() + 1);
             numberingFormatSerialRepository.save(numberingFormatSerial);
         });
 
         List<Object[]> listDocumentNumber =
-                financialDocumentRepository.findDocumentNumber(financialDocumentNumberDto.getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
+                financialDocumentRepository.findDocumentNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         listDocumentNumber.forEach(documentNumberObject -> {
             FinancialDocumentNumber financialDocumentNumber = new FinancialDocumentNumber();
             FinancialNumberingRecordDto financialNumberingRecordDto = new FinancialNumberingRecordDto();

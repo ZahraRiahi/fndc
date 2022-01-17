@@ -83,31 +83,30 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         List<FinancialAccountTurnOverOutputResponse> financialAccountTurnOverOutputResponses = new ArrayList<>();
         List<FinancialAccountTurnOverRecordsResponse> recordsResponseList = new ArrayList<>();
         FinancialAccountTurnOverOutputResponse response = new FinancialAccountTurnOverOutputResponse();
-
         list.forEach(item -> {
 
-            if (item[13] != null && (Long.parseLong(item[13].toString()) == 1 || Long.parseLong(item[13].toString()) == 2)) {
+            if (item[17] != null && (Long.parseLong(item[17].toString()) == 1 || Long.parseLong(item[17].toString()) == 2)) {
                 FinancialAccountTurnOverRecordsResponse recordsResponse = new FinancialAccountTurnOverRecordsResponse();
                 recordsResponse.setDocumentDate(item[0] == null ? null : convertDate(item[0].toString()));
-                recordsResponse.setDocumentNumber(item[1] == null ? null : item[1].toString());
-                recordsResponse.setDescription(item[2] == null ? null : item[2].toString());
-                recordsResponse.setDebitAmount(item[3] == null ? null : Double.parseDouble(item[3].toString()));
-                recordsResponse.setCreditAmount(item[4] == null ? null : Double.parseDouble(item[4].toString()));
-                recordsResponse.setRemainDebit(item[5] == null ? null : Double.parseDouble(item[5].toString()));
-                recordsResponse.setRemainCredit(item[6] == null ? null : Double.parseDouble(item[6].toString()));
-                recordsResponse.setRemainAmount(item[7] == null ? null : Double.parseDouble(item[7].toString()));
-                recordsResponse.setRecordType(item[13] == null ? null : Long.parseLong(item[13].toString()));
+                recordsResponse.setDocumentNumber(item[2] == null ? null : item[2].toString());
+                recordsResponse.setDescription(item[3] == null ? null : item[3].toString());
+                recordsResponse.setDebitAmount(item[7] == null ? null : Double.parseDouble(item[7].toString()));
+                recordsResponse.setCreditAmount(item[8] == null ? null : Double.parseDouble(item[8].toString()));
+                recordsResponse.setRemainDebit(item[9] == null ? null : Double.parseDouble(item[9].toString()));
+                recordsResponse.setRemainCredit(item[10] == null ? null : Double.parseDouble(item[10].toString()));
+                recordsResponse.setRemainAmount(item[11] == null ? null : Double.parseDouble(item[11].toString()));
+                recordsResponse.setRecordType(item[17] == null ? null : Long.parseLong(item[17].toString()));
                 recordsResponseList.add(recordsResponse);
                 response.setFinancialAccountTurnOverRecordsResponseModel(recordsResponseList);
             } else {
                 FinancialAccountTurnOverSummarizeResponse accountTurnOverSummarizeResponse = new FinancialAccountTurnOverSummarizeResponse();
                 FinancialAccountTurnOverOutputResponse outputResponse = new FinancialAccountTurnOverOutputResponse();
-                accountTurnOverSummarizeResponse.setSumDebit(item[8] == null ? null : Double.parseDouble(item[8].toString()));
-                accountTurnOverSummarizeResponse.setSumCredit(item[9] == null ? null : Double.parseDouble(item[9].toString()));
-                accountTurnOverSummarizeResponse.setSummarizeDebit(item[10] == null ? null : Double.parseDouble(item[10].toString()));
-                accountTurnOverSummarizeResponse.setSummarizeCredit(item[11] == null ? null : Double.parseDouble(item[11].toString()));
-                accountTurnOverSummarizeResponse.setSummarizeAmount(item[12] == null ? null : Double.parseDouble(item[12].toString()));
-                accountTurnOverSummarizeResponse.setRecordType(item[13] == null ? null : Long.parseLong(item[13].toString()));
+                accountTurnOverSummarizeResponse.setSumDebit(item[12] == null ? null : Double.parseDouble(item[12].toString()));
+                accountTurnOverSummarizeResponse.setSumCredit(item[13] == null ? null : Double.parseDouble(item[13].toString()));
+                accountTurnOverSummarizeResponse.setSummarizeDebit(item[14] == null ? null : Double.parseDouble(item[14].toString()));
+                accountTurnOverSummarizeResponse.setSummarizeCredit(item[15] == null ? null : Double.parseDouble(item[15].toString()));
+                accountTurnOverSummarizeResponse.setSummarizeAmount(item[16] == null ? null : Double.parseDouble(item[16].toString()));
+                accountTurnOverSummarizeResponse.setRecordType(item[17] == null ? null : Long.parseLong(item[17].toString()));
                 outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
                 response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
             }
@@ -120,12 +119,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         return dataSourceResult;
     }
 
-    private Date convertDate(String date){
-       if (date.length() == 7) {
-          return DateUtil.jalaliToGregorian(date,"yyyy/MM");
-       } else {
-           return DateUtil.jalaliToGregorian(date);
-       }
+    private Date convertDate(String date) {
+        if (date.length() == 7) {
+            return DateUtil.jalaliToGregorian(date, "yyyy/MM");
+        } else {
+            return DateUtil.jalaliToGregorian(date);
+        }
     }
 
 
@@ -330,7 +329,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialDocumentCentricTurnOverRequest.getFinancialAccountId(),
                 financialDocumentCentricTurnOverRequest.getToDate(),
                 financialDocumentCentricTurnOverRequest.getToNumber(),
-
                 pageable);
 
         List<FinancialDocumentCentricTurnOverResponse> financialDocumentCentricTurnOverResponse = list.stream().map(item ->
@@ -359,6 +357,64 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         dataSourceResult.setData(financialDocumentCentricTurnOverResponse);
         dataSourceResult.setTotal(list.getTotalElements());
         return dataSourceResult;
+
+
+//        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
+//        Page<Object[]> list = financialPeriodRepository.findByFinancialPeriodByParam(SecurityHelper.getCurrentUser().getOrganizationId(),
+//                financialDocumentReportRequest.getLedgerTypeId(),
+//                financialDocumentReportRequest.getPeriodStartDate(),
+//                financialDocumentReportRequest.getDateFilterFlg(),
+//                financialDocumentReportRequest.getFromDate(),
+//                financialDocumentReportRequest.getDocumentNumberingTypeId(),
+//                financialDocumentReportRequest.getFromNumber(),
+//                financialDocumentReportRequest.getCentricAccount1(),
+//                financialDocumentReportRequest.getCentricAccountId1(),
+//                financialDocumentReportRequest.getCentricAccount2(),
+//                financialDocumentReportRequest.getCentricAccountId2(),
+//                financialDocumentReportRequest.getReferenceNumberObject(),
+//                financialDocumentReportRequest.getReferenceNumber(),
+//                financialDocumentReportRequest.getToNumber(),
+//                financialDocumentReportRequest.getFinancialAccountId(),
+//                financialDocumentReportRequest.getSummarizingType(),
+//                financialDocumentReportRequest.getToDate(),
+//                pageable);
+//        List<FinancialAccountTurnOverOutputResponse> financialAccountTurnOverOutputResponses = new ArrayList<>();
+//        List<FinancialAccountTurnOverRecordsResponse> recordsResponseList = new ArrayList<>();
+//        FinancialAccountTurnOverOutputResponse response = new FinancialAccountTurnOverOutputResponse();
+//        list.forEach(item -> {
+//
+//            if (item[17] != null && (Long.parseLong(item[17].toString()) == 1 || Long.parseLong(item[17].toString()) == 2)) {
+//                FinancialAccountTurnOverRecordsResponse recordsResponse = new FinancialAccountTurnOverRecordsResponse();
+//                recordsResponse.setDocumentDate(item[0] == null ? null : convertDate(item[0].toString()));
+//                recordsResponse.setDocumentNumber(item[2] == null ? null : item[2].toString());
+//                recordsResponse.setDescription(item[3] == null ? null : item[3].toString());
+//                recordsResponse.setDebitAmount(item[7] == null ? null : Double.parseDouble(item[7].toString()));
+//                recordsResponse.setCreditAmount(item[8] == null ? null : Double.parseDouble(item[8].toString()));
+//                recordsResponse.setRemainDebit(item[9] == null ? null : Double.parseDouble(item[9].toString()));
+//                recordsResponse.setRemainCredit(item[10] == null ? null : Double.parseDouble(item[10].toString()));
+//                recordsResponse.setRemainAmount(item[11] == null ? null : Double.parseDouble(item[11].toString()));
+//                recordsResponse.setRecordType(item[17] == null ? null : Long.parseLong(item[17].toString()));
+//                recordsResponseList.add(recordsResponse);
+//                response.setFinancialAccountTurnOverRecordsResponseModel(recordsResponseList);
+//            } else {
+//                FinancialAccountTurnOverSummarizeResponse accountTurnOverSummarizeResponse = new FinancialAccountTurnOverSummarizeResponse();
+//                FinancialAccountTurnOverOutputResponse outputResponse = new FinancialAccountTurnOverOutputResponse();
+//                accountTurnOverSummarizeResponse.setSumDebit(item[12] == null ? null : Double.parseDouble(item[12].toString()));
+//                accountTurnOverSummarizeResponse.setSumCredit(item[13] == null ? null : Double.parseDouble(item[13].toString()));
+//                accountTurnOverSummarizeResponse.setSummarizeDebit(item[14] == null ? null : Double.parseDouble(item[14].toString()));
+//                accountTurnOverSummarizeResponse.setSummarizeCredit(item[15] == null ? null : Double.parseDouble(item[15].toString()));
+//                accountTurnOverSummarizeResponse.setSummarizeAmount(item[16] == null ? null : Double.parseDouble(item[16].toString()));
+//                accountTurnOverSummarizeResponse.setRecordType(item[17] == null ? null : Long.parseLong(item[17].toString()));
+//                outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
+//                response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
+//            }
+//        });
+//        financialAccountTurnOverOutputResponses.add(response);
+//
+//        DataSourceResult dataSourceResult = new DataSourceResult();
+//        dataSourceResult.setData(financialAccountTurnOverOutputResponses);
+//        dataSourceResult.setTotal(list.getTotalElements());
+//        return dataSourceResult;
     }
 
     private FinancialDocumentCentricTurnOverRequest setParameterCentricTurnOver(List<DataSourceRequest.FilterDescriptor> filters) {

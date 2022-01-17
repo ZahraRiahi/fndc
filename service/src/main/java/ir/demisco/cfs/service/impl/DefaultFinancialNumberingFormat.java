@@ -13,7 +13,6 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
-import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -44,7 +43,7 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     @Transactional
     public DataSourceResult getNumberingFormatByOrganizationId(Long organizationId, DataSourceRequest dataSourceRequest) {
 
-        Asserts.notNull(organizationId, "organizationId is null");
+//        Asserts.notNull(organizationId, "organizationId is null");
         dataSourceRequest.getFilter().setLogic("and");
         dataSourceRequest.getFilter().getFilters()
                 .add(DataSourceRequest.FilterDescriptor.create("organization.id", organizationId, DataSourceRequest.Operators.EQUALS));
@@ -56,7 +55,6 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
-//    public ResponseFinancialNumberingFormatDto save(FinancialNumberingFormatDto financialNumberingFormatDto) {
     public Boolean save(FinancialNumberingFormatDto financialNumberingFormatDto) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         Object formatType;
@@ -84,35 +82,13 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
             numberingFormat.setFirstSerial(financialNumberingFormatDto.getFirstSerial());
             financialNumberingFormatRepository.save(numberingFormat);
             return true;
-//            return convertNumberingFormatToDto(numberingFormat);
         }
     }
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
-//    public ResponseFinancialNumberingFormatDto upDate(FinancialNumberingFormatDto financialNumberingFormatDto) {
     public Boolean upDate(FinancialNumberingFormatDto financialNumberingFormatDto) {
         throw new RuleException("fin.financialNumberingFormat.update");
-//
-//        FinancialNumberingFormat financialNumberingFormat =
-//                financialNumberingFormatRepository.getFormatByTypeForEdit(financialNumberingFormatDto.getFinancialNumberingFormatTypeId(),
-//                        financialNumberingFormatDto.getFinancialNumberingTypeId(), organizationId, financialNumberingFormatDto.getId());
-//        if (financialNumberingFormat != null) {
-//            throw new RuleException("fin.financialNumberingFormat.existNumberingFormat");
-//        } else {
-//            FinancialNumberingFormat updateFormat = financialNumberingFormatRepository.findById(financialNumberingFormatDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
-//            updateFormat.setDescription(financialNumberingFormatDto.getDescription());
-////            updateFormat.setFinancialNumberingFormatType(financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()));
-//            updateFormat.setFinancialNumberingFormatType(financialNumberingFormatDto.getFinancialNumberingFormatTypeId() != 0 ?
-//                    financialNumberingFormatTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingFormatTypeId()) : null);
-//            updateFormat.setFinancialNumberingType(financialNumberingTypeRepository.getOne(financialNumberingFormatDto.getFinancialNumberingTypeId()));
-//            updateFormat.setReseter(financialNumberingFormatDto.getReseter());
-//            updateFormat.setSerialLength(financialNumberingFormatDto.getSerialLength());
-//            updateFormat.setFirstSerial(financialNumberingFormatDto.getFirstSerial());
-//            financialNumberingFormatRepository.save(updateFormat);
-////            return convertNumberingFormatToDto(updateFormat);
-//            return true;
-//        }
     }
 
     private ResponseFinancialNumberingFormatDto convertNumberingFormatToDto(FinancialNumberingFormat updateFormat) {

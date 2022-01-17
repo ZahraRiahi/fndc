@@ -1,9 +1,9 @@
 package ir.demisco.cfs.model.dto.request;
 
-public class FinancialDocumentItemRequest {
+public class ControlFinancialAccountNatureTypeRequest {
     private Long financialDocumentId;
     private Long financialDocumentItemId;
-    private Object financialDocumentItem;
+    private Long financialAccountId;
 
     public Long getFinancialDocumentId() {
         return financialDocumentId;
@@ -21,11 +21,11 @@ public class FinancialDocumentItemRequest {
         this.financialDocumentItemId = financialDocumentItemId;
     }
 
-    public Object getFinancialDocumentItem() {
-        return financialDocumentItem;
+    public Long getFinancialAccountId() {
+        return financialAccountId;
     }
 
-    public void setFinancialDocumentItem(Object financialDocumentItem) {
-        this.financialDocumentItem = financialDocumentItem;
+    public void setFinancialAccountId(Long financialAccountId) {
+        this.financialAccountId = financialAccountId;
     }
 }
