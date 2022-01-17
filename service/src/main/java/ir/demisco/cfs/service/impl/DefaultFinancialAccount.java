@@ -44,6 +44,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     public DataSourceResult getFinancialDocument(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialDocumentReportRequest financialDocumentReportRequest = setParameter(filters);
+        financialDocumentReportRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setSummarizingType(financialDocumentReportRequest.getSummarizingType() == null ? 1 : financialDocumentReportRequest.getSummarizingType());
         getFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest);
         if (financialDocumentReportRequest.getFinancialAccountId() == null) {
@@ -155,11 +156,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void setFromNumberAndToNumber(FinancialDocumentReportRequest financialDocumentReportRequest) {
         String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
-                financialDocumentReportRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+                financialDocumentReportRequest.getFromDate(),SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setFromNumber(fromNumber);
 
         String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
-                financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+                financialDocumentReportRequest.getToDate(),SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setToNumber(toNumber);
 
         if (fromNumber == null || toNumber == null) {
@@ -169,7 +170,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void setFromDateAndToDate(FinancialDocumentReportRequest financialDocumentReportRequest) {
         LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
-                , financialDocumentReportRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
+                , financialDocumentReportRequest.getFromNumber(),SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setFromDate(fromDate);
         LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
                 , financialDocumentReportRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
