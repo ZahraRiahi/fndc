@@ -91,7 +91,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialPeriodStatusRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
         financialPeriodStatusRequest.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
         FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
-        if (financialPeriodStatus.getPeriodStatus() == null || financialPeriodStatus.getMonthStatus() == null) {
+        if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
         }
         String documentNumber;
