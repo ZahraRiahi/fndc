@@ -12,7 +12,6 @@ import ir.demisco.cloud.core.middle.exception.RuleException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -80,9 +79,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
                 financialDocumentRepository.usedInFinancialDocument(financialDepartmentLedgerObject.getFinancialDepartmentLedgerId()).size() == 0) {
             FinancialDepartmentLedger financialDepartmentLedger = financialDepartmentLedgerRepository.findById(financialDepartmentLedgerObject.getFinancialDepartmentLedgerId())
                     .orElseThrow(() -> new RuleException("fin.financialDepartmentLedger.notExistDepartmentLedger"));
-            financialDepartmentLedger.setDeletedDate(LocalDateTime.now());
-            financialDepartmentLedgerRepository.save(financialDepartmentLedger);
-
+            financialDepartmentLedgerRepository.deleteById(financialDepartmentLedger.getId());
         } else {
             throw new RuleException("fin.financialDepartmentLedger.notPossibleDeleteDepartmentLedger");
         }
