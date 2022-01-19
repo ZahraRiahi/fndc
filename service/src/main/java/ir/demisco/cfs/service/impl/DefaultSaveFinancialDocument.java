@@ -87,7 +87,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
         financialPeriodStatusRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
-        financialPeriodStatusRequest.setDate(LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/","-")+"T00:00"));
+        financialPeriodStatusRequest.setDate(LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/", "-") + "T00:00"));
         financialPeriodStatusRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
         financialPeriodStatusRequest.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
         FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
@@ -154,10 +154,16 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private FinancialDocumentReference saveDocumentReference(FinancialDocumentItem finalFinancialDocumentItem, FinancialDocumentReferenceDto documentReference) {
         FinancialDocumentReference financialDocumentReference = new FinancialDocumentReference();
         financialDocumentReference.setFinancialDocumentItem(finalFinancialDocumentItem);
-        financialDocumentReference.setReferenceNumber(documentReference.getReferenceNumber());
+        if (documentReference.getReferenceNumber().toString().length() > 6) {
+            throw new RuleException("fin.financialDocumentReference.referenceNumber");
+        } else {
+            financialDocumentReference.setReferenceNumber(documentReference.getReferenceNumber());
+        }
         financialDocumentReference.setReferenceDate(documentReference.getReferenceDate());
         financialDocumentReference.setReferenceDescription(documentReference.getReferenceDescription());
-        return financialDocumentReferenceRepository.save(financialDocumentReference);
+        financialDocumentReference = financialDocumentReferenceRepository.save(financialDocumentReference);
+        financialDocumentReferenceRepository.flush();
+        return financialDocumentReference;
 
     }
 
