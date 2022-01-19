@@ -80,12 +80,12 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList = new ArrayList<>();
         FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
-        financialPeriodStatusRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        financialPeriodStatusRequest.setOrganizationId(100L);
         financialPeriodStatusRequest.setDate(LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/", "-") + "T00:00"));
         financialPeriodStatusRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
         financialPeriodStatusRequest.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
         FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
-        if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
+        if (financialPeriodStatus.getPeriodStatus() == null || financialPeriodStatus.getMonthStatus() == null) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
         }
         String documentNumber;
@@ -416,7 +416,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocument.setDescription(financialDocumentSaveDto.getDescription());
         financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(financialDocumentSaveDto.getFinancialDocumentStatusId()));
         financialDocument.setAutomaticFlag(financialDocumentSaveDto.getAutomaticFlag());
-        financialDocument.setOrganization(organizationRepository.getOne(SecurityHelper.getCurrentUser().getOrganizationId()));
+        financialDocument.setOrganization(organizationRepository.getOne(100L));
         financialDocument.setFinancialDocumentType(financialDocumentTypeRepository.getOne(financialDocumentSaveDto.getFinancialDocumentTypeId()));
         financialDocument.setFinancialPeriod(financialPeriodRepository.getOne(financialDocumentSaveDto.getFinancialPeriodId()));
         financialDocument.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialDocumentSaveDto.getFinancialLedgerTypeId()));
