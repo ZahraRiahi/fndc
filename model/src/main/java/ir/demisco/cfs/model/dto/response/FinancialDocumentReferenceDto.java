@@ -6,7 +6,7 @@ public class FinancialDocumentReferenceDto {
 
     private Long     financialDocumentReferenceId;
     private Long     financialDocumentItemId;
-    private Long     referenceNumber;
+    private String     referenceNumber;
     private Date referenceDate;
     private String     referenceDescription;
 
@@ -26,11 +26,11 @@ public class FinancialDocumentReferenceDto {
         this.financialDocumentItemId = financialDocumentItemId;
     }
 
-    public Long getReferenceNumber() {
+    public String getReferenceNumber() {
         return referenceNumber;
     }
 
-    public void setReferenceNumber(Long referenceNumber) {
+    public void setReferenceNumber(String referenceNumber) {
         this.referenceNumber = referenceNumber;
     }
 
@@ -76,7 +76,7 @@ public class FinancialDocumentReferenceDto {
             return this;
         }
 
-        public Builder referenceNumber(Long referenceNumber) {
+        public Builder referenceNumber(String referenceNumber) {
             financialDocumentReferenceDto.setReferenceNumber(referenceNumber);
             return this;
         }
