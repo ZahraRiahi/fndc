@@ -37,7 +37,7 @@ public class DefaultFinancialNumberingType implements FinancialNumberingTypeServ
                     .toCode(null)
                     .build()).collect(Collectors.toList());
         } else {
-            List<Object[]> financialNumberingTypeList = financialNumberingTypeRepository.findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(SecurityHelper.getCurrentUser().getOrganizationId(), financialNumberingTypeRequest.getFromDate(), financialNumberingTypeRequest.getToDate());
+            List<Object[]> financialNumberingTypeList = financialNumberingTypeRepository.findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(100L, financialNumberingTypeRequest.getFromDate(), financialNumberingTypeRequest.getToDate());
             return financialNumberingTypeList.stream().map(e -> FinancialNumberingTypeOutputResponse.builder().id(Long.parseLong(e[0].toString()))
                     .description(e[1] == null ? "" : e[1].toString())
                     .fromCode(e[2] == null ? "" : e[2].toString())
