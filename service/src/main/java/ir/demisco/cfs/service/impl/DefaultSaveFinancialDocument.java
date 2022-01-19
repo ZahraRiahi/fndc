@@ -154,7 +154,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private FinancialDocumentReference saveDocumentReference(FinancialDocumentItem finalFinancialDocumentItem, FinancialDocumentReferenceDto documentReference) {
         FinancialDocumentReference financialDocumentReference = new FinancialDocumentReference();
         financialDocumentReference.setFinancialDocumentItem(finalFinancialDocumentItem);
-        if (documentReference.getReferenceNumber().toString().length() > 6) {
+        if (documentReference.getReferenceNumber().toString().length() > 19) {
             throw new RuleException("fin.financialDocumentReference.referenceNumber");
         } else {
             financialDocumentReference.setReferenceNumber(documentReference.getReferenceNumber());
