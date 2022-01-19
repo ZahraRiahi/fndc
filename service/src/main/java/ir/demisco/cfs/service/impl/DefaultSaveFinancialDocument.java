@@ -81,7 +81,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList = new ArrayList<>();
         FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
-        financialPeriodStatusRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        financialPeriodStatusRequest.setOrganizationId(100L);
         financialPeriodStatusRequest.setDate(LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/", "-") + "T00:00"));
         financialPeriodStatusRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
         financialPeriodStatusRequest.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
@@ -149,7 +149,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private FinancialDocumentReference saveDocumentReference(FinancialDocumentItem finalFinancialDocumentItem, FinancialDocumentReferenceDto documentReference) {
         FinancialDocumentReference financialDocumentReference = new FinancialDocumentReference();
         financialDocumentReference.setFinancialDocumentItem(finalFinancialDocumentItem);
-        if (documentReference.getReferenceNumber().toString().length() > 19) {
+        if (documentReference.getReferenceNumber().toString().length() >= 19) {
             throw new RuleException("fin.financialDocumentReference.referenceNumber");
         } else {
             financialDocumentReference.setReferenceNumber(documentReference.getReferenceNumber());
