@@ -602,6 +602,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialDocumentItemList.isEmpty()) {
             throw new RuleException("fin.financialDocument.notFoundRecordWithParam");
         }
+        FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
+        financialPeriodStatusRequest.setFinancialDocumentId(financialDocumentDto.getId());
+        FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
+        if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
+        }
         entityManager.createNativeQuery(" update fndc.financial_document_item " +
                 "   set description = replace(description,:description,:newDescription) " +
                 "   where id in (:FinancialDocumentItemIdList) " +
