@@ -15,5 +15,17 @@ public interface FinancialDocumentTypeRepository extends JpaRepository<Financial
             " and fd.deletedDate is null ")
     List<FinancialDocumentType> findByOrganizationId(Long organizationId, Boolean searchStatusFlag, String isFlag);
 
-
+    @Query("select count(fdt.id) " +
+            "  from FinancialDocumentType fdt" +
+            "  join FinancialConfig fc" +
+            "    on fc.financialDocumentType.id = fdt.id" +
+            "  join FinancialDocument fd" +
+            "    on fd.financialDocumentType.id = fdt.id" +
+            "  join FinancialDocument fdp" +
+            "    on fdp.financialDocumentType.id = fdt.id" +
+            " where fdt.id = :financialDocumentTypeId" +
+            "   and ( fd.financialDocumentType.id= :financialDocumentTypeId or" +
+            "        fdp.financialDocumentType.id= :financialDocumentTypeId or" +
+            "         fc.financialDocumentType.id= :financialDocumentTypeId)")
+    Long getDocumentTypeIdForDelete(Long financialDocumentTypeId);
 }
