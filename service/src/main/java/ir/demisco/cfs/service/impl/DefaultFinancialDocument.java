@@ -706,6 +706,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             if (financialDocumentItemList.isEmpty()) {
                 throw new RuleException("fin.financialDocument.notExistDocumentItem");
             }
+            FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
+            financialPeriodStatusRequest.setFinancialDocumentId(financialCentricAccountDto.getId());
+            FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
+            if (financialPeriodStatus.getPeriodStatus() == null || financialPeriodStatus.getMonthStatus() == null) {
+                throw new RuleException("دوره مالی و ماه عملیاتی سند مبدا میبایست در وضعیت باز باشند");
+            }
             Long centricAccountId = financialCentricAccountDto.getCentricAccountId();
             financialDocumentItemList.forEach(documentItem -> {
                 if ((documentItem.getCentricAccountId1() != null) && (centricAccountId.equals(documentItem.getCentricAccountId1().getId()))) {
