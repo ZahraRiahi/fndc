@@ -631,12 +631,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         } else {
             List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocumentId);
             deleteDocumentItem(financialDocumentItemList);
-            Long documentByIdForDelete = financialDocumentRepository.getDocumentByIdForDelete(financialDocument.getId());
-            if(documentByIdForDelete >0){
-                financialDocumentNumberRepository.deleteById((financialDocumentId));
-                financialDocumentNumberRepository.flush();
-                financialDocumentRepository.deleteById(financialDocument.getId());
-            }
+            List<FinancialDocumentNumber> financialDocumentNumberList = financialDocumentNumberRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocumentId);
+            financialDocumentNumberList.forEach(financialDocumentNumber -> financialDocumentNumberRepository.deleteById((financialDocumentNumber.getId())));
+            financialDocumentNumberRepository.flush();
             financialDocumentRepository.deleteById(financialDocument.getId());
         }
         return true;
