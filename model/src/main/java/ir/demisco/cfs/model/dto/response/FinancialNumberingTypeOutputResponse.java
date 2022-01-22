@@ -5,6 +5,7 @@ public class FinancialNumberingTypeOutputResponse {
     private String description;
     private String fromCode;
     private String toCode;
+    private Long serialLength;
 
     public Long getId() {
         return id;
@@ -36,6 +37,14 @@ public class FinancialNumberingTypeOutputResponse {
 
     public void setToCode(String toCode) {
         this.toCode = toCode;
+    }
+
+    public Long getSerialLength() {
+        return serialLength;
+    }
+
+    public void setSerialLength(Long serialLength) {
+        this.serialLength = serialLength;
     }
 
     public static FinancialNumberingTypeOutputResponse.Builder builder() {
@@ -72,7 +81,10 @@ public class FinancialNumberingTypeOutputResponse {
             financialNumberingTypeOutputResponse.setToCode(toCode);
             return this;
         }
-
+        public Builder serialLength(Long serialLength) {
+            financialNumberingTypeOutputResponse.setSerialLength(serialLength);
+            return this;
+        }
         public FinancialNumberingTypeOutputResponse build() {
             return financialNumberingTypeOutputResponse;
         }
