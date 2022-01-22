@@ -17,7 +17,6 @@ import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -57,10 +56,13 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     public Boolean deleteFinancialDocumentTypeById(Long financialDocumentTypeId) {
         FinancialDocumentType financialDocumentType = financialDocumentTypeRepository.findById(financialDocumentTypeId)
                 .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
-        financialDocumentType.setDeletedDate(LocalDateTime.now());
-//        financialDocumentTypeRepository.deleteById(financialDocumentTypeId);
-        financialDocumentTypeRepository.save(financialDocumentType);
-        return true;
+        Long documentTypeIdForDelete = financialDocumentTypeRepository.getDocumentTypeIdForDelete(financialDocumentType.getId());
+        if (documentTypeIdForDelete > 0) {
+            throw new RuleException("fin.financialDocumentType.check.for.delete");
+        } else {
+          financialDocumentTypeRepository.deleteById(financialDocumentTypeId);
+            return true;
+        }
     }
 
     @Override
