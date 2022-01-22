@@ -35,17 +35,20 @@ public class DefaultFinancialNumberingType implements FinancialNumberingTypeServ
                     .description(e[1] == null ? "" : e[1].toString())
                     .fromCode(null)
                     .toCode(null)
+                    .serialLength(0L)
                     .build()).collect(Collectors.toList());
         } else {
             List<Object[]> financialNumberingTypeList = financialNumberingTypeRepository.findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(SecurityHelper.getCurrentUser().getOrganizationId(), financialNumberingTypeRequest.getFromDate(), financialNumberingTypeRequest.getToDate());
             return financialNumberingTypeList.stream().map(e -> FinancialNumberingTypeOutputResponse.builder().id(Long.parseLong(e[0].toString()))
                     .description(e[1] == null ? "" : e[1].toString())
-                    .fromCode(e[2] == null ? "" : e[2].toString())
-                    .toCode(e[3] == null ? "" : e[3].toString())
+                    .fromCode(e[3] == null ? "" : e[3].toString())
+                    .toCode(e[4] == null ? "" : e[4].toString())
+                    .serialLength(Long.parseLong(e[2] == null ? null : e[2].toString()))
                     .build()).collect(Collectors.toList());
         }
 
     }
+
     @Override
     public DataSourceResult getNumberingType(DataSourceRequest dataSourceRequest) {
         dataSourceRequest.getFilter().setLogic("and");

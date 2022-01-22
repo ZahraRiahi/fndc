@@ -11,7 +11,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Component
-public class FinancialNumberingTypeGridProvider  implements GridDataProvider {
+public class    FinancialNumberingTypeGridProvider  implements GridDataProvider {
 
     @Override
     public Class<?> getRootEntityClass() {

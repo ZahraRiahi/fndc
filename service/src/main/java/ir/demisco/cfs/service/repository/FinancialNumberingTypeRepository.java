@@ -12,6 +12,7 @@ public interface FinancialNumberingTypeRepository extends JpaRepository<Financia
     @Query(value = " WITH QRY AS" +
             " (SELECT FNNT.ID," +
             "         FNNT.DESCRIPTION," +
+            " NF.SERIAL_LENGTH, " +
             "         (SELECT REPLACE(REPLACE(REPLACE(REPLACE(NFT.CODE," +
             "                                                 '$LEG'," +
             "                                                 (SELECT LT.CODE" +
@@ -38,6 +39,7 @@ public interface FinancialNumberingTypeRepository extends JpaRepository<Financia
             "      ON NFT.ID = NF.NUMBERING_FORMAT_TYPE_ID)" +
             " SELECT QRY.ID," +
             "         QRY.DESCRIPTION," +
+            "         QRY.SERIAL_LENGTH, " +
             "       REPLACE(REPLACE(QRY.CODE," +
             "                       '$DAT'," +
             "                       TO_CHAR(TO_DATE(TO_CHAR(:fromDate, 'mm/dd/yyyy')," +
