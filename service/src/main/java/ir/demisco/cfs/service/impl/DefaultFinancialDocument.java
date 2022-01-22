@@ -707,7 +707,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             }
 
         });
-
         financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
         financialDocumentRepository.save(financialDocument);
         return message.get();
