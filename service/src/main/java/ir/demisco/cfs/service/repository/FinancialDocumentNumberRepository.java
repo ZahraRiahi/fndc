@@ -1,6 +1,8 @@
 package ir.demisco.cfs.service.repository;
 
+import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import ir.demisco.cfs.model.entity.FinancialDocumentNumber;
+import ir.demisco.cfs.model.entity.FinancialDocumentReference;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -13,4 +15,7 @@ public interface FinancialDocumentNumberRepository extends JpaRepository<Financi
 
     @Query("select fdn from FinancialDocumentNumber fdn where  fdn.financialDocument.id in (:targetDocumentId,:financialDocumentId) ")
     List<FinancialDocumentNumber> findByFinancialDocumentNumberAndFinancialDocumentIdAndTarget(Long financialDocumentId, Long targetDocumentId);
+
+    List<FinancialDocumentNumber> findByFinancialDocumentIdAndDeletedDateIsNull(Long FinancialDocumentId);
+
 }

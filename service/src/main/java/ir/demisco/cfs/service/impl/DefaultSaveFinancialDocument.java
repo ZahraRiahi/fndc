@@ -1,6 +1,5 @@
 package ir.demisco.cfs.service.impl;
 
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentItemRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
 import ir.demisco.cfs.model.dto.response.*;
@@ -24,12 +23,8 @@ import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
-import java.text.ParsePosition;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Service
@@ -154,10 +149,10 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private FinancialDocumentReference saveDocumentReference(FinancialDocumentItem finalFinancialDocumentItem, FinancialDocumentReferenceDto documentReference) {
         FinancialDocumentReference financialDocumentReference = new FinancialDocumentReference();
         financialDocumentReference.setFinancialDocumentItem(finalFinancialDocumentItem);
-        if (documentReference.getReferenceNumber().toString().length() > 19) {
+        if (documentReference.getReferenceNumber().length() > 19) {
             throw new RuleException("fin.financialDocumentReference.referenceNumber");
         } else {
-            financialDocumentReference.setReferenceNumber(documentReference.getReferenceNumber());
+            financialDocumentReference.setReferenceNumber(Long.parseLong(documentReference.getReferenceNumber()));
         }
         financialDocumentReference.setReferenceDate(documentReference.getReferenceDate());
         financialDocumentReference.setReferenceDescription(documentReference.getReferenceDescription());
@@ -166,6 +161,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         return financialDocumentReference;
 
     }
+
 
     private FinancialDocumentItem saveFinancialDocumentItem(FinancialDocument financialDocument, ResponseFinancialDocumentItemDto documentItem) {
 
@@ -357,7 +353,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private void updateDocumentReferenc(FinancialDocumentReference documentReference, FinancialDocumentReferenceDto responseReference) {
-        documentReference.setReferenceNumber(responseReference.getReferenceNumber());
+        documentReference.setReferenceNumber(Long.parseLong(responseReference.getReferenceNumber()));
         documentReference.setReferenceDate(responseReference.getReferenceDate());
         documentReference.setReferenceDescription(responseReference.getReferenceDescription());
     }
@@ -408,8 +404,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private FinancialDocument saveFinancialDocument(FinancialDocumentSaveDto financialDocumentSaveDto) {
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-
         if (financialDocumentSaveDto.getFinancialDocumentItemDtoList().isEmpty()) {
             throw new RuleException("fin.financialDocument.insertDocumentItem");
         }
@@ -495,7 +489,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         return FinancialDocumentReferenceDto.builder()
                 .financialDocumentReferenceId(financialDocumentReference.getId())
                 .financialDocumentItemId(financialDocumentReference.getFinancialDocumentItem().getId())
-                .referenceNumber(financialDocumentReference.getReferenceNumber())
+                .referenceNumber(financialDocumentReference.getReferenceNumber().toString())
                 .referenceDate(financialDocumentReference.getReferenceDate())
                 .referenceDescription(financialDocumentReference.getReferenceDescription())
                 .build();
