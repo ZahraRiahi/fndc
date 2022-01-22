@@ -536,4 +536,18 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     List<Object[]> findFinancialDocumentById(Long documentId);
 
+    @Query(value = "select count(t.id)" +
+            "  from fndc.FINANCIAL_DOCUMENT t" +
+            " left join fndc.financial_document_item fdi" +
+            "    on t.id = fdi.financial_document_id" +
+            " left join fndc.financial_document_number fdn" +
+            "    on fdn.financial_document_id=t.id" +
+            " left join fndc.financial_document_error fde" +
+            "    on fde.financial_document_id = t.id" +
+            " where t.id = :financialDocumentId" +
+            "   and (fdi.financial_document_id =:financialDocumentId" +
+            "    or fdn.financial_document_id = :financialDocumentId" +
+            "    or fde.financial_document_id = :financialDocumentId)"
+            , nativeQuery = true)
+    Long  getDocumentByIdForDelete(Long financialDocumentId);
 }
