@@ -21,9 +21,10 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Propagation;
+import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.text.ParsePosition;
 import java.time.LocalDateTime;
@@ -308,7 +309,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     @Override
-    @Transactional(rollbackOn = Throwable.class)
+    @Transactional(rollbackFor = Throwable.class)
     public ResponseEntity<ResponseFinancialDocumentSetStatusDto> changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
         ResponseFinancialDocumentSetStatusDto responseFinancialDocumentSetStatusDto = new ResponseFinancialDocumentSetStatusDto();
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
@@ -540,7 +541,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     @Override
-    @Transactional(rollbackOn = Throwable.class)
+    @Transactional(rollbackFor = Throwable.class)
     public String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto) {
         List<FinancialNumberingRecordDto> financialNumberingRecordDtoList = new ArrayList<>();
         AtomicReference<String> documentNumber = new AtomicReference<>("");
@@ -598,7 +599,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     @Override
-    @Transactional(rollbackOn = Throwable.class)
+    @Transactional(rollbackFor = Throwable.class)
     public String changeDescription(FinancialDocumentChengDescriptionDto financialDocumentDto) {
         FinancialDocument financialDocument = financialDocumentRepository.getActiveDocumentById(financialDocumentDto.getId());
         if (financialDocument == null) {
@@ -627,37 +628,46 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     @Override
-    @Transactional(rollbackOn = Throwable.class)
+    @Transactional(rollbackFor = Throwable.class)
     public boolean deleteFinancialDocumentById(Long financialDocumentId) {
         FinancialDocument document = financialDocumentRepository.findById(financialDocumentId).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
         if (financialDocument == null) {
             throw new RuleException("fin.financialDocument.openStatusPeriod");
         } else {
-            financialDocument.setDeletedDate(LocalDateTime.now());
-            financialDocumentRepository.save(financialDocument);
             List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocumentId);
-            financialDocumentItemList.forEach(documentItem -> {
-                documentItem.setDeletedDate(LocalDateTime.now());
-                financialDocumentItemRepository.save(documentItem);
-                FinancialDocumentReference financialDocumentReference = financialDocumentReferenceRepository.getByDocumentItemId(documentItem.getId());
-                if (financialDocumentReference != null) {
-                    financialDocumentReference.setDeletedDate(LocalDateTime.now());
-                    financialDocumentReferenceRepository.save(financialDocumentReference);
-                }
-                FinancialDocumentItemCurrency financialDocumentItemCurrency = documentItemCurrencyRepository.getByDocumentItemId(documentItem.getId());
-                if (financialDocumentItemCurrency != null) {
-                    financialDocumentItemCurrency.setDeletedDate(LocalDateTime.now());
-                    documentItemCurrencyRepository.save(financialDocumentItemCurrency);
-                }
-            });
+            deleteDocumentItem(financialDocumentItemList);
+            List<FinancialDocumentNumber> financialDocumentNumberList = financialDocumentNumberRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocumentId);
+            financialDocumentNumberList.forEach(financialDocumentNumber -> financialDocumentNumberRepository.deleteById((financialDocumentNumber.getId())));
+            financialDocumentNumberRepository.flush();
+            financialDocumentRepository.deleteById(financialDocument.getId());
         }
-
         return true;
     }
 
+    @Transactional(propagation = Propagation.REQUIRES_NEW)
+    public void deleteDocumentItem(List<FinancialDocumentItem> financialDocumentItemList) {
+        financialDocumentItemList.forEach(documentItem -> {
+            Long documentItemByIdForDelete = financialDocumentItemRepository.getDocumentItemByIdForDelete(documentItem.getId());
+            if (documentItemByIdForDelete > 0) {
+                FinancialDocumentReference financialDocumentReference = financialDocumentReferenceRepository.getByDocumentItemId(documentItem.getId());
+                if (financialDocumentReference != null) {
+                    financialDocumentReferenceRepository.deleteById(financialDocumentReference.getId());
+                }
+                FinancialDocumentItemCurrency financialDocumentItemCurrency = documentItemCurrencyRepository.getByDocumentItemId(documentItem.getId());
+                if (financialDocumentItemCurrency != null) {
+                    documentItemCurrencyRepository.deleteById(financialDocumentItemCurrency.getId());
+                }
+                financialDocumentItemRepository.deleteById(documentItem.getId());
+
+            } else {
+                financialDocumentItemRepository.deleteById(documentItem.getId());
+            }
+        });
+    }
+
     @Override
-    @Transactional(rollbackOn = Throwable.class)
+    @Transactional(rollbackFor = Throwable.class)
     public List<FinancialDocumentAccountMessageDto> changeAccountDocument(FinancialDocumentAccountDto financialDocumentAccountDto) {
         FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentAccountDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         List<FinancialDocumentAccountMessageDto> financialDocumentAccountMessageDtoList = new ArrayList<>();
@@ -700,7 +710,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     @Override
-    @Transactional(rollbackOn = Throwable.class)
+    @Transactional(rollbackFor = Throwable.class)
     public String changeCentricAccount(FinancialCentricAccountDto financialCentricAccountDto) {
 
         FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
@@ -761,7 +771,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     @Override
-    @Transactional(rollbackOn = Throwable.class)
+    @Transactional(rollbackFor = Throwable.class)
     public Boolean changeAmountDocument(FinancialCentricAccountDto financialCentricAccountDto) {
         FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId())
                 .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
@@ -793,7 +803,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     @Override
-    @Transactional(rollbackOn = Throwable.class)
+    @Transactional(rollbackFor = Throwable.class)
     public Boolean setAmountDocument(FinancialCentricAccountDto financialCentricAccountDto) {
         FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
@@ -828,7 +838,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     @Override
-    @Transactional(rollbackOn = Throwable.class)
+    @Transactional(rollbackFor = Throwable.class)
     public Boolean setArrangeSequence(FinancialDocumentDto financialDocumentDto) {
         FinancialDocument document = financialDocumentRepository.findById(financialDocumentDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
@@ -866,7 +876,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     @Override
-    @Transactional(rollbackOn = Throwable.class)
+    @Transactional(rollbackFor = Throwable.class)
     public DataSourceResult documentByStructure(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         RequestDocumentStructureDto paramSearch = setParamDocumentStructure(filters);
@@ -904,7 +914,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     @Override
-    @Transactional(rollbackOn = Throwable.class)
+    @Transactional(rollbackFor = Throwable.class)
     public List<ResponseFinancialDocumentStructureDto> getDocumentStructure(RequestDocumentStructureDto
                                                                                     requestDocumentStructureDto) {
         List<Object[]> documentStructure = financialDocumentItemRepository.getDocumentStructurList(requestDocumentStructureDto.getFinancialDocumentId());
