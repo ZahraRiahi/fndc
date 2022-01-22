@@ -80,10 +80,8 @@ public class DefaultFinancialDocumentDescription implements FinancialDocumentDes
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public boolean deleteDocumentDescriptionById(Long documentDescriptionId) {
-        FinancialDocumentDescription financialDocumentDescription =
-                financialDocumentDescriptionRepository.findById(documentDescriptionId).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
-        financialDocumentDescription.setDeletedDate(LocalDateTime.now());
-        financialDocumentDescriptionRepository.save(financialDocumentDescription);
+        FinancialDocumentDescription financialDocumentDescription = financialDocumentDescriptionRepository.findById(documentDescriptionId).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
+           financialDocumentDescriptionRepository.deleteById(financialDocumentDescription.getId());
         return true;
     }
 }
