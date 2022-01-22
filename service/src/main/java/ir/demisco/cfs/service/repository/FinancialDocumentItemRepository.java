@@ -525,4 +525,19 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "    OR (QRY.ACCOUNT_NATURE_TYPE_ID = 1 AND SUM_DEBIT < SUM_CREDIT) "
             , nativeQuery = true)
     List<Object[]> findByFinancialDocumentItemByIdAndFinancialDocumentId(Long financialDocumentId, Long financialDocumentItemId, Object financialDocumentItem, Object financialDocument);
+
+    @Query(value = "select count(t.id)" +
+            "  from fndc.financial_document_item t" +
+            " left join fndc.financial_document_error fde" +
+            "      on fde.financial_document_item_id = t.id" +
+            "    left join fndc.financial_document_item_currency fdic" +
+            "      on fdic.financial_document_item_id = t.id" +
+            "    left join fndc.financial_document_refrence fdr" +
+            "      on fdr.financial_document_item_id = t.id" +
+            "   where t.id = :documentItemId" +
+            "     and (fde.financial_document_item_id = :documentItemId or" +
+            "         fdic.financial_document_item_id = :documentItemId or" +
+            "         fdr.financial_document_item_id  = :documentItemId)"
+            , nativeQuery = true)
+    Long getDocumentItemByIdForDelete(Long documentItemId);
 }
