@@ -33,6 +33,8 @@ import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
+import static ir.demisco.cloud.core.middle.service.system.impl.MessageBundleImpl.message;
+
 @Service
 public class DefaultFinancialDocument implements FinancialDocumentService {
 
@@ -668,21 +670,24 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public List<FinancialDocumentAccountMessageDto> changeAccountDocument(FinancialDocumentAccountDto financialDocumentAccountDto) {
+    public String changeAccountDocument(FinancialDocumentAccountDto financialDocumentAccountDto) {
         FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentAccountDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
-        List<FinancialDocumentAccountMessageDto> financialDocumentAccountMessageDtoList = new ArrayList<>();
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
         financialPeriodStatusRequest.setFinancialDocumentId(financialDocumentAccountDto.getId());
         FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
         if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
         }
+        AtomicReference<String> message = new AtomicReference<>("");
         if (financialDocumentAccountDto.getFinancialAccountId().equals(financialDocumentAccountDto.getNewFinancialAccountId())) {
             throw new RuleException("fin.financialDocument.sameDocumentAccount");
         }
         List<FinancialDocumentItem> financialDocumentItemList =
                 financialDocumentItemRepository.getItemByDocumentItemIdListAndAccountId(financialDocumentAccountDto.getFinancialDocumentItemIdList(),
                         financialDocumentAccountDto.getFinancialAccountId());
+        if (financialDocumentItemList.size() == 0) {
+            throw new RuleException("ردیفی با این حساب یافت نشد.");
+        }
         financialDocumentItemList.forEach(documentItem -> {
             documentItem.setFinancialAccount(financialAccountRepository.getOne(financialDocumentAccountDto.getNewFinancialAccountId()));
             financialDocumentItemRepository.save(documentItem);
@@ -695,18 +700,17 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 documentItem.setCentricAccountId4(null);
                 documentItem.setCentricAccountId5(null);
                 documentItem.setCentricAccountId6(null);
+                message.set(message("به دلیل انواع تفاوت در وابستگی حساب جدید با حساب قبلی،تمام تمرکز های مربوطه حذف شده.لطفا تمرکز های مربوطه را درج نمایید."));
                 financialDocumentItemRepository.save(documentItem);
-            } else
-                financialDocumentAccountMessageDtoList.add(
-                        FinancialDocumentAccountMessageDto.builder()
-                                .id(documentItem.getId())
-                                .message("به دلیل انواع تفاوت در وابستگی حساب جدید با حساب قبلی،تمام تمرکز های مربوطه حذف شده.لطفا تمرکز های مربوطه را درج نمایید.")
-                                .build());
+            } else {
+                message.set(message("عملیات با موفقیت انجام شد."));
+            }
+
         });
 
         financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
         financialDocumentRepository.save(financialDocument);
-        return financialDocumentAccountMessageDtoList;
+        return message.get();
     }
 
     @Override
