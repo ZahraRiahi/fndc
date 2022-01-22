@@ -62,8 +62,13 @@ public class FinancialDocumentController {
     }
 
     @PostMapping("/ChangeAccount")
-    public ResponseEntity<List<FinancialDocumentAccountMessageDto>> changeAccount(@RequestBody FinancialDocumentAccountDto financialDocumentAccountDto) {
-        return ResponseEntity.ok(financialDocumentService.changeAccountDocument(financialDocumentAccountDto));
+    public ResponseEntity<FinancialDocumentAccountMessageDto> changeAccount(@RequestBody FinancialDocumentAccountDto financialDocumentAccountDto) {
+        String result;
+        FinancialDocumentAccountMessageDto financialDocumentAccountMessageDto = new FinancialDocumentAccountMessageDto();
+        result = financialDocumentService.changeAccountDocument(financialDocumentAccountDto);
+        financialDocumentAccountMessageDto.setMessage(result);
+        return ResponseEntity.ok(financialDocumentAccountMessageDto);
+
     }
 
     @PostMapping("/ChangeCentricAccount")
@@ -118,7 +123,7 @@ public class FinancialDocumentController {
 
     @PostMapping("/TransferDocument")
     public ResponseEntity<FinancialDocumentTransferOutputResponse> transferDocument(@RequestBody FinancialDocumentTransferRequest financialDocumentTransferRequest) {
-        Long organizationId =  SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         financialDocumentTransferRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(transferFinancialDocumentService.transferDocument(financialDocumentTransferRequest));
     }
