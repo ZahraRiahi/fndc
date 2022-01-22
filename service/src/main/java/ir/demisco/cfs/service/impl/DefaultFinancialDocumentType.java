@@ -60,7 +60,7 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
         if (documentTypeIdForDelete > 0) {
             throw new RuleException("fin.financialDocumentType.check.for.delete");
         } else {
-            financialDocumentTypeRepository.deleteById(financialDocumentType.getId());
+          financialDocumentTypeRepository.deleteById(financialDocumentTypeId);
             return true;
         }
     }
