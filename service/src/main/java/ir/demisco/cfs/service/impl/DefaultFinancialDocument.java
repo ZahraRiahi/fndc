@@ -82,14 +82,14 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
         Map<String, Object> paramMap = paramSearch.getParamMap();
-        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
-        Page<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getStartDate(),
+//        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip() / (dataSourceRequest.getTake() / 2)  , dataSourceRequest.getTake() + dataSourceRequest.getSkip());
+        List<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getStartDate(),
                 paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
                 paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
                 paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId()
                 , paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId()
                 , paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
-                paramSearch.getToPrice(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId(), pageable);
+                paramSearch.getToPrice(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId());
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -108,8 +108,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         .financialDocumentStatusCode(item[13].toString())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(documentDtoList);
-        dataSourceResult.setTotal(list.getTotalElements());
+        dataSourceResult.setData(documentDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
+        dataSourceResult.setTotal(list.size());
         return dataSourceResult;
     }
 
@@ -312,6 +312,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Transactional(rollbackFor = Throwable.class)
     public ResponseEntity<ResponseFinancialDocumentSetStatusDto> changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
         ResponseFinancialDocumentSetStatusDto responseFinancialDocumentSetStatusDto = new ResponseFinancialDocumentSetStatusDto();
+        FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
+        financialPeriodStatusRequest.setFinancialDocumentId(responseFinancialDocumentStatusDto.getId());
+        FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
+        if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
+        }
         FinancialDocument financialDocument = financialDocumentRepository.findById(responseFinancialDocumentStatusDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         FinancialDocumentStatus financialDocumentStatus =
                 documentStatusRepository.findFinancialDocumentStatusByCode(responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode());
@@ -716,6 +722,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             if (financialDocumentItemList.isEmpty()) {
                 throw new RuleException("fin.financialDocument.notExistDocumentItem");
             }
+            FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
+            financialPeriodStatusRequest.setFinancialDocumentId(financialCentricAccountDto.getId());
+            FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
+            if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
+                throw new RuleException("دوره مالی و ماه عملیاتی سند مبدا میبایست در وضعیت باز باشند");
+            }
             Long centricAccountId = financialCentricAccountDto.getCentricAccountId();
             financialDocumentItemList.forEach(documentItem -> {
                 if ((documentItem.getCentricAccountId1() != null) && (centricAccountId.equals(documentItem.getCentricAccountId1().getId()))) {
@@ -794,6 +806,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Transactional(rollbackFor = Throwable.class)
     public Boolean setAmountDocument(FinancialCentricAccountDto financialCentricAccountDto) {
         FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
+        FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
+        financialPeriodStatusRequest.setFinancialDocumentId(financialCentricAccountDto.getId());
+        FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
+        if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
+        }
         FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
         if (financialDocument == null) {
             throw new RuleException("fin.financialDocument.openStatusPeriod");

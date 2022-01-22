@@ -314,12 +314,12 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                     DS.CODE " +
             " order by  fidc.document_date desc  "
             , nativeQuery = true)
-    Page<Object[]> getFinancialDocumentList(LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
+    List<Object[]> getFinancialDocumentList(LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
             , Object toNumber, Long toNumberId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
                                             Long toAccountCode, Object centricAccount, Long centricAccountId,
                                             Object centricAccountType, Long centricAccountTypeId, Object user, Long userId,
                                             Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
-                                            Double tolerance, List<Long> documentStatusId, Pageable pageable);
+                                            Double tolerance, List<Long> documentStatusId);
 
     @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:FinancialDocumentId")
     FinancialDocument getActivePeriodInDocument(Long FinancialDocumentId);
