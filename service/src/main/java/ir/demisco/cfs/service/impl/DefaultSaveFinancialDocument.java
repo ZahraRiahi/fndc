@@ -584,7 +584,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         } else {
             financialDocumentReportRequest.setFinancialDocumentItemId(0L);
         }
-//        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         List<Object[]> list = financialDocumentItemRepository.findByFinancialDocumentItemId(financialDocumentReportRequest.getFinancialDocumentId(),
                 financialDocumentItem,
                 financialDocumentReportRequest.getFinancialDocumentItemId());
