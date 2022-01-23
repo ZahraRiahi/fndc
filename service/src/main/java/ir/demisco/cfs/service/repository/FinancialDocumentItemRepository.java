@@ -201,9 +201,9 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       (FNDI.CREDIT_AMOUNT <= " +
             "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0)))))  "
             , nativeQuery = true)
-    Page<Object[]> getFinancialDocumentItemList(LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
+    List<Object[]> getFinancialDocumentItemList(LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
                                                 Long toAccountCode, Object centricAccount, Long centricAccountId, Object centricAccountType, Long centricAccountTypeId, Object user, Long userId, Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
-                                                Double tolerance, Pageable pageable);
+                                                Double tolerance);
 
 
     List<FinancialDocumentItem> findByFinancialDocumentIdAndDeletedDateIsNull(Long FinancialDocumentId);
@@ -289,7 +289,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
     List<FinancialDocumentItem> getItemByDocumentItemIdListAndAccountId(List<Long> documentItemIdList, Long accountId);
 
 
-    @Query("select fdi from FinancialDocumentItem fdi " +
+    @Query(" select fdi from FinancialDocumentItem fdi " +
             " where fdi.id in (:documentItemIdList) " +
             " and fdi.financialAccount.id=:financialAccountId" +
             " and fdi.deletedDate is null" +
