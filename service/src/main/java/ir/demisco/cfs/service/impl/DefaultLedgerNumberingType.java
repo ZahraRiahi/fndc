@@ -4,7 +4,6 @@ import ir.demisco.cfs.model.dto.request.LedgerNumberingTypeRequest;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeResponse;
 import ir.demisco.cfs.model.dto.response.FinancialNumberingTypeResponse;
 import ir.demisco.cfs.model.dto.response.LedgerNumberingTypeDto;
-import ir.demisco.cfs.model.entity.FinancialAccount;
 import ir.demisco.cfs.model.entity.FinancialLedgerType;
 import ir.demisco.cfs.model.entity.FinancialNumberingType;
 import ir.demisco.cfs.model.entity.LedgerNumberingType;
@@ -16,7 +15,6 @@ import ir.demisco.cloud.core.middle.exception.RuleException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
