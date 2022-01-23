@@ -28,12 +28,6 @@ public class FinancialDocumentItemController {
         return ResponseEntity.ok(financialDocumentItemService.getFinancialDocumentItemList(dataSourceRequest));
     }
 
-//    @PostMapping("/Get")
-//    public ResponseEntity<List<FinancialDocumentItemResponse>> getFinancialDocumentInfo(@RequestBody FinancialDocumentItemRequest financialDocumentItemRequest) {
-//        return ResponseEntity.ok(saveFinancialDocumentService.getFinancialDocumentItem(financialDocumentItemRequest));
-//    }
-
-
     @PostMapping("/Get")
     public ResponseEntity<DataSourceResult> getFinancialDocumentInfo(@RequestBody DataSourceRequest dataSourceRequest) {
         return ResponseEntity.ok(saveFinancialDocumentService.getFinancialDocumentItem(dataSourceRequest));

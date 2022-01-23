@@ -15,8 +15,6 @@ import org.apache.http.util.Asserts;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
-
 
 @Service
 public class DefaultFinancialDocumentDescription implements FinancialDocumentDescriptionService {

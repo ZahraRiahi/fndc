@@ -41,7 +41,7 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             "       fnlt.active_flag," +
             "       fnct.description"
             , nativeQuery = true)
-    Page<Object[]> financialLedgerTypeList(Long organizationId, Long financialCodingTypeId, String financialCodingType, Long financialLedgerTypeId, String financialLedgerType, Pageable pageable);
+    List<Object[]> financialLedgerTypeList(Long organizationId, Long financialCodingTypeId, String financialCodingType, Long financialLedgerTypeId, String financialLedgerType);
 
 
     @Query(value = " SELECT to_char(nvl(max(t.code), 10) + 1) from" +
