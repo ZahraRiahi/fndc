@@ -26,6 +26,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class DefaultSaveFinancialDocument implements SaveFinancialDocumentService {
@@ -583,13 +584,9 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         } else {
             financialDocumentReportRequest.setFinancialDocumentItemId(0L);
         }
-
-
-        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
-        Page<Object[]> list = financialDocumentItemRepository.findByFinancialDocumentItemId(financialDocumentReportRequest.getFinancialDocumentId(),
+        List<Object[]> list = financialDocumentItemRepository.findByFinancialDocumentItemId(financialDocumentReportRequest.getFinancialDocumentId(),
                 financialDocumentItem,
-                financialDocumentReportRequest.getFinancialDocumentItemId(),
-                pageable);
+                financialDocumentReportRequest.getFinancialDocumentItemId());
         List<FinancialDocumentItemResponse> financialDocumentItemResponses = new ArrayList<>();
         list.forEach(documentItem -> {
             List<FinancialDocumentReferenceOutPutModel> documentReferenceList = new ArrayList<>();
@@ -607,10 +604,9 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                     });
             financialDocumentItemResponses.add(documentItemToList);
         });
-
         DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(financialDocumentItemResponses);
-        dataSourceResult.setTotal(list.getTotalElements());
+        dataSourceResult.setData(financialDocumentItemResponses.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
+        dataSourceResult.setTotal(list.size());
         return dataSourceResult;
     }
 
