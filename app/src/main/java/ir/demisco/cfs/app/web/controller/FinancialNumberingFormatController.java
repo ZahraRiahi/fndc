@@ -27,7 +27,6 @@ public class FinancialNumberingFormatController {
 
     @PostMapping("/save")
     public ResponseEntity<Boolean> financialNumberingFormatSave(@RequestBody FinancialNumberingFormatDto financialNumberingFormatDto) {
-        boolean result;
         if (financialNumberingFormatDto.getId() == null) {
             return ResponseEntity.ok(financialNumberingFormatService.save(financialNumberingFormatDto));
         } else {

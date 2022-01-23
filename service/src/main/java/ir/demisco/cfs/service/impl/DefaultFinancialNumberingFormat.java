@@ -14,9 +14,9 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 
 @Service
 public class DefaultFinancialNumberingFormat implements FinancialNumberingFormatService {
@@ -82,6 +82,16 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
             numberingFormat.setFirstSerial(financialNumberingFormatDto.getFirstSerial());
             financialNumberingFormatRepository.save(numberingFormat);
             return true;
+        }
+    }
+
+    private void checkValidParameter(FinancialNumberingFormatDto financialNumberingFormatDto) {
+        Assert.notNull(financialNumberingFormatDto.getSerialLength(), "serialLength is null");
+        Assert.notNull(financialNumberingFormatDto.getFirstSerial(), "firstSerial is null");
+        int firstSerial = String.valueOf(financialNumberingFormatDto.getFirstSerial()).length();
+        int serialLength = String.valueOf(financialNumberingFormatDto.getSerialLength()).length();
+        if (firstSerial > serialLength) {
+            throw new RuleException("fin.financialNumberingFormat.check.for.save");
         }
     }
 
