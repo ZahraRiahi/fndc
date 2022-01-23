@@ -413,7 +413,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " WHERE FNDI.FINANCIAL_DOCUMENT_ID = :financialDocumentId " +
             " and  ( :financialDocumentItem is null or FNDI.ID = :financialDocumentItemId)",
             nativeQuery = true)
-    Page<Object[]> findByFinancialDocumentItemId(Long financialDocumentId, Object financialDocumentItem, Long financialDocumentItemId, Pageable pageable);
+    List<Object[]> findByFinancialDocumentItemId(Long financialDocumentId, Object financialDocumentItem, Long financialDocumentItemId);
 
     @Query(value = "WITH QRY AS " +
             " (SELECT SUM(NVL(FDI.DEBIT_AMOUNT, 0)) SUM_DEBIT, " +
