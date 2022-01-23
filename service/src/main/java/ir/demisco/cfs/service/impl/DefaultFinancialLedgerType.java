@@ -14,13 +14,9 @@ import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -64,9 +60,8 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
             Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
             param.setOrganizationId(organizationId);
         }
-        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
-        Page<Object[]> list = financialLedgerTypeRepository.financialLedgerTypeList(param.getOrganizationId(), param.getFinancialCodingTypeId()
-                , param.getFinancialCodingType(), param.getFinancialLedgerTypeId(), param.getFinancialLedgerType(), pageable);
+        List<Object[]> list = financialLedgerTypeRepository.financialLedgerTypeList(param.getOrganizationId(), param.getFinancialCodingTypeId()
+                , param.getFinancialCodingType(), param.getFinancialLedgerTypeId(), param.getFinancialLedgerType());
         List<FinancialLedgerTypeResponse> financialLedgerTypeResponses = list.stream().map(item ->
                 FinancialLedgerTypeResponse.builder()
                         .financialLedgerTypeId(Long.parseLong(item[0].toString()))
@@ -78,9 +73,10 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                         .financialNumberingTypeDescription(item[6] == null ? "" : item[6].toString())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(financialLedgerTypeResponses);
-        dataSourceResult.setTotal(list.getTotalElements());
+        dataSourceResult.setData(financialLedgerTypeResponses.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
+        dataSourceResult.setTotal(list.size());
         return dataSourceResult;
+
 
     }
 
