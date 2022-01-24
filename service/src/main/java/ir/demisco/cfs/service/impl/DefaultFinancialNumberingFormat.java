@@ -56,8 +56,9 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public Boolean save(FinancialNumberingFormatDto financialNumberingFormatDto) {
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId = 100L;
         Object formatType;
+        checkValidParameter(financialNumberingFormatDto);
         if (financialNumberingFormatDto.getFinancialNumberingFormatTypeId() != null) {
             formatType = "formatType";
         } else {
@@ -89,8 +90,10 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
         Assert.notNull(financialNumberingFormatDto.getSerialLength(), "serialLength is null");
         Assert.notNull(financialNumberingFormatDto.getFirstSerial(), "firstSerial is null");
         int firstSerial = String.valueOf(financialNumberingFormatDto.getFirstSerial()).length();
-        int serialLength = String.valueOf(financialNumberingFormatDto.getSerialLength()).length();
-        if (firstSerial > serialLength) {
+        if (String.valueOf(financialNumberingFormatDto.getSerialLength()).length() > 2) {
+            throw new RuleException("fin.financialNumberingFormat.check.length.firstSerial");
+        }
+        if (firstSerial > financialNumberingFormatDto.getSerialLength()) {
             throw new RuleException("fin.financialNumberingFormat.check.for.save");
         }
     }
