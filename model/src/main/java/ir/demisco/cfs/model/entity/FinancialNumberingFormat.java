@@ -7,13 +7,13 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="FINANCIAL_NUMBERING_FORMAT" , schema = "fndc")
+@Table(name = "FINANCIAL_NUMBERING_FORMAT", schema = "fndc")
 public class FinancialNumberingFormat extends AuditModel<Long> {
 
     private Organization organization;
-    private FinancialNumberingFormatType  financialNumberingFormatType;
-    private FinancialNumberingType        financialNumberingType;
-    private String   description;
+    private FinancialNumberingFormatType financialNumberingFormatType;
+    private FinancialNumberingType financialNumberingType;
+    private String description;
     private LocalDateTime deletedDate;
     private String reseter;
     private Long serialLength;

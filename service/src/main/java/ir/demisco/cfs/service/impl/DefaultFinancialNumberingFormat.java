@@ -14,9 +14,9 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Assert;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
 
 @Service
 public class DefaultFinancialNumberingFormat implements FinancialNumberingFormatService {
@@ -56,8 +56,9 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public Boolean save(FinancialNumberingFormatDto financialNumberingFormatDto) {
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId = 100L;
         Object formatType;
+        checkValidParameter(financialNumberingFormatDto);
         if (financialNumberingFormatDto.getFinancialNumberingFormatTypeId() != null) {
             formatType = "formatType";
         } else {
@@ -82,6 +83,18 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
             numberingFormat.setFirstSerial(financialNumberingFormatDto.getFirstSerial());
             financialNumberingFormatRepository.save(numberingFormat);
             return true;
+        }
+    }
+
+    private void checkValidParameter(FinancialNumberingFormatDto financialNumberingFormatDto) {
+        Assert.notNull(financialNumberingFormatDto.getSerialLength(), "serialLength is null");
+        Assert.notNull(financialNumberingFormatDto.getFirstSerial(), "firstSerial is null");
+        int firstSerial = String.valueOf(financialNumberingFormatDto.getFirstSerial()).length();
+        if (String.valueOf(financialNumberingFormatDto.getSerialLength()).length() > 2) {
+            throw new RuleException("fin.financialNumberingFormat.check.length.firstSerial");
+        }
+        if (firstSerial > financialNumberingFormatDto.getSerialLength()) {
+            throw new RuleException("fin.financialNumberingFormat.check.for.save");
         }
     }
 
