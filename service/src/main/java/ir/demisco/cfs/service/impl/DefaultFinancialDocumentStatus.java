@@ -4,7 +4,6 @@ import ir.demisco.cfs.model.dto.response.FinancialDocumentStatusListDto;
 import ir.demisco.cfs.service.api.FinancialDocumentStatusService;
 import ir.demisco.cfs.service.repository.FinancialDocumentStatusRepository;
 import org.springframework.stereotype.Service;
-
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.stream.Collectors;
