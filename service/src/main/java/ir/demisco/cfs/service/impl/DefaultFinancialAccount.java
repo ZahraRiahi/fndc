@@ -600,9 +600,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 //        if (financialAccountBalanceRequest.getSummarizingType() == null) {
 //            throw new RuleException("لطفا نوع جمع بندی را وارد نمایید.");
 //        }
-        if (financialAccountBalanceRequest.getOrganizationId() == null) {
-            throw new RuleException("fin.financialAccount.insertOrganization");
-        }
+//        if (financialAccountBalanceRequest.getOrganizationId() == null) {
+//            throw new RuleException("fin.financialAccount.insertOrganization");
+//        }
         if (financialAccountBalanceRequest.getDateFilterFlg() == null) {
             throw new RuleException("fin.financialAccount.selectDateFilterFlg");
         }
