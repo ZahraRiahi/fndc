@@ -1666,4 +1666,12 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "       END AND FMN.FINANCIAL_MONTH_STATUS_ID = 1) "
             , nativeQuery = true)
     Long findFinancialPeriodByFinancialPeriodIdAndDate(Long financialPeriodId, String date);
+
+    @Query(value = "SELECT 1 " +
+            "                      FROM FNPR.FINANCIAL_PERIOD T " +
+            "                       WHERE T.ID = :financialPeriodId " +
+            "                          AND :documentDate BETWEEN T.START_DATE AND T.END_DATE "
+            , nativeQuery = true)
+    Long findFinancialPeriodByFinancialPeriodIdAndDocumentDate(Long financialPeriodId, LocalDateTime documentDate);
+
 }
