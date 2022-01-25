@@ -21,6 +21,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -78,6 +79,11 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         FinancialDocumentSaveDto responseDocumentSaveDto;
         List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList = new ArrayList<>();
         FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
+        Long periodDate = financialPeriodRepository.findFinancialPeriodByFinancialPeriodIdAndDocumentDate
+                (requestFinancialDocumentSaveDto.getFinancialPeriodId(),LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/","-")+"T00:00") );
+        if (periodDate == null) {
+            throw new RuleException(" تاریخ وارد شده در محدوده دوره مالی پیش فرض نمیباشد");
+        }
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
         financialPeriodStatusRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         financialPeriodStatusRequest.setDate(LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/", "-") + "T00:00"));
