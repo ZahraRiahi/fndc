@@ -619,7 +619,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 length,
                 financialAccountBalanceRequest.getFromFinancialAccountCode(),
                 financialAccountBalanceRequest.getToFinancialAccountCode(),
-                financialAccountBalanceRequest.getOrganizationId(),
+                SecurityHelper.getCurrentUser().getOrganizationId(),
                 financialAccountBalanceRequest.getHasRemain(),
                 pageable);
 
