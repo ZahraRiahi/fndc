@@ -42,8 +42,14 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     @Override
     @Transactional
     public List<FinancialDocumentTypeGetDto> getNumberingFormatByOrganizationId(Long organizationId, ResponseFinancialDocumentTypeDto responseFinancialDocumentTypeDto) {
+        String financialSystem = null;
+        if (responseFinancialDocumentTypeDto.getFinancialSystemId() != null) {
+            financialSystem = "financialSystem";
+        } else {
+            responseFinancialDocumentTypeDto.setFinancialSystemId(0L);
+        }
         return financialDocumentTypeRepository.findByOrganizationId(organizationId, responseFinancialDocumentTypeDto.getSearchStatusFlag(),
-                responseFinancialDocumentTypeDto.getSearchStatusFlag() == null ? null : "true")
+                responseFinancialDocumentTypeDto.getSearchStatusFlag() == null ? null : "true",financialSystem,responseFinancialDocumentTypeDto.getFinancialSystemId())
                 .stream().map(financialDocumentType -> FinancialDocumentTypeGetDto.builder()
                         .id(financialDocumentType.getId())
                         .description(financialDocumentType.getDescription())

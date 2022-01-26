@@ -433,7 +433,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .id(financialDocumentItem.getId())
                 .sequenceNumber(financialDocumentItem.getSequenceNumber())
                 .financialAccountId(financialDocumentItem.getFinancialAccount().getId())
-                .financialAccountDescription(financialDocumentItem.getFinancialAccount().getDescription() == null ? null : financialDocumentItem.getFinancialAccount().getDescription())
+                .financialAccountDescription(financialDocumentItem.getFinancialAccount().getDescription())
                 .debitAmount(financialDocumentItem.getDebitAmount())
                 .creditAmount(financialDocumentItem.getCreditAmount())
                 .description(financialDocumentItem.getDescription())
@@ -444,7 +444,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .centricAccountId5(financialDocumentItem.getCentricAccountId5() == null ? null : financialDocumentItem.getCentricAccountId5().getId())
                 .centricAccountId6(financialDocumentItem.getCentricAccountId6() == null ? null : financialDocumentItem.getCentricAccountId6().getId())
                 .accountRelationTypeId(financialDocumentItem.getFinancialAccount() == null ? null : financialDocumentItem.getFinancialAccount().getAccountRelationType().getId())
-                .financialAccountCode(financialDocumentItem.getFinancialAccount().getCode() == null ? null : financialDocumentItem.getFinancialAccount().getCode())
+                .financialAccountCode(financialDocumentItem.getFinancialAccount().getCode())
                 .build();
     }
 
