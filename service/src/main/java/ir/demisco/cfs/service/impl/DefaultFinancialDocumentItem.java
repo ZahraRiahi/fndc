@@ -39,10 +39,10 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         Map<String, Object> paramMap = paramSearch.getParamMap();
 //        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         List<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getStartDate(),
-                paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
-                paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
-                paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId(), paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId(), paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
-                paramSearch.getToPrice(), paramSearch.getTolerance());
+                        paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
+                        paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
+                        paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId(), paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId(), paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
+                        paramSearch.getToPrice(), paramSearch.getTolerance(),paramMap.get("financialDocumentType"), paramSearch.getFinancialDocumentTypeId());
         List<FinancialDocumentItemDto> documentItemDtoList = list.stream().map(item ->
                 FinancialDocumentItemDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -220,6 +220,17 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                         responseFinancialDocumentDto.setTolerance(0D);
                     }
 
+                    break;
+                case "financialDocumentType.id":
+                    if (item.getValue() != null) {
+                        map.put("financialDocumentType", "financialDocumentType");
+                        responseFinancialDocumentDto.setParamMap(map);
+                        responseFinancialDocumentDto.setFinancialDocumentTypeId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        map.put("financialDocumentType", null);
+                        responseFinancialDocumentDto.setParamMap(map);
+                        responseFinancialDocumentDto.setFinancialDocumentTypeId(0L);
+                    }
                     break;
             }
         }
