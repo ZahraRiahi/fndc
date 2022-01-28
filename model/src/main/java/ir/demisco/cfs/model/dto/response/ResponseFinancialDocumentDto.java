@@ -24,6 +24,7 @@ public class ResponseFinancialDocumentDto {
     private Long fromPrice;
     private Long toPrice;
     private Double tolerance;
+    private Long financialDocumentTypeId;
     Map<String, Object> paramMap;
 
     public LocalDateTime getStartDate() {
@@ -162,6 +163,13 @@ public class ResponseFinancialDocumentDto {
         this.tolerance = tolerance;
     }
 
+    public Long getFinancialDocumentTypeId() {
+        return financialDocumentTypeId;
+    }
+
+    public void setFinancialDocumentTypeId(Long financialDocumentTypeId) {
+        this.financialDocumentTypeId = financialDocumentTypeId;
+    }
     public Map<String, Object> getParamMap() {
         return paramMap;
     }
@@ -170,7 +178,7 @@ public class ResponseFinancialDocumentDto {
         this.paramMap = paramMap;
     }
 
-    public static Builder  builder(){
+    public static Builder builder() {
         return new Builder();
     }
 
@@ -278,7 +286,10 @@ public class ResponseFinancialDocumentDto {
             responseFinancialDocumentDto.setTolerance(tolerance);
             return this;
         }
-
+        public Builder financialDocumentTypeId(Long financialDocumentTypeId) {
+            responseFinancialDocumentDto.setFinancialDocumentTypeId(financialDocumentTypeId);
+            return this;
+        }
         public Builder paramMap(Map<String, Object> paramMap) {
             responseFinancialDocumentDto.setParamMap(paramMap);
             return this;

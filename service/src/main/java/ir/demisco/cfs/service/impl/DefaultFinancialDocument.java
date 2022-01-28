@@ -91,7 +91,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId()
                 , paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId()
                 , paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
-                paramSearch.getToPrice(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId());
+                paramSearch.getToPrice(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId(), paramMap.get("financialDocumentType"), paramSearch.getFinancialDocumentTypeId());
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -132,6 +132,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 case "financialNumberingType.id":
                     responseFinancialDocumentDto.setFinancialNumberingTypeId(Long.parseLong(item.getValue().toString()));
                     break;
+
                 case "priceType.id":
                     if (item.getValue() != null) {
                         map.put("priceType", "priceType");
@@ -283,9 +284,20 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     }
 
                     break;
+
+                case "financialDocumentType.id":
+                    if (item.getValue() != null) {
+                        map.put("financialDocumentType", "financialDocumentType");
+                        responseFinancialDocumentDto.setParamMap(map);
+                        responseFinancialDocumentDto.setFinancialDocumentTypeId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        map.put("financialDocumentType", null);
+                        responseFinancialDocumentDto.setParamMap(map);
+                        responseFinancialDocumentDto.setFinancialDocumentTypeId(0L);
+                    }
+                    break;
             }
         }
-
         return responseFinancialDocumentDto;
     }
 
