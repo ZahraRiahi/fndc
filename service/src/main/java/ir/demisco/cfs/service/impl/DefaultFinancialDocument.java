@@ -30,6 +30,7 @@ import java.text.ParsePosition;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
 
@@ -731,6 +732,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         CentricAccount centricAccount = centricAccountRepository.findById(financialCentricAccountDto.getCentricAccountId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistCentricAccount"));
         CentricAccount newCentricAccount = centricAccountRepository.findById(financialCentricAccountDto.getNewCentricAccountId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistCentricAccount"));
+        AtomicInteger i = new AtomicInteger(0);
         if (centricAccount.getCentricAccountType().getId().equals(newCentricAccount.getCentricAccountType().getId())) {
             List<FinancialDocumentItem> financialDocumentItemList =
                     financialDocumentItemRepository.getByDocumentIdAndCentricAccount(financialCentricAccountDto.getFinancialDocumentItemIdList(), financialCentricAccountDto.getNewCentricAccountId(), financialCentricAccountDto.getFinancialAccountId());
@@ -745,7 +747,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             }
             Long centricAccountId = financialCentricAccountDto.getCentricAccountId();
             financialDocumentItemList.forEach(documentItem -> {
+
                 if ((documentItem.getCentricAccountId1() != null) && (centricAccountId.equals(documentItem.getCentricAccountId1().getId()))) {
+                    i.getAndIncrement();
                     documentItem.setCentricAccountId1(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId2(null);
                     documentItem.setCentricAccountId3(null);
@@ -753,36 +757,47 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
                 } else if (documentItem.getCentricAccountId2() != null && centricAccountId.equals(documentItem.getCentricAccountId2().getId())) {
+                    i.getAndIncrement();
                     documentItem.setCentricAccountId2(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId3(null);
                     documentItem.setCentricAccountId4(null);
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
                 } else if (documentItem.getCentricAccountId3() != null && centricAccountId.equals(documentItem.getCentricAccountId3().getId())) {
+                    i.getAndIncrement();
                     documentItem.setCentricAccountId3(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId4(null);
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
                 } else if (documentItem.getCentricAccountId4() != null && centricAccountId.equals(documentItem.getCentricAccountId4().getId())) {
+                    i.getAndIncrement();
                     documentItem.setCentricAccountId4(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId5(null);
                     documentItem.setCentricAccountId6(null);
                 } else if (documentItem.getCentricAccountId5() != null && centricAccountId.equals(documentItem.getCentricAccountId5().getId())) {
+                    i.getAndIncrement();
                     documentItem.setCentricAccountId5(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                     documentItem.setCentricAccountId6(null);
                 } else if (documentItem.getCentricAccountId6() != null && centricAccountId.equals(documentItem.getCentricAccountId6().getId())) {
+                    i.getAndIncrement();
                     documentItem.setCentricAccountId6(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
                 }
                 financialDocumentItemRepository.save(documentItem);
+                financialDocumentItemRepository.flush();
             });
 
         } else {
             throw new RuleException("fin.financialDocument.notExistCentricAccountType");
         }
-        document.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
-        financialDocumentRepository.save(document);
+        if (i.get() > 0) {
+            document.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
+            financialDocumentRepository.save(document);
+            financialDocumentRepository.flush();
+            return "تمامی تمرکز های سطوح بعد از تمرکز تغییر یافته حذف شدند. لطفا مجددا نسبت به انتخاب تمرکز ها اقدام فرمایید.";
+        } else {
+            return "هیچ رکوردی بروز رسانی نشد";
+        }
 
-        return "تمامی تمرکز های سطوح بعد از تمرکز تغییر یافته حذف شدند. لطفا مجددا نسبت به انتخاب تمرکز ها اقدام فرمایید.";
     }
 
     @Override
