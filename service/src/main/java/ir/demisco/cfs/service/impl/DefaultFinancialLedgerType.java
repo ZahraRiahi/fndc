@@ -137,7 +137,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
 
     @Override
     public List<FinancialDepartmentLedgerResponse> getFinancialLedgerByDepartmentId(FinancialDepartmentLedgerDto departmentLedgerDto) {
-        List<Object[]> financialDepartmentLedgerListObject = financialDepartmentLedgerRepository.findByFinancialDepartmentId(departmentLedgerDto.getFinancialDepartmentId());
+        List<Object[]> financialDepartmentLedgerListObject = financialDepartmentLedgerRepository.findByFinancialDepartmentId(departmentLedgerDto.getDepartmentId());
         return financialDepartmentLedgerListObject.stream().map(objects -> FinancialDepartmentLedgerResponse.builder().financialLedgerTypeId(Long.parseLong(objects[0].toString()))
                 .description(objects[1].toString())
                 .build()).collect(Collectors.toList());

@@ -3,7 +3,7 @@ package ir.demisco.cfs.model.dto.request;
 public class FinancialDepartmentLedgerRequest {
 
     private Long financialDepartmentLedgerId;
-    private Long financialDepartmentId;
+    private Long departmentId;
     private Long financialLedgerTypeId;
 
     public Long getFinancialDepartmentLedgerId() {
@@ -14,12 +14,12 @@ public class FinancialDepartmentLedgerRequest {
         this.financialDepartmentLedgerId = financialDepartmentLedgerId;
     }
 
-    public Long getFinancialDepartmentId() {
-        return financialDepartmentId;
+    public Long getDepartmentId() {
+        return departmentId;
     }
 
-    public void setFinancialDepartmentId(Long financialDepartmentId) {
-        this.financialDepartmentId = financialDepartmentId;
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 
     public Long getFinancialLedgerTypeId() {

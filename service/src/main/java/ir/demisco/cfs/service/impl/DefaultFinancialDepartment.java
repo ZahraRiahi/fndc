@@ -2,6 +2,7 @@ package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.response.FinancialDepartmentResponse;
 import ir.demisco.cfs.service.api.FinancialDepartmentService;
+import ir.demisco.cfs.service.repository.DepartmentRepository;
 import ir.demisco.cfs.service.repository.FinancialDepartmentRepository;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
@@ -13,17 +14,17 @@ import java.util.stream.Collectors;
 
 @Service
 public class DefaultFinancialDepartment implements FinancialDepartmentService {
-    private final FinancialDepartmentRepository financialDepartmentRepository;
+    private final DepartmentRepository departmentRepository;
 
-    public DefaultFinancialDepartment(FinancialDepartmentRepository financialDepartmentRepository) {
-        this.financialDepartmentRepository = financialDepartmentRepository;
+    public DefaultFinancialDepartment(FinancialDepartmentRepository financialDepartmentRepository, DepartmentRepository departmentRepository) {
+        this.departmentRepository = departmentRepository;
     }
 
     @Override
     @Transactional
     public DataSourceResult financialDepartmentList() {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        List<Object[]> financialDocumentItemList = financialDepartmentRepository.getFinancialDocumentItemList(organizationId);
+        List<Object[]> financialDocumentItemList = departmentRepository.getFinancialDocumentItemList(organizationId);
         List<FinancialDepartmentResponse> financialDepartmentResponses = financialDocumentItemList.stream().map(item ->
                 FinancialDepartmentResponse.builder()
                         .departmentId(Long.parseLong(item[0].toString()))
