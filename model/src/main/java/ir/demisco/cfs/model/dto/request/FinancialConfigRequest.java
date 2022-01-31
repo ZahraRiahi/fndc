@@ -9,6 +9,7 @@ public class FinancialConfigRequest {
     private String documentDescription;
     private Long financialLedgerTypeId;
     private Long financialPeriodId;
+    private Long departmentId;
 
     public Long getId() {
         return id;
@@ -72,5 +73,13 @@ public class FinancialConfigRequest {
 
     public void setFinancialPeriodId(Long financialPeriodId) {
         this.financialPeriodId = financialPeriodId;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }

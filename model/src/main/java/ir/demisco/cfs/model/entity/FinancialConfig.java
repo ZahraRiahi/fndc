@@ -1,6 +1,7 @@
 package ir.demisco.cfs.model.entity;
 
 import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
+import ir.demisco.cloud.basic.model.entity.org.Department;
 import ir.demisco.cloud.basic.model.entity.org.Organization;
 import ir.demisco.cloud.basic.model.entity.sec.User;
 
@@ -20,6 +21,7 @@ public class FinancialConfig extends AuditModel<Long> {
     private FinancialLedgerType financialLedgerType;
     private FinancialPeriod financialPeriod;
     private LocalDateTime deletedDate;
+    private Department department;
 
 
     @Override
@@ -107,5 +109,15 @@ public class FinancialConfig extends AuditModel<Long> {
 
     public void setDeletedDate(LocalDateTime deletedDate) {
         this.deletedDate = deletedDate;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEPARTMENT_ID")
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 }
