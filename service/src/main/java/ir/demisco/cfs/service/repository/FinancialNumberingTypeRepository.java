@@ -31,7 +31,7 @@ public interface FinancialNumberingTypeRepository extends JpaRepository<Financia
             "                         '$SRL'," +
             "                         '')" +
             "            FROM FNDC.FINANCIAL_CONFIG T" +
-            "           WHERE T.ORGANIZATION_ID = :organizationId) CODE" +
+            "           WHERE T.ORGANIZATION_ID = :organizationId And T.USER_ID = :userId) CODE" +
             "    FROM FNDC.FINANCIAL_NUMBERING_TYPE FNNT" +
             "   INNER JOIN FNDC.FINANCIAL_NUMBERING_FORMAT NF" +
             "      ON NF.FINANCIAL_NUMBERING_TYPE_ID = FNNT.ID" +
@@ -78,7 +78,7 @@ public interface FinancialNumberingTypeRepository extends JpaRepository<Financia
             "                       FP.START_DATE AND FP.END_DATE)) TO_CODE" +
             "  FROM QRY"
             , nativeQuery = true)
-    List<Object[]> findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(Long organizationId, LocalDateTime fromDate, LocalDateTime toDate);
+    List<Object[]> findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(Long organizationId, LocalDateTime fromDate, LocalDateTime toDate,Long userId);
 
     @Query(value = "   SELECT *  " +
             "    FROM FNDC.FINANCIAL_NUMBERING_TYPE T "
