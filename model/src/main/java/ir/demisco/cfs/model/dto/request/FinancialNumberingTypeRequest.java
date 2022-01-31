@@ -21,4 +21,6 @@ public class FinancialNumberingTypeRequest {
     public void setToDate(LocalDateTime toDate) {
         this.toDate = toDate;
     }
+
+
 }
