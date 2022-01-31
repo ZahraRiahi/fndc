@@ -321,7 +321,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
                                             Long toAccountCode, Object centricAccount, Long centricAccountId,
                                             Object centricAccountType, Long centricAccountTypeId, Object user, Long userId,
                                             Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
-                                            Double tolerance, List<Long> documentStatusId,Object financialDocumentType,Long financialDocumentTypeId);
+                                            Double tolerance, List<Long> documentStatusId, Object financialDocumentType, Long financialDocumentTypeId);
 
     @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:FinancialDocumentId")
     FinancialDocument getActivePeriodInDocument(Long FinancialDocumentId);
@@ -335,10 +335,10 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
     String getDocumentNumber(Long organizationId, LocalDateTime date, Long financialPeriodId);
 
 
-    @Query("select coalesce(COUNT(fd.id),0) from FinancialDocument fd where fd.financialDepartment.id=:financialDepartmentId" +
-            " and fd.financialLedgerType.id=:financialLedgerTypeId " +
-            " and fd.deletedDate is null")
-    Long getCountByLedgerTypeIdAndDepartmentIdAndDeleteDate(Long financialDepartmentId, Long financialLedgerTypeId);
+//    @Query("select coalesce(COUNT(fd.id),0) from FinancialDocument fd where fd.financialDepartment.id=:financialDepartmentId" +
+//            " and fd.financialLedgerType.id=:financialLedgerTypeId " +
+//            " and fd.deletedDate is null")
+//    Long getCountByLedgerTypeIdAndDepartmentIdAndDeleteDate(Long financialDepartmentId, Long financialLedgerTypeId);
 
     @Query("select fd from FinancialDocument fd where fd.id=:FinancialDocumentId and fd.deletedDate is null")
     FinancialDocument getActiveDocumentById(Long FinancialDocumentId);
@@ -502,15 +502,24 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     String findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long documentNumberingTypeId, LocalDateTime toDate, Long organizationId);
 
-    @Query("select fd.id from FinancialDocument  fd " +
-            " join FinancialDepartmentLedger fdl on fdl.financialLedgerType.id=fd.financialLedgerType.id " +
-            " and fdl.financialDepartment.id=fd.financialDepartment.id and fdl.deletedDate is null " +
-            " where fdl.id=:financialDepartmentLedgerId and fd.deletedDate is null")
+//    @Query("select fd.id from FinancialDocument  fd " +
+//            " join FinancialDepartmentLedger fdl on fdl.financialLedgerType.id=fd.financialLedgerType.id and " +
+//            " and fdl.department.id=fd.financialDepartment.id  " +
+//            " where fdl.id=:financialDepartmentLedgerId ")
+//    List<Long> usedInFinancialDocument(Long financialDepartmentLedgerId);
+    @Query(value ="select FND.id  FROM FNDC.FINANCIAL_DOCUMENT FND " +
+            " INNER JOIN FNDC.FINANCIAL_DEPARTMENT FNDP " +
+            "    ON FND.FINANCIAL_DEPARTMENT_ID = FNDP.ID " +
+            " INNER JOIN FNDC.FINANCIAL_DEPARTMENT_LEDGER FDL " +
+            "    ON FNDP.DEPARTMENT_ID = FDL.DEPARTMENT_ID " +
+            "   AND FND.FINANCIAL_LEDGER_TYPE_ID = FDL.FINANCIAL_LEDGER_TYPE_ID  " +
+            " where FDL.id=:financialDepartmentLedgerId "
+             , nativeQuery = true)
     List<Long> usedInFinancialDocument(Long financialDepartmentLedgerId);
 
-    @Query("select fd.financialPeriod.id,fd.documentDate from FinancialDocument  fd " +
-            " where fd.id=:financialDocumentId and fd.deletedDate is null")
-    List<Object[]> financialDocumentById(Long financialDocumentId);
+            @Query("select fd.financialPeriod.id,fd.documentDate from FinancialDocument  fd " +
+                    " where fd.id=:financialDocumentId and fd.deletedDate is null")
+                    List < Object[]>financialDocumentById(Long financialDocumentId);
 
     @Query(value = " SELECT FD.ID, FS.CODE " +
             "  FROM FNDC.FINANCIAL_DOCUMENT FD" +

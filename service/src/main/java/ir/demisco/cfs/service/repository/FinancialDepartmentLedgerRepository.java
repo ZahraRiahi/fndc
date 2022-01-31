@@ -17,26 +17,26 @@ public interface FinancialDepartmentLedgerRepository extends JpaRepository<Finan
     Long getFinancialDepartmentLedger(Long financialDepartmentId, Long financialLedgerTypeId);
 
 
-    @Query("select coalesce(COUNT(fdl.id),0) from FinancialDepartmentLedger fdl where fdl.financialDepartment.id=:financialDepartmentId" +
+    @Query("select coalesce(COUNT(fdl.id),0) from FinancialDepartmentLedger fdl where fdl.department.id=:departmentId" +
             " and (fdl.financialLedgerType.id is null or fdl.financialLedgerType.id=:financialLedgerTypeId)" +
             " and fdl.deletedDate is null")
-    Long getCountByIsNullLedgerTypeIdAndDepartmentIdAndDeleteDate(Long financialDepartmentId, Long financialLedgerTypeId);
+    Long getCountByIsNullLedgerTypeIdAndDepartmentIdAndDeleteDate(Long departmentId, Long financialLedgerTypeId);
 
 
-    @Query("select fdl.id from FinancialDepartmentLedger fdl where fdl.financialDepartment.id=:financialDepartmentId" +
+    @Query("select fdl.id from FinancialDepartmentLedger fdl where fdl.department.id=:departmentId" +
             " and  fdl.financialLedgerType.id=:financialLedgerTypeId" +
             " and fdl.deletedDate is null")
-    List<Long> getDLByLedgerTypeIdAndDepartmentIdAndDeleteDate(Long financialDepartmentId, Long financialLedgerTypeId);
+    List<Long> getDLByLedgerTypeIdAndDepartmentIdAndDeleteDate(Long departmentId, Long financialLedgerTypeId);
 
-    @Query("select fdl from FinancialDepartmentLedger fdl where fdl.financialDepartment.id=:financialDepartmentId" +
+    @Query("select fdl from FinancialDepartmentLedger fdl where fdl.department.id=:departmentId" +
             " and  fdl.financialLedgerType.id=:financialLedgerTypeId and (:financialDepartmentLedgerTypeId is null or fdl.id <> :financialDepartmentLedgerTypeId ) " +
             " and fdl.deletedDate is null")
-    FinancialDepartmentLedger getByLedgerTypeIdAndDepartmentIdAndDeleteDate(Long financialDepartmentId,Long financialLedgerTypeId,
+    FinancialDepartmentLedger getByLedgerTypeIdAndDepartmentIdAndDeleteDate(Long departmentId,Long financialLedgerTypeId,
                                                                             Long financialDepartmentLedgerTypeId);
 
 
-    @Query("select fdl.financialLedgerType.id,flt.description from  FinancialDepartmentLedger fdl  join fdl.financialLedgerType flt where fdl.financialDepartment.id=:financialDepartmentId  and fdl.deletedDate is null")
-    List<Object[]> findByFinancialDepartmentId(Long financialDepartmentId);
+    @Query("select fdl.financialLedgerType.id,flt.description from  FinancialDepartmentLedger fdl  join fdl.financialLedgerType flt where fdl.department.id=:departmentId  and fdl.deletedDate is null")
+    List<Object[]> findByFinancialDepartmentId(Long departmentId);
 
 
 }
