@@ -7,13 +7,14 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "FINANCIAL_DEPARTMENT" , schema = "fndc")
-public class FinancialDepartment  extends AuditModel<Long> {
+@Table(name = "FINANCIAL_DEPARTMENT", schema = "fndc")
+public class FinancialDepartment extends AuditModel<Long> {
 
     private String code;
     private String name;
     private LocalDateTime deletedDate;
     private Organization organization;
+    private FinancialSystem financialSystem;
 
     @Override
     @Id
@@ -55,5 +56,15 @@ public class FinancialDepartment  extends AuditModel<Long> {
 
     public void setOrganization(Organization organization) {
         this.organization = organization;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "FINANCIAL_SYSTEM_ID")
+    public FinancialSystem getFinancialSystem() {
+        return financialSystem;
+    }
+
+    public void setFinancialSystem(FinancialSystem financialSystem) {
+        this.financialSystem = financialSystem;
     }
 }
