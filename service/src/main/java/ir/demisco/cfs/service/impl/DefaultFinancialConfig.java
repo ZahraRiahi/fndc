@@ -23,8 +23,9 @@ public class DefaultFinancialConfig implements FinancialConfigService {
     private final FinancialDocumentTypeRepository financialDocumentTypeRepository;
     private final FinancialLedgerTypeRepository financialLedgerTypeRepository;
     private final FinancialPeriodRepository financialPeriodRepository;
+    private final DepartmentRepository departmentRepository;
 
-    public DefaultFinancialConfig(GridFilterService gridFilterService, FinancialConfigListGridProvider financialConfigListGridProvider, FinancialConfigRepository financialConfigRepository, OrganizationRepository organizationRepository, FinancialDepartmentRepository financialDepartmentRepository, ApplicationUserRepository applicationUserRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, FinancialPeriodRepository financialPeriodRepository) {
+    public DefaultFinancialConfig(GridFilterService gridFilterService, FinancialConfigListGridProvider financialConfigListGridProvider, FinancialConfigRepository financialConfigRepository, OrganizationRepository organizationRepository, FinancialDepartmentRepository financialDepartmentRepository, ApplicationUserRepository applicationUserRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, FinancialPeriodRepository financialPeriodRepository, DepartmentRepository departmentRepository) {
         this.gridFilterService = gridFilterService;
         this.financialConfigListGridProvider = financialConfigListGridProvider;
         this.financialConfigRepository = financialConfigRepository;
@@ -34,6 +35,7 @@ public class DefaultFinancialConfig implements FinancialConfigService {
         this.financialDocumentTypeRepository = financialDocumentTypeRepository;
         this.financialLedgerTypeRepository = financialLedgerTypeRepository;
         this.financialPeriodRepository = financialPeriodRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     @Override
@@ -78,6 +80,10 @@ public class DefaultFinancialConfig implements FinancialConfigService {
         }
         if (financialConfigRequest.getFinancialPeriodId() != null) {
             financialConfigNew.setFinancialPeriod(financialPeriodRepository.getOne(financialConfigRequest.getFinancialPeriodId()));
+        }
+
+        if (financialConfigRequest.getDepartmentId() != null) {
+            financialConfigNew.setDepartment(departmentRepository.getOne(financialConfigRequest.getDepartmentId()));
         }
         financialConfigRepository.save(financialConfigNew);
         return true;

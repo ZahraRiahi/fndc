@@ -19,6 +19,8 @@ public class FinancialConfigDto {
     private String financialDocumentTypeDescription;
     private String financialLedgerTypeDescription;
     private Long financialCodingTypeId;
+    private Long departmentId;
+    private String departmentName;
 
     public Long getId() {
         return id;
@@ -148,6 +150,22 @@ public class FinancialConfigDto {
         this.financialCodingTypeId = financialCodingTypeId;
     }
 
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
+    public String getDepartmentName() {
+        return departmentName;
+    }
+
+    public void setDepartmentName(String departmentName) {
+        this.departmentName = departmentName;
+    }
+
     public static FinancialConfigDto.Builder builder() {
         return new FinancialConfigDto.Builder();
     }
@@ -239,6 +257,14 @@ public class FinancialConfigDto {
         }
         public Builder financialCodingTypeId(Long financialCodingTypeId) {
             financialConfigDto.setFinancialCodingTypeId(financialCodingTypeId);
+            return this;
+        }
+        public Builder departmentId(Long departmentId) {
+            financialConfigDto.setDepartmentId(departmentId);
+            return this;
+        }
+        public Builder departmentName(String departmentName) {
+            financialConfigDto.setDepartmentName(departmentName);
             return this;
         }
         public FinancialConfigDto build() {
