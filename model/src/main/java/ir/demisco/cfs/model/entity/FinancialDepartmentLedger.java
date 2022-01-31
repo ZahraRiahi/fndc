@@ -2,15 +2,16 @@
 package ir.demisco.cfs.model.entity;
 
 import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
+import ir.demisco.cloud.basic.model.entity.org.Department;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "FINANCIAL_DEPARTMENT_LEDGER" , schema = "fndc")
-public class FinancialDepartmentLedger  extends AuditModel<Long> {
+@Table(name = "FINANCIAL_DEPARTMENT_LEDGER", schema = "fndc")
+public class FinancialDepartmentLedger extends AuditModel<Long> {
     private Long id;
-    private FinancialDepartment financialDepartment;
+    private Department department;
     private FinancialLedgerType financialLedgerType;
     private LocalDateTime deletedDate;
 
@@ -26,14 +27,16 @@ public class FinancialDepartmentLedger  extends AuditModel<Long> {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FINANCIAL_DEPARTMENT_ID")
-    public FinancialDepartment getFinancialDepartment() {
-        return financialDepartment;
+    @JoinColumn(name = "DEPARTMENT_ID")
+    public Department getDepartment() {
+        return department;
     }
 
-    public void setFinancialDepartment(FinancialDepartment financialDepartment) {
-        this.financialDepartment = financialDepartment;
+    public void setDepartment(Department department) {
+        this.department = department;
     }
+
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FINANCIAL_LEDGER_TYPE_ID")
     public FinancialLedgerType getFinancialLedgerType() {

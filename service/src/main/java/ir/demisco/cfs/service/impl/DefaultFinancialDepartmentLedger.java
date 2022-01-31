@@ -4,10 +4,7 @@ import ir.demisco.cfs.model.dto.request.FinancialDepartmentLedgerRequest;
 import ir.demisco.cfs.model.entity.FinancialDepartment;
 import ir.demisco.cfs.model.entity.FinancialDepartmentLedger;
 import ir.demisco.cfs.service.api.FinancialDepartmentLedgerService;
-import ir.demisco.cfs.service.repository.FinancialDepartmentLedgerRepository;
-import ir.demisco.cfs.service.repository.FinancialDepartmentRepository;
-import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
-import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
+import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import org.springframework.stereotype.Service;
 
@@ -21,16 +18,18 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
     private final FinancialDepartmentRepository financialDepartmentRepository;
     private final FinancialLedgerTypeRepository financialLedgerTypeRepository;
     private final FinancialDocumentRepository financialDocumentRepository;
+    private final DepartmentRepository departmentRepository;
 
 
     public DefaultFinancialDepartmentLedger(FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository,
                                             FinancialDepartmentRepository financialDepartmentRepository,
                                             FinancialLedgerTypeRepository financialLedgerTypeRepository,
-                                            FinancialDocumentRepository financialDocumentRepository) {
+                                            FinancialDocumentRepository financialDocumentRepository, DepartmentRepository departmentRepository) {
         this.financialDepartmentLedgerRepository = financialDepartmentLedgerRepository;
         this.financialDepartmentRepository = financialDepartmentRepository;
         this.financialLedgerTypeRepository = financialLedgerTypeRepository;
         this.financialDocumentRepository = financialDocumentRepository;
+        this.departmentRepository = departmentRepository;
     }
 
     @Override
@@ -49,10 +48,10 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
 
     private void saveFinancialDepartmentLedgerType(FinancialDepartmentLedgerRequest financialDepartmentLedgerObject) {
 
-        FinancialDepartment financialDepartment = financialDepartmentRepository.findById(financialDepartmentLedgerObject.getFinancialDepartmentId())
+        FinancialDepartment financialDepartment = financialDepartmentRepository.findById(financialDepartmentLedgerObject.getDepartmentId())
                 .orElseThrow(() -> new RuleException("fin.financialDepartmentLedger.insertDepartmentNumber"));
         FinancialDepartmentLedger departmentLedger =
-                financialDepartmentLedgerRepository.getByLedgerTypeIdAndDepartmentIdAndDeleteDate(financialDepartment.getId(),
+                financialDepartmentLedgerRepository.getByLedgerTypeIdAndDepartmentIdAndDeleteDate(financialDepartmentLedgerObject.getDepartmentId(),
                         financialDepartmentLedgerObject.getFinancialLedgerTypeId(), financialDepartmentLedgerObject.getFinancialDepartmentLedgerId());
         if (departmentLedger != null) {
             throw new RuleException("fin.financialDepartmentLedger.departmentLedgerExist");
@@ -60,7 +59,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
 
         if (financialDepartmentLedgerObject.getFinancialDepartmentLedgerId() == null) {
             FinancialDepartmentLedger financialDepartmentLedger = new FinancialDepartmentLedger();
-            financialDepartmentLedger.setFinancialDepartment(financialDepartmentRepository.getOne(financialDepartment.getId()));
+            financialDepartmentLedger.setDepartment(departmentRepository.getOne(financialDepartment.getId()));
             financialDepartmentLedger.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialDepartmentLedgerObject.getFinancialLedgerTypeId()));
             financialDepartmentLedgerRepository.save(financialDepartmentLedger);
         } else if (financialDocumentRepository.usedInFinancialDocument(financialDepartmentLedgerObject.getFinancialDepartmentLedgerId()).size() == 0) {

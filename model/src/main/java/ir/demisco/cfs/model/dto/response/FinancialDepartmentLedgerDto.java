@@ -1,13 +1,13 @@
 package ir.demisco.cfs.model.dto.response;
 
 public class FinancialDepartmentLedgerDto {
-    private Long financialDepartmentId;
+    private Long departmentId;
 
-    public Long getFinancialDepartmentId() {
-        return financialDepartmentId;
+    public Long getDepartmentId() {
+        return departmentId;
     }
 
-    public void setFinancialDepartmentId(Long financialDepartmentId) {
-        this.financialDepartmentId = financialDepartmentId;
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
     }
 }
