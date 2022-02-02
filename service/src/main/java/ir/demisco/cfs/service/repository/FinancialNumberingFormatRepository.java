@@ -7,10 +7,8 @@ import org.springframework.data.jpa.repository.Query;
 public interface FinancialNumberingFormatRepository extends JpaRepository<FinancialNumberingFormat, Long> {
 
     @Query("select fn from FinancialNumberingFormat fn where fn.organization.id=:organizationId " +
-            "and (:formatType is not null  or fn.financialNumberingFormatType.id is null) " +
-            "and (:formatType is  null  or fn.financialNumberingFormatType.id = :formatTypeId)" +
-            "and fn.financialNumberingType.id=:numberingTypeId and fn.deletedDate is null")
-    FinancialNumberingFormat getFormatByType(Object formatType, Long formatTypeId, Long numberingTypeId, Long organizationId);
+            "and fn.financialNumberingType.id=:numberingTypeId and fn.deletedDate is null and fn.")
+    FinancialNumberingFormat getFormatByType(Long organizationId, Long numberingTypeId);
 
     @Query("select fn from FinancialNumberingFormat fn where fn.organization.id=:organizationId and fn.financialNumberingFormatType.id=:formatTypeId " +
             "and fn.financialNumberingType.id=:numberingTypeId and fn.deletedDate is null and fn.id <> :numberFormatId")
