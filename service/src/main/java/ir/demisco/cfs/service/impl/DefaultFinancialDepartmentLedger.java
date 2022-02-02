@@ -5,6 +5,7 @@ import ir.demisco.cfs.model.entity.FinancialDepartment;
 import ir.demisco.cfs.model.entity.FinancialDepartmentLedger;
 import ir.demisco.cfs.service.api.FinancialDepartmentLedgerService;
 import ir.demisco.cfs.service.repository.*;
+import ir.demisco.cloud.basic.model.entity.org.Department;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import org.springframework.stereotype.Service;
 
@@ -48,7 +49,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
 
     private void saveFinancialDepartmentLedgerType(FinancialDepartmentLedgerRequest financialDepartmentLedgerObject) {
 
-        FinancialDepartment financialDepartment = financialDepartmentRepository.findById(financialDepartmentLedgerObject.getDepartmentId())
+        Department department = departmentRepository.findById(financialDepartmentLedgerObject.getDepartmentId())
                 .orElseThrow(() -> new RuleException("fin.financialDepartmentLedger.insertDepartmentNumber"));
         FinancialDepartmentLedger departmentLedger =
                 financialDepartmentLedgerRepository.getByLedgerTypeIdAndDepartmentIdAndDeleteDate(financialDepartmentLedgerObject.getDepartmentId(),
@@ -59,7 +60,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
 
         if (financialDepartmentLedgerObject.getFinancialDepartmentLedgerId() == null) {
             FinancialDepartmentLedger financialDepartmentLedger = new FinancialDepartmentLedger();
-            financialDepartmentLedger.setDepartment(departmentRepository.getOne(financialDepartment.getId()));
+            financialDepartmentLedger.setDepartment(departmentRepository.getOne(department.getId()));
             financialDepartmentLedger.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialDepartmentLedgerObject.getFinancialLedgerTypeId()));
             financialDepartmentLedgerRepository.save(financialDepartmentLedger);
         } else if (financialDocumentRepository.usedInFinancialDocument(financialDepartmentLedgerObject.getFinancialDepartmentLedgerId()).size() == 0) {
