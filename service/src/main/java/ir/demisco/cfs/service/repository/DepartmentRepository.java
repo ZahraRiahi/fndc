@@ -21,7 +21,7 @@ public interface DepartmentRepository extends JpaRepository<Department,Long> {
             "   and fnlg.deleted_date is null" +
             "  left outer join fndc.financial_ledger_type fnlt" +
             "    on fnlt.id = fnlg.financial_ledger_type_id" +
-            "   where fndp.organization_id = :organizationId"+
-            "   order by fndp.creation_date", nativeQuery = true)
+            "   where dp.organization_id = :organizationId"+
+            "   order by dp.creation_date ", nativeQuery = true)
     List<Object[]> getFinancialDocumentItemList(Long organizationId);
 }
