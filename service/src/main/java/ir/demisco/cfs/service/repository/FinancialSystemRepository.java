@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface FinancialSystemRepository extends JpaRepository<FinancialSystem, Long> {
 
-    @Query(value = "select fs from  FinancialSystem fs  where  fs.deletedDate is null ")
+    @Query(value = "select fs from  FinancialSystem fs  ")
     List<FinancialSystem> findByFinancialSystem();
 
 
