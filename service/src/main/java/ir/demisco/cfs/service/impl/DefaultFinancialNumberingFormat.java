@@ -66,8 +66,8 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
             formatType = null;
         }
         FinancialNumberingFormat financialNumberingFormat =
-                financialNumberingFormatRepository.getFormatByType(formatType, financialNumberingFormatDto.getFinancialNumberingFormatTypeId(),
-                        financialNumberingFormatDto.getFinancialNumberingTypeId(), organizationId);
+                financialNumberingFormatRepository.getFormatByType(organizationId,
+                        financialNumberingFormatDto.getFinancialNumberingTypeId());
         if (financialNumberingFormat != null) {
             throw new RuleException("fin.financialNumberingFormat.existNumberingFormat");
         } else {
