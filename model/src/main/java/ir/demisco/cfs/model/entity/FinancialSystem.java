@@ -6,20 +6,21 @@ import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name="FINANCIAL_SYSTEM" , schema = "fndc")
-public class FinancialSystem  extends AuditModel<Long> {
+@Table(name = "FINANCIAL_SYSTEM", schema = "fnsc")
+public class FinancialSystem extends AuditModel<Long> {
+    private String code;
+    private String description;
 
-    private String   description;
-    private LocalDateTime DeletedDate;
 
     @Override
     @Id
-    @SequenceGenerator(schema = "fndc", name = "financial_system_generator", sequenceName = "sq_financial_system")
+    @SequenceGenerator(schema = "fnsc", name = "financial_system_generator", sequenceName = "sq_financial_system")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_system_generator")
     public Long getId() {
         return super.getId();
     }
 
+    @Column(name = "DESCRIPTION")
     public String getDescription() {
         return description;
     }
@@ -27,12 +28,13 @@ public class FinancialSystem  extends AuditModel<Long> {
     public void setDescription(String description) {
         this.description = description;
     }
-    @Column(name = "DELETED_DATE")
-    public LocalDateTime getDeletedDate() {
-        return DeletedDate;
+
+    @Column(name = "CODE")
+    public String getCode() {
+        return code;
     }
 
-    public void setDeletedDate(LocalDateTime deletedDate) {
-        DeletedDate = deletedDate;
+    public void setCode(String code) {
+        this.code = code;
     }
 }
