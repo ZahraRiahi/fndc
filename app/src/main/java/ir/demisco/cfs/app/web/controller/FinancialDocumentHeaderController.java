@@ -17,7 +17,7 @@ private final FinancialDocumentHeaderService financialDocumentHeaderService;
         this.financialDocumentHeaderService = financialDocumentHeaderService;
     }
 
-    @GetMapping("/List")
+    @GetMapping("/Get/{financialDocumentId}")
     public ResponseEntity<FinancialDocumentHeaderResponse> responseEntity(@PathVariable Long financialDocumentId) {
         return ResponseEntity.ok(financialDocumentHeaderService.getFinancialDocumentHeaderByDocumentId(financialDocumentId));
 
