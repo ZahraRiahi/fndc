@@ -2,12 +2,17 @@ package ir.demisco.cfs.service.impl;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentItemOutPutResponse;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentDto;
+import ir.demisco.cfs.model.entity.CentricAccount;
+import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import ir.demisco.cfs.service.api.FinancialDocumentItemService;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
+import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.text.ParsePosition;
@@ -39,10 +44,10 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         Map<String, Object> paramMap = paramSearch.getParamMap();
 //        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         List<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getStartDate(),
-                        paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
-                        paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
-                        paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId(), paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId(), paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
-                        paramSearch.getToPrice(), paramSearch.getTolerance(),paramMap.get("financialDocumentType"), paramSearch.getFinancialDocumentTypeId());
+                paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
+                paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
+                paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId(), paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId(), paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
+                paramSearch.getToPrice(), paramSearch.getTolerance(), paramMap.get("financialDocumentType"), paramSearch.getFinancialDocumentTypeId());
         List<FinancialDocumentItemDto> documentItemDtoList = list.stream().map(item ->
                 FinancialDocumentItemDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -256,5 +261,29 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         } else {
             throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
         }
+    }
+
+    @Override
+    @Transactional
+    public FinancialDocumentItemOutPutResponse getFinancialDocumentItemById(Long financialDocumentItemId) {
+        FinancialDocumentItem financialDocumentItem = financialDocumentItemRepository.findById(financialDocumentItemId).orElseThrow(() -> new RuleException("fin.ruleException.notFoundId"));
+        FinancialDocumentItemOutPutResponse financialDocumentItemOutPutResponse = FinancialDocumentItemOutPutResponse.builder().id(financialDocumentItemId)
+                .financialDocumentId(financialDocumentItem.getFinancialDocument().getId())
+                .sequenceNumber(financialDocumentItem.getSequenceNumber())
+                .debitAmount(financialDocumentItem.getDebitAmount())
+                .creditAmount(financialDocumentItem.getCreditAmount())
+                .description(financialDocumentItem.getDescription())
+                .description(financialDocumentItem.getDescription() == null ? "" : financialDocumentItem.getDescription())
+                .financialAccountId(financialDocumentItem.getFinancialAccount().getId())
+                .centricAccountId1(financialDocumentItem.getCentricAccountId1() == null ? null : financialDocumentItem.getCentricAccountId1().getId())
+                .centricAccountId2(financialDocumentItem.getCentricAccountId2() == null ? null : financialDocumentItem.getCentricAccountId2().getId())
+                .centricAccountId3(financialDocumentItem.getCentricAccountId3() == null ? null : financialDocumentItem.getCentricAccountId3().getId())
+                .centricAccountId4(financialDocumentItem.getCentricAccountId4() == null ? null : financialDocumentItem.getCentricAccountId4().getId())
+                .centricAccountId5(financialDocumentItem.getCentricAccountId5() == null ? null : financialDocumentItem.getCentricAccountId5().getId())
+                .centricAccountId6(financialDocumentItem.getCentricAccountId6() == null ? null : financialDocumentItem.getCentricAccountId6().getId())
+                .creatorId(financialDocumentItem.getCreator().getId())
+                .lastModifierId(financialDocumentItem.getLastModifier().getId())
+                .build();
+        return financialDocumentItemOutPutResponse;
     }
 }
