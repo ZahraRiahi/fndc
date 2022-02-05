@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.impl;
 
+import ir.demisco.cfs.model.dto.response.FinancialDocumentHeaderOutputResponse;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentHeaderResponse;
 import ir.demisco.cfs.model.entity.FinancialDocument;
 import ir.demisco.cfs.service.api.FinancialDocumentHeaderService;
@@ -8,6 +9,7 @@ import ir.demisco.cloud.core.middle.exception.RuleException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+
 @Service
 public class DefaultFinancialDocumentHeader implements FinancialDocumentHeaderService {
     private final FinancialDocumentRepository financialDocumentRepository;
@@ -39,6 +41,29 @@ public class DefaultFinancialDocumentHeader implements FinancialDocumentHeaderSe
                 .financialDocumentStatusDescription(financialDocument.getFinancialDocumentStatus() == null ? "" : financialDocument.getFinancialDocumentStatus().getName())
                 .build();
         return financialDocumentHeaderResponse;
+    }
+
+    @Override
+    @Transactional
+    public FinancialDocumentHeaderOutputResponse getFinancialDocumentHeaderBytId(Long financialDocumentId) {
+        FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentId).orElseThrow(() -> new RuleException("fin.ruleException.notFoundId"));
+        FinancialDocumentHeaderOutputResponse financialDocumentHeaderOutputResponse = FinancialDocumentHeaderOutputResponse.builder().id(financialDocumentId)
+                .documentDate(financialDocument.getDocumentDate())
+                .description(financialDocument.getDescription())
+                .financialDocumentStatusId(financialDocument.getFinancialDocumentStatus().getId())
+                .automaticFlag(financialDocument.getAutomaticFlag())
+                .organizationId(financialDocument.getOrganization().getId())
+                .financialDocumentTypeId(financialDocument.getFinancialDocumentType().getId())
+                .financialPeriodId(financialDocument.getFinancialPeriod().getId())
+                .financialLedgerTypeId(financialDocument.getFinancialLedgerType() == null ? 0 : financialDocument.getFinancialLedgerType().getId())
+                .financialDepartmentId(financialDocument.getFinancialDepartment() == null ? 0 : financialDocument.getFinancialDepartment().getId())
+                .documentNumber(financialDocument.getDocumentNumber())
+                .creatorId(financialDocument.getCreator().getId())
+                .lastModifierId(financialDocument.getLastModifier().getId())
+                .departmentId(financialDocument.getFinancialDepartment().getDepartment() == null ? 0 : financialDocument.getFinancialDepartment().getDepartment().getId())
+                .financialSystemId(financialDocument.getFinancialDepartment().getFinancialSystem() == null ? 0 : financialDocument.getFinancialDepartment().getFinancialSystem().getId())
+                .build();
+        return financialDocumentHeaderOutputResponse;
     }
 }
 

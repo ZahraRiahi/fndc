@@ -4,7 +4,6 @@ import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemOutPutResponse;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentDto;
-import ir.demisco.cfs.model.entity.CentricAccount;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import ir.demisco.cfs.service.api.FinancialDocumentItemService;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
