@@ -1,14 +1,12 @@
 package ir.demisco.cfs.app.web.controller;
 
+import ir.demisco.cfs.model.dto.response.FinancialDocumentItemOutPutResponse;
 import ir.demisco.cfs.service.api.FinancialDocumentItemService;
 import ir.demisco.cfs.service.api.SaveFinancialDocumentService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/api-financialDocumentItem")
@@ -31,5 +29,11 @@ public class FinancialDocumentItemController {
     @PostMapping("/Get")
     public ResponseEntity<DataSourceResult> getFinancialDocumentInfo(@RequestBody DataSourceRequest dataSourceRequest) {
         return ResponseEntity.ok(saveFinancialDocumentService.getFinancialDocumentItem(dataSourceRequest));
+    }
+
+    @GetMapping("/GetById/{financialDocumentItemId}")
+    public ResponseEntity<FinancialDocumentItemOutPutResponse> responseEntityFinancialDocumentItem(@PathVariable Long financialDocumentItemId) {
+        return ResponseEntity.ok(financialDocumentItemService.getFinancialDocumentItemById(financialDocumentItemId));
+
     }
 }
