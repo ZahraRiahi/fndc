@@ -1,5 +1,6 @@
 package ir.demisco.cfs.app.web.controller;
 
+import ir.demisco.cfs.model.dto.response.FinancialDocumentHeaderOutputResponse;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentHeaderResponse;
 import ir.demisco.cfs.service.api.FinancialDocumentHeaderService;
 import org.springframework.http.ResponseEntity;
@@ -11,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api-financialDocumentHeader")
 public class FinancialDocumentHeaderController {
-private final FinancialDocumentHeaderService financialDocumentHeaderService;
+    private final FinancialDocumentHeaderService financialDocumentHeaderService;
 
     public FinancialDocumentHeaderController(FinancialDocumentHeaderService financialDocumentHeaderService) {
         this.financialDocumentHeaderService = financialDocumentHeaderService;
@@ -20,6 +21,10 @@ private final FinancialDocumentHeaderService financialDocumentHeaderService;
     @GetMapping("/Get/{financialDocumentId}")
     public ResponseEntity<FinancialDocumentHeaderResponse> responseEntity(@PathVariable Long financialDocumentId) {
         return ResponseEntity.ok(financialDocumentHeaderService.getFinancialDocumentHeaderByDocumentId(financialDocumentId));
+    }
 
+    @GetMapping("/GetById/{financialDocumentId}")
+    public ResponseEntity<FinancialDocumentHeaderOutputResponse> responseEntityHeader(@PathVariable Long financialDocumentId) {
+        return ResponseEntity.ok(financialDocumentHeaderService.getFinancialDocumentHeaderBytId(financialDocumentId));
     }
 }
