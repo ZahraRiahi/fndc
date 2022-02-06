@@ -32,7 +32,7 @@ public interface FinancialLedgerTypeService {
      * @param financialLedgerTypeRequest
      * @return
      */
-    Boolean saveFinancialLedgerType(FinancialLedgerTypeRequest financialLedgerTypeRequest);
+    void saveFinancialLedgerType(FinancialLedgerTypeRequest financialLedgerTypeRequest);
 
     List<FinancialDepartmentLedgerResponse> getFinancialLedgerByDepartmentId(FinancialDepartmentLedgerDto departmentLedgerDto);
 
