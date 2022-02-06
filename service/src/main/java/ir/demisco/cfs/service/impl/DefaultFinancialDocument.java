@@ -401,7 +401,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     financialDocumentErrorDtoList.add(documentItemDescription);
                 }
 
-                if ((creditAmount != 000) || (debitAmount != 000)) {
+                if ((creditAmount != 0) || (debitAmount != 0)) {
                     FinancialDocumentErrorDto itemAmount = new FinancialDocumentErrorDto();
                     itemAmount.setFinancialDocumentId(financialDocument.getId());
                     itemAmount.setFinancialDocumentItemId(documentItem.getId());

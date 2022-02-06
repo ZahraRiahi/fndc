@@ -181,12 +181,12 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         if (documentItem.getDebitAmount() < 0) {
             throw new RuleException("fin.financialDocument.saveDocument.deditAmountNegative");
         }
-        if ((creditAmount != 000)) {
+        if ((creditAmount != 0)) {
             financialDocumentItem.setCreditAmount(Math.ceil(documentItem.getCreditAmount()));
         } else {
             financialDocumentItem.setCreditAmount(documentItem.getCreditAmount());
         }
-        if ((debitAmount != 000)) {
+        if ((debitAmount != 0)) {
             financialDocumentItem.setDebitAmount(Math.ceil(documentItem.getDebitAmount()));
         } else {
             financialDocumentItem.setDebitAmount(documentItem.getDebitAmount());
@@ -312,12 +312,12 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         }
         financialDocumentItem.setSequenceNumber(responseFinancialDocumentItemDto.getSequenceNumber());
 
-        if ((creditAmount != 000)) {
+        if ((creditAmount != 0)) {
             financialDocumentItem.setCreditAmount(Math.ceil(responseFinancialDocumentItemDto.getCreditAmount()));
         } else {
             financialDocumentItem.setCreditAmount(responseFinancialDocumentItemDto.getCreditAmount());
         }
-        if ((debitAmount != 000)) {
+        if ((debitAmount != 0)) {
             financialDocumentItem.setDebitAmount(Math.ceil(responseFinancialDocumentItemDto.getDebitAmount()));
         } else {
             financialDocumentItem.setDebitAmount(responseFinancialDocumentItemDto.getDebitAmount());
