@@ -123,6 +123,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         }
         if (financialLedgerTypeId == null) {
             insertFinancialLedgerType(financialLedgerTypeRequest);
+            return;
         }
         Optional<FinancialLedgerType> financialLedgerTypeTbl = financialLedgerTypeRepository.findById(financialLedgerTypeId);
         if (financialLedgerTypeTbl.isPresent()) {
