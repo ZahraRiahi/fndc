@@ -109,7 +109,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
 
     @Override
     @Transactional
-    public Boolean saveFinancialLedgerType(FinancialLedgerTypeRequest financialLedgerTypeRequest) {
+    public void saveFinancialLedgerType(FinancialLedgerTypeRequest financialLedgerTypeRequest) {
         Long financialLedgerTypeId = financialLedgerTypeRequest.getFinancialLedgerTypeId();
         Long financialCodingTypeId = financialLedgerTypeRequest.getFinancialCodingTypeId();
         if (financialCodingTypeId == null || financialCodingTypeId < 0) {
@@ -123,7 +123,6 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         }
         if (financialLedgerTypeId == null) {
             insertFinancialLedgerType(financialLedgerTypeRequest);
-            return true;
         }
         Optional<FinancialLedgerType> financialLedgerTypeTbl = financialLedgerTypeRepository.findById(financialLedgerTypeId);
         if (financialLedgerTypeTbl.isPresent()) {
@@ -132,7 +131,6 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         } else {
             insertFinancialLedgerType(financialLedgerTypeRequest);
         }
-        return true;
     }
 
     @Override
