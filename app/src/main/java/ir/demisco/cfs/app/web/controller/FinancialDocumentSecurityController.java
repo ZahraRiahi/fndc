@@ -9,7 +9,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
-@RequestMapping("/api-financialDocumentNumber")
+@RequestMapping("/api-financialDocumentSecurity")
 public class FinancialDocumentSecurityController {
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
 
