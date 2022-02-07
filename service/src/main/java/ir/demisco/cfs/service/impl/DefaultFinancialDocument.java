@@ -3,10 +3,12 @@ package ir.demisco.cfs.service.impl;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.request.ControlFinancialAccountNatureTypeInputRequest;
+import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.*;
 import ir.demisco.cfs.service.api.ControlFinancialAccountNatureTypeService;
+import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.FinancialPeriodService;
 import ir.demisco.cfs.service.repository.*;
@@ -55,12 +57,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository;
     private final ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService;
     private final FinancialPeriodService financialPeriodService;
+    private final FinancialDocumentSecurityService financialDocumentSecurityService;
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
                                     FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                     FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
-                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService, FinancialPeriodService financialPeriodService) {
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -76,6 +79,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.financialDocumentItemCurrencyRepository = financialDocumentItemCurrencyRepository;
         this.controlFinancialAccountNatureTypeService = controlFinancialAccountNatureTypeService;
         this.financialPeriodService = financialPeriodService;
+        this.financialDocumentSecurityService = financialDocumentSecurityService;
     }
 
 
@@ -326,6 +330,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public ResponseEntity<ResponseFinancialDocumentSetStatusDto> changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
+        String activityCode="FNDC_DOCUMENT_CONF";
+        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest=new FinancialDocumentSecurityInputRequest();
+        financialDocumentSecurityInputRequest.setActivityCode(activityCode);
+        financialDocumentSecurityInputRequest.setFinancialDocumentId(responseFinancialDocumentStatusDto.getId());
+        financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
+        financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
+
         ResponseFinancialDocumentSetStatusDto responseFinancialDocumentSetStatusDto = new ResponseFinancialDocumentSetStatusDto();
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
         financialPeriodStatusRequest.setFinancialDocumentId(responseFinancialDocumentStatusDto.getId());
