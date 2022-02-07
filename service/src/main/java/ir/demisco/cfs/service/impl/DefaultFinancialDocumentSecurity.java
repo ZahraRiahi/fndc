@@ -62,7 +62,6 @@ public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecuri
             financialSecurityFilterRequest.setInputFromConfigFlag(financialDocumentSecurityInputRequest.getSecurityModelRequest().getInputFromConfigFlag());
             financialSecurityFilterRequest.setCreatorUserId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getCreatorUserId());
         }
-
         FinancialSecurityOutputResponse financialSecurityOutputResponse = financialSecurityService.hasPermission(financialSecurityFilterRequest, SecurityHelper.getCurrentUser().getOrganizationId());
         if (financialSecurityOutputResponse.getHasPermissionStatus() == 0) {
             if (financialSecurityOutputResponse.getPermissionMessage() == null) {
