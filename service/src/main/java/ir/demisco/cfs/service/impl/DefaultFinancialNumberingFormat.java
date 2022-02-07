@@ -56,7 +56,7 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public Boolean save(FinancialNumberingFormatDto financialNumberingFormatDto) {
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         Object formatType;
         checkValidParameter(financialNumberingFormatDto);
         if (financialNumberingFormatDto.getFinancialNumberingFormatTypeId() != null) {
