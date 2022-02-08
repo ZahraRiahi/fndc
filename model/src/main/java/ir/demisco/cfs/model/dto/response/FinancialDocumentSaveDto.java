@@ -23,6 +23,7 @@ public class FinancialDocumentSaveDto {
     private Long departmentId;
     private String departmentName;
     private Boolean automaticFlag;
+    private Long financialDepartmentId;
     private List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList;
 
 
@@ -147,6 +148,13 @@ public class FinancialDocumentSaveDto {
         this.financialDocumentItemDtoList = financialDocumentItemDtoList;
     }
 
+    public Long getFinancialDepartmentId() {
+        return financialDepartmentId;
+    }
+
+    public void setFinancialDepartmentId(Long financialDepartmentId) {
+        this.financialDepartmentId = financialDepartmentId;
+    }
 
     public String getPermanentDocumentNumber() {
         return permanentDocumentNumber;
@@ -288,7 +296,10 @@ public class FinancialDocumentSaveDto {
             financialDocumentSaveDto.setFinancialDocumentItemDtoList(financialDocumentItemDtoList);
             return this;
         }
-
+        public Builder financialDepartmentId(Long financialDepartmentId) {
+            financialDocumentSaveDto.setFinancialDepartmentId(financialDepartmentId);
+            return this;
+        }
         public FinancialDocumentSaveDto build() {
             return financialDocumentSaveDto;
         }
