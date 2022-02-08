@@ -1,12 +1,12 @@
 package ir.demisco.cfs.service.impl;
 
-import ir.demisco.cfs.model.dto.request.FinancialDocumentItemRequest;
-import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
+import ir.demisco.cfs.model.dto.request.*;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.FinancialDocument;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import ir.demisco.cfs.model.entity.FinancialDocumentItemCurrency;
 import ir.demisco.cfs.model.entity.FinancialDocumentReference;
+import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.FinancialPeriodService;
 import ir.demisco.cfs.service.api.SaveFinancialDocumentService;
@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -45,6 +44,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private final FinancialDocumentStatusRepository documentStatusRepository;
     private final FinancialDocumentService financialDocumentService;
     private final FinancialPeriodService financialPeriodService;
+    private final FinancialDocumentSecurityService financialDocumentSecurityService;
 
     public DefaultSaveFinancialDocument(FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository,
                                         FinancialDocumentRepository financialDocumentRepository, FinancialDocumentItemRepository financialDocumentItemRepository,
@@ -53,7 +53,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                                         FinancialPeriodRepository financialPeriodRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository,
                                         FinancialDepartmentRepository financialDepartmentRepository, MoneyPrisingReferenceRepository prisingReferenceRepository,
                                         FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialDocumentStatusRepository documentStatusRepository,
-                                        FinancialDocumentService financialDocumentService, FinancialPeriodService financialPeriodService) {
+                                        FinancialDocumentService financialDocumentService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService) {
         this.financialAccountRepository = financialAccountRepository;
         this.centricAccountRepository = centricAccountRepository;
         this.financialDocumentRepository = financialDocumentRepository;
@@ -70,15 +70,35 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentService = financialDocumentService;
         this.financialPeriodService = financialPeriodService;
+        this.financialDocumentSecurityService = financialDocumentSecurityService;
     }
 
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public FinancialDocumentSaveDto saveDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto) {
-
         FinancialDocumentSaveDto responseDocumentSaveDto;
         List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList = new ArrayList<>();
         FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
+        String activityCode = "FNDC _DOCUMENT_CREATE";
+        SecurityModelRequest securityModelRequest = new SecurityModelRequest();
+        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
+        financialDocumentSecurityInputRequest.setActivityCode(activityCode);
+        financialDocumentSecurityInputRequest.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
+        financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
+        securityModelRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        securityModelRequest.setUserId(SecurityHelper.getCurrentUser().getUserId());
+        securityModelRequest.setDepartmentId(requestFinancialDocumentSaveDto.getDepartmentId());
+        securityModelRequest.setFinancialDepartmentId(requestFinancialDocumentSaveDto.getFinancialDepartmentId());
+        securityModelRequest.setFinancialLedgerId(requestFinancialDocumentSaveDto.getFinancialLedgerTypeId());
+        securityModelRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
+        securityModelRequest.setDocumentTypeId(requestFinancialDocumentSaveDto.getFinancialDocumentTypeId());
+        securityModelRequest.setSubjectId(null);
+        securityModelRequest.setActivityCode(financialDocumentSecurityInputRequest.getActivityCode());
+        securityModelRequest.setInputFromConfigFlag(false);
+        securityModelRequest.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
+        financialDocumentSecurityInputRequest.setSecurityModelRequest(securityModelRequest);
+        financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
+
         Long periodDate = financialPeriodRepository.findFinancialPeriodByFinancialPeriodIdAndDocumentDate
                 (requestFinancialDocumentSaveDto.getFinancialPeriodId(), LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/", "-") + "T00:00"));
         if (periodDate == null) {
@@ -225,6 +245,13 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         List<FinancialDocumentReferenceDto> documentReferenceList = new ArrayList<>();
         List<FinancialDocumentItemCurrencyDto> newResponseDocumentItemCurrencyList = new ArrayList<>();
         List<FinancialDocumentItemCurrencyDto> responseDocumentItemCurrencyList = new ArrayList<>();
+        String activityCode = "FNDC _DOCUMENT_UPDATE";
+        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
+        financialDocumentSecurityInputRequest.setActivityCode(activityCode);
+        financialDocumentSecurityInputRequest.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
+        financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
+        financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
+
         FinancialDocument updateFinancialDocument = updateFinancialDocument(requestFinancialDocumentSaveDto);
         responseDocumentSaveDto = convertDocumentToDto(updateFinancialDocument);
         if (!requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().isEmpty()) {
@@ -233,14 +260,14 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                     updateFinancialDocumentItemDto.add(e);
                     if (e.getDocumentReferenceList() != null) {
                         e.getDocumentReferenceList().forEach(referenceDocument -> {
-                                referenceDocument.setFinancialDocumentItemId(e.getId());
-                                newDocumentReferenceList.add(referenceDocument);
+                            referenceDocument.setFinancialDocumentItemId(e.getId());
+                            newDocumentReferenceList.add(referenceDocument);
                         });
                     }
                     if (e.getDocumentItemCurrencyList() != null) {
                         e.getDocumentItemCurrencyList().forEach(itemCurrency -> {
-                                itemCurrency.setFinancialDocumentItemId(e.getId());
-                                newResponseDocumentItemCurrencyList.add(itemCurrency);
+                            itemCurrency.setFinancialDocumentItemId(e.getId());
+                            newResponseDocumentItemCurrencyList.add(itemCurrency);
                         });
                     }
                 } else {
