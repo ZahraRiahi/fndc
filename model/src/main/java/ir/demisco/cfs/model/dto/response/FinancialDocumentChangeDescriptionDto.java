@@ -2,7 +2,7 @@ package ir.demisco.cfs.model.dto.response;
 
 import java.util.List;
 
-public class FinancialDocumentChengDescriptionDto {
+public class FinancialDocumentChangeDescriptionDto {
 
     private Long id;
     private List<Long> financialDocumentItemIdList;

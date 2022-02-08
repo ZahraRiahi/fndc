@@ -627,11 +627,19 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public String changeDescription(FinancialDocumentChengDescriptionDto financialDocumentDto) {
+    public String changeDescription(FinancialDocumentChangeDescriptionDto financialDocumentDto) {
         FinancialDocument financialDocument = financialDocumentRepository.getActiveDocumentById(financialDocumentDto.getId());
         if (financialDocument == null) {
             throw new RuleException("fin.financialDocument.notExistDocument");
         }
+        String activityCode = "FNDC _DOCUMENT_UPDATE";
+        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
+        financialDocumentSecurityInputRequest.setActivityCode(activityCode);
+        financialDocumentSecurityInputRequest.setFinancialDocumentId(financialDocumentDto.getId());
+        financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
+        financialDocumentSecurityInputRequest.setSecurityModelRequest(null);
+        financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
+
         List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getDocumentDescription(financialDocumentDto.getFinancialDocumentItemIdList(), financialDocumentDto.getOldDescription());
         if (financialDocumentItemList.isEmpty()) {
             throw new RuleException("fin.financialDocument.notFoundRecordWithParam");
