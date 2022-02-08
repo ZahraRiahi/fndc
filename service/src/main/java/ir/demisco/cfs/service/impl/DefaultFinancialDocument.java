@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.request.ControlFinancialAccountNatureTypeInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
+import ir.demisco.cfs.model.dto.request.SecurityModelRequest;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.*;
 import ir.demisco.cfs.service.api.ControlFinancialAccountNatureTypeService;
@@ -330,8 +331,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public ResponseEntity<ResponseFinancialDocumentSetStatusDto> changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
-        String activityCode="FNDC_DOCUMENT_CONF";
-        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest=new FinancialDocumentSecurityInputRequest();
+        String activityCode = "FNDC_DOCUMENT_CONF";
+        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
         financialDocumentSecurityInputRequest.setActivityCode(activityCode);
         financialDocumentSecurityInputRequest.setFinancialDocumentId(responseFinancialDocumentStatusDto.getId());
         financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
@@ -657,6 +658,14 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Transactional(rollbackFor = Throwable.class)
     public boolean deleteFinancialDocumentById(Long financialDocumentId) {
         FinancialDocument document = financialDocumentRepository.findById(financialDocumentId).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
+        String activityCode = "FNDC _DOCUMENT_DELETE";
+        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
+        financialDocumentSecurityInputRequest.setActivityCode(activityCode);
+        financialDocumentSecurityInputRequest.setFinancialDocumentId(financialDocumentId);
+        financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
+        financialDocumentSecurityInputRequest.setSecurityModelRequest(null);
+        financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
+
         FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
         if (financialDocument == null) {
             throw new RuleException("fin.financialDocument.openStatusPeriod");
