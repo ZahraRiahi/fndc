@@ -79,7 +79,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         FinancialDocumentSaveDto responseDocumentSaveDto;
         List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList = new ArrayList<>();
         FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
-        String activityCode = "FNDC _DOCUMENT_CREATE";
+        String activityCode = "FNDC_DOCUMENT_CREATE";
         SecurityModelRequest securityModelRequest = new SecurityModelRequest();
         FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
         financialDocumentSecurityInputRequest.setActivityCode(activityCode);
@@ -245,7 +245,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         List<FinancialDocumentReferenceDto> documentReferenceList = new ArrayList<>();
         List<FinancialDocumentItemCurrencyDto> newResponseDocumentItemCurrencyList = new ArrayList<>();
         List<FinancialDocumentItemCurrencyDto> responseDocumentItemCurrencyList = new ArrayList<>();
-        String activityCode = "FNDC _DOCUMENT_UPDATE";
+        String activityCode = "FNDC_DOCUMENT_UPDATE";
         FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
         financialDocumentSecurityInputRequest.setActivityCode(activityCode);
         financialDocumentSecurityInputRequest.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());

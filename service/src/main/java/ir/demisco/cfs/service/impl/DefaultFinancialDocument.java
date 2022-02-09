@@ -632,7 +632,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialDocument == null) {
             throw new RuleException("fin.financialDocument.notExistDocument");
         }
-        String activityCode = "FNDC _DOCUMENT_UPDATE";
+        String activityCode = "FNDC_DOCUMENT_UPDATE";
         FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
         financialDocumentSecurityInputRequest.setActivityCode(activityCode);
         financialDocumentSecurityInputRequest.setFinancialDocumentId(financialDocumentDto.getId());
@@ -666,7 +666,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Transactional(rollbackFor = Throwable.class)
     public boolean deleteFinancialDocumentById(Long financialDocumentId) {
         FinancialDocument document = financialDocumentRepository.findById(financialDocumentId).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
-        String activityCode = "FNDC _DOCUMENT_DELETE";
+        String activityCode = "FNDC_DOCUMENT_DELETE";
         FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
         financialDocumentSecurityInputRequest.setActivityCode(activityCode);
         financialDocumentSecurityInputRequest.setFinancialDocumentId(financialDocumentId);
@@ -756,7 +756,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public String changeCentricAccount(FinancialCentricAccountDto financialCentricAccountDto) {
-
         String activityCode = "FNDC_DOCUMENT_UPDATE";
         FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
         financialDocumentSecurityInputRequest.setActivityCode(activityCode);
@@ -839,6 +838,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public Boolean changeAmountDocument(FinancialCentricAccountDto financialCentricAccountDto) {
+        String activityCode = "FNDC_DOCUMENT_UPDATE";
+        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
+        financialDocumentSecurityInputRequest.setActivityCode(activityCode);
+        financialDocumentSecurityInputRequest.setFinancialDocumentId(financialCentricAccountDto.getId());
+        financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
+        financialDocumentSecurityInputRequest.setSecurityModelRequest(null);
+        financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
         FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId())
                 .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
