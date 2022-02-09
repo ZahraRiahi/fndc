@@ -46,7 +46,7 @@ public class FinancialDocumentController {
     }
 
     @PostMapping("/ChangeDescription")
-    public ResponseEntity<FinancialDocumentAccountMessageDto> changeDescription(@RequestBody FinancialDocumentChengDescriptionDto financialDocumentDto) {
+    public ResponseEntity<FinancialDocumentAccountMessageDto> changeDescription(@RequestBody FinancialDocumentChangeDescriptionDto financialDocumentDto) {
         String result;
         FinancialDocumentAccountMessageDto financialDocumentAccountMessageDto = new FinancialDocumentAccountMessageDto();
         result = financialDocumentService.changeDescription(financialDocumentDto);
