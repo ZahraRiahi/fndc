@@ -327,6 +327,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialDocumentCentricTurnOverRequest.getCentricAccountId2(),
                 financialDocumentCentricTurnOverRequest.getReferenceNumberObject(),
                 financialDocumentCentricTurnOverRequest.getReferenceNumber(),
+                financialDocumentCentricTurnOverRequest.getFinancialAccount(),
                 financialDocumentCentricTurnOverRequest.getFinancialAccountId(),
                 financialDocumentCentricTurnOverRequest.getToDate(),
                 financialDocumentCentricTurnOverRequest.getToNumber(),
