@@ -1298,8 +1298,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 :dateFilterFlg = 1)" +
             "             AND (EXISTS (SELECT 1" +
             "                            FROM FNAC.ACCOUNT_STRUCTURE_LEVEL ASL" +
-            "                           WHERE ASL.FINANCIAL_ACCOUNT_ID = FA.ID" +
-            "                             AND ASL.RELATED_ACCOUNT_ID = :financialAccountId " +
+            "                           WHERE ASL.FINANCIAL_ACCOUNT_ID = FA.ID " +
+            " AND(:financialAccount IS NULL OR ASL.RELATED_ACCOUNT_ID=:financialAccountId) " +
             "                             AND ASL.DELETED_DATE IS NULL))" +
             "             AND FDS.CODE > 10" +
             "          UNION " +
@@ -1474,7 +1474,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
                                                          Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId,
                                                          String fromNumber, Object centricAccount1, Long centricAccountId1,
                                                          Object centricAccount2, Long centricAccountId2, Object referenceNumberObject,
-                                                         Long referenceNumber, Long financialAccountId, LocalDateTime toDate, String toNumber,
+                                                         Long referenceNumber,Object  financialAccount,Long financialAccountId, LocalDateTime toDate, String toNumber,
                                                          Pageable pageable);
 
 
