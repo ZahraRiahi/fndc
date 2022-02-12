@@ -7,21 +7,21 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-public interface DepartmentRepository extends JpaRepository<Department,Long> {
+public interface DepartmentRepository extends JpaRepository<Department, Long> {
 
-    @Query(value = "select dp.id  as departmentId," +
-            "       dp.code," +
-            "       dp.name," +
+    @Query(value = "select FNDP.id  as departmentId," +
+            "       FNDP.code," +
+            "       FNDP.name," +
             "       fnlg.financial_ledger_type_id," +
             "       fnlt.description," +
             "       fnlg.id    as financial_department_ledger_id" +
-            "  from org.department dp " +
+            "  from FNDC.FINANCIAL_DEPARTMENT FNDP " +
             "  left outer join fndc.financial_department_ledger fnlg" +
-            "        on dp.id = fnlg.department_id " +
-            "   and fnlg.deleted_date is null" +
+            "        ON FNDP.DEPARTMENT_ID = FNLG.DEPARTMENT_ID " +
             "  left outer join fndc.financial_ledger_type fnlt" +
             "    on fnlt.id = fnlg.financial_ledger_type_id" +
-            "   where dp.organization_id = :organizationId"+
-            "   order by dp.creation_date ", nativeQuery = true)
-    List<Object[]> getFinancialDocumentItemList(Long organizationId);
+            "   where FNDP.organization_id = :organizationId" +
+            " AND FNDP.DEPARTMENT_ID = :departmentId "
+            , nativeQuery = true)
+    List<Object[]> getFinancialDocumentItemList(Long organizationId, Long departmentId);
 }
