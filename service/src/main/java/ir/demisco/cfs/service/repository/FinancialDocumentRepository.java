@@ -502,32 +502,61 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     String findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long documentNumberingTypeId, LocalDateTime toDate, Long organizationId);
 
-//    @Query("select fd.id from FinancialDocument  fd " +
+    //    @Query("select fd.id from FinancialDocument  fd " +
 //            " join FinancialDepartmentLedger fdl on fdl.financialLedgerType.id=fd.financialLedgerType.id and " +
 //            " and fdl.department.id=fd.financialDepartment.id  " +
 //            " where fdl.id=:financialDepartmentLedgerId ")
 //    List<Long> usedInFinancialDocument(Long financialDepartmentLedgerId);
-    @Query(value ="select FND.id  FROM FNDC.FINANCIAL_DOCUMENT FND " +
+    @Query(value = "select FND.id  FROM FNDC.FINANCIAL_DOCUMENT FND " +
             " INNER JOIN FNDC.FINANCIAL_DEPARTMENT FNDP " +
             "    ON FND.FINANCIAL_DEPARTMENT_ID = FNDP.ID " +
             " INNER JOIN FNDC.FINANCIAL_DEPARTMENT_LEDGER FDL " +
             "    ON FNDP.DEPARTMENT_ID = FDL.DEPARTMENT_ID " +
             "   AND FND.FINANCIAL_LEDGER_TYPE_ID = FDL.FINANCIAL_LEDGER_TYPE_ID  " +
             " where FDL.id=:financialDepartmentLedgerId "
-             , nativeQuery = true)
+            , nativeQuery = true)
     List<Long> usedInFinancialDocument(Long financialDepartmentLedgerId);
 
-            @Query("select fd.financialPeriod.id,fd.documentDate from FinancialDocument  fd " +
-                    " where fd.id=:financialDocumentId and fd.deletedDate is null")
-                    List < Object[]>financialDocumentById(Long financialDocumentId);
+    @Query("select fd.financialPeriod.id,fd.documentDate from FinancialDocument  fd " +
+            " where fd.id=:financialDocumentId and fd.deletedDate is null")
+    List<Object[]> financialDocumentById(Long financialDocumentId);
 
-    @Query(value = " SELECT FD.ID, FS.CODE " +
+    @Query(value = " SELECT FD.ID," +
+            "       FS.CODE," +
+            "       FD.Automatic_Flag," +
+            "       FD.ORGANIZATION_ID," +
+            "       FD.Financial_Document_Type_Id," +
+            "       FD.Financial_Period_Id," +
+            "       FD.Financial_Ledger_Type_Id," +
+            "       FD.FINANCIAL_DEPARTMENT_ID," +
+            "       FNDP.DEPARTMENT_ID" +
             "  FROM FNDC.FINANCIAL_DOCUMENT FD" +
-            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FS " +
-            "    ON FS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
-            "  WHERE FD.DOCUMENT_NUMBER = :targetDocumentNumber "
+            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FS" +
+            "    ON FS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID" +
+            " INNER JOIN FNDC.FINANCIAL_DEPARTMENT FNDP" +
+            "    ON FNDP.ID = FD.FINANCIAL_DEPARTMENT_ID" +
+            " WHERE FD.DOCUMENT_NUMBER = :targetDocumentNumber" +
+            "   and FD.ORGANIZATION_ID = :organizationId" +
+            "   and FD.Financial_Ledger_Type_Id = :financialLedgerTypeId" +
+            "   and FD.Financial_Department_Id = :financialDepartmentId" +
+            "   and  (:department is null or FNDP.DEPARTMENT_ID=:departmentId) "
             , nativeQuery = true)
-    List<Object[]> findDocumentByDocumentNumberAndCode(String targetDocumentNumber);
+    List<Object[]> findDocumentByDocumentNumberAndCode(String targetDocumentNumber, Long organizationId, Long financialLedgerTypeId, Long financialDepartmentId, Object department, Long departmentId);
+
+
+    @Query(value = " SELECT FD.AUTOMATIC_FLAG," +
+            "       FD.ORGANIZATION_ID," +
+            "       FD.FINANCIAL_DOCUMENT_TYPE_ID," +
+            "       FD.FINANCIAL_PERIOD_ID," +
+            "       FD.FINANCIAL_LEDGER_TYPE_ID," +
+            "       FD.FINANCIAL_DEPARTMENT_ID," +
+            "       FNDP.DEPARTMENT_ID  " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            " INNER JOIN FNDC.FINANCIAL_DEPARTMENT FNDP " +
+            "    ON FNDP.ID = FD.FINANCIAL_DEPARTMENT_ID " +
+            " WHERE FD.ID = :documentId "
+            , nativeQuery = true)
+    List<Object[]> findDocumentByFlagAndOrganAndPeriodId(Long documentId);
 
     @Query(value = " SELECT FS.CODE " +
             "  FROM FNDC.FINANCIAL_DOCUMENT FD " +

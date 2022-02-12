@@ -1,14 +1,10 @@
 package ir.demisco.cfs.service.impl;
 
 
-import ir.demisco.cfs.model.dto.request.FinancialDocumentTransferRequest;
-import ir.demisco.cfs.model.dto.request.FinancialPeriodRequest;
-import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
+import ir.demisco.cfs.model.dto.request.*;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.*;
-import ir.demisco.cfs.service.api.FinancialDocumentService;
-import ir.demisco.cfs.service.api.FinancialPeriodService;
-import ir.demisco.cfs.service.api.TransferFinancialDocumentService;
+import ir.demisco.cfs.service.api.*;
 import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
@@ -35,12 +31,13 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
     private final OrganizationRepository organizationRepository;
     private final FinancialDocumentNumberRepository financialDocumentNumberRepository;
     private final FinancialPeriodRepository financialPeriodRepository;
-
+    private final FinancialDocumentSecurityService financialDocumentSecurityService;
+    private final FinancialDocumentHeaderService financialDocumentHeaderService;
 
     public DefaultTeransferFinancialDocument(FinancialDocumentService financialDocumentService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentItemRepository financialDocumentItemRepository,
                                              FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                              FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository,
-                                             FinancialPeriodRepository financialPeriodRepository, FinancialPeriodService financialPeriodService, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialPeriodRepository financialPeriodRepository1) {
+                                             FinancialPeriodRepository financialPeriodRepository, FinancialPeriodService financialPeriodService, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialPeriodRepository financialPeriodRepository1, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialDocumentHeaderService financialDocumentHeaderService) {
         this.financialDocumentService = financialDocumentService;
         this.financialDocumentRepository = financialDocumentRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -51,6 +48,8 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         this.organizationRepository = organizationRepository;
         this.financialDocumentNumberRepository = financialDocumentNumberRepository;
         this.financialPeriodRepository = financialPeriodRepository1;
+        this.financialDocumentSecurityService = financialDocumentSecurityService;
+        this.financialDocumentHeaderService = financialDocumentHeaderService;
     }
 
 //    @Override
@@ -355,18 +354,50 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
     public FinancialDocumentTransferOutputResponse transferDocument(FinancialDocumentTransferRequest financialDocumentTransferRequest) {
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
         FinancialDocumentTransferOutputResponse financialDocumentTransferOutputResponse = new FinancialDocumentTransferOutputResponse();
+        String activityCode = "FNDC_DOCUMENT_TRANSFER";
+        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
+        financialDocumentSecurityInputRequest.setActivityCode(activityCode);
+        financialDocumentSecurityInputRequest.setFinancialDocumentId(financialDocumentTransferRequest.getId());
+        financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
+        financialDocumentSecurityInputRequest.setSecurityModelRequest(null);
+        financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
         Long targetDocumentId = null;
         if (financialDocumentTransferRequest.getTransferType() == 1 || financialDocumentTransferRequest.getTransferType() == 2 || financialDocumentTransferRequest.getTransferType() == 6) {
-            List<Object[]> financialDocument = financialDocumentRepository.findDocumentByDocumentNumberAndCode(financialDocumentTransferRequest.getTargetDocumentNumber());
+            List<Object[]> financialDocumentFlag = financialDocumentRepository.findDocumentByFlagAndOrganAndPeriodId(financialDocumentTransferRequest.getId());
+            if (Long.parseLong(financialDocumentFlag.get(0)[0].toString()) == 1) {
+                throw new RuleException("امکان عملیات بر روی سند اتوماتیک وجود ندارد");
+            }
+            Long ledgerTypeId = Long.parseLong(financialDocumentFlag.get(0)[4].toString());
+            Long financialDepartmentId = Long.parseLong(financialDocumentFlag.get(0)[5].toString());
+            Long departmentId = financialDocumentFlag.get(0)[6] ==  null ? null :  Long.parseLong(financialDocumentFlag.get(0)[6].toString());
+            Object department;
+            if (departmentId != null) {
+                department = "department";
+            } else {
+                departmentId=0L;
+                department = null;
+            }
+            List<Object[]> financialDocument = financialDocumentRepository.findDocumentByDocumentNumberAndCode(financialDocumentTransferRequest.getTargetDocumentNumber(), 100L, ledgerTypeId, financialDepartmentId, department,departmentId);
 //            if (financialDocument.get(0)[0] == null) {
             if (financialDocument.size() == 0) {
-                throw new RuleException("اشکال در بدست آوردن اطلاعات سند مقصد");
+                throw new RuleException("اشکال در بدست آوردن اطلاعات سند مقصد در سازمان، واحد و دفتر جاری");
             }
             targetDocumentId = Long.parseLong(financialDocument.get(0)[0].toString());
             String targetDocumentStatus = financialDocument.get(0)[1].toString();
+
             if (!targetDocumentStatus.equals("10") && !targetDocumentStatus.equals("20")) {
                 throw new RuleException("سند مقصد میبایست در وضعیت ایجاد یا تائید کاربر باشد");
             }
+            if (Long.parseLong(financialDocumentFlag.get(0)[2].toString()) == 1) {
+                throw new RuleException("امکان تغییر در اسناد اتوماتیک وجود ندارد");
+            }
+            String activityCodeTransfer = "FNDC_DOCUMENT_UPDATE";
+            FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequestTransfer = new FinancialDocumentSecurityInputRequest();
+            financialDocumentSecurityInputRequestTransfer.setActivityCode(activityCodeTransfer);
+            financialDocumentSecurityInputRequestTransfer.setFinancialDocumentId(targetDocumentId);
+            financialDocumentSecurityInputRequestTransfer.setFinancialDocumentItemId(null);
+            financialDocumentSecurityInputRequestTransfer.setSecurityModelRequest(null);
+            financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
 
             financialPeriodStatusRequest.setFinancialDocumentId(Long.parseLong(financialDocument.get(0)[0].toString()));
             FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
@@ -378,6 +409,15 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
             financialDocumentUpdate.setFinancialDocumentStatus(financialDocumentStatusRepository.getOne(1L));
         }
         if (financialDocumentTransferRequest.getTransferType() == 2 || financialDocumentTransferRequest.getTransferType() == 4 || financialDocumentTransferRequest.getTransferType() == 5 || financialDocumentTransferRequest.getTransferType() == 6) {
+            String activityCodeTransfer = "FNDC_DOCUMENT_UPDATE";
+            FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequestTransfer = new FinancialDocumentSecurityInputRequest();
+            financialDocumentSecurityInputRequestTransfer.setActivityCode(activityCodeTransfer);
+            financialDocumentSecurityInputRequestTransfer.setFinancialDocumentId(financialDocumentTransferRequest.getId());
+            financialDocumentSecurityInputRequestTransfer.setFinancialDocumentItemId(null);
+            financialDocumentSecurityInputRequestTransfer.setSecurityModelRequest(null);
+            financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
+
+
             String sourceDocumentStatus = financialDocumentRepository.findByFinancialDocumentByDocumentId(financialDocumentTransferRequest.getId());
             String sourceDocumentCode = sourceDocumentStatus.toString();
             if (!sourceDocumentCode.equals("10") && !sourceDocumentCode.equals("20")) {
@@ -411,9 +451,31 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
             financialDocumentTransferRequest.setFinancialDocumentItemIdList(null);
             financialDocumentTransferRequest.setFinancialDocumentItemIdList(
                     financialDocumentItemRepository.findByFinancialDocumentIdByDocumentId(financialDocumentTransferRequest.getId()));
-
         }
         if (financialDocumentTransferRequest.getTransferType() == 3 || financialDocumentTransferRequest.getTransferType() == 4 || financialDocumentTransferRequest.getTransferType() == 7) {
+            String activityCodeTransfer = "FNDC_DOCUMENT_CREATE";
+            FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequestTransfer = new FinancialDocumentSecurityInputRequest();
+            financialDocumentSecurityInputRequestTransfer.setActivityCode(activityCodeTransfer);
+            financialDocumentSecurityInputRequestTransfer.setFinancialDocumentId(financialDocumentTransferRequest.getId());
+            financialDocumentSecurityInputRequestTransfer.setFinancialDocumentItemId(null);
+            financialDocumentSecurityInputRequestTransfer.setSecurityModelRequest(null);
+            FinancialSecurityFilterRequest financialSecurityFilterRequest = new FinancialSecurityFilterRequest();
+            FinancialDocumentHeaderOutputResponse
+                    financialDocumentHeaderOutputResponse = financialDocumentHeaderService.getFinancialDocumentHeaderBytId(financialDocumentSecurityInputRequest.getFinancialDocumentId());
+
+            financialSecurityFilterRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+            financialSecurityFilterRequest.setUserId(SecurityHelper.getCurrentUser().getUserId());
+            financialSecurityFilterRequest.setDepartmentId(financialDocumentHeaderOutputResponse.getDepartmentId());
+            financialSecurityFilterRequest.setFinancialDepartmentId(financialDocumentHeaderOutputResponse.getFinancialDepartmentId());
+            financialSecurityFilterRequest.setFinancialLedgerId(financialDocumentHeaderOutputResponse.getFinancialLedgerTypeId());
+            financialSecurityFilterRequest.setFinancialPeriodId(financialDocumentHeaderOutputResponse.getFinancialPeriodId());
+            financialSecurityFilterRequest.setDocumentTypeId(financialDocumentHeaderOutputResponse.getFinancialDocumentTypeId());
+            financialSecurityFilterRequest.setSubjectId(null);
+            financialSecurityFilterRequest.setActivityCode(activityCodeTransfer);
+            financialSecurityFilterRequest.setInputFromConfigFlag(false);
+            financialSecurityFilterRequest.setCreatorUserId(financialDocumentHeaderOutputResponse.getCreatorId());
+            financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
+
             financialPeriodStatusRequest.setDate(financialDocumentTransferRequest.getDate());
             financialPeriodStatusRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
             FinancialPeriodStatusResponse financialPeriodStatusOutPut = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
