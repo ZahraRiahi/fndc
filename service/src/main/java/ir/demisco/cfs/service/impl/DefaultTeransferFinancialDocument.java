@@ -377,7 +377,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
                 departmentId=0L;
                 department = null;
             }
-            List<Object[]> financialDocument = financialDocumentRepository.findDocumentByDocumentNumberAndCode(financialDocumentTransferRequest.getTargetDocumentNumber(), 100L, ledgerTypeId, financialDepartmentId, department,departmentId);
+            List<Object[]> financialDocument = financialDocumentRepository.findDocumentByDocumentNumberAndCode(financialDocumentTransferRequest.getTargetDocumentNumber(), SecurityHelper.getCurrentUser().getOrganizationId(), ledgerTypeId, financialDepartmentId, department,departmentId);
 //            if (financialDocument.get(0)[0] == null) {
             if (financialDocument.size() == 0) {
                 throw new RuleException("اشکال در بدست آوردن اطلاعات سند مقصد در سازمان، واحد و دفتر جاری");

@@ -123,7 +123,7 @@ public class FinancialDocumentController {
 
     @PostMapping("/TransferDocument")
     public ResponseEntity<FinancialDocumentTransferOutputResponse> transferDocument(@RequestBody FinancialDocumentTransferRequest financialDocumentTransferRequest) {
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         financialDocumentTransferRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(transferFinancialDocumentService.transferDocument(financialDocumentTransferRequest));
     }
