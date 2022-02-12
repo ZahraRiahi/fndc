@@ -33,9 +33,9 @@ public class DefaultFinancialSecurity implements FinancialSecurityService {
         if (financialSecurityFilterRequest.getInputFromConfigFlag() == null) {
             throw new RuleException("لطفا فلگ تنظیمات را وارد نمایید.");
         }
-        List<Object[]> financialDocumentItemList = financialActivityTypeRepository.getFinancialActivityTypeByActivityCode(financialSecurityFilterRequest.getActivityCode());
+        List<Object[]> financialActivityTypeList = financialActivityTypeRepository.getFinancialActivityTypeByActivityCode(financialSecurityFilterRequest.getActivityCode());
         FinancialSecurityOutputResponse financialSecurityOutputResponse = new FinancialSecurityOutputResponse();
-        if (financialDocumentItemList.size() != 0 && financialDocumentItemList.get(0)[0] == null) {
+        if (financialActivityTypeList.size() != 0 && financialActivityTypeList.get(0)[0] == null) {
             financialSecurityOutputResponse.setPermissionMessage("اشکال در واکشی اطلاعات امنیت سیستم");
             financialSecurityOutputResponse.setHasPermissionStatus(2L);
         } else {
