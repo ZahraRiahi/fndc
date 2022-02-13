@@ -63,7 +63,7 @@ public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecuri
             financialSecurityFilterRequest.setCreatorUserId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getCreatorUserId());
         }
         FinancialSecurityOutputResponse financialSecurityOutputResponse = financialSecurityService.hasPermission(financialSecurityFilterRequest, SecurityHelper.getCurrentUser().getOrganizationId());
-        if (financialSecurityOutputResponse.getHasPermissionStatus() == 0) {
+        if (financialSecurityOutputResponse.getHasPermissionStatus() == null) {
             if (financialSecurityOutputResponse.getPermissionMessage() == null) {
                 throw new RuleException("عدم دسترسی به عملیات");
             } else {
