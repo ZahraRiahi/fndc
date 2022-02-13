@@ -47,7 +47,7 @@ public class DefaultFinancialSecurity implements FinancialSecurityService {
         } else {
 
             List<Object> resultList = entityManager.createNativeQuery(
-                    " select * from table(pkg_financial_security.GET_PERMISSION(p_organization_id => ?1," +
+                    " select * from table(fnsc.pkg_financial_security.GET_PERMISSION(p_organization_id => ?1," +
                     "                                                       p_activity_code => ?2," +
                     "                                                       p_financial_period_id => ?3," +
                     "                                                       p_financial_document_type_id => ?4," +
