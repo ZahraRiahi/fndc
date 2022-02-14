@@ -46,30 +46,37 @@ public class DefaultFinancialSecurity implements FinancialSecurityService {
             financialSecurityOutputResponse.setHasPermissionStatus(2L);
         } else {
 
-            List<Object> resultList = entityManager.createNativeQuery(
-                    " select * from table(fnsc.pkg_financial_security.GET_PERMISSION(p_organization_id => ?1," +
-                    "                                                       p_activity_code => ?2," +
-                    "                                                       p_financial_period_id => ?3," +
-                    "                                                       p_financial_document_type_id => ?4," +
-                    "                                                       p_creator_user => ?5," +
-                    "                                                       p_financial_department_id => ?6," +
-                    "                                                       p_financial_ledger_type_id => ?7," +
-                    "                                                       p_department_id => ?8," +
-                    "                                                       p_user_id => ?9))" )
-                    .setParameter(1, SecurityHelper.getCurrentUser().getOrganizationId())
-                    .setParameter(2, "FNDC_DOCUMENT_CONF")
-                    .setParameter(3, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialPeriodId()))
-                    .setParameter(4, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getDocumentTypeId()))
-                    .setParameter(5, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getCreatorUserId()))
-                    .setParameter(6, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialDepartmentId()))
-                    .setParameter(7, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialLedgerId()))
-                    .setParameter(8, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getDepartmentId()))
-                    .setParameter(9, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getUserId()))
-                    .getResultList();
-
+            resultSet(financialSecurityFilterRequest);
             financialSecurityOutputResponse.setPermissionMessage(null);
 
         }
         return financialSecurityOutputResponse;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public int resultSet(FinancialSecurityFilterRequest financialSecurityFilterRequest) {
+        List<Object> resultList = entityManager.createNativeQuery(
+                " select * from table(fnsc.pkg_financial_security.GET_PERMISSION(p_organization_id => ?1," +
+                        "                                                       p_activity_code => ?2," +
+                        "                                                       p_financial_period_id => ?3," +
+                        "                                                       p_financial_document_type_id => ?4," +
+                        "                                                       p_creator_user => ?5," +
+                        "                                                       p_financial_department_id => ?6," +
+                        "                                                       p_financial_ledger_type_id => ?7," +
+                        "                                                       p_department_id => ?8," +
+                        "                                                       p_user_id => ?9))")
+                .setParameter(1, SecurityHelper.getCurrentUser().getOrganizationId())
+                .setParameter(2, "FNDC_DOCUMENT_CONF")
+                .setParameter(3, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialPeriodId()))
+                .setParameter(4, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getDocumentTypeId()))
+                .setParameter(5, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getCreatorUserId()))
+                .setParameter(6, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialDepartmentId()))
+                .setParameter(7, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialLedgerId()))
+                .setParameter(8, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getDepartmentId()))
+                .setParameter(9, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getUserId()))
+                .getResultList();
+
+        return Integer.parseInt(resultList.get(0).toString());
     }
 }
