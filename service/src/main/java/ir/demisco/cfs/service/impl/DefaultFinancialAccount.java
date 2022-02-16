@@ -128,7 +128,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-
     private void getFinancialDocumentByNumberingTypeAndFromNumber(FinancialDocumentReportRequest financialDocumentReportRequest) {
 
         if (financialDocumentReportRequest.getDateFilterFlg() == 0) {
@@ -304,9 +303,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest = setParameterCentricTurnOver(filters);
         getFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentCentricTurnOverRequest);
-        if (financialDocumentCentricTurnOverRequest.getFinancialAccountId() == null) {
-            throw new RuleException("fin.financialAccount.insertFinancialAccount");
-        }
+//        if (financialDocumentCentricTurnOverRequest.getFinancialAccountId() == null) {
+//            throw new RuleException("fin.financialAccount.insertFinancialAccount");
+//        }
         if (financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId() == null) {
             throw new RuleException("fin.financialAccount.insertDocumentNumberingType");
         }
@@ -417,8 +416,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 case "financialAccountId":
                     if (item.getValue() != null) {
                         financialDocumentCentricTurnOverRequest.setFinancialAccountId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialDocumentCentricTurnOverRequest.setFinancialAccountId(0L);
+                        financialDocumentCentricTurnOverRequest.setFinancialAccount(null);
                     }
                     break;
+
                 case "fromDate":
                     if (item.getValue() != null) {
                         financialDocumentCentricTurnOverRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
