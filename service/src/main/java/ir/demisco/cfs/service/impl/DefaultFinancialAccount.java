@@ -128,7 +128,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-
     private void getFinancialDocumentByNumberingTypeAndFromNumber(FinancialDocumentReportRequest financialDocumentReportRequest) {
 
         if (financialDocumentReportRequest.getDateFilterFlg() == 0) {
