@@ -1,8 +1,6 @@
 package ir.demisco.cfs.service.impl;
 
-import ir.demisco.cfs.model.dto.FinancialLedgerTypeParameterDto;
 import ir.demisco.cfs.model.dto.response.FinancialDepartmentResponse;
-import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeResponse;
 import ir.demisco.cfs.service.api.FinancialDepartmentService;
 import ir.demisco.cfs.service.repository.DepartmentRepository;
 import ir.demisco.cfs.service.repository.FinancialDepartmentRepository;

@@ -5,7 +5,6 @@ import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.request.ControlFinancialAccountNatureTypeInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
-import ir.demisco.cfs.model.dto.request.SecurityModelRequest;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.*;
 import ir.demisco.cfs.service.api.ControlFinancialAccountNatureTypeService;

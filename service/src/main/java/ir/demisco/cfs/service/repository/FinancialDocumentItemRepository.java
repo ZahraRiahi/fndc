@@ -58,7 +58,16 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "   AND CN5.DELETED_DATE IS NULL " +
             "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN6 " +
             "    ON CN6.ID = FNDI.CENTRIC_ACCOUNT_ID_6  " +
-            "    AND CN6.DELETED_DATE IS NULL " +
+            "    AND CN6.DELETED_DATE IS NULL," +
+            " TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationId," +
+            "                                                        :activityCode," +
+            "                                                        FIDC.FINANCIAL_PERIOD_ID," +
+            "                                                        FIDC.FINANCIAL_DOCUMENT_TYPE_ID," +
+            "                                                       :creatorUserId," +
+            "                                                        FIDC.FINANCIAL_DEPARTMENT_ID," +
+            "                                                        FIDC.FINANCIAL_LEDGER_TYPE_ID," +
+            "                                                        :departmentId," +
+            "                                                        :userId)) FNSC " +
             " WHERE FIDC.DOCUMENT_DATE >= :startDate " +
             "   AND FIDC.DOCUMENT_DATE <= :endDate" +
             " AND FNDI.CREDIT_AMOUNT = CASE " +
@@ -144,7 +153,16 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "   AND CN5.DELETED_DATE IS NULL " +
             "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN6 " +
             "    ON CN6.ID = FNDI.CENTRIC_ACCOUNT_ID_6  " +
-            "    AND CN6.DELETED_DATE IS NULL " +
+            "    AND CN6.DELETED_DATE IS NULL, " +
+            " TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationId," +
+            "                                                        :activityCode," +
+            "                                                        FIDC.FINANCIAL_PERIOD_ID," +
+            "                                                        FIDC.FINANCIAL_DOCUMENT_TYPE_ID," +
+            "                                                       :creatorUserId," +
+            "                                                        FIDC.FINANCIAL_DEPARTMENT_ID," +
+            "                                                        FIDC.FINANCIAL_LEDGER_TYPE_ID," +
+            "                                                        :departmentId," +
+            "                                                        :userId)) FNSC " +
             " WHERE FIDC.DOCUMENT_DATE >= :startDate " +
             "   AND FIDC.DOCUMENT_DATE <= :endDate" +
             " AND FNDI.CREDIT_AMOUNT = CASE " +
@@ -203,9 +221,9 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0)))))  " +
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) "
             , nativeQuery = true)
-    List<Object[]> getFinancialDocumentItemList(LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
+    List<Object[]> getFinancialDocumentItemList(Long organizationId, String activityCode, Long creatorUserId, Long departmentId, Long userId,LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
                                                 Long toAccountCode, Object centricAccount, Long centricAccountId, Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId, Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
-                                                Double tolerance,Object financialDocumentType,Long financialDocumentTypeId);
+                                                Double tolerance, Object financialDocumentType, Long financialDocumentTypeId);
 
 
     List<FinancialDocumentItem> findByFinancialDocumentIdAndDeletedDateIsNull(Long FinancialDocumentId);
