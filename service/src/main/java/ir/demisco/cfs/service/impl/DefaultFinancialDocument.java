@@ -132,6 +132,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 case "departmentId":
                     responseFinancialDocumentDto.setDepartmentId(Long.parseLong(item.getValue().toString()));
                     break;
+
+
                 case "startDate":
                     responseFinancialDocumentDto.setStartDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
                     break;

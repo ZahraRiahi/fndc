@@ -317,6 +317,7 @@ public class ResponseFinancialDocumentDto {
             responseFinancialDocumentDto.setDepartmentId(departmentId);
             return this;
         }
+
         public Builder paramMap(Map<String, Object> paramMap) {
             responseFinancialDocumentDto.setParamMap(paramMap);
             return this;
