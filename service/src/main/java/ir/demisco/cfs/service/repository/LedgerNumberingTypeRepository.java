@@ -1,6 +1,5 @@
 package ir.demisco.cfs.service.repository;
 
-import ir.demisco.cfs.model.entity.FinancialNumberingType;
 import ir.demisco.cfs.model.entity.LedgerNumberingType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
