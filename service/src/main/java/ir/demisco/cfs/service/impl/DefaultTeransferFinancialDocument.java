@@ -369,15 +369,15 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
             }
             Long ledgerTypeId = Long.parseLong(financialDocumentFlag.get(0)[4].toString());
             Long financialDepartmentId = Long.parseLong(financialDocumentFlag.get(0)[5].toString());
-            Long departmentId = financialDocumentFlag.get(0)[6] ==  null ? null :  Long.parseLong(financialDocumentFlag.get(0)[6].toString());
+            Long departmentId = financialDocumentFlag.get(0)[6] == null ? null : Long.parseLong(financialDocumentFlag.get(0)[6].toString());
             Object department;
             if (departmentId != null) {
                 department = "department";
             } else {
-                departmentId=0L;
+                departmentId = 0L;
                 department = null;
             }
-            List<Object[]> financialDocument = financialDocumentRepository.findDocumentByDocumentNumberAndCode(financialDocumentTransferRequest.getTargetDocumentNumber(), SecurityHelper.getCurrentUser().getOrganizationId(), ledgerTypeId, financialDepartmentId, department,departmentId);
+            List<Object[]> financialDocument = financialDocumentRepository.findDocumentByDocumentNumberAndCode(financialDocumentTransferRequest.getTargetDocumentNumber(), SecurityHelper.getCurrentUser().getOrganizationId(), ledgerTypeId, financialDepartmentId, department, departmentId);
 //            if (financialDocument.get(0)[0] == null) {
             if (financialDocument.size() == 0) {
                 throw new RuleException("اشکال در بدست آوردن اطلاعات سند مقصد در سازمان، واحد و دفتر جاری");

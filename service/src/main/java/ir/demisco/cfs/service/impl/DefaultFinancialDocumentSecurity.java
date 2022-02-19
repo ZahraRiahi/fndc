@@ -37,6 +37,7 @@ public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecuri
             financialSecurityFilterRequest.setDocumentTypeId(financialDocumentHeaderOutputResponse.getFinancialDocumentTypeId());
             financialSecurityFilterRequest.setCreatorUserId(financialDocumentHeaderOutputResponse.getCreatorId());
             financialSecurityFilterRequest.setUserId(financialDocumentHeaderOutputResponse.getCreatorId());
+            financialSecurityFilterRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         } else {
             if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getUserId() == null) {
                 throw new RuleException("لطفا شناسه ی کاربر را وارد نمایید.");

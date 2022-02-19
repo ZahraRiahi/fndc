@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.impl;
 
+import ir.demisco.cfs.model.dto.request.FinancialDocumentTypeRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeGetDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentTypeDto;
@@ -14,6 +15,8 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
+import org.hibernate.jpa.TypedParameterValue;
+import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -41,20 +44,26 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
 
     @Override
     @Transactional
-    public List<FinancialDocumentTypeGetDto> getNumberingFormatByOrganizationId(Long organizationId, ResponseFinancialDocumentTypeDto responseFinancialDocumentTypeDto) {
+    public List<FinancialDocumentTypeGetDto> getNumberingFormatByOrganizationId(Long organizationId, Long userId, FinancialDocumentTypeRequest financialDocumentTypeRequest) {
         String financialSystem = null;
-        if (responseFinancialDocumentTypeDto.getFinancialSystemId() != null) {
+        if (financialDocumentTypeRequest.getFinancialSystemId() != null) {
             financialSystem = "financialSystem";
         } else {
-            responseFinancialDocumentTypeDto.setFinancialSystemId(0L);
+            financialDocumentTypeRequest.setFinancialSystemId(0L);
         }
-        return financialDocumentTypeRepository.findByOrganizationId(organizationId, responseFinancialDocumentTypeDto.getSearchStatusFlag(),
-                responseFinancialDocumentTypeDto.getSearchStatusFlag() == null ? null : "true",financialSystem,responseFinancialDocumentTypeDto.getFinancialSystemId())
-                .stream().map(financialDocumentType -> FinancialDocumentTypeGetDto.builder()
-                        .id(financialDocumentType.getId())
-                        .description(financialDocumentType.getDescription())
-                        .activeFlag(financialDocumentType.getActiveFlag())
-                        .build()).collect(Collectors.toList());
+        return financialDocumentTypeRepository.findByOrganizationId(financialDocumentTypeRequest.getSearchStatusFlag(), SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentTypeRequest.getSecurityModelRequest().getActivityCode()
+                , new TypedParameterValue(StandardBasicTypes.LONG, financialDocumentTypeRequest.getSecurityModelRequest().getFinancialPeriodId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, financialDocumentTypeRequest.getSecurityModelRequest().getFinancialDepartmentId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, financialDocumentTypeRequest.getSecurityModelRequest().getFinancialLedgerId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, financialDocumentTypeRequest.getSecurityModelRequest().getDepartmentId())
+                , SecurityHelper.getCurrentUser().getUserId(), financialSystem, financialDocumentTypeRequest.getFinancialSystemId())
+
+                .stream().map(objects -> FinancialDocumentTypeGetDto.builder()
+                          .id(Long.parseLong(objects[0] == null ? null : objects[0].toString()))
+                          .description(objects[1] == null ? null : objects[1].toString())
+                          .activeFlag(Integer.parseInt(objects[2].toString()) == 1)
+                          .disabled(Integer.parseInt(objects[3].toString()) == 1)
+                          .build()).collect(Collectors.toList());
     }
 
     @Override
@@ -66,7 +75,7 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
         if (documentTypeIdForDelete > 0) {
             throw new RuleException("fin.financialDocumentType.check.for.delete");
         } else {
-          financialDocumentTypeRepository.deleteById(financialDocumentTypeId);
+            financialDocumentTypeRepository.deleteById(financialDocumentTypeId);
             return true;
         }
     }

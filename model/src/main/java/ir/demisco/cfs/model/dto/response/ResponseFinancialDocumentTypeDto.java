@@ -5,7 +5,7 @@ public class ResponseFinancialDocumentTypeDto {
     private Long id;
     private Long organizationId;
     private String description;
-    private Boolean   activeFlag;
+    private Boolean activeFlag;
     private Boolean automaticFlag;
     private Long financialSystemId;
     private String financialSystemDescription;
@@ -84,9 +84,10 @@ public class ResponseFinancialDocumentTypeDto {
         this.message = message;
     }
 
-    public static Builder builder(){
+    public static Builder builder() {
         return new Builder();
-     }
+    }
+
     public static final class Builder {
         private ResponseFinancialDocumentTypeDto responseFinancialDocumentTypeDto;
 
