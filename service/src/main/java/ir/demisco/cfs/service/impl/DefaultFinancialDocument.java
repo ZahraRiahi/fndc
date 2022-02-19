@@ -91,11 +91,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
         Map<String, Object> paramMap = paramSearch.getParamMap();
 //        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip() / (dataSourceRequest.getTake() / 2)  , dataSourceRequest.getTake() + dataSourceRequest.getSkip());
-        List<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getStartDate(),
+        List<Object[]> list = financialDocumentRepository.getFinancialDocumentList(SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getStartDate(),
                 paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
                 paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
                 paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId()
-                , paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId()
+                , paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("documentUser"), paramSearch.getDocumentUserId()
                 , paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
                 paramSearch.getToPrice(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId(), paramMap.get("financialDocumentType"), paramSearch.getFinancialDocumentTypeId());
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
@@ -126,7 +126,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         Map<String, Object> map = new HashMap<>();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
-
+                case "activityCode":
+                    responseFinancialDocumentDto.setActivityCode(item.getValue().toString());
+                    break;
+                case "departmentId":
+                    responseFinancialDocumentDto.setDepartmentId(Long.parseLong(item.getValue().toString()));
+                    break;
                 case "startDate":
                     responseFinancialDocumentDto.setStartDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
                     break;
@@ -234,15 +239,15 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     }
                     break;
 
-                case "user.id":
+                case "documentUser.id":
                     if (item.getValue() != null) {
-                        map.put("user", "user");
+                        map.put("documentUser", "documentUser");
                         responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setUserId(Long.parseLong(item.getValue().toString()));
+                        responseFinancialDocumentDto.setDocumentUserId(Long.parseLong(item.getValue().toString()));
                     } else {
-                        map.put("user", null);
+                        map.put("documentUser", null);
                         responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setUserId(0L);
+                        responseFinancialDocumentDto.setDocumentUserId(0L);
                     }
                     break;
 

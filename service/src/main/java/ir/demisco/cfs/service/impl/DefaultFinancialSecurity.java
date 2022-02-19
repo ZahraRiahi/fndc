@@ -66,8 +66,8 @@ public class DefaultFinancialSecurity implements FinancialSecurityService {
                         "                                                       p_financial_ledger_type_id => ?7," +
                         "                                                       p_department_id => ?8," +
                         "                                                       p_user_id => ?9))")
-                .setParameter(1, 100L)
-                .setParameter(2, "FNDC_DOCUMENT_CONF")
+                .setParameter(1, SecurityHelper.getCurrentUser().getOrganizationId())
+                .setParameter(2, financialSecurityFilterRequest.getActivityCode())
                 .setParameter(3, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialPeriodId()))
                 .setParameter(4, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getDocumentTypeId()))
                 .setParameter(5, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getCreatorUserId()))

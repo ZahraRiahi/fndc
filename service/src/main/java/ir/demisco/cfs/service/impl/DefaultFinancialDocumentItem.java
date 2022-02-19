@@ -45,7 +45,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         List<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getStartDate(),
                 paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
                 paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
-                paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId(), paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getUserId(), paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
+                paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId(), paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("user"), paramSearch.getDocumentUserId(), paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
                 paramSearch.getToPrice(), paramSearch.getTolerance(), paramMap.get("financialDocumentType"), paramSearch.getFinancialDocumentTypeId());
         List<FinancialDocumentItemDto> documentItemDtoList = list.stream().map(item ->
                 FinancialDocumentItemDto.builder()
@@ -181,18 +181,17 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                     }
                     break;
 
-                case "user.id":
+                case "documentUser.id":
                     if (item.getValue() != null) {
-                        map.put("user", "user");
+                        map.put("documentUser", "documentUser");
                         responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setUserId(Long.parseLong(item.getValue().toString()));
+                        responseFinancialDocumentDto.setDocumentUserId(Long.parseLong(item.getValue().toString()));
                     } else {
-                        map.put("user", null);
+                        map.put("documentUser", null);
                         responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setUserId(0L);
+                        responseFinancialDocumentDto.setDocumentUserId(0L);
                     }
                     break;
-
                 case "fromPriceAmount":
                     if (item.getValue() != null) {
                         map.put("fromPrice", "fromPrice");

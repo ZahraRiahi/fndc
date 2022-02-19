@@ -1,5 +1,6 @@
 package ir.demisco.cfs.app.web.controller;
 
+import ir.demisco.cfs.model.dto.request.FinancialDocumentTypeRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeGetDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentTypeDto;
@@ -23,10 +24,11 @@ public class FinancialDocumentTypeController {
     }
 
     @PostMapping("/get")
-    public ResponseEntity<List<FinancialDocumentTypeGetDto>> responseEntity(@RequestBody ResponseFinancialDocumentTypeDto responseFinancialDocumentTypeDto) {
+    public ResponseEntity<List<FinancialDocumentTypeGetDto>> responseEntity(@RequestBody FinancialDocumentTypeRequest financialDocumentTypeRequest) {
 
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        return ResponseEntity.ok(financialDocumentTypeService.getNumberingFormatByOrganizationId(organizationId, responseFinancialDocumentTypeDto));
+        Long userId = SecurityHelper.getCurrentUser().getUserId();
+        return ResponseEntity.ok(financialDocumentTypeService.getNumberingFormatByOrganizationId(organizationId, userId, financialDocumentTypeRequest));
 
     }
 
@@ -43,10 +45,10 @@ public class FinancialDocumentTypeController {
     }
 
     @PostMapping("/save")
-    public ResponseEntity<ResponseFinancialDocumentTypeDto> financialDocumentTypeSave(@RequestBody FinancialDocumentTypeDto financialDocumentTypeDto)  {
-        if(financialDocumentTypeDto.getId()==null){
+    public ResponseEntity<ResponseFinancialDocumentTypeDto> financialDocumentTypeSave(@RequestBody FinancialDocumentTypeDto financialDocumentTypeDto) {
+        if (financialDocumentTypeDto.getId() == null) {
             return ResponseEntity.ok(financialDocumentTypeService.save(financialDocumentTypeDto));
-        }else{
+        } else {
             return ResponseEntity.ok(financialDocumentTypeService.update(financialDocumentTypeDto));
         }
     }
