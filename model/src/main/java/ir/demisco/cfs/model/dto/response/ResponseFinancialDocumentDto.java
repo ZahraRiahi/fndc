@@ -19,12 +19,14 @@ public class ResponseFinancialDocumentDto {
     private Long toAccountCode;
     private Long centricAccountId;
     private Long centricAccountTypeId;
-    private Long userId;
+    private Long documentUserId;
     private Long priceTypeId;
     private Long fromPrice;
     private Long toPrice;
     private Double tolerance;
     private Long financialDocumentTypeId;
+    private String activityCode;
+    private Long departmentId;
     Map<String, Object> paramMap;
 
     public LocalDateTime getStartDate() {
@@ -123,12 +125,12 @@ public class ResponseFinancialDocumentDto {
         this.centricAccountTypeId = centricAccountTypeId;
     }
 
-    public Long getUserId() {
-        return userId;
+    public Long getDocumentUserId() {
+        return documentUserId;
     }
 
-    public void setUserId(Long userId) {
-        this.userId = userId;
+    public void setDocumentUserId(Long documentUserId) {
+        this.documentUserId = documentUserId;
     }
 
     public Long getPriceTypeId() {
@@ -170,6 +172,23 @@ public class ResponseFinancialDocumentDto {
     public void setFinancialDocumentTypeId(Long financialDocumentTypeId) {
         this.financialDocumentTypeId = financialDocumentTypeId;
     }
+
+    public String getActivityCode() {
+        return activityCode;
+    }
+
+    public void setActivityCode(String activityCode) {
+        this.activityCode = activityCode;
+    }
+
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
     public Map<String, Object> getParamMap() {
         return paramMap;
     }
@@ -262,8 +281,8 @@ public class ResponseFinancialDocumentDto {
             return this;
         }
 
-        public Builder userId(Long userId) {
-            responseFinancialDocumentDto.setUserId(userId);
+        public Builder documentUserId(Long documentUserId) {
+            responseFinancialDocumentDto.setDocumentUserId(documentUserId);
             return this;
         }
 
@@ -288,6 +307,14 @@ public class ResponseFinancialDocumentDto {
         }
         public Builder financialDocumentTypeId(Long financialDocumentTypeId) {
             responseFinancialDocumentDto.setFinancialDocumentTypeId(financialDocumentTypeId);
+            return this;
+        }
+        public Builder activityCode(String  activityCode) {
+            responseFinancialDocumentDto.setActivityCode(activityCode);
+            return this;
+        }
+        public Builder departmentId(Long  departmentId) {
+            responseFinancialDocumentDto.setDepartmentId(departmentId);
             return this;
         }
         public Builder paramMap(Map<String, Object> paramMap) {
