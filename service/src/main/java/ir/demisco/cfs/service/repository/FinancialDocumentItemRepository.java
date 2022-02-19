@@ -98,8 +98,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "             OR FNDI.CENTRIC_ACCOUNT_ID_4 = CNT.ID " +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_5 = CNT.ID " +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_6 = CNT.ID))" +
-            "   and (:user is null or (FIDC.CREATOR_ID= :userId or " +
-            "       FIDC.LAST_MODIFIER_ID = :userId))" +
+            "   and (:documentUser is null or (FIDC.CREATOR_ID= :documentUserId or " +
+            "       FIDC.LAST_MODIFIER_ID = :documentUserId))" +
             "    AND (:priceType IS NULL OR " +
             "       (:priceTypeId = 1 AND " +
             "       (:fromPrice IS NULL OR " +
@@ -184,8 +184,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "             OR FNDI.CENTRIC_ACCOUNT_ID_4 = CNT.ID " +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_5 = CNT.ID " +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_6 = CNT.ID))" +
-            "   and (:user is null or (FIDC.CREATOR_ID= :userId or " +
-            "       FIDC.LAST_MODIFIER_ID = :userId))" +
+            "   and (:documentUser is null or (FIDC.CREATOR_ID= :documentUserId or " +
+            "       FIDC.LAST_MODIFIER_ID = :documentUserId))" +
             "    AND (:priceType IS NULL OR " +
             "       (:priceTypeId = 1 AND " +
             "       (:fromPrice IS NULL OR " +
@@ -204,7 +204,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) "
             , nativeQuery = true)
     List<Object[]> getFinancialDocumentItemList(LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
-                                                Long toAccountCode, Object centricAccount, Long centricAccountId, Object centricAccountType, Long centricAccountTypeId, Object user, Long userId, Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
+                                                Long toAccountCode, Object centricAccount, Long centricAccountId, Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId, Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
                                                 Double tolerance,Object financialDocumentType,Long financialDocumentTypeId);
 
 
