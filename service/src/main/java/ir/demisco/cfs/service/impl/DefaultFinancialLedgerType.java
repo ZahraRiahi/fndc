@@ -3,10 +3,8 @@ package ir.demisco.cfs.service.impl;
 import ir.demisco.cfs.model.dto.FinancialLedgerTypeParameterDto;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerTypeRequest;
-import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerDto;
-import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerResponse;
-import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeDto;
-import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeResponse;
+import ir.demisco.cfs.model.dto.request.FinancialSecurityFilterRequest;
+import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.*;
 import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.api.FinancialLedgerTypeService;
@@ -16,6 +14,8 @@ import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
+import org.hibernate.jpa.TypedParameterValue;
+import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -47,13 +47,39 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
 
     @Override
     @Transactional()
-    public List<FinancialLedgerTypeDto> getFinancialLedgerType(Long organizationId) {
-        List<FinancialLedgerType> financialLedgerType = financialLedgerTypeRepository.findFinancialLedgerTypeByOrganizationId(organizationId);
-        return financialLedgerType.stream().map(e -> FinancialLedgerTypeDto.builder().id(e.getId())
-                .description(e.getDescription())
-                .code(e.getCode())
-                .build()).collect(Collectors.toList());
+    public List<FinancialLedgerTypeDto> getFinancialLedgerType(FinancialSecurityFilterRequest financialSecurityFilterRequest) {
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        financialSecurityFilterRequest.setUserId(SecurityHelper.getCurrentUser().getUserId());
+        financialSecurityFilterRequest.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
+        if (financialSecurityFilterRequest.getUserId() == null) {
+            throw new RuleException("fin.security.check.user.id");
+        }
+        if (financialSecurityFilterRequest.getDepartmentId() == null) {
+            throw new RuleException("fin.security.check.department.id");
+        }
+        if (financialSecurityFilterRequest.getActivityCode() == null) {
+            throw new RuleException("fin.security.check.activity.code");
+        }
+        if (financialSecurityFilterRequest.getInputFromConfigFlag() == null) {
+            throw new RuleException("fin.security.check.input.from.config.flag");
+        }
+        return financialLedgerTypeRepository.findFinancialLedgerTypeByOrganizationId(
+                organizationId,
+                financialSecurityFilterRequest.getActivityCode()
+                , new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialPeriodId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getDocumentTypeId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getCreatorUserId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialDepartmentId())
+                , financialSecurityFilterRequest.getDepartmentId()
+                , financialSecurityFilterRequest.getUserId())
+                .stream().map(item -> FinancialLedgerTypeDto.builder()
+                        .id(Long.parseLong(item[0] == null ? null : item[0].toString()))
+                        .code(item[1] == null ? null : item[1].toString())
+                        .description(item[2] == null ? null : item[2].toString())
+                        .disabled(Integer.parseInt(item[3].toString()) == 1)
+                        .build()).collect(Collectors.toList());
     }
+
 
     @Override
     @Transactional

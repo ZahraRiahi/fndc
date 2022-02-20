@@ -1,6 +1,7 @@
 package ir.demisco.cfs.app.web.controller;
 
 import ir.demisco.cfs.model.dto.request.FinancialLedgerTypeRequest;
+import ir.demisco.cfs.model.dto.request.FinancialSecurityFilterRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerDto;
 import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerResponse;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeDto;
@@ -24,11 +25,9 @@ public class FinancialLedgerTypeController {
         this.financialLedgerTypeService = financialLedgerTypeService;
     }
 
-    @GetMapping("/Get")
-    public ResponseEntity<List<FinancialLedgerTypeDto>> responseEntity() {
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        return ResponseEntity.ok(financialLedgerTypeService.getFinancialLedgerType(organizationId));
-
+    @PostMapping("/Get")
+    public ResponseEntity<List<FinancialLedgerTypeDto>> responseEntity(@RequestBody FinancialSecurityFilterRequest financialSecurityFilterRequest ) {
+        return ResponseEntity.ok(financialLedgerTypeService.getFinancialLedgerType(financialSecurityFilterRequest));
     }
 
     @PostMapping("/List")
