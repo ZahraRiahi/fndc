@@ -43,8 +43,8 @@ public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecuri
             if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getUserId() == null) {
                 throw new RuleException("لطفا شناسه ی کاربر را وارد نمایید.");
             }
-            if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getDocumentTypeId() == null) {
-                throw new RuleException("لطفا شناسه ی نوع سند را وارد نمایید.");
+            if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getDepartmentId() == null) {
+                throw new RuleException("لطفا شناسه ی شعبه را وارد نمایید.");
             }
             if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getActivityCode() == null) {
                 throw new RuleException("لطفا کد نوع فعالیت را وارد نمایید.");
