@@ -48,9 +48,9 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     @Override
     @Transactional()
     public List<FinancialLedgerTypeDto> getFinancialLedgerType(FinancialSecurityFilterRequest financialSecurityFilterRequest) {
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        financialSecurityFilterRequest.setUserId(SecurityHelper.getCurrentUser().getUserId());
-        financialSecurityFilterRequest.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
+        Long organizationId = 100L;
+        financialSecurityFilterRequest.setUserId(112L);
+        financialSecurityFilterRequest.setCreatorUserId(112L);
         if (financialSecurityFilterRequest.getUserId() == null) {
             throw new RuleException("fin.security.check.user.id");
         }
