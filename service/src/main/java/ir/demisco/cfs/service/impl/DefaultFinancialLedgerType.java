@@ -80,30 +80,51 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                         .build()).collect(Collectors.toList());
     }
 
-
     @Override
     @Transactional
     public DataSourceResult financialLedgerTypeList(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialLedgerTypeParameterDto param = setParameterToDto(filters);
-        if (param.getOrganizationId() == null) {
-            Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-            param.setOrganizationId(organizationId);
+        param.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        param.setUserId(SecurityHelper.getCurrentUser().getUserId());
+        param.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
+
+        if (param.getUserId() == null) {
+            throw new RuleException("fin.security.check.user.id");
         }
-        List<Object[]> list = financialLedgerTypeRepository.financialLedgerTypeList(param.getOrganizationId(), param.getFinancialCodingTypeId()
-                , param.getFinancialCodingType(), param.getFinancialLedgerTypeId(), param.getFinancialLedgerType());
-        List<FinancialLedgerTypeResponse> financialLedgerTypeResponses = list.stream().map(item ->
-                FinancialLedgerTypeResponse.builder()
+        if (param.getDepartmentId() == null) {
+            throw new RuleException("fin.security.check.department.id");
+        }
+        if (param.getActivityCode() == null) {
+            throw new RuleException("fin.security.check.activity.code");
+        }
+        if (param.getInputFromConfigFlag() == null) {
+            throw new RuleException("fin.security.check.input.from.config.flag");
+        }
+
+        List<Object[]> list = financialLedgerTypeRepository.financialLedgerTypeList(param.getOrganizationId()
+                , param.getActivityCode()
+                , new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialPeriodId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, param.getDocumentTypeId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, param.getCreatorUserId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialDepartmentId())
+                , param.getDepartmentId()
+                , param.getUserId()
+                , param.getFinancialCodingTypeId()
+                , param.getFinancialCodingType()
+                , param.getFinancialLedgerTypeId()
+                , param.getFinancialLedgerType());
+        List<FinancialLedgerTypeListResponse> financialLedgerTypeListResponses =
+                list.stream().map(item -> FinancialLedgerTypeListResponse.builder()
                         .financialLedgerTypeId(Long.parseLong(item[0].toString()))
                         .description(item[1] == null ? "" : item[1].toString())
-                        .code(item[2] == null ? "" : item[2].toString())
-                        .financialCodingTypeId(Long.parseLong(item[3].toString()))
-                        .activeFlag(Integer.parseInt(item[4].toString()) == 1)
-                        .financialCodingTypeDescription(item[5] == null ? "" : item[5].toString())
-                        .financialNumberingTypeDescription(item[6] == null ? "" : item[6].toString())
+                        .financialCodingTypeId(Long.parseLong(item[2].toString()))
+                        .activeFlag(Integer.parseInt(item[3].toString()) == 1)
+                        .financialCodingTypeDescription(item[4] == null ? "" : item[4].toString())
+                        .financialNumberingTypeDescription(item[5] == null ? "" : item[5].toString())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(financialLedgerTypeResponses.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
+        dataSourceResult.setData(financialLedgerTypeListResponses.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
         dataSourceResult.setTotal(list.size());
         return dataSourceResult;
 
@@ -114,7 +135,16 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         FinancialLedgerTypeParameterDto financialLedgerTypeParameterDto = new FinancialLedgerTypeParameterDto();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
-                case "financialCodingType.id":
+                case "financialLedgerTypeId":
+                    if (item.getValue() != null) {
+                        financialLedgerTypeParameterDto.setFinancialLedgerType("setFinancialLedgerType");
+                        financialLedgerTypeParameterDto.setFinancialLedgerTypeId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialLedgerTypeParameterDto.setFinancialLedgerType(null);
+                        financialLedgerTypeParameterDto.setFinancialLedgerTypeId(0L);
+                    }
+                    break;
+                case "financialCodingTypeId":
                     if (item.getValue() != null) {
                         financialLedgerTypeParameterDto.setFinancialCodingType("financialCodingType");
                         financialLedgerTypeParameterDto.setFinancialCodingTypeId(Long.parseLong(item.getValue().toString()));
@@ -123,13 +153,60 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                         financialLedgerTypeParameterDto.setFinancialCodingTypeId(0L);
                     }
                     break;
-                case "id":
+                case "departmentId":
                     if (item.getValue() != null) {
-                        financialLedgerTypeParameterDto.setFinancialLedgerType("setFinancialLedgerType");
-                        financialLedgerTypeParameterDto.setFinancialLedgerTypeId(Long.parseLong(item.getValue().toString()));
+                        financialLedgerTypeParameterDto.setDepartmentId(Long.parseLong(item.getValue().toString()));
                     } else {
-                        financialLedgerTypeParameterDto.setFinancialLedgerType(null);
-                        financialLedgerTypeParameterDto.setFinancialLedgerTypeId(0L);
+                        financialLedgerTypeParameterDto.setDepartmentId(null);
+                    }
+                    break;
+                case "financialDepartmentId":
+                    if (item.getValue() != null) {
+                        financialLedgerTypeParameterDto.setFinancialDepartmentId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialLedgerTypeParameterDto.setFinancialDepartmentId(null);
+                    }
+                    break;
+                case "financialLedgerId":
+                    if (item.getValue() != null) {
+                        financialLedgerTypeParameterDto.setFinancialLedgerId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialLedgerTypeParameterDto.setFinancialLedgerId(null);
+                    }
+                    break;
+                case "financialPeriodId":
+                    if (item.getValue() != null) {
+                        financialLedgerTypeParameterDto.setFinancialPeriodId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialLedgerTypeParameterDto.setFinancialPeriodId(null);
+                    }
+                    break;
+                case "documentTypeId":
+                    if (item.getValue() != null) {
+                        financialLedgerTypeParameterDto.setDocumentTypeId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialLedgerTypeParameterDto.setDocumentTypeId(null);
+                    }
+                    break;
+                case "subjectId":
+                    if (item.getValue() != null) {
+                        financialLedgerTypeParameterDto.setSubjectId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialLedgerTypeParameterDto.setSubjectId(null);
+                    }
+                    break;
+                case "activityCode":
+                    if (item.getValue() != null) {
+                        financialLedgerTypeParameterDto.setActivityCode(item.getValue().toString());
+                    } else {
+                        financialLedgerTypeParameterDto.setActivityCode(null);
+                    }
+                    break;
+                case "inputFromConfigFlag":
+                    if (item.getValue() != null) {
+                        financialLedgerTypeParameterDto.setInputFromConfigFlag((Boolean) item.getValue());
+                    } else {
+                        financialLedgerTypeParameterDto.setInputFromConfigFlag(null);
                     }
                     break;
             }
