@@ -1,12 +1,15 @@
 package ir.demisco.cfs.service.impl;
 
+import ir.demisco.cfs.model.dto.request.FinancialSecurityFilterRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDepartmentResponse;
 import ir.demisco.cfs.service.api.FinancialDepartmentService;
 import ir.demisco.cfs.service.repository.DepartmentRepository;
-import ir.demisco.cfs.service.repository.FinancialDepartmentRepository;
+import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
+import org.hibernate.jpa.TypedParameterValue;
+import org.hibernate.type.StandardBasicTypes;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -17,37 +20,38 @@ import java.util.stream.Collectors;
 public class DefaultFinancialDepartment implements FinancialDepartmentService {
     private final DepartmentRepository departmentRepository;
 
-    public DefaultFinancialDepartment(FinancialDepartmentRepository financialDepartmentRepository, DepartmentRepository departmentRepository) {
+    public DefaultFinancialDepartment( DepartmentRepository departmentRepository) {
         this.departmentRepository = departmentRepository;
     }
-
-//    @Override
-//    @Transactional
-//    public DataSourceResult financialDepartmentList() {
-//        Long organizationId = 100L;
-//        List<Object[]> financialDocumentItemList = departmentRepository.getFinancialDocumentItemList(organizationId, );
-//        List<FinancialDepartmentResponse> financialDepartmentResponses = financialDocumentItemList.stream().map(item ->
-//                FinancialDepartmentResponse.builder()
-//                        .departmentId(Long.parseLong(item[0].toString()))
-//                        .code(item[1].toString())
-//                        .name((item[2].toString()))
-//                        .financialLedgerTypeId(Long.parseLong(item[3] == null ? "0" : item[3].toString()))
-//                        .ledgerTypeDescription(item[4] == null ? "" : item[4].toString())
-//                        .financialDepartmentLedgerId(Long.parseLong(item[5] == null ? "0" : item[5].toString()))
-//                        .build()).collect(Collectors.toList());
-//        DataSourceResult dataSourceResult = new DataSourceResult();
-//        dataSourceResult.setData(financialDepartmentResponses);
-//        dataSourceResult.setTotal(financialDocumentItemList.size());
-//        return dataSourceResult;
-//
-//    }
 
     @Override
     @Transactional
     public DataSourceResult financialDepartmentList(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
-        FinancialDepartmentResponse param = setParameterToDto(filters);
-        List<Object[]> financialDocumentItemList = departmentRepository.getFinancialDocumentItemList(SecurityHelper.getCurrentUser().getOrganizationId(), param.getDepartmentId());
+        FinancialSecurityFilterRequest param = setParameterToDto(filters);
+        param.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        param.setUserId(SecurityHelper.getCurrentUser().getUserId());
+        param.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
+        if (param.getUserId() == null) {
+            throw new RuleException("fin.security.check.user.id");
+        }
+        if (param.getDepartmentId() == null) {
+            throw new RuleException("fin.security.check.department.id");
+        }
+        if (param.getActivityCode() == null) {
+            throw new RuleException("fin.security.check.activity.code");
+        }
+        if (param.getInputFromConfigFlag() == null) {
+            throw new RuleException("fin.security.check.input.from.config.flag");
+        }
+        List<Object[]> financialDocumentItemList = departmentRepository.getFinancialDocumentItemList(
+                param.getOrganizationId()
+                , param.getActivityCode()
+                , new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialPeriodId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, param.getDocumentTypeId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, param.getCreatorUserId())
+                , param.getDepartmentId()
+                , param.getUserId());
         List<FinancialDepartmentResponse> financialDepartmentResponses = financialDocumentItemList.stream().map(item ->
                 FinancialDepartmentResponse.builder()
                         .departmentId(Long.parseLong(item[0].toString()))
@@ -56,6 +60,7 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
                         .financialLedgerTypeId(Long.parseLong(item[3] == null ? "0" : item[3].toString()))
                         .ledgerTypeDescription(item[4] == null ? "" : item[4].toString())
                         .financialDepartmentLedgerId(Long.parseLong(item[5] == null ? "0" : item[5].toString()))
+//                        .disabled(Integer.parseInt(item[6].toString()) == 1)
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialDepartmentResponses.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
@@ -63,21 +68,62 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
         return dataSourceResult;
     }
 
-    private FinancialDepartmentResponse setParameterToDto(List<DataSourceRequest.FilterDescriptor> filters) {
-        FinancialDepartmentResponse financialDepartmentResponse = new FinancialDepartmentResponse();
+    private FinancialSecurityFilterRequest setParameterToDto(List<DataSourceRequest.FilterDescriptor> filters) {
+        FinancialSecurityFilterRequest financialSecurityFilterRequest = new FinancialSecurityFilterRequest();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
-                case "department.id":
+                case "departmentId":
                     if (item.getValue() != null) {
-                        financialDepartmentResponse.setDepartment("department");
-                        financialDepartmentResponse.setDepartmentId(Long.parseLong(item.getValue().toString()));
+                        financialSecurityFilterRequest.setDepartmentId(Long.parseLong(item.getValue().toString()));
                     } else {
-                        financialDepartmentResponse.setDepartment(null);
-                        financialDepartmentResponse.setDepartmentId(0L);
+                        financialSecurityFilterRequest.setDepartmentId(null);
                     }
                     break;
+                case "financialLedgerId":
+                    if (item.getValue() != null) {
+                        financialSecurityFilterRequest.setFinancialLedgerId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialSecurityFilterRequest.setFinancialLedgerId(null);
+                    }
+                    break;
+                case "financialPeriodId":
+                    if (item.getValue() != null) {
+                        financialSecurityFilterRequest.setFinancialPeriodId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialSecurityFilterRequest.setFinancialPeriodId(null);
+                    }
+                    break;
+                case "documentTypeId":
+                    if (item.getValue() != null) {
+                        financialSecurityFilterRequest.setDocumentTypeId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialSecurityFilterRequest.setDocumentTypeId(null);
+                    }
+                    break;
+                case "subjectId":
+                    if (item.getValue() != null) {
+                        financialSecurityFilterRequest.setSubjectId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialSecurityFilterRequest.setSubjectId(null);
+                    }
+                    break;
+                case "activityCode":
+                    if (item.getValue() != null) {
+                        financialSecurityFilterRequest.setActivityCode(item.getValue().toString());
+                    } else {
+                        financialSecurityFilterRequest.setActivityCode(null);
+                    }
+                    break;
+                case "inputFromConfigFlag":
+                    if (item.getValue() != null) {
+                        financialSecurityFilterRequest.setInputFromConfigFlag((Boolean) item.getValue());
+                    } else {
+                        financialSecurityFilterRequest.setInputFromConfigFlag(null);
+                    }
+                    break;
+                default:
             }
         }
-        return financialDepartmentResponse;
+        return financialSecurityFilterRequest;
     }
 }
