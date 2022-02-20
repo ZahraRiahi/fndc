@@ -135,7 +135,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         FinancialLedgerTypeParameterDto financialLedgerTypeParameterDto = new FinancialLedgerTypeParameterDto();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
-                case "financialLedgerTypeId":
+                case "id":
                     if (item.getValue() != null) {
                         financialLedgerTypeParameterDto.setFinancialLedgerType("setFinancialLedgerType");
                         financialLedgerTypeParameterDto.setFinancialLedgerTypeId(Long.parseLong(item.getValue().toString()));
