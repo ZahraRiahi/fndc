@@ -23,42 +23,59 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             " :organizationId,:activityCode,:financialPeriodId,:financialDocumentTypeId," +
             " :creatorUserId,:financialDepartmentId,LGT.ID,:departmentId, :userId)) FNSC" +
             " WHERE " +
-             " LGT.ORGANIZATION_ID = :organizationId ",nativeQuery = true)
+            " LGT.ORGANIZATION_ID = :organizationId ", nativeQuery = true)
     List<Object[]> findFinancialLedgerTypeByOrganizationId(Long organizationId,
-                                                                      String activityCode,
-                                                                      TypedParameterValue financialPeriodId,
-                                                                      TypedParameterValue financialDocumentTypeId
-                                                                      ,TypedParameterValue creatorUserId,
-                                                                      TypedParameterValue financialDepartmentId,
-                                                                      Long departmentId,
-                                                                      Long userId);
+                                                           String activityCode,
+                                                           TypedParameterValue financialPeriodId,
+                                                           TypedParameterValue financialDocumentTypeId,
+                                                           TypedParameterValue creatorUserId,
+                                                           TypedParameterValue financialDepartmentId,
+                                                           Long departmentId,
+                                                           Long userId);
 
-    @Query(value = "select" +
-            "       fnlt.id," +
+    @Query(value = "select fnlt.id," +
             "       fnlt.description," +
-            "       fnlt.code," +
             "       fnlt.financial_coding_type_id," +
             "       fnlt.active_flag," +
             "       fnct.description as financial_coding_type_Description," +
-            "       LISTAGG( fnnt.description,',' )  as numbering_description" +
+            "       LISTAGG(fnnt.description, ',') as numbering_description" +
             "  from fndc.financial_ledger_type fnlt" +
             " inner join fnac.financial_coding_type fnct" +
             "    on fnlt.financial_coding_type_id = fnct.id" +
-            "    left outer join fndc.ledger_numbering_type lgnt on lgnt.financial_ledger_type_id=fnlt.id" +
-            "    and lgnt.deleted_date is null" +
-            "    left outer join fndc.financial_numbering_type fnnt on fnnt.id=lgnt.financial_numbering_type_id" +
-            "     where fnlt.deleted_date is null" +
-            "    and  fnlt.organization_id = :organizationId" +
-            "    and  ( :financialCodingType is null or fnlt.financial_coding_type_id = :financialCodingTypeId)" +
-            "    and  ( :financialLedgerType is null or fnlt.id = :financialLedgerTypeId )" +
-            "    group by   fnlt.id," +
-            "       fnlt.description," +
-            "       fnlt.code," +
-            "       fnlt.financial_coding_type_id," +
-            "       fnlt.active_flag," +
-            "       fnct.description"
+            "  left outer join fndc.ledger_numbering_type lgnt" +
+            "    on lgnt.financial_ledger_type_id = fnlt.id" +
+            "  left outer join fndc.financial_numbering_type fnnt" +
+            "    on fnnt.id = lgnt.financial_numbering_type_id," +
+            "          TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(" +
+            ":organizationId," +
+            ":activityCode," +
+            ":financialPeriodId," +
+            ":financialDocumentTypeId," +
+            ":creatorUserId," +
+            ":financialDepartmentId," +
+            " fnlt.ID," +
+            ":departmentId," +
+            ":userId)) FNSC" +
+            " where fnlt.organization_id = :organizationId" +
+            "   and (fnlt.financial_coding_type_id = :financialCodingTypeId or" +
+            "       :financialCodingType is null)" +
+            "   and (fnlt.id = :financialLedgerTypeId or :financialLedgerType is null)" +
+            "   and FNSC.SEC_RESULT = 1 " +
+            " group by fnlt.id," +
+            "          fnlt.description," +
+            "          fnlt.financial_coding_type_id," +
+            "          fnlt.active_flag," +
+            "          fnct.description"
             , nativeQuery = true)
-    List<Object[]> financialLedgerTypeList(Long organizationId, Long financialCodingTypeId, String financialCodingType, Long financialLedgerTypeId, String financialLedgerType);
+    List<Object[]> financialLedgerTypeList(Long organizationId,
+                                           String activityCode,
+                                           TypedParameterValue financialPeriodId,
+                                           TypedParameterValue financialDocumentTypeId,
+                                           TypedParameterValue creatorUserId,
+                                           TypedParameterValue financialDepartmentId,
+                                           Long departmentId,
+                                           Long userId,
+                                           Long financialCodingTypeId, String financialCodingType, Long financialLedgerTypeId, String financialLedgerType);
 
 
     @Query(value = " SELECT to_char(nvl(max(t.code), 10) + 1) from" +
