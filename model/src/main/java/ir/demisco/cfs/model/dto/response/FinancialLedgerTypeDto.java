@@ -8,6 +8,7 @@ public class FinancialLedgerTypeDto {
     private String description;
     private LocalDateTime DeletedDate;
     private String code;
+    private Boolean disabled;
 
     public Long getId() {
         return id;
@@ -45,6 +46,14 @@ public class FinancialLedgerTypeDto {
         return new Builder();
     }
 
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
     public static final class Builder {
         private FinancialLedgerTypeDto financialLedgerTypeDto;
 
@@ -68,6 +77,11 @@ public class FinancialLedgerTypeDto {
 
         public Builder DeletedDate(LocalDateTime DeletedDate) {
             financialLedgerTypeDto.setDeletedDate(DeletedDate);
+            return this;
+        }
+
+        public Builder disabled(Boolean disabled) {
+            financialLedgerTypeDto.setDisabled(disabled);
             return this;
         }
         public Builder code(String code) {
