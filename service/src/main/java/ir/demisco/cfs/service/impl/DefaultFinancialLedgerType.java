@@ -64,7 +64,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
             throw new RuleException("fin.security.check.input.from.config.flag");
         }
         return financialLedgerTypeRepository.findFinancialLedgerTypeByOrganizationId(
-                organizationId,
+                -1L,
                 financialSecurityFilterRequest.getActivityCode()
                 , new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialPeriodId())
                 , new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getDocumentTypeId())
@@ -219,13 +219,12 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     public void saveFinancialLedgerType(FinancialLedgerTypeRequest financialLedgerTypeRequest) {
         Long financialLedgerTypeId = financialLedgerTypeRequest.getFinancialLedgerTypeId();
         Long financialCodingTypeId = financialLedgerTypeRequest.getFinancialCodingTypeId();
-        String activityCode = "FNDC_LEDGER_SAVE";
-        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
-        financialDocumentSecurityInputRequest.setActivityCode(activityCode);
-        financialDocumentSecurityInputRequest.setFinancialDocumentId(null);
-        financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
-        financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
-
+//        String activityCode = "FNDC_LEDGER_SAVE";
+//        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
+//        financialDocumentSecurityInputRequest.setActivityCode(activityCode);
+//        financialDocumentSecurityInputRequest.setFinancialDocumentId(null);
+//        financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
+//        financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
         if (financialCodingTypeId == null || financialCodingTypeId < 0) {
             throw new RuleException("fin.financialLedgerType.insertCodingType");
         }
