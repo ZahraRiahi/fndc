@@ -1,12 +1,13 @@
 package ir.demisco.cfs.model.dto;
 
 
+import ir.demisco.cfs.model.dto.request.FinancialSecurityFilterRequest;
+
 import java.util.Map;
 
-public class FinancialLedgerTypeParameterDto {
+public class FinancialLedgerTypeParameterDto extends FinancialSecurityFilterRequest {
     private Long FinancialLedgerTypeId;
     private String description;
-    private Long organizationId;
     private String FinancialLedgerType;
     private boolean activeFlag;
     private Long financialCodingTypeId;
@@ -69,14 +70,6 @@ public class FinancialLedgerTypeParameterDto {
 
     public void setFinancialCodingTypeDescription(String financialCodingTypeDescription) {
         this.financialCodingTypeDescription = financialCodingTypeDescription;
-    }
-
-    public Long getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
     }
 
     public Map<String, Object> getParamMap() {
