@@ -1,6 +1,7 @@
 package ir.demisco.cfs.service.repository;
 
 import ir.demisco.cfs.model.entity.FinancialLedgerType;
+import org.hibernate.jpa.TypedParameterValue;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -8,11 +9,29 @@ import java.util.List;
 
 public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLedgerType, Long> {
 
-    @Query(value = " select flt" +
-            " from FinancialLedgerType flt " +
-            " where flt.deletedDate is null " +
-            " and flt.organization.id =:organizationId ")
-    List<FinancialLedgerType> findFinancialLedgerTypeByOrganizationId(Long organizationId);
+    @Query(value = " SELECT LGT.id," +
+            "       LGT.CODE," +
+            "       LGT.DESCRIPTION," +
+            "       CASE" +
+            "         WHEN FNSC.SEC_RESULT = 1 THEN" +
+            "          0" +
+            "         ELSE" +
+            "          1" +
+            "       END DISABLED" +
+            "  FROM fndc.FINANCIAL_LEDGER_TYPE LGT," +
+            "       TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(" +
+            " :organizationId,:activityCode,:financialPeriodId,:financialDocumentTypeId," +
+            " :creatorUserId,:financialDepartmentId,LGT.ID,:departmentId, :userId)) FNSC" +
+            " WHERE " +
+             " LGT.ORGANIZATION_ID = :organizationId ",nativeQuery = true)
+    List<Object[]> findFinancialLedgerTypeByOrganizationId(Long organizationId,
+                                                                      String activityCode,
+                                                                      TypedParameterValue financialPeriodId,
+                                                                      TypedParameterValue financialDocumentTypeId
+                                                                      ,TypedParameterValue creatorUserId,
+                                                                      TypedParameterValue financialDepartmentId,
+                                                                      Long departmentId,
+                                                                      Long userId);
 
     @Query(value = "select" +
             "       fnlt.id," +

@@ -1,6 +1,7 @@
 package ir.demisco.cfs.service.api;
 
 import ir.demisco.cfs.model.dto.request.FinancialLedgerTypeRequest;
+import ir.demisco.cfs.model.dto.request.FinancialSecurityFilterRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerDto;
 import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerResponse;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeDto;
@@ -16,7 +17,7 @@ public interface FinancialLedgerTypeService {
      * @param organizationId
      * @return
      */
-    List<FinancialLedgerTypeDto> getFinancialLedgerType(Long organizationId);
+    List<FinancialLedgerTypeDto> getFinancialLedgerType(FinancialSecurityFilterRequest organizationId);
 
     /**
      * لیست انواع دفاتر مالی
