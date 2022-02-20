@@ -1,17 +1,14 @@
 package ir.demisco.cfs.model.dto.response;
 
-import java.util.Map;
 
 public class FinancialDepartmentResponse {
     private Long departmentId;
-    private String name;
     private String code;
+    private String name;
     private Long financialLedgerTypeId;
     private String ledgerTypeDescription;
     private Long financialDepartmentLedgerId;
-    private String department;
-    private Long organizationId;
-    Map<String, Object> paramMap;
+//    private Boolean disabled;
 
     public Long getDepartmentId() {
         return departmentId;
@@ -61,29 +58,13 @@ public class FinancialDepartmentResponse {
         this.financialDepartmentLedgerId = financialDepartmentLedgerId;
     }
 
-    public String getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(String department) {
-        this.department = department;
-    }
-
-    public Long getOrganizationId() {
-        return organizationId;
-    }
-
-    public void setOrganizationId(Long organizationId) {
-        this.organizationId = organizationId;
-    }
-
-    public Map<String, Object> getParamMap() {
-        return paramMap;
-    }
-
-    public void setParamMap(Map<String, Object> paramMap) {
-        this.paramMap = paramMap;
-    }
+//    public Boolean getDisabled() {
+//        return disabled;
+//    }
+//
+//    public void setDisabled(Boolean disabled) {
+//        this.disabled = disabled;
+//    }
 
     public static Builder builder() {
         return new Builder();
@@ -130,14 +111,10 @@ public class FinancialDepartmentResponse {
             return this;
         }
 
-        public Builder department(String department) {
-            financialDepartmentResponse.setDepartment(department);
-            return this;
-        }
-        public Builder organizationId(Long organizationId) {
-            financialDepartmentResponse.setOrganizationId(organizationId);
-            return this;
-        }
+//        public Builder disabled(Boolean disabled) {
+//            financialDepartmentResponse.setDisabled(disabled);
+//            return this;
+//        }
 
         public FinancialDepartmentResponse build() {
             return financialDepartmentResponse;
