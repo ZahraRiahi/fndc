@@ -1,10 +1,12 @@
 package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.FinancialLedgerTypeParameterDto;
+import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerTypeRequest;
 import ir.demisco.cfs.model.dto.request.FinancialSecurityFilterRequest;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.*;
+import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.api.FinancialLedgerTypeService;
 import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.basic.model.entity.org.Organization;
@@ -30,15 +32,17 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     private final FinancialNumberingTypeRepository financialNumberingTypeRepository;
     private final LedgerNumberingTypeRepository ledgerNumberingTypeRepository;
     private final FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository;
+    private final FinancialDocumentSecurityService financialDocumentSecurityService;
 
     public DefaultFinancialLedgerType(FinancialLedgerTypeRepository financialLedgerTypeRepository, FinancialCodingTypeRepository financialCodingTypeRepository
-            , OrganizationRepository organizationRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository, FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository) {
+            , OrganizationRepository organizationRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository, FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository, FinancialDocumentSecurityService financialDocumentSecurityService) {
         this.financialLedgerTypeRepository = financialLedgerTypeRepository;
         this.financialCodingTypeRepository = financialCodingTypeRepository;
         this.organizationRepository = organizationRepository;
         this.financialNumberingTypeRepository = financialNumberingTypeRepository;
         this.ledgerNumberingTypeRepository = ledgerNumberingTypeRepository;
         this.financialDepartmentLedgerRepository = financialDepartmentLedgerRepository;
+        this.financialDocumentSecurityService = financialDocumentSecurityService;
     }
 
     @Override
@@ -215,6 +219,13 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     public void saveFinancialLedgerType(FinancialLedgerTypeRequest financialLedgerTypeRequest) {
         Long financialLedgerTypeId = financialLedgerTypeRequest.getFinancialLedgerTypeId();
         Long financialCodingTypeId = financialLedgerTypeRequest.getFinancialCodingTypeId();
+        String activityCode = "FNDC_LEDGER_SAVE";
+        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
+        financialDocumentSecurityInputRequest.setActivityCode(activityCode);
+        financialDocumentSecurityInputRequest.setFinancialDocumentId(null);
+        financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
+        financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
+
         if (financialCodingTypeId == null || financialCodingTypeId < 0) {
             throw new RuleException("fin.financialLedgerType.insertCodingType");
         }
