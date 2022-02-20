@@ -85,10 +85,9 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     public DataSourceResult financialLedgerTypeList(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialLedgerTypeParameterDto param = setParameterToDto(filters);
-        param.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
-        param.setUserId(SecurityHelper.getCurrentUser().getUserId());
-        param.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
-
+        param.setOrganizationId(100L);
+        param.setUserId(112L);
+        param.setCreatorUserId(112L);
         if (param.getUserId() == null) {
             throw new RuleException("fin.security.check.user.id");
         }

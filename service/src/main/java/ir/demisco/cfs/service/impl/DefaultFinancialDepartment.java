@@ -44,8 +44,11 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
         if (param.getInputFromConfigFlag() == null) {
             throw new RuleException("fin.security.check.input.from.config.flag");
         }
+        // comment jira FIN-1126 organ pakage -1
+        Long organizationIdPKG= -1L;
         List<Object[]> financialDocumentItemList = departmentRepository.getFinancialDocumentItemList(
-                param.getOrganizationId()
+                 param.getOrganizationId()
+                ,organizationIdPKG
                 , param.getActivityCode()
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialPeriodId())
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getDocumentTypeId())
