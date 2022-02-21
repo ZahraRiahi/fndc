@@ -49,6 +49,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     @Transactional()
     public List<FinancialLedgerTypeDto> getFinancialLedgerType(FinancialSecurityFilterRequest financialSecurityFilterRequest) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        financialSecurityFilterRequest.setOrganizationId(organizationId);
         financialSecurityFilterRequest.setUserId(SecurityHelper.getCurrentUser().getUserId());
         financialSecurityFilterRequest.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
         if (financialSecurityFilterRequest.getUserId() == null) {
@@ -64,7 +65,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
             throw new RuleException("fin.security.check.input.from.config.flag");
         }
         return financialLedgerTypeRepository.findFinancialLedgerTypeByOrganizationId(
-                -1L,
+                organizationId,
                 financialSecurityFilterRequest.getActivityCode()
                 , new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialPeriodId())
                 , new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getDocumentTypeId())
