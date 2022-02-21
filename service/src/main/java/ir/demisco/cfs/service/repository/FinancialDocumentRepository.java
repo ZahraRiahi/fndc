@@ -396,7 +396,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                                                         FD.FINANCIAL_LEDGER_TYPE_ID)),'$DEP', " +
             "                                         (SELECT DP.CODE " +
             "                                            FROM FNDC.FINANCIAL_DEPARTMENT DP " +
-            "                                           WHERE DP.ID =FD.FINANCIAL_DEPARTMENT_ID)), '$ORG', " +
+            "                                           WHERE DP.ID = FD.FINANCIAL_DEPARTMENT_ID)), '$ORG', " +
             "                                 (SELECT OG.CODE " +
             "                                    FROM FNDC.FINANCIAL_ORGANIZATION OG " +
             "                                   WHERE OG.ORGANIZATION_ID =:organizationId)), '$PRI'," +

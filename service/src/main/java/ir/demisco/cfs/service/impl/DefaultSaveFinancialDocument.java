@@ -85,7 +85,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocumentSecurityInputRequest.setActivityCode(activityCode);
         financialDocumentSecurityInputRequest.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
         financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
-        securityModelRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        securityModelRequest.setOrganizationId(100L);
         securityModelRequest.setUserId(SecurityHelper.getCurrentUser().getUserId());
         securityModelRequest.setDepartmentId(requestFinancialDocumentSaveDto.getDepartmentId());
         securityModelRequest.setFinancialDepartmentId(requestFinancialDocumentSaveDto.getFinancialDepartmentId());
@@ -105,7 +105,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
             throw new RuleException(" تاریخ وارد شده در محدوده دوره مالی پیش فرض نمیباشد");
         }
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
-        financialPeriodStatusRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        financialPeriodStatusRequest.setOrganizationId(100L);
         financialPeriodStatusRequest.setDate(LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/", "-") + "T00:00"));
         financialPeriodStatusRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
         financialPeriodStatusRequest.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
@@ -385,11 +385,11 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocument.setDescription(financialDocumentSaveDto.getDescription());
         financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(financialDocumentSaveDto.getFinancialDocumentStatusId()));
         financialDocument.setAutomaticFlag(financialDocumentSaveDto.getAutomaticFlag());
-        financialDocument.setOrganization(organizationRepository.getOne(SecurityHelper.getCurrentUser().getOrganizationId()));
+        financialDocument.setOrganization(organizationRepository.getOne(100L));
         financialDocument.setFinancialDocumentType(financialDocumentTypeRepository.getOne(financialDocumentSaveDto.getFinancialDocumentTypeId()));
         financialDocument.setFinancialPeriod(financialPeriodRepository.getOne(financialDocumentSaveDto.getFinancialPeriodId()));
         financialDocument.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialDocumentSaveDto.getFinancialLedgerTypeId()));
-        financialDocument.setFinancialDepartment(financialDepartmentRepository.getOne(financialDocumentSaveDto.getDepartmentId()));
+        financialDocument.setFinancialDepartment(financialDepartmentRepository.getOne(financialDocumentSaveDto.getFinancialDepartmentId()));
         financialDocument.setDocumentNumber("9999");
         return financialDocumentRepository.save(financialDocument);
     }
@@ -427,7 +427,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .financialLedgerTypeId(financialDocument.getFinancialLedgerType().getId())
                 .financialLedgerTypeDescription(financialDocument.getFinancialLedgerType().getDescription())
                 .departmentId(financialDocument.getFinancialDepartment().getId())
-                .departmentName(financialDocument.getFinancialDepartment().getName())
+                .departmentName(financialDocument.getFinancialDepartment().getDepartment().getName())
                 .financialPeriodId(financialDocument.getFinancialPeriod().getId())
                 .financialPeriodDescription(financialDocument.getFinancialPeriod().getDescription())
                 .build();
