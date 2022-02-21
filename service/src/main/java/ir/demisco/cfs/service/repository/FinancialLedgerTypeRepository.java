@@ -9,7 +9,7 @@ import java.util.List;
 
 public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLedgerType, Long> {
 
-    @Query(value = " SELECT LGT.id," +
+    @Query(value = "SELECT LGT.ID," +
             "       LGT.CODE," +
             "       LGT.DESCRIPTION," +
             "       CASE" +
@@ -19,11 +19,16 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             "          1" +
             "       END DISABLED" +
             "  FROM fndc.FINANCIAL_LEDGER_TYPE LGT," +
-            "       TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(" +
-            " :organizationId,:activityCode,:financialPeriodId,:financialDocumentTypeId," +
-            " :creatorUserId,:financialDepartmentId,LGT.ID,:departmentId, :userId)) FNSC" +
-            " WHERE " +
-            " LGT.ORGANIZATION_ID = :organizationId ", nativeQuery = true)
+            "       TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationId," +
+            "                                                        :activityCode," +
+            "                                                        :financialPeriodId," +
+            "                                                        :financialDocumentTypeId," +
+            "                                                        :creatorUserId," +
+            "                                                        :financialDepartmentId," +
+            "                                                        LGT.ID," +
+            "                                                        :departmentId," +
+            "                                                        :userId)) FNSC" +
+            " WHERE LGT.ORGANIZATION_ID = :organizationId", nativeQuery = true)
     List<Object[]> findFinancialLedgerTypeByOrganizationId(Long organizationId,
                                                            String activityCode,
                                                            TypedParameterValue financialPeriodId,
@@ -47,15 +52,15 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             "  left outer join fndc.financial_numbering_type fnnt" +
             "    on fnnt.id = lgnt.financial_numbering_type_id," +
             "          TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(" +
-            ":organizationId," +
-            ":activityCode," +
-            ":financialPeriodId," +
-            ":financialDocumentTypeId," +
-            ":creatorUserId," +
-            ":financialDepartmentId," +
-            " fnlt.ID," +
-            ":departmentId," +
-            ":userId)) FNSC" +
+                                 ":organizationId," +
+                                 ":activityCode," +
+                                 ":financialPeriodId," +
+                                 ":financialDocumentTypeId," +
+                                 ":creatorUserId," +
+                                 ":financialDepartmentId," +
+                                 " fnlt.ID," +
+                                 ":departmentId," +
+                                 ":userId)) FNSC" +
             " where fnlt.organization_id = :organizationId" +
             "   and (fnlt.financial_coding_type_id = :financialCodingTypeId or" +
             "       :financialCodingType is null)" +
