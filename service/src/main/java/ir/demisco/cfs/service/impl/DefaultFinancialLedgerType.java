@@ -1,11 +1,16 @@
 package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.FinancialLedgerTypeParameterDto;
-import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerTypeRequest;
 import ir.demisco.cfs.model.dto.request.FinancialSecurityFilterRequest;
-import ir.demisco.cfs.model.dto.response.*;
-import ir.demisco.cfs.model.entity.*;
+import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerDto;
+import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerResponse;
+import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeDto;
+import ir.demisco.cfs.model.dto.response.FinancialLedgerTypeListResponse;
+import ir.demisco.cfs.model.entity.FinancialCodingType;
+import ir.demisco.cfs.model.entity.FinancialLedgerType;
+import ir.demisco.cfs.model.entity.FinancialNumberingType;
+import ir.demisco.cfs.model.entity.LedgerNumberingType;
 import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.api.FinancialLedgerTypeService;
 import ir.demisco.cfs.service.repository.*;
@@ -32,23 +37,22 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     private final FinancialNumberingTypeRepository financialNumberingTypeRepository;
     private final LedgerNumberingTypeRepository ledgerNumberingTypeRepository;
     private final FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository;
-    private final FinancialDocumentSecurityService financialDocumentSecurityService;
 
     public DefaultFinancialLedgerType(FinancialLedgerTypeRepository financialLedgerTypeRepository, FinancialCodingTypeRepository financialCodingTypeRepository
-            , OrganizationRepository organizationRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository, FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository, FinancialDocumentSecurityService financialDocumentSecurityService) {
+            , OrganizationRepository organizationRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository, FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository) {
         this.financialLedgerTypeRepository = financialLedgerTypeRepository;
         this.financialCodingTypeRepository = financialCodingTypeRepository;
         this.organizationRepository = organizationRepository;
         this.financialNumberingTypeRepository = financialNumberingTypeRepository;
         this.ledgerNumberingTypeRepository = ledgerNumberingTypeRepository;
         this.financialDepartmentLedgerRepository = financialDepartmentLedgerRepository;
-        this.financialDocumentSecurityService = financialDocumentSecurityService;
     }
 
     @Override
     @Transactional()
     public List<FinancialLedgerTypeDto> getFinancialLedgerType(FinancialSecurityFilterRequest financialSecurityFilterRequest) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        financialSecurityFilterRequest.setOrganizationId(organizationId);
         financialSecurityFilterRequest.setUserId(SecurityHelper.getCurrentUser().getUserId());
         financialSecurityFilterRequest.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
         if (financialSecurityFilterRequest.getUserId() == null) {
@@ -64,7 +68,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
             throw new RuleException("fin.security.check.input.from.config.flag");
         }
         return financialLedgerTypeRepository.findFinancialLedgerTypeByOrganizationId(
-                -1L,
+                organizationId,
                 financialSecurityFilterRequest.getActivityCode()
                 , new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialPeriodId())
                 , new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getDocumentTypeId())
