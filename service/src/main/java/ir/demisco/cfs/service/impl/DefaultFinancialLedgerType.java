@@ -48,9 +48,9 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     @Override
     @Transactional()
     public List<FinancialLedgerTypeDto> getFinancialLedgerType(FinancialSecurityFilterRequest financialSecurityFilterRequest) {
-        Long organizationId = 100L;
-        financialSecurityFilterRequest.setUserId(112L);
-        financialSecurityFilterRequest.setCreatorUserId(112L);
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        financialSecurityFilterRequest.setUserId(SecurityHelper.getCurrentUser().getUserId());
+        financialSecurityFilterRequest.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
         if (financialSecurityFilterRequest.getUserId() == null) {
             throw new RuleException("fin.security.check.user.id");
         }
@@ -85,9 +85,9 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     public DataSourceResult financialLedgerTypeList(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialLedgerTypeParameterDto param = setParameterToDto(filters);
-        param.setOrganizationId(100L);
-        param.setUserId(112L);
-        param.setCreatorUserId(112L);
+        param.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        param.setUserId(SecurityHelper.getCurrentUser().getUserId());
+        param.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
         if (param.getUserId() == null) {
             throw new RuleException("fin.security.check.user.id");
         }

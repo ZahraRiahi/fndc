@@ -52,15 +52,15 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             "  left outer join fndc.financial_numbering_type fnnt" +
             "    on fnnt.id = lgnt.financial_numbering_type_id," +
             "          TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(" +
-            ":organizationId," +
-            ":activityCode," +
-            ":financialPeriodId," +
-            ":financialDocumentTypeId," +
-            ":creatorUserId," +
-            ":financialDepartmentId," +
-            " fnlt.ID," +
-            ":departmentId," +
-            ":userId)) FNSC" +
+                                 ":organizationId," +
+                                 ":activityCode," +
+                                 ":financialPeriodId," +
+                                 ":financialDocumentTypeId," +
+                                 ":creatorUserId," +
+                                 ":financialDepartmentId," +
+                                 " fnlt.ID," +
+                                 ":departmentId," +
+                                 ":userId)) FNSC" +
             " where fnlt.organization_id = :organizationId" +
             "   and (fnlt.financial_coding_type_id = :financialCodingTypeId or" +
             "       :financialCodingType is null)" +
