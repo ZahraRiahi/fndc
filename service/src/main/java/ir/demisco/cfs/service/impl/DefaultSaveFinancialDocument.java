@@ -390,7 +390,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocument.setFinancialPeriod(financialPeriodRepository.getOne(financialDocumentSaveDto.getFinancialPeriodId()));
         financialDocument.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialDocumentSaveDto.getFinancialLedgerTypeId()));
         financialDocument.setFinancialDepartment(financialDepartmentRepository.getOne(financialDocumentSaveDto.getFinancialDepartmentId()));
-        financialDocument.setDocumentNumber("9999");
+        financialDocument.setDocumentNumber("X9999999X");
         return financialDocumentRepository.save(financialDocument);
     }
 
@@ -406,7 +406,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocument.setFinancialDocumentType(financialDocumentTypeRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDocumentTypeId()));
         financialDocument.setFinancialPeriod(financialPeriodRepository.getOne(requestFinancialDocumentSaveDto.getFinancialPeriodId()));
         financialDocument.setFinancialLedgerType(financialLedgerTypeRepository.getOne(requestFinancialDocumentSaveDto.getFinancialLedgerTypeId()));
-        financialDocument.setFinancialDepartment(financialDepartmentRepository.getOne(requestFinancialDocumentSaveDto.getDepartmentId()));
+        financialDocument.setFinancialDepartment(financialDepartmentRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDepartmentId()));
         financialDocument.setDocumentNumber(financialDocument.getDocumentNumber());
         return financialDocumentRepository.save(financialDocument);
     }
