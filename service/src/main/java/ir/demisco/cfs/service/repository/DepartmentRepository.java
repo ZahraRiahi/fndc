@@ -26,7 +26,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
             "    ON FNDP.DEPARTMENT_ID = FNLG.DEPARTMENT_ID" +
             "  LEFT OUTER JOIN FNDC.FINANCIAL_LEDGER_TYPE FNLT" +
             "    ON FNLT.ID = FNLG.FINANCIAL_LEDGER_TYPE_ID," +
-            " TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationId," +
+            " TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationIdPKG," +
             "                                                   :activityCode," +
             "                                                   :financialPeriodId," +
             "                                                   :financialDocumentTypeId," +
@@ -38,7 +38,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
             " WHERE FNDP.ORGANIZATION_ID = :organizationId" +
             "   AND FNDP.DEPARTMENT_ID =:departmentId"
             , nativeQuery = true)
-    List<Object[]> getFinancialDocumentItemList(Long organizationId,
+    List<Object[]> getFinancialDocumentItemList(Long organizationId,Long organizationIdPKG,
                                                 String activityCode,
                                                 TypedParameterValue financialPeriodId,
                                                 TypedParameterValue financialDocumentTypeId,

@@ -88,7 +88,6 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         param.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         param.setUserId(SecurityHelper.getCurrentUser().getUserId());
         param.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
-
         if (param.getUserId() == null) {
             throw new RuleException("fin.security.check.user.id");
         }
