@@ -37,17 +37,15 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     private final FinancialNumberingTypeRepository financialNumberingTypeRepository;
     private final LedgerNumberingTypeRepository ledgerNumberingTypeRepository;
     private final FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository;
-    private final FinancialDocumentSecurityService financialDocumentSecurityService;
 
     public DefaultFinancialLedgerType(FinancialLedgerTypeRepository financialLedgerTypeRepository, FinancialCodingTypeRepository financialCodingTypeRepository
-            , OrganizationRepository organizationRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository, FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository, FinancialDocumentSecurityService financialDocumentSecurityService) {
+            , OrganizationRepository organizationRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository, FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository) {
         this.financialLedgerTypeRepository = financialLedgerTypeRepository;
         this.financialCodingTypeRepository = financialCodingTypeRepository;
         this.organizationRepository = organizationRepository;
         this.financialNumberingTypeRepository = financialNumberingTypeRepository;
         this.ledgerNumberingTypeRepository = ledgerNumberingTypeRepository;
         this.financialDepartmentLedgerRepository = financialDepartmentLedgerRepository;
-        this.financialDocumentSecurityService = financialDocumentSecurityService;
     }
 
     @Override
