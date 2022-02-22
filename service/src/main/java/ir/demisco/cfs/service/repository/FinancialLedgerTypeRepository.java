@@ -19,7 +19,7 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             "          1" +
             "       END DISABLED" +
             "  FROM fndc.FINANCIAL_LEDGER_TYPE LGT," +
-            "       TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationId," +
+            "       TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationPKG," +
             "                                                        :activityCode," +
             "                                                        :financialPeriodId," +
             "                                                        :financialDocumentTypeId," +
@@ -29,8 +29,8 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             "                                                        :departmentId," +
             "                                                        :userId)) FNSC" +
             " WHERE LGT.ORGANIZATION_ID = :organizationId", nativeQuery = true)
-    List<Object[]> findFinancialLedgerTypeByOrganizationId(Long organizationId,
-                                                           String activityCode,
+    List<Object[]> findFinancialLedgerTypeByOrganizationId(Long organizationId,Long organizationPKG
+                                                           ,String activityCode,
                                                            TypedParameterValue financialPeriodId,
                                                            TypedParameterValue financialDocumentTypeId,
                                                            TypedParameterValue creatorUserId,
@@ -52,7 +52,7 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             "  left outer join fndc.financial_numbering_type fnnt" +
             "    on fnnt.id = lgnt.financial_numbering_type_id," +
             "          TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(" +
-                                 ":organizationId," +
+                                 ":organizationPKG," +
                                  ":activityCode," +
                                  ":financialPeriodId," +
                                  ":financialDocumentTypeId," +
@@ -72,8 +72,8 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             "          fnlt.active_flag," +
             "          fnct.description"
             , nativeQuery = true)
-    List<Object[]> financialLedgerTypeList(Long organizationId,
-                                           String activityCode,
+    List<Object[]> financialLedgerTypeList(Long organizationId,Long organizationPKG
+                                           ,String activityCode,
                                            TypedParameterValue financialPeriodId,
                                            TypedParameterValue financialDocumentTypeId,
                                            TypedParameterValue creatorUserId,
