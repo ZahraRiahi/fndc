@@ -38,7 +38,7 @@ public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecuri
             financialSecurityFilterRequest.setCreatorUserId(financialDocumentHeaderOutputResponse.getCreatorId());
             financialSecurityFilterRequest.setFinancialLedgerId(financialDocumentHeaderOutputResponse.getFinancialLedgerTypeId());
             financialSecurityFilterRequest.setUserId(financialDocumentHeaderOutputResponse.getCreatorId());
-            financialSecurityFilterRequest.setOrganizationId(100L);
+            financialSecurityFilterRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         } else {
             if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getUserId() == null) {
                 throw new RuleException("لطفا شناسه ی کاربر را وارد نمایید.");
@@ -52,7 +52,7 @@ public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecuri
             if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getInputFromConfigFlag() == null) {
                 throw new RuleException("لطفا فلگ تنظیمات را وارد نمایید.");
             }
-            financialSecurityFilterRequest.setOrganizationId(100L);
+            financialSecurityFilterRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
             financialSecurityFilterRequest.setUserId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getUserId());
             financialSecurityFilterRequest.setDepartmentId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getDepartmentId());
             financialSecurityFilterRequest.setFinancialDepartmentId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getFinancialDepartmentId());
@@ -64,7 +64,7 @@ public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecuri
             financialSecurityFilterRequest.setInputFromConfigFlag(financialDocumentSecurityInputRequest.getSecurityModelRequest().getInputFromConfigFlag());
             financialSecurityFilterRequest.setCreatorUserId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getCreatorUserId());
         }
-        FinancialSecurityOutputResponse financialSecurityOutputResponse = financialSecurityService.hasPermission(financialSecurityFilterRequest, 100L);
+        FinancialSecurityOutputResponse financialSecurityOutputResponse = financialSecurityService.hasPermission(financialSecurityFilterRequest, SecurityHelper.getCurrentUser().getOrganizationId());
         int resultSet = financialSecurityService.resultSet(financialSecurityFilterRequest);
         if (resultSet == 0) {
             if (financialSecurityOutputResponse.getPermissionMessage() == null) {
