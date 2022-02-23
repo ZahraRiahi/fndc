@@ -579,7 +579,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         List<FinancialNumberingRecordDto> financialNumberingRecordDtoList = new ArrayList<>();
         AtomicReference<String> documentNumber = new AtomicReference<>("");
 
-        List<Object[]> list = financialDocumentRepository.getSerialNumber(100L, financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
+        List<Object[]> list = financialDocumentRepository.getSerialNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         if (!list.isEmpty()) {
             list.forEach(objects -> {
                 FinancialNumberingFormat financialNumberingFormat =
@@ -600,14 +600,14 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
 
         List<NumberingFormatSerial> numberingFormatSerialList =
-                numberingFormatSerialRepository.findNumberingFormatSerialByParam(100L, financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
+                numberingFormatSerialRepository.findNumberingFormatSerialByParam(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         numberingFormatSerialList.forEach(numberingFormatSerial -> {
             numberingFormatSerial.setLastSerial(numberingFormatSerial.getLastSerial() + 1);
             numberingFormatSerialRepository.save(numberingFormatSerial);
         });
 
         List<Object[]> listDocumentNumber =
-                financialDocumentRepository.findDocumentNumber(100L, financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
+                financialDocumentRepository.findDocumentNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         listDocumentNumber.forEach(documentNumberObject -> {
             FinancialDocumentNumber financialDocumentNumber = new FinancialDocumentNumber();
             FinancialNumberingRecordDto financialNumberingRecordDto = new FinancialNumberingRecordDto();
