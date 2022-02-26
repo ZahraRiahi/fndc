@@ -23,7 +23,7 @@ public class FinancialConfigController {
 
     @PostMapping("/Get")
     public ResponseEntity<DataSourceResult> responseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
-        Long organizationId = 100L;
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         return ResponseEntity.ok(financialConfigService.getFinancialConfigByOrganizationIdAndUserAndDepartment(dataSourceRequest, organizationId));
     }
 
