@@ -42,10 +42,10 @@ public class DefaultFinancialConfig implements FinancialConfigService {
     @Transactional(readOnly = true)
     public DataSourceResult getFinancialConfigByOrganizationIdAndUserAndDepartment(DataSourceRequest dataSourceRequest, Long organizationId) {
         dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("deletedDate", null, DataSourceRequest.Operators.IS_NULL));
-        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialDepartment.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
-        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialPeriod.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
-        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialDocumentType.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
-        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialLedgerType.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
+//        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialDepartment.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
+//        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialPeriod.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
+//        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialDocumentType.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
+//        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialLedgerType.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
         return gridFilterService.filter(dataSourceRequest, financialConfigListGridProvider);
     }
 
