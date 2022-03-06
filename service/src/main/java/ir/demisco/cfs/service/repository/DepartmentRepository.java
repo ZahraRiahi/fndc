@@ -35,14 +35,18 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
             "                                                   FNLG.FINANCIAL_LEDGER_TYPE_ID," +
             "                                                   :departmentId," +
             "                                                   :userId)) FNSC" +
-            " WHERE FNDP.ORGANIZATION_ID = :organizationId" +
-            "   AND FNDP.DEPARTMENT_ID =:departmentId"
+            " where FNDP.DEPARTMENT_ID =:departmentId " +
+            "   AND EXISTS (SELECT 1" +
+            "           FROM fndc.FINANCIAL_DEP_ORG_REL INER_ORG_REL" +
+            "          WHERE INER_ORG_REL.ORGANIZATION_ID = :organizationId " +
+            "           AND INER_ORG_REL.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId" +
+            "            AND INER_ORG_REL.ACTIVE_FLAG = 1) "
             , nativeQuery = true)
-    List<Object[]> getFinancialDocumentItemList(Long organizationId,Long organizationIdPKG,
+    List<Object[]> getFinancialDocumentItemList(Long organizationId, Long organizationIdPKG,
                                                 String activityCode,
                                                 TypedParameterValue financialPeriodId,
                                                 TypedParameterValue financialDocumentTypeId,
                                                 TypedParameterValue creatorUserId,
                                                 Long departmentId,
-                                                Long userId);
+                                                Long userId,Long financialDepartmentId);
 }
