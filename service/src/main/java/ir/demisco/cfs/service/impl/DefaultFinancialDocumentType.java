@@ -17,10 +17,15 @@ import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.hibernate.jpa.TypedParameterValue;
 import org.hibernate.type.StandardBasicTypes;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -80,14 +85,76 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
         }
     }
 
+//    @Override
+//    public DataSourceResult getFinancialDocumentTypeOrganizationIdAndFinancialSystemId(DataSourceRequest dataSourceRequest) {
+//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+//        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor
+//                .create("organization", organizationId, DataSourceRequest.Operators.EQUALS));
+//        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("deletedDate", null, DataSourceRequest.Operators.IS_NULL));
+//        return gridFilterService.filter(dataSourceRequest, financialDocumentTypeProvider);
+//    }
+
+
     @Override
+    @Transactional
     public DataSourceResult getFinancialDocumentTypeOrganizationIdAndFinancialSystemId(DataSourceRequest dataSourceRequest) {
-        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor
-                .create("organization", organizationId, DataSourceRequest.Operators.EQUALS));
-        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("deletedDate", null, DataSourceRequest.Operators.IS_NULL));
-        return gridFilterService.filter(dataSourceRequest, financialDocumentTypeProvider);
+        List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
+        FinancialDocumentTypeRequest param = setParameterFinancialDocumentType(filters);
+        Map<String, Object> paramMap = param.getParamMap();
+        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
+        Page<Object[]> list = financialDocumentTypeRepository.financialDocumentType(paramMap.get("financialSystem"), param.getFinancialSystemId(), SecurityHelper.getCurrentUser().getOrganizationId(),
+                paramMap.get("idObject"),
+                param.getId(), pageable);
+        List<FinancialDocumentTypeDto> financialDocumentTypeDtos = list.stream().map(item ->
+                FinancialDocumentTypeDto.builder()
+                        .id(Long.parseLong(item[0].toString()))
+                        .description(item[1] == null ? null : item[1].toString())
+                        .activeFlag(item[2] == null ? null : Integer.parseInt(item[2].toString()) == 1)
+                        .automaticFlag(item[3] == null ? null : Integer.parseInt(item[3].toString()) == 1)
+                        .organizationId(item[4] == null ? null : Long.parseLong(item[4].toString()))
+                        .financialSystemId(item[5] == null ? null : Long.parseLong(item[5].toString()))
+                        .financialSystemDescription(item[6] == null ? null : item[6].toString())
+                        .build()).collect(Collectors.toList());
+        DataSourceResult dataSourceResult = new DataSourceResult();
+        dataSourceResult.setData(financialDocumentTypeDtos);
+        dataSourceResult.setTotal(list.getTotalElements());
+        return dataSourceResult;
     }
+
+    private FinancialDocumentTypeRequest setParameterFinancialDocumentType(List<DataSourceRequest.FilterDescriptor> filters) {
+        FinancialDocumentTypeRequest financialDocumentTypeRequest = new FinancialDocumentTypeRequest();
+        Map<String, Object> map = new HashMap<>();
+        for (DataSourceRequest.FilterDescriptor item : filters) {
+            switch (item.getField()) {
+
+                case "financialSystem.id":
+                    if (item.getValue() != null) {
+                        map.put("financialSystem", "financialSystem");
+                        financialDocumentTypeRequest.setParamMap(map);
+                        financialDocumentTypeRequest.setFinancialSystemId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        map.put("financialSystem", null);
+                        financialDocumentTypeRequest.setParamMap(map);
+                        financialDocumentTypeRequest.setFinancialSystemId(0L);
+                    }
+                    break;
+                case "id":
+                    if (item.getValue() != null) {
+                        map.put("idObject", "idObject");
+                        financialDocumentTypeRequest.setParamMap(map);
+                        financialDocumentTypeRequest.setId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        map.put("idObject", null);
+                        financialDocumentTypeRequest.setParamMap(map);
+                        financialDocumentTypeRequest.setId(0L);
+                    }
+                    break;
+
+            }
+        }
+        return financialDocumentTypeRequest;
+    }
+
 
     @Override
     public ResponseFinancialDocumentTypeDto save(FinancialDocumentTypeDto financialDocumentTypeDto) {
