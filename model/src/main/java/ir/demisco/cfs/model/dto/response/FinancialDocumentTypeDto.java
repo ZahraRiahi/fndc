@@ -126,7 +126,7 @@ public class FinancialDocumentTypeDto {
             return this;
         }
 
-        public Builder FinancialSystemDescription(String financialSystemDescription) {
+        public Builder financialSystemDescription(String financialSystemDescription) {
             financialDocumentTypeDto.setFinancialSystemDescription(financialSystemDescription);
             return this;
         }
