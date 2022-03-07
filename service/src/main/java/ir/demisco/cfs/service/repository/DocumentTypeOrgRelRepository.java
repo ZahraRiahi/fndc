@@ -12,4 +12,8 @@ public interface DocumentTypeOrgRelRepository extends JpaRepository<DocumentType
             "             AND INER_ORG_REL.ACTIVE_FLAG = 1 "
             , nativeQuery = true)
     Long getDocumentTypeOrgRelByOrganization(Long organizationId, Long financialDocumentTypeId);
+
+    @Query(value = "select t.id from fndc.document_type_org_rel t WHERE t.financial_document_type_id = :financialDocumentTypeId "
+            , nativeQuery = true)
+    Long findByFinancialDocumentTypeIdForDelete(Long financialDocumentTypeId);
 }

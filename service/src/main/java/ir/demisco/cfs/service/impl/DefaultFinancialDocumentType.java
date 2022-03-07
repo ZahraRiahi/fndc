@@ -6,10 +6,7 @@ import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeGetDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentTypeDto;
 import ir.demisco.cfs.model.entity.FinancialDocumentType;
 import ir.demisco.cfs.service.api.FinancialDocumentTypeService;
-import ir.demisco.cfs.service.repository.FinancialConfigRepository;
-import ir.demisco.cfs.service.repository.FinancialDocumentTypeRepository;
-import ir.demisco.cfs.service.repository.FinancialSystemRepository;
-import ir.demisco.cfs.service.repository.OrganizationRepository;
+import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -37,14 +34,16 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     private final OrganizationRepository organizationRepository;
     private final FinancialSystemRepository financialSystemRepository;
     private final FinancialConfigRepository financialConfigRepository;
+    private final DocumentTypeOrgRelRepository documentTypeOrgRelRepository;
 
-    public DefaultFinancialDocumentType(FinancialDocumentTypeRepository financialDocumentTypeRepository, GridFilterService gridFilterService, FinancialDocumentTypeProvider financialDocumentTypeProvider, OrganizationRepository organizationRepository, FinancialSystemRepository financialSystemRepository, FinancialConfigRepository financialConfigRepository) {
+    public DefaultFinancialDocumentType(FinancialDocumentTypeRepository financialDocumentTypeRepository, GridFilterService gridFilterService, FinancialDocumentTypeProvider financialDocumentTypeProvider, OrganizationRepository organizationRepository, FinancialSystemRepository financialSystemRepository, FinancialConfigRepository financialConfigRepository, DocumentTypeOrgRelRepository documentTypeOrgRelRepository) {
         this.financialDocumentTypeRepository = financialDocumentTypeRepository;
         this.gridFilterService = gridFilterService;
         this.financialDocumentTypeProvider = financialDocumentTypeProvider;
         this.organizationRepository = organizationRepository;
         this.financialSystemRepository = financialSystemRepository;
         this.financialConfigRepository = financialConfigRepository;
+        this.documentTypeOrgRelRepository = documentTypeOrgRelRepository;
     }
 
     @Override
@@ -80,14 +79,21 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
         if (documentTypeIdForDelete > 0) {
             throw new RuleException("fin.financialDocumentType.check.for.delete");
         } else {
-            financialDocumentTypeRepository.deleteById(financialDocumentTypeId);
-            return true;
+            Long documentTypeOrgRelForDelete = documentTypeOrgRelRepository.findByFinancialDocumentTypeIdForDelete(financialDocumentTypeId);
+            if (documentTypeOrgRelForDelete == null) {
+                throw new RuleException("fin.ruleException.notFoundId");
+            } else {
+                documentTypeOrgRelRepository.deleteById(documentTypeOrgRelForDelete);
+                financialDocumentTypeRepository.deleteById(financialDocumentTypeId);
+                return true;
+            }
         }
     }
 
     @Override
     @Transactional
-    public DataSourceResult getFinancialDocumentTypeOrganizationIdAndFinancialSystemId(DataSourceRequest dataSourceRequest) {
+    public DataSourceResult getFinancialDocumentTypeOrganizationIdAndFinancialSystemId(DataSourceRequest
+                                                                                               dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialDocumentTypeRequest param = setParameterFinancialDocumentType(filters);
         Map<String, Object> paramMap = param.getParamMap();
@@ -111,7 +117,8 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
         return dataSourceResult;
     }
 
-    private FinancialDocumentTypeRequest setParameterFinancialDocumentType(List<DataSourceRequest.FilterDescriptor> filters) {
+    private FinancialDocumentTypeRequest setParameterFinancialDocumentType
+            (List<DataSourceRequest.FilterDescriptor> filters) {
         FinancialDocumentTypeRequest financialDocumentTypeRequest = new FinancialDocumentTypeRequest();
         Map<String, Object> map = new HashMap<>();
         for (DataSourceRequest.FilterDescriptor item : filters) {
