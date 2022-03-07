@@ -59,11 +59,11 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
                 , SecurityHelper.getCurrentUser().getUserId(), financialSystem, financialDocumentTypeRequest.getFinancialSystemId())
 
                 .stream().map(objects -> FinancialDocumentTypeGetDto.builder()
-                          .id(Long.parseLong(objects[0] == null ? null : objects[0].toString()))
-                          .description(objects[1] == null ? null : objects[1].toString())
-                          .activeFlag(Integer.parseInt(objects[2].toString()) == 1)
-                          .disabled(Integer.parseInt(objects[3].toString()) == 1)
-                          .build()).collect(Collectors.toList());
+                        .id(Long.parseLong(objects[0] == null ? null : objects[0].toString()))
+                        .description(objects[1] == null ? null : objects[1].toString())
+                        .activeFlag(Integer.parseInt(objects[2].toString()) == 1)
+                        .disabled(Integer.parseInt(objects[3].toString()) == 1)
+                        .build()).collect(Collectors.toList());
     }
 
     @Override

@@ -43,7 +43,12 @@ public interface FinancialDocumentTypeRepository extends JpaRepository<Financial
             "                                                   :financialLedgerTypeId," +
             "                                                   :departmentId," +
             "                                                   :userId)) FNSC" +
-            "  WHERE FNDT.ORGANIZATION_ID = :organizationId " +
+            "  WHERE   EXISTS (SELECT 1" +
+            "          FROM fndc.DOCUMENT_TYPE_ORG_REL INER_ORG_REL" +
+            "         WHERE INER_ORG_REL.ORGANIZATION_ID = :organizationId" +
+            "           AND INER_ORG_REL.FINANCIAL_DOCUMENT_TYPE_ID =" +
+            "               FNDT.ID" +
+            "           AND INER_ORG_REL.ACTIVE_FLAG = 1) " +
 //            " and :isFlag is null or ((:searchStatusFlag=0 and FNDT.ACTIVE_FLAG =1) or (:searchStatusFlag=1)) " +
             " and (:financialSystem is null or FNDT.FINANCIAL_SYSTEM_ID =:financialSystemId )", nativeQuery = true)
     List<Object[]> findByOrganizationId(Long searchStatusFlag, Long organizationId, String activityCode, TypedParameterValue financialPeriodId, TypedParameterValue financialDepartmentId, TypedParameterValue financialLedgerTypeId, TypedParameterValue departmentId
