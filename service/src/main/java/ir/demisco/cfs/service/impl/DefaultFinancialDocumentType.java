@@ -85,16 +85,6 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
         }
     }
 
-//    @Override
-//    public DataSourceResult getFinancialDocumentTypeOrganizationIdAndFinancialSystemId(DataSourceRequest dataSourceRequest) {
-//        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-//        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor
-//                .create("organization", organizationId, DataSourceRequest.Operators.EQUALS));
-//        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("deletedDate", null, DataSourceRequest.Operators.IS_NULL));
-//        return gridFilterService.filter(dataSourceRequest, financialDocumentTypeProvider);
-//    }
-
-
     @Override
     @Transactional
     public DataSourceResult getFinancialDocumentTypeOrganizationIdAndFinancialSystemId(DataSourceRequest dataSourceRequest) {
