@@ -39,7 +39,7 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
             "   AND EXISTS (SELECT 1" +
             "           FROM fndc.FINANCIAL_DEP_ORG_REL INER_ORG_REL" +
             "          WHERE INER_ORG_REL.ORGANIZATION_ID = :organizationId " +
-            "           AND INER_ORG_REL.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId" +
+            "           AND INER_ORG_REL.FINANCIAL_DEPARTMENT_ID = FNDP.ID " +
             "            AND INER_ORG_REL.ACTIVE_FLAG = 1) "
             , nativeQuery = true)
     List<Object[]> getFinancialDocumentItemList(Long organizationId, Long organizationIdPKG,
@@ -48,5 +48,5 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
                                                 TypedParameterValue financialDocumentTypeId,
                                                 TypedParameterValue creatorUserId,
                                                 Long departmentId,
-                                                Long userId,Long financialDepartmentId);
+                                                Long userId);
 }
