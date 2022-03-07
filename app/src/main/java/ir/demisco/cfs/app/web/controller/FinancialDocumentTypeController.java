@@ -4,6 +4,7 @@ import ir.demisco.cfs.model.dto.request.FinancialDocumentTypeRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeGetDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentTypeDto;
+import ir.demisco.cfs.service.api.DocumentTypeOrgRelService;
 import ir.demisco.cfs.service.api.FinancialDocumentTypeService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -16,10 +17,11 @@ import java.util.List;
 @RestController
 @RequestMapping("/api-financialDocumentType")
 public class FinancialDocumentTypeController {
-
+    private final DocumentTypeOrgRelService documentTypeOrgRelService;
     private final FinancialDocumentTypeService financialDocumentTypeService;
 
-    public FinancialDocumentTypeController(FinancialDocumentTypeService financialDocumentTypeService) {
+    public FinancialDocumentTypeController(DocumentTypeOrgRelService documentTypeOrgRelService, FinancialDocumentTypeService financialDocumentTypeService) {
+        this.documentTypeOrgRelService = documentTypeOrgRelService;
         this.financialDocumentTypeService = financialDocumentTypeService;
     }
 
@@ -47,9 +49,15 @@ public class FinancialDocumentTypeController {
     @PostMapping("/save")
     public ResponseEntity<ResponseFinancialDocumentTypeDto> financialDocumentTypeSave(@RequestBody FinancialDocumentTypeDto financialDocumentTypeDto) {
         if (financialDocumentTypeDto.getId() == null) {
-            return ResponseEntity.ok(financialDocumentTypeService.save(financialDocumentTypeDto));
+            ResponseFinancialDocumentTypeDto responseFinancialDocumentTypeDto = financialDocumentTypeService.save(financialDocumentTypeDto);
+            documentTypeOrgRelService.save(responseFinancialDocumentTypeDto.getId(), SecurityHelper.getCurrentUser().getOrganizationId());
+            financialDocumentTypeDto.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+            return ResponseEntity.ok(responseFinancialDocumentTypeDto);
         } else {
-            return ResponseEntity.ok(financialDocumentTypeService.update(financialDocumentTypeDto));
+            ResponseFinancialDocumentTypeDto financialCodingTypeDtoUpdate = financialDocumentTypeService.update(financialDocumentTypeDto);
+            documentTypeOrgRelService.save(financialCodingTypeDtoUpdate.getId(), SecurityHelper.getCurrentUser().getOrganizationId());
+            financialDocumentTypeDto.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+            return ResponseEntity.ok(financialCodingTypeDtoUpdate);
         }
     }
 }
