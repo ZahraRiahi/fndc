@@ -80,15 +80,14 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
             throw new RuleException("fin.financialDocumentType.check.for.delete");
         } else {
             Long documentTypeOrgRelForDelete = documentTypeOrgRelRepository.findByFinancialDocumentTypeIdForDelete(financialDocumentTypeId);
-            if (documentTypeOrgRelForDelete == null) {
-                throw new RuleException("fin.ruleException.notFoundId");
-            } else {
+            if (documentTypeOrgRelForDelete != null) {
                 documentTypeOrgRelRepository.deleteById(documentTypeOrgRelForDelete);
-                financialDocumentTypeRepository.deleteById(financialDocumentTypeId);
-                return true;
             }
+            financialDocumentTypeRepository.deleteById(financialDocumentTypeId);
+            return true;
         }
     }
+
 
     @Override
     @Transactional
