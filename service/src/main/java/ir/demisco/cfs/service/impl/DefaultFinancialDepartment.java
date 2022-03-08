@@ -47,14 +47,14 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
         // comment jira FIN-1126 organ pakage -1
         Long organizationIdPKG = -1L;
         List<Object[]> financialDocumentItemList = departmentRepository.getFinancialDocumentItemList(
-                param.getOrganizationId()
+               SecurityHelper.getCurrentUser().getOrganizationId()
                 , organizationIdPKG
                 , param.getActivityCode()
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialPeriodId())
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getDocumentTypeId())
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getCreatorUserId())
                 , param.getDepartmentId()
-                , param.getUserId(), param.getFinancialDepartmentId());
+                , param.getUserId());
         List<FinancialDepartmentResponse> financialDepartmentResponses = financialDocumentItemList.stream().map(item ->
                 FinancialDepartmentResponse.builder()
                         .departmentId(Long.parseLong(item[0].toString()))
@@ -63,7 +63,6 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
                         .financialLedgerTypeId(Long.parseLong(item[3] == null ? "0" : item[3].toString()))
                         .ledgerTypeDescription(item[4] == null ? "" : item[4].toString())
                         .financialDepartmentLedgerId(Long.parseLong(item[5] == null ? "0" : item[5].toString()))
-//                        .disabled(Integer.parseInt(item[6].toString()) == 1)
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialDepartmentResponses.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
@@ -83,8 +82,14 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
                     }
                     break;
                 case "financialDepartmentId":
-                    financialSecurityFilterRequest.setFinancialDepartmentId(Long.parseLong(item.getValue().toString()));
+                    if (item.getValue() != null) {
+                        financialSecurityFilterRequest.setFinancialDepartmentId(Long.parseLong(item.getValue().toString()));
+                    } else {
+                        financialSecurityFilterRequest.setFinancialDepartmentId(null);
+                    }
                     break;
+
+
                 case "financialLedgerId":
                     if (item.getValue() != null) {
                         financialSecurityFilterRequest.setFinancialLedgerId(Long.parseLong(item.getValue().toString()));
@@ -120,6 +125,7 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
                         financialSecurityFilterRequest.setActivityCode(null);
                     }
                     break;
+
                 case "inputFromConfigFlag":
                     if (item.getValue() != null) {
                         financialSecurityFilterRequest.setInputFromConfigFlag((Boolean) item.getValue());
