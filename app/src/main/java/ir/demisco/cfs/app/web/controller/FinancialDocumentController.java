@@ -2,6 +2,8 @@ package ir.demisco.cfs.app.web.controller;
 
 
 import ir.demisco.cfs.model.dto.request.FinancialDocumentTransferRequest;
+import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
+import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.SaveFinancialDocumentService;
@@ -123,7 +125,7 @@ public class FinancialDocumentController {
 
     @PostMapping("/TransferDocument")
     public ResponseEntity<FinancialDocumentTransferOutputResponse> transferDocument(@RequestBody FinancialDocumentTransferRequest financialDocumentTransferRequest) {
-        Long organizationId =SecurityHelper.getCurrentUser().getOrganizationId();
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         financialDocumentTransferRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(transferFinancialDocumentService.transferDocument(financialDocumentTransferRequest));
     }
@@ -142,5 +144,10 @@ public class FinancialDocumentController {
     @PostMapping("/GetStructure")
     public ResponseEntity<List<ResponseFinancialDocumentStructureDto>> responseDocumentByStructure(@RequestBody RequestDocumentStructureDto requestDocumentStructureDto) {
         return ResponseEntity.ok(financialDocumentService.getDocumentStructure(requestDocumentStructureDto));
+    }
+
+    @PostMapping("/GetPeriodLedgerStatus")
+    public ResponseEntity<FinancialPeriodStatusResponse> responseEntity(@RequestBody FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest) {
+        return ResponseEntity.ok(financialDocumentService.getFinancialPeriodStatus(financialPeriodLedgerStatusRequest));
     }
 }

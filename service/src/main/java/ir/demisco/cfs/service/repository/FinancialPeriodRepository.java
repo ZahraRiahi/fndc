@@ -1474,7 +1474,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
                                                          Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId,
                                                          String fromNumber, Object centricAccount1, Long centricAccountId1,
                                                          Object centricAccount2, Long centricAccountId2, Object referenceNumberObject,
-                                                         Long referenceNumber,Object  financialAccount,Long financialAccountId, LocalDateTime toDate, String toNumber,
+                                                         Long referenceNumber, Object financialAccount, Long financialAccountId, LocalDateTime toDate, String toNumber,
                                                          Pageable pageable);
 
 
@@ -1674,4 +1674,55 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             , nativeQuery = true)
     Long findFinancialPeriodByFinancialPeriodIdAndDocumentDate(Long financialPeriodId, LocalDateTime documentDate);
 
+    @Query(value = " SELECT " +
+            "       NVL((SELECT FLPS.CODE" +
+            "             FROM FNDC.FINANCIAL_LEDGER_PERIOD FNLP" +
+            "            INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD_STATUS FLPS" +
+            "               ON FNLP.FIN_LEDGER_PERIOD_STAT_ID = FLPS.ID" +
+            "            WHERE FNLP.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "              AND FNLP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId)," +
+            "           0) AS CODE" +
+            "  FROM DUAL "
+            , nativeQuery = true)
+    Long findFinancialPeriodByIdAndLedgerType(Long financialPeriodId, Long financialLedgerTypeId);
+
+    @Query(value = " SELECT  NVL((SELECT  FLMS.CODE" +
+            "             FROM FNDC.FINANCIAL_LEDGER_MONTH FNLM" +
+            "            INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH_STATUS FLMS" +
+            "               ON FNLM.FIN_LEDGER_MONTH_STAT_ID = FLMS.ID" +
+            "            INNER JOIN FNPR.FINANCIAL_MONTH FNMN" +
+            "               ON FNMN.ID = FNLM.FINANCIAL_MONTH_ID" +
+            "            INNER JOIN FNPR.FINANCIAL_PERIOD FNP" +
+            "               ON FNP.ID = FNMN.FINANCIAL_PERIOD_ID" +
+            "            INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FNPT" +
+            "               ON FNPT.ID = FNP.FINANCIAL_PERIOD_TYPE_ID" +
+            "            INNER JOIN FNPR.FINANCIAL_MONTH_TYPE FNMT" +
+            "               ON FNMT.ID = FNMN.FINANCIAL_MONTH_TYPE_ID" +
+            "            WHERE FNMN.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "              AND FNLM.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
+            "              AND (CASE CALENDAR_TYPE_ID" +
+            "                    WHEN 2 THEN" +
+            "          EXTRACT(MONTH FROM " +
+            "                  to_date(:date, 'mm/dd/yyyy')) " +
+            "         WHEN 1 THEN " +
+            "          TO_NUMBER(SUBSTR(TO_CHAR(to_date(:date, 'mm/dd/yyyy')," +
+            "                                   'yyyy/mm/dd'," +
+            "                                   'NLS_CALENDAR=persian')," +
+            "                           6," +
+            "                           2))" +
+            "                  END = CASE" +
+            "                    WHEN FNPT.CURRENT_YEAR_FLAG = 1 THEN" +
+            "                     FNPT.FROM_MONTH + FNMT.MONTH_NUMBER - 1" +
+            "                    ELSE" +
+            "                     CASE" +
+            "                       WHEN FNPT.FROM_MONTH + FNMT.MONTH_NUMBER - 1 > 12 THEN" +
+            "                        FNPT.FROM_MONTH + FNMT.MONTH_NUMBER - 13" +
+            "                       ELSE" +
+            "                        FNPT.FROM_MONTH + FNMT.MONTH_NUMBER - 1" +
+            "                     END" +
+            "                  END AND FNMN.FINANCIAL_MONTH_STATUS_ID = 1))," +
+            "           0) AS CODE" +
+            "  FROM DUAL"
+            , nativeQuery = true)
+    Long findFinancialPeriodByIdAndLedgerTypeAndDate(Long financialPeriodId, Long financialLedgerTypeId, String date);
 }
