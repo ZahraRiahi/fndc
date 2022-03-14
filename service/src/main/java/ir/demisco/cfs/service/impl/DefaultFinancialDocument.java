@@ -2,9 +2,7 @@ package ir.demisco.cfs.service.impl;
 
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
-import ir.demisco.cfs.model.dto.request.ControlFinancialAccountNatureTypeInputRequest;
-import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
-import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
+import ir.demisco.cfs.model.dto.request.*;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cfs.model.entity.*;
 import ir.demisco.cfs.service.api.ControlFinancialAccountNatureTypeService;
@@ -31,6 +29,7 @@ import java.math.BigDecimal;
 import java.text.ParsePosition;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
@@ -58,12 +57,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService;
     private final FinancialPeriodService financialPeriodService;
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
+    private final FinancialPeriodRepository financialPeriodRepository;
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
                                     FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                     FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
-                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService) {
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialPeriodRepository financialPeriodRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -80,6 +80,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.controlFinancialAccountNatureTypeService = controlFinancialAccountNatureTypeService;
         this.financialPeriodService = financialPeriodService;
         this.financialDocumentSecurityService = financialDocumentSecurityService;
+        this.financialPeriodRepository = financialPeriodRepository;
     }
 
 
@@ -1021,5 +1022,19 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         ).collect(Collectors.toList());
     }
 
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public FinancialPeriodStatusResponse getFinancialPeriodStatus(FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest) {
+        if (financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() == null && financialPeriodLedgerStatusRequest.getFinancialPeriodId() == null
+                && financialPeriodLedgerStatusRequest.getDate() == null) {
+            throw new RuleException("fin.financialPeriod.getStatus");
+        }
+        FinancialPeriodStatusResponse financialPeriodStatusResponses = new FinancialPeriodStatusResponse();
+        Long periodStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerType(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId());
+        Long monthStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerTypeAndDate(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId(), financialPeriodLedgerStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
 
+        financialPeriodStatusResponses.setPeriodStatus(periodStatus);
+        financialPeriodStatusResponses.setMonthStatus(monthStatus);
+        return financialPeriodStatusResponses;
+    }
 }

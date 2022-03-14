@@ -1,5 +1,7 @@
 package ir.demisco.cfs.service.api;
 
+import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
+import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
 import ir.demisco.cfs.model.dto.response.*;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -33,4 +35,7 @@ public interface FinancialDocumentService {
     DataSourceResult documentByStructure(DataSourceRequest dataSourceRequest);
 
     List<ResponseFinancialDocumentStructureDto> getDocumentStructure(RequestDocumentStructureDto requestDocumentStructureDto);
+
+    FinancialPeriodStatusResponse getFinancialPeriodStatus(FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest);
+
 }
