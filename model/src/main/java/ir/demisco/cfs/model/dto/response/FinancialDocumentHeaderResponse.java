@@ -20,6 +20,8 @@ public class FinancialDocumentHeaderResponse {
     private String financialPeriodDescription;
     private String financialDocumentStatusCode;
     private String financialDocumentStatusDescription;
+    private Long creatorId;
+
 
     public Long getId() {
         return id;
@@ -157,6 +159,14 @@ public class FinancialDocumentHeaderResponse {
         this.financialDocumentStatusDescription = financialDocumentStatusDescription;
     }
 
+    public Long getCreatorId() {
+        return creatorId;
+    }
+
+    public void setCreatorId(Long creatorId) {
+        this.creatorId = creatorId;
+    }
+
     public static FinancialDocumentHeaderResponse.Builder builder() {
         return new FinancialDocumentHeaderResponse.Builder();
     }
@@ -256,6 +266,12 @@ public class FinancialDocumentHeaderResponse {
             financialDocumentHeaderResponse.setFinancialDocumentStatusDescription(financialDocumentStatusDescription);
             return this;
         }
+
+        public Builder creatorId(Long creatorId) {
+            financialDocumentHeaderResponse.setCreatorId(creatorId);
+            return this;
+        }
+
         public FinancialDocumentHeaderResponse build() {
             return financialDocumentHeaderResponse;
         }

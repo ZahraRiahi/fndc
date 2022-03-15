@@ -620,6 +620,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .centricAccountDescription5(financialDocumentItem[20] == null ? null : financialDocumentItem[20].toString())
                 .centricAccountId6(financialDocumentItem[21] == null ? null : Long.parseLong(financialDocumentItem[21].toString()))
                 .centricAccountDescription6(financialDocumentItem[22] == null ? null : financialDocumentItem[22].toString())
+                .creatorId(financialDocumentItem[23] == null ? null : Long.parseLong(financialDocumentItem[23].toString()))
                 .build();
     }
 

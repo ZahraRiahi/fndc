@@ -39,6 +39,7 @@ public class DefaultFinancialDocumentHeader implements FinancialDocumentHeaderSe
                 .financialPeriodDescription(financialDocument.getFinancialPeriod() == null ? "" : financialDocument.getFinancialPeriod().getDescription())
                 .financialDocumentStatusCode(financialDocument.getFinancialDocumentStatus() == null ? "" : financialDocument.getFinancialDocumentStatus().getCode())
                 .financialDocumentStatusDescription(financialDocument.getFinancialDocumentStatus() == null ? "" : financialDocument.getFinancialDocumentStatus().getName())
+                .creatorId(financialDocument.getCreator().getId())
                 .build();
         return financialDocumentHeaderResponse;
     }
