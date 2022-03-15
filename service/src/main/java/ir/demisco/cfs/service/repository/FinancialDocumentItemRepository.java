@@ -414,7 +414,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       FNDI.CENTRIC_ACCOUNT_ID_5," +
             "       CNAC5.NAME  as CENTRIC_ACCOUNT_DESCRIPTION_5," +
             "       FNDI.CENTRIC_ACCOUNT_ID_6," +
-            "       CNAC6.NAME as CENTRIC_ACCOUNT_DESCRIPTION_6 " +
+            "       CNAC6.NAME as CENTRIC_ACCOUNT_DESCRIPTION_6," +
+            " FNDI.CREATOR_ID " +
             "  FROM FNDC.FINANCIAL_DOCUMENT_ITEM FNDI" +
             " INNER JOIN FNAC.FINANCIAL_ACCOUNT FNC" +
             "    ON FNC.ID = FNDI.FINANCIAL_ACCOUNT_ID" +
