@@ -11,7 +11,6 @@ import ir.demisco.cfs.model.entity.FinancialCodingType;
 import ir.demisco.cfs.model.entity.FinancialLedgerType;
 import ir.demisco.cfs.model.entity.FinancialNumberingType;
 import ir.demisco.cfs.model.entity.LedgerNumberingType;
-import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.api.FinancialLedgerTypeService;
 import ir.demisco.cfs.service.repository.*;
 import ir.demisco.cloud.basic.model.entity.org.Organization;
@@ -106,7 +105,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
             throw new RuleException("fin.security.check.input.from.config.flag");
         }
 
-        List<Object[]> list = financialLedgerTypeRepository.financialLedgerTypeList(param.getOrganizationId(),-1L
+        List<Object[]> list = financialLedgerTypeRepository.financialLedgerTypeList(param.getOrganizationId(), -1L
                 , param.getActivityCode()
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialPeriodId())
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getDocumentTypeId())
@@ -269,12 +268,6 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         financialLedgerTypeNew.setCode(financialLedgerTypeCodeByOrganizationId);
         FinancialCodingType financialCodingType = financialCodingTypeRepository.findById(financialLedgerTypeRequest.getFinancialCodingTypeId()).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidCodingType"));
         financialLedgerTypeNew.setFinancialCodingType(financialCodingType);
-//        Optional<FinancialCodingType> financialCodingType = financialCodingTypeRepository.findById(financialCodingTypeId);
-//        if (financialCodingType.isPresent()) {
-//            financialLedgerTypeNew.setFinancialCodingType(financialCodingType.get());
-//        } else {
-//            throw new RuleException("fin.financialLedgerType.notValidCodingType");
-//        }
         Optional<Organization> organization = organizationRepository.findById(financialLedgerTypeRequest.getOrganizationId());
         financialLedgerTypeNew.setOrganization(organization.get());
         financialLedgerTypeNew.setActiveFlag(financialLedgerTypeRequest.getActiveFlag());
@@ -308,7 +301,10 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     private Boolean saveLedgerNumberingType(List<Long> financialNumberingListRequest, FinancialLedgerTypeRequest financialLedgerTypeRequest, FinancialLedgerType financialLedgerType) {
         Long financialLedgerTypeIdRequest = financialLedgerTypeRequest.getFinancialLedgerTypeId();
         for (Long financialNumberingTypeId : financialNumberingListRequest) {
-            FinancialLedgerType financialLedgerTypeFromInsert = financialLedgerTypeRepository.findById(financialLedgerType.getId()).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidNumberingType"));
+            FinancialLedgerType financialLedgerTypeFromInsert = null;
+            if (financialLedgerType.getId() != null) {
+                financialLedgerTypeFromInsert = financialLedgerTypeRepository.findById(financialLedgerType.getId()).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidNumberingType"));
+            }
             FinancialLedgerType financialLedgerTypeFromUpdate = financialLedgerTypeRepository.findById(financialLedgerTypeIdRequest).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidNumberingType"));
             LedgerNumberingType ledgerNumberingTypeNew = new LedgerNumberingType();
             FinancialNumberingType financialNumberingType = financialNumberingTypeRepository.findById(financialNumberingTypeId).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidNumberingType"));
