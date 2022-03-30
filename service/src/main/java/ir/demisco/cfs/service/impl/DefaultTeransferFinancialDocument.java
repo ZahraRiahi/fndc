@@ -431,7 +431,6 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
          date  =financialDocumentTransferRequest.getDate();
         if (financialDocumentTransferRequest.getTransferType() == 2 || financialDocumentTransferRequest.getTransferType() == 4 || financialDocumentTransferRequest.getTransferType() == 6) {
             financialPeriodStatusRequest.setFinancialDocumentId(financialDocumentTransferRequest.getId());
-            financialPeriodStatusRequest.setDate(date);
             FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
             if (financialPeriodStatus.getPeriodStatus() == null || financialPeriodStatus.getMonthStatus() == null) {
                 throw new RuleException("دوره مالی و ماه عملیاتی سند مبدا میبایست در وضعیت باز باشند");
