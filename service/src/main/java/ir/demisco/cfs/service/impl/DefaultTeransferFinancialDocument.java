@@ -33,6 +33,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
     private final FinancialPeriodRepository financialPeriodRepository;
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
     private final FinancialDocumentHeaderService financialDocumentHeaderService;
+    public LocalDateTime date;
 
     public DefaultTeransferFinancialDocument(FinancialDocumentService financialDocumentService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentItemRepository financialDocumentItemRepository,
                                              FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
@@ -427,8 +428,10 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
                     .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
             financialDocumentUpdate.setFinancialDocumentStatus(financialDocumentStatusRepository.getOne(1L));
         }
+         date  =financialDocumentTransferRequest.getDate();
         if (financialDocumentTransferRequest.getTransferType() == 2 || financialDocumentTransferRequest.getTransferType() == 4 || financialDocumentTransferRequest.getTransferType() == 6) {
             financialPeriodStatusRequest.setFinancialDocumentId(financialDocumentTransferRequest.getId());
+            financialPeriodStatusRequest.setDate(date);
             FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
             if (financialPeriodStatus.getPeriodStatus() == null || financialPeriodStatus.getMonthStatus() == null) {
                 throw new RuleException("دوره مالی و ماه عملیاتی سند مبدا میبایست در وضعیت باز باشند");
