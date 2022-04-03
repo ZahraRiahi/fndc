@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.impl;
 
+import ir.demisco.cfs.model.dto.request.FinancialDocumentTransferRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodResponse;
@@ -40,6 +41,7 @@ public class DefaultFinancialPeriod implements FinancialPeriodService {
             throw new RuleException("fin.financialPeriod.getStatus");
         }
         FinancialPeriodStatusResponse financialPeriodStatusResponses = new FinancialPeriodStatusResponse();
+
         if (financialPeriodStatusRequest.getFinancialDocumentId() != null) {
             List<Object[]> financialDocument = financialDocumentRepository.financialDocumentById(financialPeriodStatusRequest.getFinancialDocumentId());
             financialPeriodStatusRequest.setDate(financialDocument.get(0)[1] == null ? financialPeriodStatusRequest.getDate() : LocalDateTime.parse(financialDocument.get(0)[1].toString().substring(0,10) + "T00:00"));
