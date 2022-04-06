@@ -384,9 +384,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest = setParameterCentricTurnOver(filters);
         getFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentCentricTurnOverRequest);
-//        if (financialDocumentCentricTurnOverRequest.getFinancialAccountId() == null) {
-//            throw new RuleException("fin.financialAccount.insertFinancialAccount");
-//        }
         if (financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId() == null) {
             throw new RuleException("fin.financialAccount.insertDocumentNumberingType");
         }
@@ -412,35 +409,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialDocumentCentricTurnOverRequest.getToDate(),
                 financialDocumentCentricTurnOverRequest.getToNumber(),
                 pageable);
-
-//        List<FinancialDocumentCentricTurnOverResponse> financialDocumentCentricTurnOverResponse = list.stream().map(item ->
-//                FinancialDocumentCentricTurnOverResponse.builder()
-//                        .accountId(Long.parseLong(item[0] == null ? null : item[0].toString()))
-//                        .accountCode(item[1] == null ? "" : item[1].toString())
-//                        .accountDescription(item[2] == null ? "" : item[2].toString())
-//                        .centricAccountId1(Long.parseLong(item[3] == null ? "0" : item[3].toString()))
-//                        .centricAccountId2(Long.parseLong(item[4] == null ? "0" : item[4].toString()))
-//                        .centricAccountId3(Long.parseLong(item[5] == null ? "0" : item[5].toString()))
-//                        .centricAccountId4(Long.parseLong(item[6] == null ? "0" : item[6].toString()))
-//                        .centricAccountId5(Long.parseLong(item[7] == null ? "0" : item[7].toString()))
-//                        .centricAccountId6(Long.parseLong(item[8] == null ? "0" : item[8].toString()))
-//                        .centricAccountDes1(item[9] == null ? "" : item[9].toString())
-//                        .centricAccountDes2(item[10] == null ? "" : item[10].toString())
-//                        .centricAccountDes3(item[11] == null ? "" : item[11].toString())
-//                        .centricAccountDes4(item[12] == null ? "" : item[12].toString())
-//                        .centricAccountDes5(item[13] == null ? "" : item[13].toString())
-//                        .centricAccountDes6(item[14] == null ? "" : item[14].toString())
-//                        .debitAmount(item[15] == null ? null : ((BigDecimal) item[15]).doubleValue())
-//                        .creditAmount(item[16] == null ? null : ((BigDecimal) item[16]).doubleValue())
-//                        .remainDebit(item[17] == null ? null : ((BigDecimal) item[17]).doubleValue())
-//                        .remainCredit(item[18] == null ? null : ((BigDecimal) item[18]).doubleValue())
-//                        .build()).collect(Collectors.toList());
-//        DataSourceResult dataSourceResult = new DataSourceResult();
-//        dataSourceResult.setData(financialDocumentCentricTurnOverResponse);
-//        dataSourceResult.setTotal(list.getTotalElements());
-//        return dataSourceResult;
-
-
         List<FinancialAccountCentricTurnOverOutputResponse> financialAccountCentricTurnOverOutputResponses = new ArrayList<>();
         List<FinancialAccountCentricTurnOverRecordsResponse> recordsResponseList = new ArrayList<>();
         FinancialAccountCentricTurnOverOutputResponse response = new FinancialAccountCentricTurnOverOutputResponse();
@@ -676,21 +644,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             }
             length = financialAccountBalanceRequest.getFromFinancialAccountCode().length();
         }
-
-
         getFinancialDocumentByNumberingTypeAndFromNumberBalance(financialAccountBalanceRequest);
-//        if (financialAccountBalanceRequest.getFinancialAccountId() == null) {
-//            throw new RuleException("لطفا شناسه ی حساب مالی را وارد نمایید.");
-//        }
         if (financialAccountBalanceRequest.getDocumentNumberingTypeId() == null) {
             throw new RuleException("fin.financialAccount.insertDocumentNumberingType");
         }
-//        if (financialAccountBalanceRequest.getSummarizingType() == null) {
-//            throw new RuleException("لطفا نوع جمع بندی را وارد نمایید.");
-//        }
-//        if (financialAccountBalanceRequest.getOrganizationId() == null) {
-//            throw new RuleException("fin.financialAccount.insertOrganization");
-//        }
+
         if (financialAccountBalanceRequest.getDateFilterFlg() == null) {
             throw new RuleException("fin.financialAccount.selectDateFilterFlg");
         }

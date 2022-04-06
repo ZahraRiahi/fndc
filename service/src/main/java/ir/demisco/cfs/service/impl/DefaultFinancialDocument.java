@@ -131,7 +131,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
         Map<String, Object> paramMap = paramSearch.getParamMap();
-//        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip() / (dataSourceRequest.getTake() / 2)  , dataSourceRequest.getTake() + dataSourceRequest.getSkip());
         List<Object[]> list = financialDocumentRepository.getFinancialDocumentList(SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getStartDate(),
                 paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
                 paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
@@ -293,19 +292,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         responseFinancialDocumentDto.setDocumentUserId(0L);
                     }
                     break;
-
-//                case "priceType.id":
-//                    if (item.getValue() != null) {
-//                        map.put("priceType", "priceType");
-//                        responseFinancialDocumentDto.setParamMap(map);
-//                        responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
-//                    } else {
-//                        map.put("priceType", null);
-//                        responseFinancialDocumentDto.setParamMap(map);
-//                        responseFinancialDocumentDto.setPriceTypeId(0L);
-//                    }
-//                    break;
-
                 case "fromPriceAmount":
                     if (item.getValue() != null) {
                         map.put("fromPrice", "fromPrice");
@@ -409,7 +395,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 responseFinancialDocumentSetStatusDto.setErrorFoundFlag(true);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(responseFinancialDocumentSetStatusDto);
             }
-//            return ResponseEntity.status(HttpStatus.CONFLICT).body(responseFinancialDocumentSetStatusDto);
         } else {
 
             financialDocument.setFinancialDocumentStatus(financialDocumentStatus);
@@ -418,7 +403,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             return ResponseEntity.ok(responseFinancialDocumentSetStatusDto);
         }
 
-//        return responseFinancialDocumentSetStatusDto;
     }
 
     private List<FinancialDocumentErrorDto> validationSetStatus(FinancialDocument financialDocument) {
@@ -508,22 +492,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     equalCurrency.setMessage("نوع ارز انتخاب شده در ردیفهای ارزی سند ، با نوع ارز یکسان نمیباشد");
                     financialDocumentErrorDtoList.add(equalCurrency);
                 }
-//                List<AccountDefaultValue> accountDefaultValueList = accountDefaultValueRepository.getAccountDefaultValueByDocumentItemId(documentItem.getId());
-//                accountDefaultValueList.forEach(defaultValue -> {
-//                    if ((documentItem.getCentricAccountId1() != defaultValue.getCentricAccount()) ||
-//                            (documentItem.getCentricAccountId2() != defaultValue.getCentricAccount()) ||
-//                            (documentItem.getCentricAccountId3() != defaultValue.getCentricAccount()) ||
-//                            (documentItem.getCentricAccountId4() != defaultValue.getCentricAccount()) ||
-//                            (documentItem.getCentricAccountId5() != defaultValue.getCentricAccount()) ||
-//                            (documentItem.getCentricAccountId6() != defaultValue.getCentricAccount())) {
-//                        FinancialDocumentErrorDto centricAccount = new FinancialDocumentErrorDto();
-//                        centricAccount.setFinancialDocumentId(financialDocument.getId());
-//                        centricAccount.setFinancialDocumentItemId(documentItem.getId());
-//                        centricAccount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-//                        centricAccount.setMessage("کد / کدهای تمرکز با تمرکز های حساب ، همخوانی ندارد");
-//                        financialDocumentErrorDtoList.add(centricAccount);
-//                    }
-//                });
 
             });
         }
