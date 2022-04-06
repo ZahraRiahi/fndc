@@ -35,10 +35,7 @@ public class DefaultFinancialPeriod implements FinancialPeriodService {
     @Override
     @Transactional
     public FinancialPeriodStatusResponse getFinancialPeriodStatus(FinancialPeriodStatusRequest financialPeriodStatusRequest) {
-        if (financialPeriodStatusRequest.getFinancialDocumentId() == null && financialPeriodStatusRequest.getFinancialPeriodId() == null
-                && financialPeriodStatusRequest.getDate() == null && financialPeriodStatusRequest.getOrganizationId() == null) {
-            throw new RuleException("fin.financialPeriod.getStatus");
-        }
+        checkFinancialPeriodStatus(financialPeriodStatusRequest);
         FinancialPeriodStatusResponse financialPeriodStatusResponses = new FinancialPeriodStatusResponse();
 
         if (financialPeriodStatusRequest.getFinancialDocumentId() != null) {
@@ -62,6 +59,8 @@ public class DefaultFinancialPeriod implements FinancialPeriodService {
                 financialPeriodStatusResponses.setPeriodStatus(0L);
                 return financialPeriodStatusResponses;
             }
+        }else{
+            throw new RuleException("fin.allMessage");
         }
         Long periodStatus = financialPeriodRepository.findFinancialPeriodById(financialPeriodStatusRequest.getFinancialPeriodId());
         Long monthStatus = financialPeriodRepository.findFinancialPeriodByFinancialPeriodIdAndDate(financialPeriodStatusRequest.getFinancialPeriodId(), financialPeriodStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
@@ -69,6 +68,12 @@ public class DefaultFinancialPeriod implements FinancialPeriodService {
         financialPeriodStatusResponses.setPeriodStatus(periodStatus);
         financialPeriodStatusResponses.setMonthStatus(monthStatus);
         return financialPeriodStatusResponses;
+    }
+    private void checkFinancialPeriodStatus(FinancialPeriodStatusRequest financialPeriodStatusRequest) {
+        if (financialPeriodStatusRequest.getFinancialDocumentId() == null && financialPeriodStatusRequest.getFinancialPeriodId() == null
+                && financialPeriodStatusRequest.getDate() == null && financialPeriodStatusRequest.getOrganizationId() == null) {
+            throw new RuleException("fin.financialPeriod.getStatus");
+        }
     }
 
     @Override

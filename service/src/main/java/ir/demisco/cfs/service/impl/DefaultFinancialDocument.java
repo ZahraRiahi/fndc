@@ -336,6 +336,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         responseFinancialDocumentDto.setFinancialDocumentTypeId(0L);
                     }
                     break;
+                default:
+
+                    break;
             }
         }
         return responseFinancialDocumentDto;
@@ -1009,6 +1012,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     break;
                 case "financialStructure.id":
                     requestDocumentStructureDto.setFinancialStructureId(Long.parseLong(item.getValue().toString()));
+                    break;
+                default:
+
                     break;
             }
         }

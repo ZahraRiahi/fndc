@@ -44,7 +44,7 @@ public class DefaultFinancialNumberingType implements FinancialNumberingTypeServ
             List<Object[]> financialNumberingTypeList = financialNumberingTypeRepository.findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(SecurityHelper.getCurrentUser().getOrganizationId(), financialNumberingTypeRequest.getFromDate(), financialNumberingTypeRequest.getToDate(), SecurityHelper.getCurrentUser().getUserId());
 
             return financialNumberingTypeList.stream().map(e -> FinancialNumberingTypeOutputResponse.builder().id(Long.parseLong(e[0].toString()))
-                    .description(e[1] == null ? "" : e[1].toString())
+                    .description(gatItemForString(e, 1))
                     .fromCode(e[3] == null ? "" : e[3].toString())
                     .toCode(e[4] == null ? "" : e[4].toString())
                     .serialLength(Long.parseLong(e[2] == null ? null : e[2].toString()))
@@ -52,7 +52,9 @@ public class DefaultFinancialNumberingType implements FinancialNumberingTypeServ
         }
 
     }
-
+    private String gatItemForString(Object[] e, int i) {
+        return e[i] == null ? null : e[i].toString();
+    }
     @Override
     public DataSourceResult getNumberingType(DataSourceRequest dataSourceRequest) {
         dataSourceRequest.getFilter().setLogic("and");

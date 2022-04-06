@@ -1,6 +1,7 @@
 package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.FinancialLedgerTypeParameterDto;
+import ir.demisco.cfs.model.dto.request.FinancialDocumentCentricTurnOverRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerTypeRequest;
 import ir.demisco.cfs.model.dto.request.FinancialSecurityFilterRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerDto;
@@ -144,13 +145,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
                 case "id":
-                    if (item.getValue() != null) {
-                        financialLedgerTypeParameterDto.setFinancialLedgerType("setFinancialLedgerType");
-                        financialLedgerTypeParameterDto.setFinancialLedgerTypeId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        financialLedgerTypeParameterDto.setFinancialLedgerType(null);
-                        financialLedgerTypeParameterDto.setFinancialLedgerTypeId(0L);
-                    }
+                    checkIdSet(financialLedgerTypeParameterDto, item);
                     break;
                 case "financialCodingTypeId":
                     if (item.getValue() != null) {
@@ -217,9 +212,22 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                         financialLedgerTypeParameterDto.setInputFromConfigFlag(null);
                     }
                     break;
+                default:
+
+                    break;
             }
         }
         return financialLedgerTypeParameterDto;
+    }
+
+    private void checkIdSet(FinancialLedgerTypeParameterDto financialLedgerTypeParameterDto, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialLedgerTypeParameterDto.setFinancialLedgerType("setFinancialLedgerType");
+            financialLedgerTypeParameterDto.setFinancialLedgerTypeId(Long.parseLong(item.getValue().toString()));
+        } else {
+            financialLedgerTypeParameterDto.setFinancialLedgerType(null);
+            financialLedgerTypeParameterDto.setFinancialLedgerTypeId(0L);
+        }
     }
 
     @Override

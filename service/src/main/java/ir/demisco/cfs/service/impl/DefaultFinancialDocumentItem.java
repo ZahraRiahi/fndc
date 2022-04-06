@@ -240,6 +240,9 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                         responseFinancialDocumentDto.setFinancialDocumentTypeId(0L);
                     }
                     break;
+                default:
+
+                    break;
             }
         }
 

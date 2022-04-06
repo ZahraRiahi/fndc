@@ -583,6 +583,9 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
                     }
                     break;
+                default:
+
+                    break;
             }
         }
 
@@ -591,10 +594,10 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
     private FinancialDocumentItemResponse convertDocumentItemToListUpdate(Object[] financialDocumentItem) {
         return FinancialDocumentItemResponse.builder()
-                .id(Long.parseLong(financialDocumentItem[0].toString()))
-                .financialDocumentId(financialDocumentItem[1] == null ? null : Long.parseLong(financialDocumentItem[1].toString()))
-                .sequenceNumber(financialDocumentItem[2] == null ? null : Long.parseLong(financialDocumentItem[2].toString()))
-                .financialAccountId(financialDocumentItem[3] == null ? null : Long.parseLong(financialDocumentItem[3].toString()))
+                .id(getItemIdForLong(financialDocumentItem, 0))
+                .financialDocumentId(getItemForLong(financialDocumentItem, 1))
+                .sequenceNumber(getItemForLong(financialDocumentItem, 2))
+                .financialAccountId(getItemForLong(financialDocumentItem, 3))
                 .financialAccountDescription(financialDocumentItem[4] == null ? null : financialDocumentItem[4].toString())
                 .financialAccountCode(financialDocumentItem[5] == null ? null : financialDocumentItem[5].toString())
                 .debitAmount(((BigDecimal) financialDocumentItem[6]).doubleValue())
@@ -602,11 +605,11 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .description(financialDocumentItem[8] == null ? null : financialDocumentItem[8].toString())
                 .centricAccountDescription(financialDocumentItem[9] == null ? null : financialDocumentItem[9].toString())
                 .accountRelationTypeId(financialDocumentItem[10] == null ? null : Long.parseLong(financialDocumentItem[10].toString()))
-                .centricAccountId1(financialDocumentItem[11] == null ? null : Long.parseLong(financialDocumentItem[11].toString()))
+                .centricAccountId1(getItemForLong(financialDocumentItem, 11))
                 .centricAccountDescription1(financialDocumentItem[12] == null ? null : financialDocumentItem[12].toString())
-                .centricAccountId2(financialDocumentItem[13] == null ? null : Long.parseLong(financialDocumentItem[13].toString()))
+                .centricAccountId2(getItemForLong(financialDocumentItem, 13))
                 .centricAccountDescription2(financialDocumentItem[14] == null ? null : financialDocumentItem[14].toString())
-                .centricAccountId3(financialDocumentItem[15] == null ? null : Long.parseLong(financialDocumentItem[15].toString()))
+                .centricAccountId3(getItemForLong(financialDocumentItem, 15))
                 .centricAccountDescription3(financialDocumentItem[16] == null ? null : financialDocumentItem[16].toString())
                 .centricAccountId4(financialDocumentItem[17] == null ? null : Long.parseLong(financialDocumentItem[17].toString()))
                 .centricAccountDescription4(financialDocumentItem[18] == null ? null : financialDocumentItem[18].toString())
@@ -616,6 +619,14 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .centricAccountDescription6(financialDocumentItem[22] == null ? null : financialDocumentItem[22].toString())
                 .creatorId(financialDocumentItem[23] == null ? null : Long.parseLong(financialDocumentItem[23].toString()))
                 .build();
+    }
+
+    private Long getItemIdForLong(Object[] financialDocumentItem, int i) {
+        return Long.parseLong(financialDocumentItem[i].toString());
+    }
+
+    private Long getItemForLong(Object[] financialDocumentItem, int i) {
+        return financialDocumentItem[i] == null ? null : Long.parseLong(financialDocumentItem[i].toString());
     }
 
     private FinancialDocumentReferenceOutPutModel convertFinancialDocumentItem(FinancialDocumentReference

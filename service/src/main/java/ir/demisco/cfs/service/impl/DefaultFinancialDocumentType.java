@@ -149,7 +149,9 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
                         financialDocumentTypeRequest.setId(0L);
                     }
                     break;
+                default:
 
+                    break;
             }
         }
         return financialDocumentTypeRequest;
