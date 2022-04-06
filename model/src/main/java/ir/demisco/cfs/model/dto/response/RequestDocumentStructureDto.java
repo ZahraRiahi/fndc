@@ -2,15 +2,15 @@ package ir.demisco.cfs.model.dto.response;
 
 public class RequestDocumentStructureDto {
 
-    private Long FinancialDocumentId;
+    private Long financialDocumentId;
     private Long financialStructureId;
 
     public Long getFinancialDocumentId() {
-        return FinancialDocumentId;
+        return financialDocumentId;
     }
 
     public void setFinancialDocumentId(Long financialDocumentId) {
-        FinancialDocumentId = financialDocumentId;
+        this.financialDocumentId = financialDocumentId;
     }
 
     public Long getFinancialStructureId() {

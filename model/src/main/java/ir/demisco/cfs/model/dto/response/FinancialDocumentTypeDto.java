@@ -9,7 +9,7 @@ public class FinancialDocumentTypeDto {
     private Boolean automaticFlag;
     private Long financialSystemId;
     private Long organizationId;
-    private LocalDateTime DeletedDate;
+    private LocalDateTime deletedDate;
     private String financialSystemDescription;
 
     public Long getId() {
@@ -61,11 +61,11 @@ public class FinancialDocumentTypeDto {
     }
 
     public LocalDateTime getDeletedDate() {
-        return DeletedDate;
+        return deletedDate;
     }
 
     public void setDeletedDate(LocalDateTime deletedDate) {
-        DeletedDate = deletedDate;
+        this.deletedDate = deletedDate;
     }
 
     public String getFinancialSystemDescription() {
@@ -121,8 +121,8 @@ public class FinancialDocumentTypeDto {
             return this;
         }
 
-        public Builder DeletedDate(LocalDateTime DeletedDate) {
-            financialDocumentTypeDto.setDeletedDate(DeletedDate);
+        public Builder deletedDate(LocalDateTime deletedDate) {
+            financialDocumentTypeDto.setDeletedDate(deletedDate);
             return this;
         }
 

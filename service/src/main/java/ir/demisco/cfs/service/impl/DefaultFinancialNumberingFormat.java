@@ -59,12 +59,6 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         Object formatType;
         checkValidParameter(financialNumberingFormatDto);
-        if (financialNumberingFormatDto.getFinancialNumberingFormatTypeId() != null) {
-            formatType = "formatType";
-        } else {
-            financialNumberingFormatDto.setFinancialNumberingFormatTypeId(0L);
-            formatType = null;
-        }
         FinancialNumberingFormat financialNumberingFormat =
                 financialNumberingFormatRepository.getFormatByType(organizationId,
                         financialNumberingFormatDto.getFinancialNumberingTypeId());

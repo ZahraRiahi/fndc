@@ -6,7 +6,11 @@ import ir.demisco.cfs.model.dto.response.FinancialDocumentTypeGetDto;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentTypeDto;
 import ir.demisco.cfs.model.entity.FinancialDocumentType;
 import ir.demisco.cfs.service.api.FinancialDocumentTypeService;
-import ir.demisco.cfs.service.repository.*;
+import ir.demisco.cfs.service.repository.DocumentTypeOrgRelRepository;
+import ir.demisco.cfs.service.repository.FinancialConfigRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentTypeRepository;
+import ir.demisco.cfs.service.repository.FinancialSystemRepository;
+import ir.demisco.cfs.service.repository.OrganizationRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -170,8 +174,8 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     public ResponseFinancialDocumentTypeDto update(FinancialDocumentTypeDto financialDocumentTypeDto) {
         FinancialDocumentType financialDocumentType = financialDocumentTypeRepository.
                 findById(financialDocumentTypeDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
-        if (!financialDocumentTypeDto.getAutomaticFlag()) {
-            if (!financialDocumentTypeDto.getActiveFlag()) {
+        if (Boolean.TRUE.equals(!financialDocumentTypeDto.getAutomaticFlag())) {
+            if (Boolean.TRUE.equals(!financialDocumentTypeDto.getActiveFlag())) {
                 List<Long> financialConfigCount = financialConfigRepository.findByFinancialConfigByFinancialDocumentTypeId(financialDocumentTypeDto.getId());
                 if (financialConfigCount.size() != 0) {
                     throw new RuleException("fin.financialDocumentType.update");

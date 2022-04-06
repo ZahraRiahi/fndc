@@ -13,11 +13,11 @@ public interface NumberingFormatSerialRepository extends JpaRepository<Numbering
             " join FinancialNumberingFormat nf on nf.financialNumberingType.id=nt.id and nf.deletedDate is null" +
             " join FinancialNumberingFormatType nft on nft.id=nf.financialNumberingFormatType.id and nft.deletedDate is null " +
             " join NumberingFormatSerial nfs on nfs.financialNumberingFormat.id=nf.id and nfs.deletedDate is null " +
-            " where fd.id=:FinancialDocumentId" +
+            " where fd.id=:financialDocumentId" +
             "   and nt.typeStatus=:numberingType " +
             "   and nf.organization.id=:organizationId " +
             "   and fd.deletedDate is null ")
-    List<NumberingFormatSerial> findNumberingFormatSerialByParam(Long organizationId, Long FinancialDocumentId, Long numberingType);
+    List<NumberingFormatSerial> findNumberingFormatSerialByParam(Long organizationId, Long financialDocumentId, Long numberingType);
 
     @Query("select nf from NumberingFormatSerial nf " +
             " where nf.financialNumberingFormat.id=:numberingFormatId  and nf.serialReseter=:serialReseter and nf.serialLength=:serialLength and nf.deletedDate is null")

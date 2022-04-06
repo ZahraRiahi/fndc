@@ -12,6 +12,7 @@ import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+
 @Service
 public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecurityService {
     private final FinancialDocumentHeaderService financialDocumentHeaderService;
@@ -40,18 +41,7 @@ public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecuri
             financialSecurityFilterRequest.setUserId(financialDocumentHeaderOutputResponse.getCreatorId());
             financialSecurityFilterRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         } else {
-            if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getUserId() == null) {
-                throw new RuleException("لطفا شناسه ی کاربر را وارد نمایید.");
-            }
-            if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getDepartmentId() == null) {
-                throw new RuleException("لطفا شناسه ی شعبه را وارد نمایید.");
-            }
-            if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getActivityCode() == null) {
-                throw new RuleException("لطفا کد نوع فعالیت را وارد نمایید.");
-            }
-            if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getInputFromConfigFlag() == null) {
-                throw new RuleException("لطفا فلگ تنظیمات را وارد نمایید.");
-            }
+            checkFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
             financialSecurityFilterRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
             financialSecurityFilterRequest.setUserId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getUserId());
             financialSecurityFilterRequest.setDepartmentId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getDepartmentId());
@@ -76,6 +66,20 @@ public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecuri
             throw new RuleException(financialSecurityOutputResponse.getPermissionMessage());
         } else {
             return true;
+        }
+    }
+    private void checkFinancialDocumentSecurity(FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest) {
+        if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getUserId() == null) {
+            throw new RuleException("لطفا شناسه ی کاربر را وارد نمایید.");
+        }
+        if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getDepartmentId() == null) {
+            throw new RuleException("لطفا شناسه ی شعبه را وارد نمایید.");
+        }
+        if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getActivityCode() == null) {
+            throw new RuleException("لطفا کد نوع فعالیت را وارد نمایید.");
+        }
+        if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getInputFromConfigFlag() == null) {
+            throw new RuleException("لطفا فلگ تنظیمات را وارد نمایید.");
         }
     }
 }

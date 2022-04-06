@@ -4,7 +4,12 @@ import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.request.FinancialAccountBalanceRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentCentricTurnOverRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentReportRequest;
-import ir.demisco.cfs.model.dto.response.*;
+import ir.demisco.cfs.model.dto.response.FinancialAccountBalanceResponse;
+import ir.demisco.cfs.model.dto.response.FinancialAccountCentricTurnOverOutputResponse;
+import ir.demisco.cfs.model.dto.response.FinancialAccountCentricTurnOverRecordsResponse;
+import ir.demisco.cfs.model.dto.response.FinancialAccountTurnOverOutputResponse;
+import ir.demisco.cfs.model.dto.response.FinancialAccountTurnOverRecordsResponse;
+import ir.demisco.cfs.model.dto.response.FinancialAccountTurnOverSummarizeResponse;
 import ir.demisco.cfs.service.api.FinancialAccountService;
 import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
@@ -47,21 +52,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         financialDocumentReportRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setSummarizingType(financialDocumentReportRequest.getSummarizingType() == null ? 1 : financialDocumentReportRequest.getSummarizingType());
         getFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest);
-        if (financialDocumentReportRequest.getFinancialAccountId() == null) {
-            throw new RuleException("fin.financialAccount.insertFinancialAccount");
-        }
-        if (financialDocumentReportRequest.getDocumentNumberingTypeId() == null) {
-            throw new RuleException("fin.financialAccount.insertDocumentNumberingType");
-        }
-        if (financialDocumentReportRequest.getSummarizingType() == null) {
-            throw new RuleException("fin.financialAccount.insertSummarizingType");
-        }
-        if (financialDocumentReportRequest.getOrganizationId() == null) {
-            throw new RuleException("fin.financialAccount.insertOrganization");
-        }
-        if (financialDocumentReportRequest.getDateFilterFlg() == null) {
-            throw new RuleException("fin.financialAccount.selectDateFilterFlg");
-        }
+        checkFinancialDocumentReport(financialDocumentReportRequest);
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         Page<Object[]> list = financialPeriodRepository.findByFinancialPeriodByParam(SecurityHelper.getCurrentUser().getOrganizationId(),
                 financialDocumentReportRequest.getLedgerTypeId(),
@@ -118,6 +109,24 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         dataSourceResult.setData(financialAccountTurnOverOutputResponses);
         dataSourceResult.setTotal(list.getTotalElements());
         return dataSourceResult;
+    }
+
+    private void checkFinancialDocumentReport(FinancialDocumentReportRequest financialDocumentReportRequest) {
+        if (financialDocumentReportRequest.getFinancialAccountId() == null) {
+            throw new RuleException("fin.financialAccount.insertFinancialAccount");
+        }
+        if (financialDocumentReportRequest.getDocumentNumberingTypeId() == null) {
+            throw new RuleException("fin.financialAccount.insertDocumentNumberingType");
+        }
+        if (financialDocumentReportRequest.getSummarizingType() == null) {
+            throw new RuleException("fin.financialAccount.insertSummarizingType");
+        }
+        if (financialDocumentReportRequest.getOrganizationId() == null) {
+            throw new RuleException("fin.financialAccount.insertOrganization");
+        }
+        if (financialDocumentReportRequest.getDateFilterFlg() == null) {
+            throw new RuleException("fin.financialAccount.selectDateFilterFlg");
+        }
     }
 
     private Date convertDate(String date) {
@@ -185,78 +194,54 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
                 case "financialAccountId":
-                    if (item.getValue() != null) {
-                        financialDocumentReportRequest.setFinancialAccountId(Long.parseLong(item.getValue().toString()));
-                    }
+                    checkFinancialAccountIdSet(financialDocumentReportRequest, item);
                     break;
                 case "fromDate":
-                    if (item.getValue() != null) {
-                        financialDocumentReportRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
-
-                    }
+                    checkFromDateForDate(financialDocumentReportRequest, item);
                     break;
 
                 case "toDate":
-                    if (item.getValue() != null) {
-                        financialDocumentReportRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
-
-                    }
+                    checkToDateForDate(financialDocumentReportRequest, item);
                     break;
 
                 case "documentNumberingTypeId":
-                    if (item.getValue() != null) {
-                        financialDocumentReportRequest.setDocumentNumberingTypeId(Long.parseLong(item.getValue().toString()));
-                    }
+                    checkDocumentNumberingTypeIdSet(financialDocumentReportRequest, item);
                     break;
 
                 case "centricAccountId1":
-                    if (item.getValue() != null) {
-                        financialDocumentReportRequest.setCentricAccountId1(Long.parseLong(item.getValue().toString()));
-                    }
+                    checkCentricAccountId1Set(financialDocumentReportRequest, item);
                     break;
                 case "centricAccountId2":
-                    if (item.getValue() != null) {
-                        financialDocumentReportRequest.setCentricAccountId2(Long.parseLong(item.getValue().toString()));
-                    }
+                    checkCentricAccountId2Set(financialDocumentReportRequest, item);
                     break;
                 case "referenceNumber":
-                    if (item.getValue() != null) {
-                        financialDocumentReportRequest.setReferenceNumber(Long.parseLong(item.getValue().toString()));
-                    }
+                    checkReferenceNumberSet(financialDocumentReportRequest, item);
                     break;
 
                 case "fromNumber":
-                    if (item.getValue() != null) {
-                        financialDocumentReportRequest.setFromNumber(item.getValue().toString());
-                    }
+                    checkFromNumberSet(financialDocumentReportRequest, item);
                     break;
                 case "toNumber":
-                    if (item.getValue() != null) {
-                        financialDocumentReportRequest.setToNumber(item.getValue().toString());
-                    }
+                    checkToNumberSet(financialDocumentReportRequest, item);
                     break;
-
                 case "summarizingType":
-                    if (item.getValue() != null) {
-                        financialDocumentReportRequest.setSummarizingType(Long.parseLong(item.getValue().toString()));
-                    }
+                    checkSummarizingTypeSet(financialDocumentReportRequest, item);
                     break;
                 case "ledgerTypeId":
-                    if (item.getValue() != null) {
-                        financialDocumentReportRequest.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
-                    }
+                    checkLedgerTypeIdSet(financialDocumentReportRequest, item);
+
                     break;
                 case "organizationId":
-                    if (item.getValue() != null) {
-                        financialDocumentReportRequest.setOrganizationId(Long.parseLong(item.getValue().toString()));
-                    }
+                    checkOrganizationIdSet(financialDocumentReportRequest, item);
                     break;
                 case "dateFilterFlg":
                     if (item.getValue() != null) {
                         financialDocumentReportRequest.setDateFilterFlg(Long.parseLong(item.getValue().toString()));
                     }
                     break;
+                default:
 
+                    break;
             }
         }
 
@@ -274,6 +259,102 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
 
         return financialDocumentReportRequest;
+    }
+
+    private void checkDocumentNumberingTypeIdSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentReportRequest.setDocumentNumberingTypeId(Long.parseLong(item.getValue().toString()));
+        } else {
+            throw new RuleException("fin.document.documentNumberingType.is.null");
+        }
+    }
+
+    private void checkFromDateForDate(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentReportRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        } else {
+            throw new RuleException("fin.request.fromDate.is.null");
+        }
+    }
+
+    private void checkToDateForDate(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentReportRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        } else {
+            throw new RuleException("fin.request.fromDate.is.null");
+        }
+    }
+
+    private void checkFinancialAccountIdSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentReportRequest.setFinancialAccountId(Long.parseLong(item.getValue().toString()));
+        } else {
+            throw new RuleException("fin.document.financialAccount.is.null");
+        }
+    }
+
+    private void checkCentricAccountId1Set(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentReportRequest.setCentricAccountId1(Long.parseLong(item.getValue().toString()));
+        } else {
+            throw new RuleException("fin.document.centricAccountId1.is.null");
+        }
+    }
+
+    private void checkCentricAccountId2Set(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentReportRequest.setCentricAccountId2(Long.parseLong(item.getValue().toString()));
+        } else {
+            throw new RuleException("fin.document.centricAccountId2.is.null");
+        }
+    }
+
+    private void checkReferenceNumberSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentReportRequest.setReferenceNumber(Long.parseLong(item.getValue().toString()));
+        } else {
+            throw new RuleException("fin.document.referenceNumber.is.null");
+        }
+    }
+
+    private void checkFromNumberSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentReportRequest.setFromNumber(item.getValue().toString());
+        } else {
+            throw new RuleException("fin.document.fromNumber.is.null");
+        }
+    }
+
+    private void checkToNumberSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentReportRequest.setToNumber(item.getValue().toString());
+        } else {
+            throw new RuleException("fin.document.fromNumber.is.null");
+        }
+    }
+
+    private void checkSummarizingTypeSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentReportRequest.setSummarizingType(Long.parseLong(item.getValue().toString()));
+        } else {
+            throw new RuleException("fin.document.summarizingType.is.null");
+        }
+    }
+
+    private void checkLedgerTypeIdSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentReportRequest.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
+        } else {
+            throw new RuleException("fin.document.ledgerType.is.null");
+        }
+    }
+
+    private void checkOrganizationIdSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentReportRequest.setOrganizationId(Long.parseLong(item.getValue().toString()));
+        } else {
+            throw new RuleException("fin.document.organization.is.null");
+        }
     }
 
     private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
@@ -505,6 +586,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                         financialDocumentCentricTurnOverRequest.setReferenceNumberObject(null);
                     }
                     break;
+                default:
+
+                    break;
             }
         }
 
@@ -652,50 +736,32 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
                 case "fromDate":
-                    if (item.getValue() != null) {
-                        financialAccountBalanceRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
-                    }
+                    checkFromDateForDate(financialAccountBalanceRequest, item);
                     break;
                 case "toDate":
-                    if (item.getValue() != null) {
-                        financialAccountBalanceRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
-                    }
+                    checkToDateForDate(financialAccountBalanceRequest, item);
                     break;
 
                 case "fromNumber":
-                    if (item.getValue() != null) {
-                        financialAccountBalanceRequest.setFromNumber(item.getValue().toString());
-                    }
+                    checkFromNumberSet(financialAccountBalanceRequest, item);
                     break;
                 case "toNumber":
-                    if (item.getValue() != null) {
-                        financialAccountBalanceRequest.setToNumber(item.getValue().toString());
-                    }
+                    checkToNumberSet(financialAccountBalanceRequest, item);
                     break;
                 case "documentNumberingTypeId":
-                    if (item.getValue() != null) {
-                        financialAccountBalanceRequest.setDocumentNumberingTypeId(Long.parseLong(item.getValue().toString()));
-                    }
+                    checkDocumentNumberingTypeIdSet(financialAccountBalanceRequest, item);
                     break;
                 case "ledgerTypeId":
-                    if (item.getValue() != null) {
-                        financialAccountBalanceRequest.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
-                    }
+                    checkLedgerTypeIdSet(financialAccountBalanceRequest, item);
                     break;
                 case "structureLevel":
-                    if (item.getValue() != null) {
-                        financialAccountBalanceRequest.setStructureLevel(Long.parseLong(item.getValue().toString()));
-                    }
+                    checkStructureLevelIdSet(financialAccountBalanceRequest, item);
                     break;
                 case "hasRemain":
-                    if (item.getValue() != null) {
-                        financialAccountBalanceRequest.setHasRemain((Boolean) item.getValue());
-                    }
+                    checkHasRemainSet(financialAccountBalanceRequest, item);
                     break;
                 case "showHigherLevels":
-                    if (item.getValue() != null) {
-                        financialAccountBalanceRequest.setShowHigherLevels((Boolean) item.getValue());
-                    }
+                    checkShowHigherLevelsSet(financialAccountBalanceRequest, item);
                     break;
                 case "organizationId":
                     if (item.getValue() != null) {
@@ -718,12 +784,86 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                         financialAccountBalanceRequest.setDateFilterFlg(Long.parseLong(item.getValue().toString()));
                     }
                     break;
+                default:
 
+                    break;
             }
         }
 
         return financialAccountBalanceRequest;
 
+    }
+
+    private void checkFromDateForDate(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialAccountBalanceRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        } else {
+            throw new RuleException("fin.request.fromDate.is.null");
+        }
+    }
+
+    private void checkToDateForDate(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialAccountBalanceRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        } else {
+            throw new RuleException("fin.request.fromDate.is.null");
+        }
+    }
+
+    private void checkFromNumberSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialAccountBalanceRequest.setFromNumber(item.getValue().toString());
+        } else {
+            throw new RuleException("fin.document.fromNumber.is.null");
+        }
+    }
+
+    private void checkToNumberSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialAccountBalanceRequest.setToNumber(item.getValue().toString());
+        } else {
+            throw new RuleException("fin.document.fromNumber.is.null");
+        }
+    }
+
+    private void checkDocumentNumberingTypeIdSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialAccountBalanceRequest.setDocumentNumberingTypeId(Long.parseLong(item.getValue().toString()));
+        } else {
+            throw new RuleException("fin.document.documentNumberingType.is.null");
+        }
+    }
+
+    private void checkLedgerTypeIdSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialAccountBalanceRequest.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
+        } else {
+            throw new RuleException("fin.document.ledgerType.is.null");
+        }
+    }
+
+    private void checkStructureLevelIdSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialAccountBalanceRequest.setStructureLevel(Long.parseLong(item.getValue().toString()));
+        } else {
+            throw new RuleException("fin.document.structureLevel.is.null");
+        }
+    }
+
+    private void checkHasRemainSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialAccountBalanceRequest.setHasRemain((Boolean) item.getValue());
+        } else {
+            throw new RuleException("fin.document.hasRemain.is.null");
+        }
+    }
+
+    private void checkShowHigherLevelsSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialAccountBalanceRequest.setShowHigherLevels((Boolean) item.getValue());
+        } else {
+            throw new RuleException("fin.document.showHigherLevels.is.null");
+        }
     }
 
     private void getFinancialDocumentByNumberingTypeAndFromNumberBalance(FinancialAccountBalanceRequest financialAccountBalanceRequest) {

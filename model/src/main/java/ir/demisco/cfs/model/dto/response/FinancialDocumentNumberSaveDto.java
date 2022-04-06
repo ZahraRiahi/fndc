@@ -5,7 +5,7 @@ public class FinancialDocumentNumberSaveDto {
     private Long id;
     private Long financialNumberingTypeId;
     private String financialNumberingTypeDescription;
-    private Long  FinancialDocumentId;
+    private Long  financialDocumentId;
     private String documentNumber;
 
 
@@ -34,11 +34,11 @@ public class FinancialDocumentNumberSaveDto {
     }
 
     public Long getFinancialDocumentId() {
-        return FinancialDocumentId;
+        return financialDocumentId;
     }
 
     public void setFinancialDocumentId(Long financialDocumentId) {
-        FinancialDocumentId = financialDocumentId;
+        this.financialDocumentId = financialDocumentId;
     }
 
     public String getDocumentNumber() {
@@ -80,8 +80,8 @@ public class FinancialDocumentNumberSaveDto {
             return this;
         }
 
-        public Builder FinancialDocumentId(Long FinancialDocumentId) {
-            financialDocumentNumberSaveDto.setFinancialDocumentId(FinancialDocumentId);
+        public Builder financialDocumentId(Long financialDocumentId) {
+            financialDocumentNumberSaveDto.setFinancialDocumentId(financialDocumentId);
             return this;
         }
 

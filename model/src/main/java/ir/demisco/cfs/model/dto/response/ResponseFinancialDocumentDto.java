@@ -13,9 +13,9 @@ public class ResponseFinancialDocumentDto {
     private Long toNumber;
     private List<Long> financialDocumentStatusDtoListId;
     private String description;
-    private Long FromAccountId;
+    private Long fromAccountId;
     private Long toAccountId;
-    private Long FromAccountCode;
+    private Long fromAccountCode;
     private Long toAccountCode;
     private Long centricAccountId;
     private Long centricAccountTypeId;
@@ -78,11 +78,11 @@ public class ResponseFinancialDocumentDto {
     }
 
     public Long getFromAccountId() {
-        return FromAccountId;
+        return fromAccountId;
     }
 
     public void setFromAccountId(Long fromAccountId) {
-        FromAccountId = fromAccountId;
+        this.fromAccountId = fromAccountId;
     }
 
     public Long getToAccountId() {
@@ -94,11 +94,11 @@ public class ResponseFinancialDocumentDto {
     }
 
     public Long getFromAccountCode() {
-        return FromAccountCode;
+        return fromAccountCode;
     }
 
     public void setFromAccountCode(Long fromAccountCode) {
-        FromAccountCode = fromAccountCode;
+        this.fromAccountCode = fromAccountCode;
     }
 
     public Long getToAccountCode() {
@@ -251,8 +251,8 @@ public class ResponseFinancialDocumentDto {
             return this;
         }
 
-        public Builder FromAccountId(Long FromAccountId) {
-            responseFinancialDocumentDto.setFromAccountId(FromAccountId);
+        public Builder fromAccountId(Long fromAccountId) {
+            responseFinancialDocumentDto.setFromAccountId(fromAccountId);
             return this;
         }
 
@@ -261,8 +261,8 @@ public class ResponseFinancialDocumentDto {
             return this;
         }
 
-        public Builder FromAccountCode(Long FromAccountCode) {
-            responseFinancialDocumentDto.setFromAccountCode(FromAccountCode);
+        public Builder fromAccountCode(Long fromAccountCode) {
+            responseFinancialDocumentDto.setFromAccountCode(fromAccountCode);
             return this;
         }
 

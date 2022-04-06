@@ -3,7 +3,7 @@ package ir.demisco.cfs.model.dto.response;
 public class FinancialDocumentStatusListDto {
 
     private Long id;
-    private String Code;
+    private String code;
     private String name;
 
     public Long getId() {
@@ -15,11 +15,11 @@ public class FinancialDocumentStatusListDto {
     }
 
     public String getCode() {
-        return Code;
+        return code;
     }
 
     public void setCode(String code) {
-        Code = code;
+        this.code = code;
     }
 
     public String getName() {
@@ -50,8 +50,8 @@ public class FinancialDocumentStatusListDto {
             return this;
         }
 
-        public Builder Code(String Code) {
-            financialDocumentStatusListDto.setCode(Code);
+        public Builder code(String code) {
+            financialDocumentStatusListDto.setCode(code);
             return this;
         }
 

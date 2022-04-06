@@ -43,7 +43,7 @@ public class DefaultFinancialDocumentNumber implements FinancialDocumentNumberSe
                 .id(financialDocumentNumber.getId())
                 .financialNumberingTypeId(financialDocumentNumber.getFinancialNumberingType().getId())
                 .financialNumberingTypeDescription(financialDocumentNumber.getFinancialNumberingType().getDescription())
-                .FinancialDocumentId(financialDocumentNumber.getFinancialDocument().getId())
+                .financialDocumentId(financialDocumentNumber.getFinancialDocument().getId())
                 .documentNumber(financialDocumentNumber.getDocumentNumber())
                 .build();
     }

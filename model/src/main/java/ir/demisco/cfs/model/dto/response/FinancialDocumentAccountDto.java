@@ -4,17 +4,17 @@ import java.util.List;
 
 public class FinancialDocumentAccountDto {
 
-    private Long Id;
+    private Long id;
     private List<Long> financialDocumentItemIdList;
     private Long  financialAccountId;
     private Long newFinancialAccountId;
 
     public Long getId() {
-        return Id;
+        return id;
     }
 
     public void setId(Long id) {
-        Id = id;
+        this.id = id;
     }
 
     public List<Long> getFinancialDocumentItemIdList() {
