@@ -20,13 +20,11 @@ public class DefaultFinancialNumberingType implements FinancialNumberingTypeServ
     private final FinancialNumberingTypeRepository financialNumberingTypeRepository;
     private final GridFilterService gridFilterService;
     private final FinancialNumberingTypeGridProvider financialNumberingTypeGridProvider;
-    private final ApplicationUserRepository applicationUserRepository;
 
-    public DefaultFinancialNumberingType(FinancialNumberingTypeRepository financialNumberingTypeRepository, GridFilterService gridFilterService, FinancialNumberingTypeGridProvider financialNumberingTypeGridProvider, ApplicationUserRepository applicationUserRepository) {
+    public DefaultFinancialNumberingType(FinancialNumberingTypeRepository financialNumberingTypeRepository, GridFilterService gridFilterService, FinancialNumberingTypeGridProvider financialNumberingTypeGridProvider) {
         this.financialNumberingTypeRepository = financialNumberingTypeRepository;
         this.gridFilterService = gridFilterService;
         this.financialNumberingTypeGridProvider = financialNumberingTypeGridProvider;
-        this.applicationUserRepository = applicationUserRepository;
     }
 
     @Override

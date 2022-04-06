@@ -1,7 +1,6 @@
 package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.FinancialLedgerTypeParameterDto;
-import ir.demisco.cfs.model.dto.request.FinancialDocumentCentricTurnOverRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerTypeRequest;
 import ir.demisco.cfs.model.dto.request.FinancialSecurityFilterRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerDto;

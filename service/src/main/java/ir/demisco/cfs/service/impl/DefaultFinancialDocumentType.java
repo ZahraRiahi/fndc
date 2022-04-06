@@ -14,7 +14,6 @@ import ir.demisco.cfs.service.repository.OrganizationRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
-import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.hibernate.jpa.TypedParameterValue;
 import org.hibernate.type.StandardBasicTypes;
@@ -33,17 +32,13 @@ import java.util.stream.Collectors;
 public class DefaultFinancialDocumentType implements FinancialDocumentTypeService {
 
     private final FinancialDocumentTypeRepository financialDocumentTypeRepository;
-    private final GridFilterService gridFilterService;
-    private final FinancialDocumentTypeProvider financialDocumentTypeProvider;
     private final OrganizationRepository organizationRepository;
     private final FinancialSystemRepository financialSystemRepository;
     private final FinancialConfigRepository financialConfigRepository;
     private final DocumentTypeOrgRelRepository documentTypeOrgRelRepository;
 
-    public DefaultFinancialDocumentType(FinancialDocumentTypeRepository financialDocumentTypeRepository, GridFilterService gridFilterService, FinancialDocumentTypeProvider financialDocumentTypeProvider, OrganizationRepository organizationRepository, FinancialSystemRepository financialSystemRepository, FinancialConfigRepository financialConfigRepository, DocumentTypeOrgRelRepository documentTypeOrgRelRepository) {
+    public DefaultFinancialDocumentType(FinancialDocumentTypeRepository financialDocumentTypeRepository, OrganizationRepository organizationRepository, FinancialSystemRepository financialSystemRepository, FinancialConfigRepository financialConfigRepository, DocumentTypeOrgRelRepository documentTypeOrgRelRepository) {
         this.financialDocumentTypeRepository = financialDocumentTypeRepository;
-        this.gridFilterService = gridFilterService;
-        this.financialDocumentTypeProvider = financialDocumentTypeProvider;
         this.organizationRepository = organizationRepository;
         this.financialSystemRepository = financialSystemRepository;
         this.financialConfigRepository = financialConfigRepository;
@@ -156,7 +151,6 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
         }
         return financialDocumentTypeRequest;
     }
-
 
     @Override
     public ResponseFinancialDocumentTypeDto save(FinancialDocumentTypeDto financialDocumentTypeDto) {

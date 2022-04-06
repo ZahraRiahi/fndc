@@ -18,16 +18,13 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-
 @Service
 public class DefaultFinancialPeriod implements FinancialPeriodService {
 
-    private final GridFilterService gridFilterService;
     private final FinancialPeriodRepository financialPeriodRepository;
     private final FinancialDocumentRepository financialDocumentRepository;
 
     public DefaultFinancialPeriod(GridFilterService gridFilterService, FinancialPeriodRepository financialPeriodRepository, FinancialDocumentRepository financialDocumentRepository) {
-        this.gridFilterService = gridFilterService;
         this.financialPeriodRepository = financialPeriodRepository;
         this.financialDocumentRepository = financialDocumentRepository;
     }
@@ -40,7 +37,7 @@ public class DefaultFinancialPeriod implements FinancialPeriodService {
 
         if (financialPeriodStatusRequest.getFinancialDocumentId() != null) {
             List<Object[]> financialDocument = financialDocumentRepository.financialDocumentById(financialPeriodStatusRequest.getFinancialDocumentId());
-            financialPeriodStatusRequest.setDate(financialDocument.get(0)[1] == null ? financialPeriodStatusRequest.getDate() : LocalDateTime.parse(financialDocument.get(0)[1].toString().substring(0,10) + "T00:00"));
+            financialPeriodStatusRequest.setDate(financialDocument.get(0)[1] == null ? financialPeriodStatusRequest.getDate() : LocalDateTime.parse(financialDocument.get(0)[1].toString().substring(0, 10) + "T00:00"));
             financialPeriodStatusRequest.setFinancialPeriodId(financialDocument.get(0)[0] == null ? financialPeriodStatusRequest.getFinancialPeriodId() : Long.parseLong(financialDocument.get(0)[0].toString()));
             if (financialPeriodStatusRequest.getFinancialPeriodId() == null || financialPeriodStatusRequest.getDate() == null) {
                 throw new RuleException("fin.financialPeriod.list");
@@ -59,7 +56,7 @@ public class DefaultFinancialPeriod implements FinancialPeriodService {
                 financialPeriodStatusResponses.setPeriodStatus(0L);
                 return financialPeriodStatusResponses;
             }
-        }else{
+        } else {
             throw new RuleException("fin.allMessage");
         }
         Long periodStatus = financialPeriodRepository.findFinancialPeriodById(financialPeriodStatusRequest.getFinancialPeriodId());
@@ -69,6 +66,7 @@ public class DefaultFinancialPeriod implements FinancialPeriodService {
         financialPeriodStatusResponses.setMonthStatus(monthStatus);
         return financialPeriodStatusResponses;
     }
+
     private void checkFinancialPeriodStatus(FinancialPeriodStatusRequest financialPeriodStatusRequest) {
         if (financialPeriodStatusRequest.getFinancialDocumentId() == null && financialPeriodStatusRequest.getFinancialPeriodId() == null
                 && financialPeriodStatusRequest.getDate() == null && financialPeriodStatusRequest.getOrganizationId() == null) {
