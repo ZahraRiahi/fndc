@@ -531,38 +531,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         return responseDocumentSaveDto;
     }
 
-    //    @Override
-//    @Transactional(rollbackOn = Throwable.class)
-//    public List<FinancialDocumentItemResponse> getFinancialDocumentItem(FinancialDocumentItemRequest financialDocumentItemRequest) {
-//        List<FinancialDocumentItemResponse> financialDocumentItemDtoList = new ArrayList<>();
-//        Object financialDocumentItem = null;
-//        if (financialDocumentItemRequest.getFinancialDocumentItemId() != null) {
-//            financialDocumentItem = "financialDocumentItem";
-//        } else {
-//            financialDocumentItemRequest.setFinancialDocumentItemId(0L);
-//        }
-//        List<Object[]> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentItemId(financialDocumentItemRequest.getFinancialDocumentId()
-//                , financialDocumentItem, financialDocumentItemRequest.getFinancialDocumentItemId());
-//        financialDocumentItemList.forEach(documentItem -> {
-//            List<FinancialDocumentReferenceOutPutModel> documentReferenceList = new ArrayList<>();
-//            List<FinancialDocumentItemCurrencyOutPutModel> responseDocumentItemCurrencyList = new ArrayList<>();
-//            FinancialDocumentItemResponse documentItemToList = convertDocumentItemToListUpdate(documentItem);
-//            financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItemToList.getId())
-//                    .forEach(documentReference -> {
-//                        documentReferenceList.add(convertFinancialDocumentItem(documentReference));
-//                        documentItemToList.setDocumentReferenceList(documentReferenceList);
-//                    });
-//            documentItemCurrencyRepository.findByFinancialDocumentItemCurrency(documentItemToList.getId())
-//                    .forEach(documentItemCurrency -> {
-//                        responseDocumentItemCurrencyList.add(convertDocumentItemCurrencyOutPut(documentItemCurrency));
-//                        documentItemToList.setDocumentItemCurrencyList(responseDocumentItemCurrencyList);
-//                    });
-//            financialDocumentItemDtoList.add(documentItemToList);
-//        });
-//        return financialDocumentItemDtoList;
-//    }
-
-
     @Override
     @Transactional
     public DataSourceResult getFinancialDocumentItem(DataSourceRequest dataSourceRequest) {
@@ -662,8 +630,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private FinancialDocumentItemCurrencyOutPutModel convertDocumentItemCurrencyOutPut(Object[] documentItemCurrency) {
-//        DecimalFormat df = new DecimalFormat();
-//        df.setMaximumFractionDigits(340);// 340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
         return FinancialDocumentItemCurrencyOutPutModel.builder()
                 .id(Long.parseLong(documentItemCurrency[0].toString()))
                 .financialDocumentItemId(documentItemCurrency[1] == null ? null : Long.parseLong(documentItemCurrency[1].toString()))

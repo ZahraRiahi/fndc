@@ -43,7 +43,6 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     @Transactional
     public DataSourceResult getNumberingFormatByOrganizationId(Long organizationId, DataSourceRequest dataSourceRequest) {
 
-//        Asserts.notNull(organizationId, "organizationId is null");
         dataSourceRequest.getFilter().setLogic("and");
         dataSourceRequest.getFilter().getFilters()
                 .add(DataSourceRequest.FilterDescriptor.create("organization.id", organizationId, DataSourceRequest.Operators.EQUALS));

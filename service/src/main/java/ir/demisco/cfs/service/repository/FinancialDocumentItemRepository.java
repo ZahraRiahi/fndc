@@ -481,11 +481,6 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             , nativeQuery = true)
     List<Object[]> findByMoneyTypeAndFinancialAccountId(Long organizationId, Long financialLedgerTypeId, Long financialDepartmentId, Date date, Long financialAccountId);
 
-
-    @Query("select fdi from  FinancialDocumentItem fdi where fdi.financialDocument.id=:financialDocumentId ")
-    List<FinancialDocumentItem> findByFinancialDocumentId(Long financialDocumentId);
-
-
     @Query(value = "WITH QRY AS " +
             " (SELECT SUM(FDI.DEBIT_AMOUNT) SUM_DEBIT," +
             "         SUM(FDI.CREDIT_AMOUNT) SUM_CREDIT," +
