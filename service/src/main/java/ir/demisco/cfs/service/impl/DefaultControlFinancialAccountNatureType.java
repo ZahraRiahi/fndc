@@ -40,9 +40,6 @@ public class DefaultControlFinancialAccountNatureType implements ControlFinancia
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public List<ControlFinancialAccountNatureTypeOutputResponse> getControlFinancialAccountNatureType(ControlFinancialAccountNatureTypeInputRequest controlFinancialAccountNatureTypeInputRequest) {
-//        if (controlFinancialAccountNatureTypeInputRequest.getFinancialDocumentId() == null && controlFinancialAccountNatureTypeInputRequest.getFinancialDocumentItemId() == null) {
-//            throw new RuleException("fin.financialNatureControl.getControl");
-//        }
         checkFinancialNatureControl(controlFinancialAccountNatureTypeInputRequest);
         Object financialDocumentItem = null;
         if (controlFinancialAccountNatureTypeInputRequest.getFinancialDocumentItemId() != null) {

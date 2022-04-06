@@ -131,13 +131,6 @@ public class FinancialDocumentController {
         return ResponseEntity.ok(result);
 
     }
-//    @PostMapping("/TransferDocument")
-//    public ResponseEntity<Boolean> transferDocument(@RequestBody FinancialDocumentTransferDto financialDocumentTransferDto) {
-//        boolean result;
-//        result = transferFinancialDocumentService.transferDocument(financialDocumentTransferDto);
-//        return ResponseEntity.ok(result);
-//
-//    }
 
     @PostMapping("/TransferDocument")
     public ResponseEntity<FinancialDocumentTransferOutputResponse> transferDocument(@RequestBody FinancialDocumentTransferRequest financialDocumentTransferRequest) {
