@@ -42,7 +42,6 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
         Map<String, Object> paramMap = paramSearch.getParamMap();
-//        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
         List<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getStartDate(),
                 paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
                 paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
@@ -240,6 +239,9 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setFinancialDocumentTypeId(0L);
                     }
+                    break;
+                default:
+
                     break;
             }
         }

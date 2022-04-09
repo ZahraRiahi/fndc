@@ -6,7 +6,9 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridDataProvider;
 import org.springframework.stereotype.Component;
 
-import javax.persistence.criteria.*;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Selection;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -76,14 +78,9 @@ public class FinancialConfigListGridProvider implements GridDataProvider {
     public Predicate getCustomRestriction(FilterContext filterContext) {
         DataSourceRequest dataSourceRequest = filterContext.getDataSourceRequest();
         for (DataSourceRequest.FilterDescriptor filter : dataSourceRequest.getFilter().getFilters()) {
-            switch (filter.getField()) {
-                case "user.id":
-                case "organization.id":
-                case "financialDepartment.id":
-                    if (filter.getValue() == null) {
-                        filter.setDisable(true);
-                    }
-                    break;
+            String field = filter.getField();
+            if (filter.getValue() == null && ("user.id".equals(field) || "organization.id".equals(field) || "financialDepartment.id".equals(field))) {
+                filter.setDisable(true);
             }
         }
         return null;

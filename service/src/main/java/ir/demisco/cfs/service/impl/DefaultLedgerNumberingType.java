@@ -78,7 +78,7 @@ public class DefaultLedgerNumberingType implements LedgerNumberingTypeService {
             } else {
                 insertLedgerNumberingType(financialNumberingTypeRequest, financialLedgerTypeRequest);
             }
-            return null;
+            return false;
         }
     }
 

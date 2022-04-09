@@ -43,7 +43,6 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     @Transactional
     public DataSourceResult getNumberingFormatByOrganizationId(Long organizationId, DataSourceRequest dataSourceRequest) {
 
-//        Asserts.notNull(organizationId, "organizationId is null");
         dataSourceRequest.getFilter().setLogic("and");
         dataSourceRequest.getFilter().getFilters()
                 .add(DataSourceRequest.FilterDescriptor.create("organization.id", organizationId, DataSourceRequest.Operators.EQUALS));
@@ -59,12 +58,6 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         Object formatType;
         checkValidParameter(financialNumberingFormatDto);
-        if (financialNumberingFormatDto.getFinancialNumberingFormatTypeId() != null) {
-            formatType = "formatType";
-        } else {
-            financialNumberingFormatDto.setFinancialNumberingFormatTypeId(0L);
-            formatType = null;
-        }
         FinancialNumberingFormat financialNumberingFormat =
                 financialNumberingFormatRepository.getFormatByType(organizationId,
                         financialNumberingFormatDto.getFinancialNumberingTypeId());

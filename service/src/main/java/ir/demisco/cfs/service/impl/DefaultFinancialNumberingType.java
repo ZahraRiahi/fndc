@@ -3,7 +3,6 @@ package ir.demisco.cfs.service.impl;
 import ir.demisco.cfs.model.dto.request.FinancialNumberingTypeRequest;
 import ir.demisco.cfs.model.dto.response.FinancialNumberingTypeOutputResponse;
 import ir.demisco.cfs.service.api.FinancialNumberingTypeService;
-import ir.demisco.cfs.service.repository.ApplicationUserRepository;
 import ir.demisco.cfs.service.repository.FinancialNumberingTypeRepository;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -20,13 +19,11 @@ public class DefaultFinancialNumberingType implements FinancialNumberingTypeServ
     private final FinancialNumberingTypeRepository financialNumberingTypeRepository;
     private final GridFilterService gridFilterService;
     private final FinancialNumberingTypeGridProvider financialNumberingTypeGridProvider;
-    private final ApplicationUserRepository applicationUserRepository;
 
-    public DefaultFinancialNumberingType(FinancialNumberingTypeRepository financialNumberingTypeRepository, GridFilterService gridFilterService, FinancialNumberingTypeGridProvider financialNumberingTypeGridProvider, ApplicationUserRepository applicationUserRepository) {
+    public DefaultFinancialNumberingType(FinancialNumberingTypeRepository financialNumberingTypeRepository, GridFilterService gridFilterService, FinancialNumberingTypeGridProvider financialNumberingTypeGridProvider) {
         this.financialNumberingTypeRepository = financialNumberingTypeRepository;
         this.gridFilterService = gridFilterService;
         this.financialNumberingTypeGridProvider = financialNumberingTypeGridProvider;
-        this.applicationUserRepository = applicationUserRepository;
     }
 
     @Override
@@ -44,7 +41,7 @@ public class DefaultFinancialNumberingType implements FinancialNumberingTypeServ
             List<Object[]> financialNumberingTypeList = financialNumberingTypeRepository.findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(SecurityHelper.getCurrentUser().getOrganizationId(), financialNumberingTypeRequest.getFromDate(), financialNumberingTypeRequest.getToDate(), SecurityHelper.getCurrentUser().getUserId());
 
             return financialNumberingTypeList.stream().map(e -> FinancialNumberingTypeOutputResponse.builder().id(Long.parseLong(e[0].toString()))
-                    .description(e[1] == null ? "" : e[1].toString())
+                    .description(gatItemForString(e, 1))
                     .fromCode(e[3] == null ? "" : e[3].toString())
                     .toCode(e[4] == null ? "" : e[4].toString())
                     .serialLength(Long.parseLong(e[2] == null ? null : e[2].toString()))
@@ -52,7 +49,9 @@ public class DefaultFinancialNumberingType implements FinancialNumberingTypeServ
         }
 
     }
-
+    private String gatItemForString(Object[] e, int i) {
+        return e[i] == null ? null : e[i].toString();
+    }
     @Override
     public DataSourceResult getNumberingType(DataSourceRequest dataSourceRequest) {
         dataSourceRequest.getFilter().setLogic("and");

@@ -12,7 +12,12 @@ import ir.demisco.cfs.model.entity.FinancialLedgerType;
 import ir.demisco.cfs.model.entity.FinancialNumberingType;
 import ir.demisco.cfs.model.entity.LedgerNumberingType;
 import ir.demisco.cfs.service.api.FinancialLedgerTypeService;
-import ir.demisco.cfs.service.repository.*;
+import ir.demisco.cfs.service.repository.FinancialCodingTypeRepository;
+import ir.demisco.cfs.service.repository.FinancialDepartmentLedgerRepository;
+import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
+import ir.demisco.cfs.service.repository.FinancialNumberingTypeRepository;
+import ir.demisco.cfs.service.repository.LedgerNumberingTypeRepository;
+import ir.demisco.cfs.service.repository.OrganizationRepository;
 import ir.demisco.cloud.basic.model.entity.org.Organization;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
@@ -139,13 +144,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
                 case "id":
-                    if (item.getValue() != null) {
-                        financialLedgerTypeParameterDto.setFinancialLedgerType("setFinancialLedgerType");
-                        financialLedgerTypeParameterDto.setFinancialLedgerTypeId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        financialLedgerTypeParameterDto.setFinancialLedgerType(null);
-                        financialLedgerTypeParameterDto.setFinancialLedgerTypeId(0L);
-                    }
+                    checkIdSet(financialLedgerTypeParameterDto, item);
                     break;
                 case "financialCodingTypeId":
                     if (item.getValue() != null) {
@@ -212,9 +211,22 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                         financialLedgerTypeParameterDto.setInputFromConfigFlag(null);
                     }
                     break;
+                default:
+
+                    break;
             }
         }
         return financialLedgerTypeParameterDto;
+    }
+
+    private void checkIdSet(FinancialLedgerTypeParameterDto financialLedgerTypeParameterDto, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialLedgerTypeParameterDto.setFinancialLedgerType("setFinancialLedgerType");
+            financialLedgerTypeParameterDto.setFinancialLedgerTypeId(Long.parseLong(item.getValue().toString()));
+        } else {
+            financialLedgerTypeParameterDto.setFinancialLedgerType(null);
+            financialLedgerTypeParameterDto.setFinancialLedgerTypeId(0L);
+        }
     }
 
     @Override
@@ -222,12 +234,6 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
     public void saveFinancialLedgerType(FinancialLedgerTypeRequest financialLedgerTypeRequest) {
         Long financialLedgerTypeId = financialLedgerTypeRequest.getFinancialLedgerTypeId();
         Long financialCodingTypeId = financialLedgerTypeRequest.getFinancialCodingTypeId();
-//        String activityCode = "FNDC_LEDGER_SAVE";
-//        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
-//        financialDocumentSecurityInputRequest.setActivityCode(activityCode);
-//        financialDocumentSecurityInputRequest.setFinancialDocumentId(null);
-//        financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
-//        financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
         if (financialCodingTypeId == null || financialCodingTypeId < 0) {
             throw new RuleException("fin.financialLedgerType.insertCodingType");
         }

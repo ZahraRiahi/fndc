@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 public class FinancialDocumentStatusDto {
 
     private Long id;
-    private String Code;
+    private String code;
     private String name;
     private LocalDateTime deletedDate;
 
@@ -18,11 +18,11 @@ public class FinancialDocumentStatusDto {
     }
 
     public String getCode() {
-        return Code;
+        return code;
     }
 
     public void setCode(String code) {
-        Code = code;
+        this.code = code;
     }
 
     public String getName() {
@@ -60,8 +60,8 @@ public class FinancialDocumentStatusDto {
             return this;
         }
 
-        public Builder Code(String Code) {
-            financialDocumentStatusDto.setCode(Code);
+        public Builder code(String code) {
+            financialDocumentStatusDto.setCode(code);
             return this;
         }
 

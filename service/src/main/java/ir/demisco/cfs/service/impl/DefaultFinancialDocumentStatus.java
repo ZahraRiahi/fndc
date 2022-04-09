@@ -22,7 +22,7 @@ public class DefaultFinancialDocumentStatus implements FinancialDocumentStatusSe
         public List<FinancialDocumentStatusListDto> getStatusList() {
         return documentStatusRepository.getFinancialDocumentStatusList().stream().map(documentStatus -> FinancialDocumentStatusListDto.builder()
         .id(documentStatus.getId())
-         .Code(documentStatus.getCode())
+         .code(documentStatus.getCode())
         .name(documentStatus.getName())
         .build()).collect(Collectors.toList());
     }

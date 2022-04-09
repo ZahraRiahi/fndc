@@ -3,7 +3,10 @@ package ir.demisco.cfs.service.impl;
 import ir.demisco.cfs.model.dto.request.FinancialDepartmentLedgerRequest;
 import ir.demisco.cfs.model.entity.FinancialDepartmentLedger;
 import ir.demisco.cfs.service.api.FinancialDepartmentLedgerService;
-import ir.demisco.cfs.service.repository.*;
+import ir.demisco.cfs.service.repository.DepartmentRepository;
+import ir.demisco.cfs.service.repository.FinancialDepartmentLedgerRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
+import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
 import ir.demisco.cloud.basic.model.entity.org.Department;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import org.springframework.stereotype.Service;
@@ -15,18 +18,15 @@ import java.util.List;
 public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedgerService {
 
     private final FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository;
-    private final FinancialDepartmentRepository financialDepartmentRepository;
     private final FinancialLedgerTypeRepository financialLedgerTypeRepository;
     private final FinancialDocumentRepository financialDocumentRepository;
     private final DepartmentRepository departmentRepository;
 
 
     public DefaultFinancialDepartmentLedger(FinancialDepartmentLedgerRepository financialDepartmentLedgerRepository,
-                                            FinancialDepartmentRepository financialDepartmentRepository,
                                             FinancialLedgerTypeRepository financialLedgerTypeRepository,
                                             FinancialDocumentRepository financialDocumentRepository, DepartmentRepository departmentRepository) {
         this.financialDepartmentLedgerRepository = financialDepartmentLedgerRepository;
-        this.financialDepartmentRepository = financialDepartmentRepository;
         this.financialLedgerTypeRepository = financialLedgerTypeRepository;
         this.financialDocumentRepository = financialDocumentRepository;
         this.departmentRepository = departmentRepository;

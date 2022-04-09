@@ -30,7 +30,7 @@ public class LedgerNumberingTypeController {
     }
 
     @PostMapping("/Save")
-    public ResponseEntity<Boolean> SaveLedgerNumberingType(@RequestBody LedgerNumberingTypeDto ledgerNumberingTypeDto) {
+    public ResponseEntity<Boolean> saveLedgerNumberingType(@RequestBody LedgerNumberingTypeDto ledgerNumberingTypeDto) {
         return ResponseEntity.ok(ledgerNumberingTypeService.saveLedgerNumberingType(ledgerNumberingTypeDto));
 
     }

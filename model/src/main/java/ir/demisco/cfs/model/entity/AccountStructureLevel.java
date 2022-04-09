@@ -2,7 +2,12 @@ package ir.demisco.cfs.model.entity;
 
 import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
@@ -14,7 +19,7 @@ public class AccountStructureLevel extends AuditModel<Long> {
     private String structureLevelCode;
     private FinancialAccountStructure financialAccountStructure;
     private FinancialAccount financialAccount;
-    private LocalDateTime DeletedDate;
+    private LocalDateTime deletedDate;
     private FinancialAccount relatedAccount;
 
     @Id
@@ -63,11 +68,11 @@ public class AccountStructureLevel extends AuditModel<Long> {
     }
 
     public LocalDateTime getDeletedDate() {
-        return DeletedDate;
+        return deletedDate;
     }
 
     public void setDeletedDate(LocalDateTime deletedDate) {
-        DeletedDate = deletedDate;
+        this.deletedDate = deletedDate;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

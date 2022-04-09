@@ -16,7 +16,7 @@ public class AccountPermanentStatus extends AuditModel<Long> {
     private Long id;
     private String code;
     private String description;
-    private LocalDateTime DeletedDate;
+    private LocalDateTime deletedDate;
 
     @Id
     public Long getId() {
@@ -47,11 +47,12 @@ public class AccountPermanentStatus extends AuditModel<Long> {
     }
 
     @Column(name = "DELETED_DATE")
+
     public LocalDateTime getDeletedDate() {
-        return DeletedDate;
+        return deletedDate;
     }
 
     public void setDeletedDate(LocalDateTime deletedDate) {
-        DeletedDate = deletedDate;
+        this.deletedDate = deletedDate;
     }
 }

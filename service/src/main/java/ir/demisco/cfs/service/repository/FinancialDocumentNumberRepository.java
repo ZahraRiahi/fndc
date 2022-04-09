@@ -14,6 +14,6 @@ public interface FinancialDocumentNumberRepository extends JpaRepository<Financi
     @Query("select fdn from FinancialDocumentNumber fdn where  fdn.financialDocument.id in (:targetDocumentId,:financialDocumentId) ")
     List<FinancialDocumentNumber> findByFinancialDocumentNumberAndFinancialDocumentIdAndTarget(Long financialDocumentId, Long targetDocumentId);
 
-    List<FinancialDocumentNumber> findByFinancialDocumentIdAndDeletedDateIsNull(Long FinancialDocumentId);
+    List<FinancialDocumentNumber> findByFinancialDocumentIdAndDeletedDateIsNull(Long financialDocumentId);
 
 }
