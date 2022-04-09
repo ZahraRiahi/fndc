@@ -1,9 +1,6 @@
 package ir.demisco.cfs.model.dto.response;
 
-
-
 import com.fasterxml.jackson.core.JsonGenerator;
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.JsonSerializer;
 import com.fasterxml.jackson.databind.SerializerProvider;
 
@@ -14,8 +11,6 @@ public class FinancialDocumentItemCurrencyDto {
 
     private Long financialDocumentItemCurrencyId;
     private Long financialDocumentItemId;
-//    private Double foreignDebitAmount;
-//    private Double foreignCreditAmount;
     private Long exchangeRate;
     private Long moneyTypeId;
     private String moneyTypeDescription;
@@ -39,24 +34,6 @@ public class FinancialDocumentItemCurrencyDto {
     public void setFinancialDocumentItemId(Long financialDocumentItemId) {
         this.financialDocumentItemId = financialDocumentItemId;
     }
-
-//    public Double getForeignDebitAmount() {
-//        return foreignDebitAmount;
-//    }
-//
-//    public void setForeignDebitAmount(Double foreignDebitAmount) {
-//        this.foreignDebitAmount = foreignDebitAmount;
-//    }
-//
-//
-//    public Double getForeignCreditAmount() {
-//        return foreignCreditAmount;
-//    }
-//
-//    public void setForeignCreditAmount(Double foreignCreditAmount) {
-//        this.foreignCreditAmount = foreignCreditAmount;
-//    }
-
     public Long getExchangeRate() {
         return exchangeRate;
     }
@@ -139,16 +116,6 @@ public class FinancialDocumentItemCurrencyDto {
             return this;
         }
 
-//        public Builder foreignDebitAmount(Double foreignDebitAmount) {
-//            financialDocumentItemCurrencyDto.setForeignDebitAmount(foreignDebitAmount);
-//            return this;
-//        }
-//
-//        public Builder foreignCreditAmount(Double foreignCreditAmount) {
-//            financialDocumentItemCurrencyDto.setForeignCreditAmount(foreignCreditAmount);
-//            return this;
-//        }
-
         public Builder exchangeRate(Long exchangeRate) {
             financialDocumentItemCurrencyDto.setExchangeRate(exchangeRate);
             return this;
@@ -193,7 +160,7 @@ public class FinancialDocumentItemCurrencyDto {
 
         @Override
         public void serialize(Double value, JsonGenerator gen, SerializerProvider serializers)
-                throws IOException, JsonProcessingException {
+                throws IOException {
             // TODO Auto-generated method stub
 
             BigDecimal d = new BigDecimal(value);

@@ -2,17 +2,17 @@ package ir.demisco.cfs.model.dto.response;
 
 public class ResponseFinancialDocumentStructureDto {
 
-    private Long DocumentStructureId;
+    private Long documentStructureId;
     private Long sequence;
     private String description;
-    private Long FinancialCodingTypeId;
+    private Long financialCodingTypeId;
 
     public Long getDocumentStructureId() {
-        return DocumentStructureId;
+        return documentStructureId;
     }
 
     public void setDocumentStructureId(Long documentStructureId) {
-        DocumentStructureId = documentStructureId;
+        this.documentStructureId = documentStructureId;
     }
 
     public Long getSequence() {
@@ -32,11 +32,11 @@ public class ResponseFinancialDocumentStructureDto {
     }
 
     public Long getFinancialCodingTypeId() {
-        return FinancialCodingTypeId;
+        return financialCodingTypeId;
     }
 
     public void setFinancialCodingTypeId(Long financialCodingTypeId) {
-        FinancialCodingTypeId = financialCodingTypeId;
+        this.financialCodingTypeId = financialCodingTypeId;
     }
 
     public static Builder builder(){
@@ -54,8 +54,8 @@ public class ResponseFinancialDocumentStructureDto {
             return new Builder();
         }
 
-        public Builder DocumentStructureId(Long DocumentStructureId) {
-            responseFinancialDocumentStructureDto.setDocumentStructureId(DocumentStructureId);
+        public Builder documentStructureId(Long documentStructureId) {
+            responseFinancialDocumentStructureDto.setDocumentStructureId(documentStructureId);
             return this;
         }
 
@@ -69,8 +69,8 @@ public class ResponseFinancialDocumentStructureDto {
             return this;
         }
 
-        public Builder FinancialCodingTypeId(Long FinancialCodingTypeId) {
-            responseFinancialDocumentStructureDto.setFinancialCodingTypeId(FinancialCodingTypeId);
+        public Builder financialCodingTypeId(Long financialCodingTypeId) {
+            responseFinancialDocumentStructureDto.setFinancialCodingTypeId(financialCodingTypeId);
             return this;
         }
 

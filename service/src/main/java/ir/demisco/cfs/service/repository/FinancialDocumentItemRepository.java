@@ -226,7 +226,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
                                                 Double tolerance, Object financialDocumentType, Long financialDocumentTypeId);
 
 
-    List<FinancialDocumentItem> findByFinancialDocumentIdAndDeletedDateIsNull(Long FinancialDocumentId);
+    List<FinancialDocumentItem> findByFinancialDocumentIdAndDeletedDateIsNull(Long financialDocumentId);
 
     @Query("select fdi from FinancialDocumentItem fdi where fdi.id in (:documentItemIdList)  and fdi.deletedDate is null")
     List<FinancialDocumentItem> findByFinancialDocumentItemIdList(List<Long> documentItemIdList);
@@ -240,33 +240,33 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
     @Query(" select 1 from FinancialDocumentItem fdi " +
             " join FinancialAccount  fa on fa.id=fdi.financialAccount.id " +
             " join FinancialAccountStructure fs on fs.id=fa.financialAccountStructure.id " +
-            " where fdi.financialDocument.id= :FinancialDocumentId " +
+            " where fdi.financialDocument.id= :financialDocumentId " +
             " and not exists (select 1 from FinancialAccount fa2 where fa2.financialAccountParent.id=fa.id and fa2.deletedDate is null) " +
             " and fs.flagShowInAcc=1 " +
             " and fa.disableDate is null"
 
     )
-    Long getFinancialAccount(Long FinancialDocumentId);
+    Long getFinancialAccount(Long financialDocumentId);
 
     @Query(" select 1 from FinancialDocumentItem fdi" +
             " join FinancialAccount  fa on fa.id=fdi.financialAccount.id  and fa.exchangeFlag=1 " +
             " join FinancialDocumentItemCurrency dc on dc.financialDocumentItem.id=fdi.id " +
-            " where fdi.id=:FinancialDocumentItemId " +
+            " where fdi.id=:financialDocumentItemId " +
             " and ((dc.foreignDebitAmount is null and dc.foreignCreditAmount is null) " +
             "      or dc.exchangeRate is null or dc.moneyPricingReference is null or dc.moneyType is null)")
-    Long getInfoCurrency(Long FinancialDocumentItemId);
+    Long getInfoCurrency(Long financialDocumentItemId);
 
     @Query("select 1 from FinancialDocumentItem fdi " +
             " join FinancialAccount  fa on fa.id=fdi.financialAccount.id  and fa.exchangeFlag=1 " +
             " join FinancialDocumentItemCurrency dc on dc.financialDocumentItem.id=fdi.id " +
-            " where fdi.id=:FinancialDocumentItemId " +
+            " where fdi.id=:financialDocumentItemId " +
             "   and not exists (select 1 from AccountMoneyType mt where mt.financialAccount.id=fa.id " +
             "            and mt.moneyType.id=dc.moneyType.id)")
-    Long equalCurrency(Long FinancialDocumentItemId);
+    Long equalCurrency(Long financialDocumentItemId);
 
     @Query(" select 1 from FinancialDocumentItem fdi  " +
             " join FinancialDocumentItemCurrency fdic on fdic.financialDocumentItem.id=fdi.id " +
-            " where fdi.financialDocument.id=:FinancialDocumentId " +
+            " where fdi.financialDocument.id=:financialDocumentId " +
             " group by fdi.creditAmount,fdi.debitAmount " +
             " having (nvl(fdi.debitAmount,0) != 0 and sum(nvl(fdic.foreignDebitAmount,0)) =0) " +
             " or (nvl(fdi.debitAmount,0) = 0 and sum(nvl(fdic.foreignDebitAmount,0)) != 0)" +
@@ -274,7 +274,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " or (nvl(fdi.creditAmount,0) = 0 and sum(nvl(fdic.foreignCreditAmount,0)) != 0)" +
             " or (nvl(fdi.debitAmount,0) != 0 and nvl(fdi.creditAmount,0) != 0) "
     )
-    Long costHarmony(Long FinancialDocumentId);
+    Long costHarmony(Long financialDocumentId);
 
     @Query("select 1 from FinancialDocumentItem fdi " +
             " left join CentricAccount cn on cn.id=fdi.centricAccountId1.id " +
@@ -283,14 +283,14 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " left join CentricAccount cn4 on cn4.id=fdi.centricAccountId4.id " +
             " left join CentricAccount cn5 on cn5.id=fdi.centricAccountId5.id " +
             " left join CentricAccount cn6 on cn6.id=fdi.centricAccountId6.id " +
-            " where fdi.financialDocument.id =:FinancialDocumentId " +
+            " where fdi.financialDocument.id =:financialDocumentId " +
             " and ((fdi.centricAccountId1 is not null and fdi.centricAccountId2 is not null and fdi.centricAccountId1 <> nvl (cn2.parentCentricAccount,0)) or " +
             "      (fdi.centricAccountId2 is not null and fdi.centricAccountId3 is not null and fdi.centricAccountId2<> nvl (cn3.parentCentricAccount,0))  or " +
             "      (fdi.centricAccountId3 is not null and fdi.centricAccountId4 is not null and fdi.centricAccountId3<> nvl (cn4.parentCentricAccount,0))  or " +
             "      (fdi.centricAccountId4 is not null and fdi.centricAccountId5 is not null and fdi.centricAccountId4<> nvl (cn5.parentCentricAccount,0))  or " +
             "      (fdi.centricAccountId5 is not null and fdi.centricAccountId6 is not null and fdi.centricAccountId5<> nvl (cn6.parentCentricAccount,0))) "
     )
-    Long referenceCode(Long FinancialDocumentId);
+    Long referenceCode(Long financialDocumentId);
 
 
     @Query(value = "  select sum(t.debit_amount) as debit_amount, " +
@@ -300,8 +300,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "        inner join fnac.financial_account fiac " +
             "            on fiac.id =t.financial_account_id   " +
             "            and fiac.deleted_date is null  " +
-            "    where t.financial_document_id =:FinancialDocumentId ", nativeQuery = true)
-    List<Object[]> findParamByDocumentId(Long FinancialDocumentId);
+            "    where t.financial_document_id =:financialDocumentId ", nativeQuery = true)
+    List<Object[]> findParamByDocumentId(Long financialDocumentId);
 
 
     @Query("select fdi from FinancialDocumentItem fdi where fdi.id in (:documentItemIdList)  and fdi.financialAccount.id=:accountId " +
@@ -384,7 +384,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " coalesce(sum (fdi.creditAmount),0) - coalesce(sum(fdi.debitAmount) , 0) as SELECTED_REMAIN_AMOUNT" +
             " from FinancialDocumentItem fdi where fdi.financialDocument.id =:financialDocumentId and fdi.id in (:financialDocumentItemIdList) " +
             " and fdi.deletedDate is null ")
-    List<Object[]> findFinancialDocumentItemByFinancialDocumentIdList(Long financialDocumentId, List financialDocumentItemIdList);
+    List<Object[]> findFinancialDocumentItemByFinancialDocumentIdList(Long financialDocumentId, List<Long> financialDocumentItemIdList);
 
 
     @Query(value = " SELECT FNDI.ID, " +
@@ -480,11 +480,6 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "  FROM QRY "
             , nativeQuery = true)
     List<Object[]> findByMoneyTypeAndFinancialAccountId(Long organizationId, Long financialLedgerTypeId, Long financialDepartmentId, Date date, Long financialAccountId);
-
-
-    @Query("select fdi from  FinancialDocumentItem fdi where fdi.financialDocument.id=:financialDocumentId ")
-    List<FinancialDocumentItem> findByFinancialDocumentId(Long financialDocumentId);
-
 
     @Query(value = "WITH QRY AS " +
             " (SELECT SUM(FDI.DEBIT_AMOUNT) SUM_DEBIT," +

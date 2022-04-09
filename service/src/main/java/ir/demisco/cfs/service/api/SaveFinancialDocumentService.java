@@ -13,7 +13,5 @@ public interface SaveFinancialDocumentService {
 
     FinancialDocumentSaveDto getFinancialDocumentInfo(FinancialDocumentDto financialDocumentDto);
 
-//    List<FinancialDocumentItemResponse> getFinancialDocumentItem(FinancialDocumentItemRequest financialDocumentItemRequest);
-
     DataSourceResult getFinancialDocumentItem(DataSourceRequest dataSourceRequest);
 }

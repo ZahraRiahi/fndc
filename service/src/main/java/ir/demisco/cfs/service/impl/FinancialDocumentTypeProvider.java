@@ -55,14 +55,10 @@ public class FinancialDocumentTypeProvider implements GridDataProvider {
     public Predicate getCustomRestriction(FilterContext filterContext) {
         DataSourceRequest dataSourceRequest = filterContext.getDataSourceRequest();
         for (DataSourceRequest.FilterDescriptor filter : dataSourceRequest.getFilter().getFilters()) {
-            switch (filter.getField()) {
-                case "financialSystem.id":
-                case "organization.id":
-                case "id":
-                    if (filter.getValue() == null) {
-                        filter.setDisable(true);
-                    }
-                    break;
+            String field = filter.getField();
+            if (filter.getValue() == null && ("financialSystem.id".equals(field) || "organization.id".equals(field) || "id".equals(field))) {
+
+                filter.setDisable(true);
 
             }
         }

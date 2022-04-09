@@ -1,7 +1,19 @@
 package ir.demisco.cfs.service.impl;
 
-import ir.demisco.cfs.model.dto.request.*;
-import ir.demisco.cfs.model.dto.response.*;
+import ir.demisco.cfs.model.dto.request.FinancialDocumentItemRequest;
+import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
+import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
+import ir.demisco.cfs.model.dto.request.SecurityModelRequest;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentItemCurrencyDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentItemCurrencyOutPutModel;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentItemResponse;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentNumberDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentReferenceDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentReferenceOutPutModel;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentSaveDto;
+import ir.demisco.cfs.model.dto.response.FinancialPeriodStatusResponse;
+import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentItemDto;
 import ir.demisco.cfs.model.entity.FinancialDocument;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import ir.demisco.cfs.model.entity.FinancialDocumentItemCurrency;
@@ -10,7 +22,20 @@ import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.FinancialPeriodService;
 import ir.demisco.cfs.service.api.SaveFinancialDocumentService;
-import ir.demisco.cfs.service.repository.*;
+import ir.demisco.cfs.service.repository.CentricAccountRepository;
+import ir.demisco.cfs.service.repository.FinancialAccountRepository;
+import ir.demisco.cfs.service.repository.FinancialDepartmentRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentItemCurrencyRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentReferenceRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentStatusRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentTypeRepository;
+import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
+import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
+import ir.demisco.cfs.service.repository.MoneyPrisingReferenceRepository;
+import ir.demisco.cfs.service.repository.MoneyTypeRepository;
+import ir.demisco.cfs.service.repository.OrganizationRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -506,37 +531,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         return responseDocumentSaveDto;
     }
 
-    //    @Override
-//    @Transactional(rollbackOn = Throwable.class)
-//    public List<FinancialDocumentItemResponse> getFinancialDocumentItem(FinancialDocumentItemRequest financialDocumentItemRequest) {
-//        List<FinancialDocumentItemResponse> financialDocumentItemDtoList = new ArrayList<>();
-//        Object financialDocumentItem = null;
-//        if (financialDocumentItemRequest.getFinancialDocumentItemId() != null) {
-//            financialDocumentItem = "financialDocumentItem";
-//        } else {
-//            financialDocumentItemRequest.setFinancialDocumentItemId(0L);
-//        }
-//        List<Object[]> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentItemId(financialDocumentItemRequest.getFinancialDocumentId()
-//                , financialDocumentItem, financialDocumentItemRequest.getFinancialDocumentItemId());
-//        financialDocumentItemList.forEach(documentItem -> {
-//            List<FinancialDocumentReferenceOutPutModel> documentReferenceList = new ArrayList<>();
-//            List<FinancialDocumentItemCurrencyOutPutModel> responseDocumentItemCurrencyList = new ArrayList<>();
-//            FinancialDocumentItemResponse documentItemToList = convertDocumentItemToListUpdate(documentItem);
-//            financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItemToList.getId())
-//                    .forEach(documentReference -> {
-//                        documentReferenceList.add(convertFinancialDocumentItem(documentReference));
-//                        documentItemToList.setDocumentReferenceList(documentReferenceList);
-//                    });
-//            documentItemCurrencyRepository.findByFinancialDocumentItemCurrency(documentItemToList.getId())
-//                    .forEach(documentItemCurrency -> {
-//                        responseDocumentItemCurrencyList.add(convertDocumentItemCurrencyOutPut(documentItemCurrency));
-//                        documentItemToList.setDocumentItemCurrencyList(responseDocumentItemCurrencyList);
-//                    });
-//            financialDocumentItemDtoList.add(documentItemToList);
-//        });
-//        return financialDocumentItemDtoList;
-//    }
-
     @Override
     @Transactional
     public DataSourceResult getFinancialDocumentItem(DataSourceRequest dataSourceRequest) {
@@ -589,6 +583,9 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
                     }
                     break;
+                default:
+
+                    break;
             }
         }
 
@@ -597,10 +594,10 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
     private FinancialDocumentItemResponse convertDocumentItemToListUpdate(Object[] financialDocumentItem) {
         return FinancialDocumentItemResponse.builder()
-                .id(Long.parseLong(financialDocumentItem[0].toString()))
-                .financialDocumentId(financialDocumentItem[1] == null ? null : Long.parseLong(financialDocumentItem[1].toString()))
-                .sequenceNumber(financialDocumentItem[2] == null ? null : Long.parseLong(financialDocumentItem[2].toString()))
-                .financialAccountId(financialDocumentItem[3] == null ? null : Long.parseLong(financialDocumentItem[3].toString()))
+                .id(getItemIdForLong(financialDocumentItem, 0))
+                .financialDocumentId(getItemForLong(financialDocumentItem, 1))
+                .sequenceNumber(getItemForLong(financialDocumentItem, 2))
+                .financialAccountId(getItemForLong(financialDocumentItem, 3))
                 .financialAccountDescription(financialDocumentItem[4] == null ? null : financialDocumentItem[4].toString())
                 .financialAccountCode(financialDocumentItem[5] == null ? null : financialDocumentItem[5].toString())
                 .debitAmount(((BigDecimal) financialDocumentItem[6]).doubleValue())
@@ -608,11 +605,11 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .description(financialDocumentItem[8] == null ? null : financialDocumentItem[8].toString())
                 .centricAccountDescription(financialDocumentItem[9] == null ? null : financialDocumentItem[9].toString())
                 .accountRelationTypeId(financialDocumentItem[10] == null ? null : Long.parseLong(financialDocumentItem[10].toString()))
-                .centricAccountId1(financialDocumentItem[11] == null ? null : Long.parseLong(financialDocumentItem[11].toString()))
+                .centricAccountId1(getItemForLong(financialDocumentItem, 11))
                 .centricAccountDescription1(financialDocumentItem[12] == null ? null : financialDocumentItem[12].toString())
-                .centricAccountId2(financialDocumentItem[13] == null ? null : Long.parseLong(financialDocumentItem[13].toString()))
+                .centricAccountId2(getItemForLong(financialDocumentItem, 13))
                 .centricAccountDescription2(financialDocumentItem[14] == null ? null : financialDocumentItem[14].toString())
-                .centricAccountId3(financialDocumentItem[15] == null ? null : Long.parseLong(financialDocumentItem[15].toString()))
+                .centricAccountId3(getItemForLong(financialDocumentItem, 15))
                 .centricAccountDescription3(financialDocumentItem[16] == null ? null : financialDocumentItem[16].toString())
                 .centricAccountId4(financialDocumentItem[17] == null ? null : Long.parseLong(financialDocumentItem[17].toString()))
                 .centricAccountDescription4(financialDocumentItem[18] == null ? null : financialDocumentItem[18].toString())
@@ -622,6 +619,14 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .centricAccountDescription6(financialDocumentItem[22] == null ? null : financialDocumentItem[22].toString())
                 .creatorId(financialDocumentItem[23] == null ? null : Long.parseLong(financialDocumentItem[23].toString()))
                 .build();
+    }
+
+    private Long getItemIdForLong(Object[] financialDocumentItem, int i) {
+        return Long.parseLong(financialDocumentItem[i].toString());
+    }
+
+    private Long getItemForLong(Object[] financialDocumentItem, int i) {
+        return financialDocumentItem[i] == null ? null : Long.parseLong(financialDocumentItem[i].toString());
     }
 
     private FinancialDocumentReferenceOutPutModel convertFinancialDocumentItem(FinancialDocumentReference
@@ -636,8 +641,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private FinancialDocumentItemCurrencyOutPutModel convertDocumentItemCurrencyOutPut(Object[] documentItemCurrency) {
-//        DecimalFormat df = new DecimalFormat();
-//        df.setMaximumFractionDigits(340);// 340 = DecimalFormat.DOUBLE_FRACTION_DIGITS
         return FinancialDocumentItemCurrencyOutPutModel.builder()
                 .id(Long.parseLong(documentItemCurrency[0].toString()))
                 .financialDocumentItemId(documentItemCurrency[1] == null ? null : Long.parseLong(documentItemCurrency[1].toString()))

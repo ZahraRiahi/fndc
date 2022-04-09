@@ -3,7 +3,14 @@ package ir.demisco.cfs.service.impl;
 import ir.demisco.cfs.model.dto.request.FinancialConfigRequest;
 import ir.demisco.cfs.model.entity.FinancialConfig;
 import ir.demisco.cfs.service.api.FinancialConfigService;
-import ir.demisco.cfs.service.repository.*;
+import ir.demisco.cfs.service.repository.ApplicationUserRepository;
+import ir.demisco.cfs.service.repository.DepartmentRepository;
+import ir.demisco.cfs.service.repository.FinancialConfigRepository;
+import ir.demisco.cfs.service.repository.FinancialDepartmentRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentTypeRepository;
+import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
+import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
+import ir.demisco.cfs.service.repository.OrganizationRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -42,10 +49,6 @@ public class DefaultFinancialConfig implements FinancialConfigService {
     @Transactional(readOnly = true)
     public DataSourceResult getFinancialConfigByOrganizationIdAndUserAndDepartment(DataSourceRequest dataSourceRequest, Long organizationId) {
         dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("deletedDate", null, DataSourceRequest.Operators.IS_NULL));
-//        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialDepartment.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
-//        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialPeriod.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
-//        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialDocumentType.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
-//        dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("financialLedgerType.deletedDate", null, DataSourceRequest.Operators.IS_NULL));
         return gridFilterService.filter(dataSourceRequest, financialConfigListGridProvider);
     }
 
@@ -54,9 +57,7 @@ public class DefaultFinancialConfig implements FinancialConfigService {
     public Boolean saveOrUpdateFinancialConfig(FinancialConfigRequest financialConfigRequest) {
         FinancialConfig financialConfig = financialConfigRepository.findById(financialConfigRequest.getId() == null ? 0 : financialConfigRequest.getId()).orElse(new FinancialConfig());
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-//        FinancialConfig financialConfigUpdate = financialConfigRepository.findById(financialConfigRequest.getId()).orElseThrow(() -> new RuleException("fin.ruleException.notFoundId"));
         if (financialConfig.getId() != null) {
-//            financialConfig.setDeletedDate(LocalDateTime.now());
             financialConfigRepository.deleteById(financialConfigRequest.getId());
         }
         Long financialAccountStructureCount = financialConfigRepository.getCountByFinancialConfigAndOrganizationAndUser(organizationId, financialConfigRequest.getUserId());

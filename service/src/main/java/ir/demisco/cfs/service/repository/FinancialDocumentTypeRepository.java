@@ -10,17 +10,6 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface FinancialDocumentTypeRepository extends JpaRepository<FinancialDocumentType, Long> {
-
-//    @Query("select fd " +
-//            "from FinancialDocumentType fd" +
-//            " where fd.organization.id=:organizationId" +
-//            " and :isFlag is null or ((:searchStatusFlag=false and fd.activeFlag=true) or (:searchStatusFlag=true)) " +
-//            " and (:financialSystem is null or " +
-//            " fd.financialSystem.id = :financialSystemId)" +
-//            " and fd.deletedDate is null ")
-//    List<FinancialDocumentType> findByOrganizationId(Long organizationId, Boolean searchStatusFlag, String isFlag, Object financialSystem, Long financialSystemId);
-
-
     @Query(value = " SELECT FNDT.ID, " +
             "       FNDT.DESCRIPTION, " +
             "       FNDT.ACTIVE_FLAG," +
@@ -51,7 +40,6 @@ public interface FinancialDocumentTypeRepository extends JpaRepository<Financial
             "           AND INER_ORG_REL.FINANCIAL_DOCUMENT_TYPE_ID =" +
             "               FNDT.ID" +
             "           AND INER_ORG_REL.ACTIVE_FLAG = 1) " +
-//            " and :isFlag is null or ((:searchStatusFlag=0 and FNDT.ACTIVE_FLAG =1) or (:searchStatusFlag=1)) " +
             " and (:financialSystem is null or FNDT.FINANCIAL_SYSTEM_ID =:financialSystemId )", nativeQuery = true)
     List<Object[]> findByOrganizationId(Long searchStatusFlag, Long organizationId, String activityCode, TypedParameterValue financialPeriodId, TypedParameterValue financialDepartmentId, TypedParameterValue financialLedgerTypeId, TypedParameterValue departmentId
             , Long userId, Object financialSystem, Long financialSystemId);

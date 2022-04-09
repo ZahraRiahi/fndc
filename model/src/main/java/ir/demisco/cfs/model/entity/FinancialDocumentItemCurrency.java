@@ -2,7 +2,15 @@ package ir.demisco.cfs.model.entity;
 
 import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
 
-import javax.persistence.*;
+import javax.persistence.Entity;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
+import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
@@ -16,7 +24,7 @@ public class FinancialDocumentItemCurrency extends AuditModel<Long> {
     private Long                   exchangeRate;
     private MoneyType              moneyType;
     private MoneyPricingReference  moneyPricingReference;
-    private LocalDateTime DeletedDate;
+    private LocalDateTime deletedDate;
 
     @Id
     @SequenceGenerator(schema = "fndc", name = "financial_document_item_reference_generator", sequenceName = "sq_financial_document_item_currency")
@@ -84,10 +92,10 @@ public class FinancialDocumentItemCurrency extends AuditModel<Long> {
     }
 
     public LocalDateTime getDeletedDate() {
-        return DeletedDate;
+        return deletedDate;
     }
 
     public void setDeletedDate(LocalDateTime deletedDate) {
-        DeletedDate = deletedDate;
+        this.deletedDate = deletedDate;
     }
 }

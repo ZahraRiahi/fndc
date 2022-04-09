@@ -2,14 +2,52 @@ package ir.demisco.cfs.service.impl;
 
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
-import ir.demisco.cfs.model.dto.request.*;
-import ir.demisco.cfs.model.dto.response.*;
-import ir.demisco.cfs.model.entity.*;
+import ir.demisco.cfs.model.dto.request.ControlFinancialAccountNatureTypeInputRequest;
+import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
+import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
+import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
+import ir.demisco.cfs.model.dto.response.ControlFinancialAccountNatureTypeOutputResponse;
+import ir.demisco.cfs.model.dto.response.FinancialCentricAccountDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentAccountDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentChangeDescriptionDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentErrorDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentNumberDto;
+import ir.demisco.cfs.model.dto.response.FinancialNumberingRecordDto;
+import ir.demisco.cfs.model.dto.response.FinancialPeriodStatusResponse;
+import ir.demisco.cfs.model.dto.response.RequestDocumentStructureDto;
+import ir.demisco.cfs.model.dto.response.ResponseDocumentStructureDto;
+import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentDto;
+import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentSetStatusDto;
+import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentStatusDto;
+import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentStructureDto;
+import ir.demisco.cfs.model.entity.CentricAccount;
+import ir.demisco.cfs.model.entity.FinancialAccount;
+import ir.demisco.cfs.model.entity.FinancialDocument;
+import ir.demisco.cfs.model.entity.FinancialDocumentItem;
+import ir.demisco.cfs.model.entity.FinancialDocumentItemCurrency;
+import ir.demisco.cfs.model.entity.FinancialDocumentNumber;
+import ir.demisco.cfs.model.entity.FinancialDocumentReference;
+import ir.demisco.cfs.model.entity.FinancialDocumentStatus;
+import ir.demisco.cfs.model.entity.FinancialNumberingFormat;
+import ir.demisco.cfs.model.entity.NumberingFormatSerial;
 import ir.demisco.cfs.service.api.ControlFinancialAccountNatureTypeService;
 import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.FinancialPeriodService;
-import ir.demisco.cfs.service.repository.*;
+import ir.demisco.cfs.service.repository.AccountDefaultValueRepository;
+import ir.demisco.cfs.service.repository.CentricAccountRepository;
+import ir.demisco.cfs.service.repository.FinancialAccountRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentItemCurrencyRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentNumberRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentReferenceRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentStatusRepository;
+import ir.demisco.cfs.service.repository.FinancialNumberingFormatRepository;
+import ir.demisco.cfs.service.repository.FinancialNumberingTypeRepository;
+import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
+import ir.demisco.cfs.service.repository.NumberingFormatSerialRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -21,7 +59,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
@@ -30,7 +67,11 @@ import java.text.ParsePosition;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
@@ -90,7 +131,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
         Map<String, Object> paramMap = paramSearch.getParamMap();
-//        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip() / (dataSourceRequest.getTake() / 2)  , dataSourceRequest.getTake() + dataSourceRequest.getSkip());
         List<Object[]> list = financialDocumentRepository.getFinancialDocumentList(SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getStartDate(),
                 paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
                 paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
@@ -252,19 +292,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         responseFinancialDocumentDto.setDocumentUserId(0L);
                     }
                     break;
-
-//                case "priceType.id":
-//                    if (item.getValue() != null) {
-//                        map.put("priceType", "priceType");
-//                        responseFinancialDocumentDto.setParamMap(map);
-//                        responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
-//                    } else {
-//                        map.put("priceType", null);
-//                        responseFinancialDocumentDto.setParamMap(map);
-//                        responseFinancialDocumentDto.setPriceTypeId(0L);
-//                    }
-//                    break;
-
                 case "fromPriceAmount":
                     if (item.getValue() != null) {
                         map.put("fromPrice", "fromPrice");
@@ -308,6 +335,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         responseFinancialDocumentDto.setParamMap(map);
                         responseFinancialDocumentDto.setFinancialDocumentTypeId(0L);
                     }
+                    break;
+                default:
+
                     break;
             }
         }
@@ -368,7 +398,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 responseFinancialDocumentSetStatusDto.setErrorFoundFlag(true);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(responseFinancialDocumentSetStatusDto);
             }
-//            return ResponseEntity.status(HttpStatus.CONFLICT).body(responseFinancialDocumentSetStatusDto);
         } else {
 
             financialDocument.setFinancialDocumentStatus(financialDocumentStatus);
@@ -377,7 +406,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             return ResponseEntity.ok(responseFinancialDocumentSetStatusDto);
         }
 
-//        return responseFinancialDocumentSetStatusDto;
     }
 
     private List<FinancialDocumentErrorDto> validationSetStatus(FinancialDocument financialDocument) {
@@ -440,12 +468,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
                 Long documentReference = financialDocumentReferenceRepository.getDocumentReference(documentItem.getId());
                 if (documentReference != null) {
-                    FinancialDocumentErrorDto FinancialDocumentReference = new FinancialDocumentErrorDto();
-                    FinancialDocumentReference.setFinancialDocumentId(financialDocument.getId());
-                    FinancialDocumentReference.setFinancialDocumentItemId(documentItem.getId());
-                    FinancialDocumentReference.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-                    FinancialDocumentReference.setMessage("تاریخ و شرح در مدارک مرجع پر نشده.");
-                    financialDocumentErrorDtoList.add(FinancialDocumentReference);
+                    FinancialDocumentErrorDto financialDocumentReference = new FinancialDocumentErrorDto();
+                    financialDocumentReference.setFinancialDocumentId(financialDocument.getId());
+                    financialDocumentReference.setFinancialDocumentItemId(documentItem.getId());
+                    financialDocumentReference.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+                    financialDocumentReference.setMessage("تاریخ و شرح در مدارک مرجع پر نشده.");
+                    financialDocumentErrorDtoList.add(financialDocumentReference);
                 }
 
                 Long financialDocumentItemInfoCurrency = financialDocumentItemRepository.getInfoCurrency(documentItem.getId());
@@ -467,22 +495,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     equalCurrency.setMessage("نوع ارز انتخاب شده در ردیفهای ارزی سند ، با نوع ارز یکسان نمیباشد");
                     financialDocumentErrorDtoList.add(equalCurrency);
                 }
-//                List<AccountDefaultValue> accountDefaultValueList = accountDefaultValueRepository.getAccountDefaultValueByDocumentItemId(documentItem.getId());
-//                accountDefaultValueList.forEach(defaultValue -> {
-//                    if ((documentItem.getCentricAccountId1() != defaultValue.getCentricAccount()) ||
-//                            (documentItem.getCentricAccountId2() != defaultValue.getCentricAccount()) ||
-//                            (documentItem.getCentricAccountId3() != defaultValue.getCentricAccount()) ||
-//                            (documentItem.getCentricAccountId4() != defaultValue.getCentricAccount()) ||
-//                            (documentItem.getCentricAccountId5() != defaultValue.getCentricAccount()) ||
-//                            (documentItem.getCentricAccountId6() != defaultValue.getCentricAccount())) {
-//                        FinancialDocumentErrorDto centricAccount = new FinancialDocumentErrorDto();
-//                        centricAccount.setFinancialDocumentId(financialDocument.getId());
-//                        centricAccount.setFinancialDocumentItemId(documentItem.getId());
-//                        centricAccount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-//                        centricAccount.setMessage("کد / کدهای تمرکز با تمرکز های حساب ، همخوانی ندارد");
-//                        financialDocumentErrorDtoList.add(centricAccount);
-//                    }
-//                });
 
             });
         }
@@ -695,7 +707,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         return true;
     }
 
-    @Transactional(propagation = Propagation.REQUIRES_NEW)
     public void deleteDocumentItem(List<FinancialDocumentItem> financialDocumentItemList) {
         financialDocumentItemList.forEach(documentItem -> {
             Long documentItemByIdForDelete = financialDocumentItemRepository.getDocumentItemByIdForDelete(documentItem.getId());
@@ -1002,6 +1013,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 case "financialStructure.id":
                     requestDocumentStructureDto.setFinancialStructureId(Long.parseLong(item.getValue().toString()));
                     break;
+                default:
+
+                    break;
             }
         }
         return requestDocumentStructureDto;
@@ -1014,10 +1028,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         List<Object[]> documentStructure = financialDocumentItemRepository.getDocumentStructurList(requestDocumentStructureDto.getFinancialDocumentId());
         return documentStructure.stream().map(objects ->
                 ResponseFinancialDocumentStructureDto.builder()
-                        .DocumentStructureId(Long.parseLong(objects[0].toString()))
+                        .documentStructureId(Long.parseLong(objects[0].toString()))
                         .sequence(Long.parseLong(objects[1].toString()))
                         .description(objects[2].toString())
-                        .FinancialCodingTypeId(Long.parseLong(objects[3].toString()))
+                        .financialCodingTypeId(Long.parseLong(objects[3].toString()))
                         .build()
         ).collect(Collectors.toList());
     }

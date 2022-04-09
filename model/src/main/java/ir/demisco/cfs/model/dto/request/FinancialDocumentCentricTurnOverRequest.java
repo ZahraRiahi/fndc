@@ -21,7 +21,7 @@ public class FinancialDocumentCentricTurnOverRequest {
     private LocalDateTime periodStartDate;
     private Long referenceNumber;
     private Object referenceNumberObject;
-    private Object FinancialAccount;
+    private Object financialAccount;
 
 
     public Long getFinancialAccountId() {
@@ -169,10 +169,10 @@ public class FinancialDocumentCentricTurnOverRequest {
     }
 
     public Object getFinancialAccount() {
-        return FinancialAccount;
+        return financialAccount;
     }
 
     public void setFinancialAccount(Object financialAccount) {
-        FinancialAccount = financialAccount;
+        this.financialAccount = financialAccount;
     }
 }
