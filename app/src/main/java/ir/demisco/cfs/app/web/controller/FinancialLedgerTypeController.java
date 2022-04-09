@@ -1,6 +1,5 @@
 package ir.demisco.cfs.app.web.controller;
 
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerTypeRequest;
 import ir.demisco.cfs.model.dto.request.FinancialSecurityFilterRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDepartmentLedgerDto;
@@ -13,6 +12,7 @@ import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 
 import java.util.List;
