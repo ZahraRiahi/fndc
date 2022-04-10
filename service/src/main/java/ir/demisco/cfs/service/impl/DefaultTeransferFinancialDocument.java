@@ -302,7 +302,8 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
             FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentTransferRequest.getId() == null ? 0L : financialDocumentTransferRequest.getId()).orElse(new FinancialDocument());
             FinancialDocument financialDocumentUpdate;
             financialDocumentUpdate = financialDocument;
-            financialDocumentUpdate.setDocumentDate(DateUtil.convertStringToDate(financialDocumentTransferRequest.getDate().format(DateTimeFormatter.ofPattern("YYYY/MM/DD"))));
+//            financialDocumentUpdate.setDocumentDate(DateUtil.convertStringToDate(financialDocumentTransferRequest.getDate().format(DateTimeFormatter.ofPattern("YYYY/MM/DD"))));
+            financialDocumentUpdate.setDocumentDate(DateUtil.convertStringToDate(financialPeriodStatusRequest.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))));
             financialDocumentUpdate.setFinancialPeriod(financialPeriodRepository.getOne(newFinancialPeriodId.get(0).getId()));
             financialDocumentUpdate = financialDocumentRepository.save(financialDocumentUpdate);
             String newNumber;
@@ -314,7 +315,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
             financialDocumentUpdate.setDocumentNumber(newNumber);
             financialDocumentTransferOutputResponse = FinancialDocumentTransferOutputResponse.builder()
                     .documentId(financialDocumentUpdate.getId())
-                    .date(DateUtil.convertStringToDate(financialPeriodStatusRequest.getDate().format(DateTimeFormatter.ofPattern("YYYY/MM/DD"))))
+                    .date(DateUtil.convertStringToDate(financialPeriodStatusRequest.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))))
                     .documentNumber(newNumber)
                     .build();
 
