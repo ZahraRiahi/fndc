@@ -47,7 +47,7 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
         // comment jira FIN-1126 organ pakage -1
         Long organizationIdPKG = -1L;
         List<Object[]> financialDocumentItemList = departmentRepository.getFinancialDocumentItemList(
-               SecurityHelper.getCurrentUser().getOrganizationId()
+                SecurityHelper.getCurrentUser().getOrganizationId()
                 , organizationIdPKG
                 , param.getActivityCode()
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialPeriodId())
@@ -75,41 +75,19 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
                 case "departmentId":
-                    if (item.getValue() != null) {
-                        financialSecurityFilterRequest.setDepartmentId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        financialSecurityFilterRequest.setDepartmentId(null);
-                    }
+                    checkDepartmentId(financialSecurityFilterRequest, item);
                     break;
                 case "financialDepartmentId":
-                    if (item.getValue() != null) {
-                        financialSecurityFilterRequest.setFinancialDepartmentId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        financialSecurityFilterRequest.setFinancialDepartmentId(null);
-                    }
+                    checkFinancialDepartmentId(financialSecurityFilterRequest, item);
                     break;
-
-
                 case "financialLedgerId":
-                    if (item.getValue() != null) {
-                        financialSecurityFilterRequest.setFinancialLedgerId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        financialSecurityFilterRequest.setFinancialLedgerId(null);
-                    }
+                    checkFinancialLedgerId(financialSecurityFilterRequest, item);
                     break;
                 case "financialPeriodId":
-                    if (item.getValue() != null) {
-                        financialSecurityFilterRequest.setFinancialPeriodId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        financialSecurityFilterRequest.setFinancialPeriodId(null);
-                    }
+                    checkFinancialPeriodId(financialSecurityFilterRequest, item);
                     break;
                 case "documentTypeId":
-                    if (item.getValue() != null) {
-                        financialSecurityFilterRequest.setDocumentTypeId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        financialSecurityFilterRequest.setDocumentTypeId(null);
-                    }
+                    checkDocumentTypeId(financialSecurityFilterRequest, item);
                     break;
                 case "subjectId":
                     if (item.getValue() != null) {
@@ -137,5 +115,45 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
             }
         }
         return financialSecurityFilterRequest;
+    }
+
+    private void checkDepartmentId(FinancialSecurityFilterRequest financialSecurityFilterRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialSecurityFilterRequest.setDepartmentId(Long.parseLong(item.getValue().toString()));
+        } else {
+            financialSecurityFilterRequest.setDepartmentId(null);
+        }
+    }
+
+    private void checkFinancialDepartmentId(FinancialSecurityFilterRequest financialSecurityFilterRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialSecurityFilterRequest.setFinancialDepartmentId(Long.parseLong(item.getValue().toString()));
+        } else {
+            financialSecurityFilterRequest.setFinancialDepartmentId(null);
+        }
+    }
+
+    private void checkFinancialLedgerId(FinancialSecurityFilterRequest financialSecurityFilterRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialSecurityFilterRequest.setFinancialLedgerId(Long.parseLong(item.getValue().toString()));
+        } else {
+            financialSecurityFilterRequest.setFinancialLedgerId(null);
+        }
+    }
+
+    private void checkFinancialPeriodId(FinancialSecurityFilterRequest financialSecurityFilterRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialSecurityFilterRequest.setFinancialPeriodId(Long.parseLong(item.getValue().toString()));
+        } else {
+            financialSecurityFilterRequest.setFinancialPeriodId(null);
+        }
+    }
+
+    private void checkDocumentTypeId(FinancialSecurityFilterRequest financialSecurityFilterRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialSecurityFilterRequest.setDocumentTypeId(Long.parseLong(item.getValue().toString()));
+        } else {
+            financialSecurityFilterRequest.setDocumentTypeId(null);
+        }
     }
 }

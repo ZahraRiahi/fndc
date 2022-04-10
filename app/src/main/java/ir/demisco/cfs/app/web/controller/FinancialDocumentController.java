@@ -1,7 +1,5 @@
 package ir.demisco.cfs.app.web.controller;
 
-
-
 import ir.demisco.cfs.model.dto.request.FinancialDocumentTransferRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
 import ir.demisco.cfs.model.dto.response.FinancialCentricAccountDto;
@@ -101,7 +99,6 @@ public class FinancialDocumentController {
 
     @PostMapping("/ChangeAmount")
     public ResponseEntity<Boolean> changeAmount(@RequestBody FinancialCentricAccountDto financialCentricAccountDto) {
-
         Boolean result;
         result = financialDocumentService.changeAmountDocument(financialCentricAccountDto);
         return ResponseEntity.ok(result);
@@ -109,7 +106,6 @@ public class FinancialDocumentController {
 
     @PostMapping("/SetAmount")
     public ResponseEntity<Boolean> setAmount(@RequestBody FinancialCentricAccountDto financialCentricAccountDto) {
-
         Boolean result;
         result = financialDocumentService.setAmountDocument(financialCentricAccountDto);
         return ResponseEntity.ok(result);
