@@ -22,7 +22,7 @@ public class DefaultFinancialDocumentHeader implements FinancialDocumentHeaderSe
     @Transactional
     public FinancialDocumentHeaderResponse getFinancialDocumentHeaderByDocumentId(Long financialDocumentId) {
         FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentId).orElseThrow(() -> new RuleException("fin.ruleException.notFoundId"));
-        FinancialDocumentHeaderResponse financialDocumentHeaderResponse = FinancialDocumentHeaderResponse.builder().id(financialDocumentId)
+        return FinancialDocumentHeaderResponse.builder().id(financialDocumentId)
                 .documentDate(financialDocument.getDocumentDate())
                 .documentNumber(financialDocument.getDocumentNumber())
                 .financialDocumentTypeId(financialDocument.getFinancialDocumentType().getId())
@@ -41,14 +41,14 @@ public class DefaultFinancialDocumentHeader implements FinancialDocumentHeaderSe
                 .financialDocumentStatusDescription(financialDocument.getFinancialDocumentStatus() == null ? "" : financialDocument.getFinancialDocumentStatus().getName())
                 .creatorId(financialDocument.getCreator().getId())
                 .build();
-        return financialDocumentHeaderResponse;
+
     }
 
     @Override
     @Transactional
     public FinancialDocumentHeaderOutputResponse getFinancialDocumentHeaderBytId(Long financialDocumentId) {
         FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentId).orElseThrow(() -> new RuleException("fin.ruleException.notFoundId"));
-        FinancialDocumentHeaderOutputResponse financialDocumentHeaderOutputResponse = FinancialDocumentHeaderOutputResponse.builder().id(financialDocumentId)
+        return FinancialDocumentHeaderOutputResponse.builder().id(financialDocumentId)
                 .documentDate(financialDocument.getDocumentDate())
                 .description(financialDocument.getDescription())
                 .financialDocumentStatusId(financialDocument.getFinancialDocumentStatus().getId())
@@ -64,7 +64,6 @@ public class DefaultFinancialDocumentHeader implements FinancialDocumentHeaderSe
                 .departmentId(financialDocument.getFinancialDepartment().getDepartment() == null ? 0 : financialDocument.getFinancialDepartment().getDepartment().getId())
                 .financialSystemId(financialDocument.getFinancialDepartment().getFinancialSystem() == null ? 0 : financialDocument.getFinancialDepartment().getFinancialSystem().getId())
                 .build();
-        return financialDocumentHeaderOutputResponse;
     }
 }
 

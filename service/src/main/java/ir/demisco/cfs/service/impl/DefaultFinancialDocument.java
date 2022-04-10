@@ -172,8 +172,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 case "departmentId":
                     responseFinancialDocumentDto.setDepartmentId(Long.parseLong(item.getValue().toString()));
                     break;
-
-
                 case "startDate":
                     responseFinancialDocumentDto.setStartDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
                     break;
@@ -865,30 +863,31 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
         FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId())
                 .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
-        FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
-        if (financialDocument == null) {
-            throw new RuleException("fin.financialDocument.openStatusPeriod");
-        } else {
-            List<FinancialDocumentItem> financialDocumentItemList =
-                    financialDocumentItemRepository.findByFinancialDocumentItemIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
-            financialDocumentItemList.forEach(documentItem -> {
-                Double newAmount = documentItem.getCreditAmount();
-                documentItem.setCreditAmount(documentItem.getDebitAmount());
-                documentItem.setDebitAmount(newAmount);
-                financialDocumentItemRepository.save(documentItem);
-            });
-            List<FinancialDocumentItemCurrency> financialDocumentItemCurrencyList =
-                    financialDocumentItemCurrencyRepository.findByFinancialDocumentItemCurrencyIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
-            financialDocumentItemCurrencyList.forEach(documentItem -> {
-                Double newAmount2 = documentItem.getForeignCreditAmount();
-                documentItem.setForeignCreditAmount(documentItem.getForeignDebitAmount());
-                documentItem.setForeignDebitAmount(newAmount2);
-                financialDocumentItemCurrencyRepository.save(documentItem);
-            });
-            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
-            financialDocumentRepository.save(financialDocument);
-
+        FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
+        financialPeriodStatusRequest.setFinancialDocumentId(financialCentricAccountDto.getId());
+        FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
+        if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
         }
+        List<FinancialDocumentItem> financialDocumentItemList =
+                financialDocumentItemRepository.findByFinancialDocumentItemIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
+        financialDocumentItemList.forEach(documentItem -> {
+            Double newAmount = documentItem.getCreditAmount();
+            documentItem.setCreditAmount(documentItem.getDebitAmount());
+            documentItem.setDebitAmount(newAmount);
+            financialDocumentItemRepository.save(documentItem);
+        });
+        List<FinancialDocumentItemCurrency> financialDocumentItemCurrencyList =
+                financialDocumentItemCurrencyRepository.findByFinancialDocumentItemCurrencyIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
+        financialDocumentItemCurrencyList.forEach(documentItem -> {
+            Double newAmount2 = documentItem.getForeignCreditAmount();
+            documentItem.setForeignCreditAmount(documentItem.getForeignDebitAmount());
+            documentItem.setForeignDebitAmount(newAmount2);
+            financialDocumentItemCurrencyRepository.save(documentItem);
+        });
+        document.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
+        financialDocumentRepository.save(document);
+
         return true;
     }
 
@@ -909,28 +908,22 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
         }
-        FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
-        if (financialDocument == null) {
-            throw new RuleException("fin.financialDocument.openStatusPeriod");
-        } else {
-            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentItemIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
-            financialDocumentItemList.forEach(documentItem -> {
-                documentItem.setCreditAmount(0D);
-                documentItem.setDebitAmount(0D);
-                financialDocumentItemRepository.save(documentItem);
-            });
+        List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentItemIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
+        financialDocumentItemList.forEach(documentItem -> {
+            documentItem.setCreditAmount(0D);
+            documentItem.setDebitAmount(0D);
+            financialDocumentItemRepository.save(documentItem);
+        });
 
-            List<FinancialDocumentItemCurrency> financialDocumentItemCurrencyList =
-                    financialDocumentItemCurrencyRepository.findByFinancialDocumentItemCurrencyIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
-            financialDocumentItemCurrencyList.forEach(documentItem -> {
-                documentItem.setForeignDebitAmount(0D);
-                documentItem.setForeignCreditAmount(0D);
-                financialDocumentItemCurrencyRepository.save(documentItem);
-            });
-            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
-            financialDocumentRepository.save(financialDocument);
-
-        }
+        List<FinancialDocumentItemCurrency> financialDocumentItemCurrencyList =
+                financialDocumentItemCurrencyRepository.findByFinancialDocumentItemCurrencyIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
+        financialDocumentItemCurrencyList.forEach(documentItem -> {
+            documentItem.setForeignDebitAmount(0D);
+            documentItem.setForeignCreditAmount(0D);
+            financialDocumentItemCurrencyRepository.save(documentItem);
+        });
+        document.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
+        financialDocumentRepository.save(document);
         return true;
     }
 
