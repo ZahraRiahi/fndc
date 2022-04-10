@@ -22,12 +22,12 @@ public class DefaultFinancialDocumentSummarize implements FinancialDocumentSumma
     public FinancialDocumentSummarizeResponse getFinancialDocumentByFinancialDocumentId(FinancialDocumentSummarizeRequest financialDocumentSummarizeRequest) {
         List<Object[]> financialDocumentItemListObject = financialDocumentItemRepository.findFinancialDocumentItemByFinancialDocumentId(financialDocumentSummarizeRequest.getFinancialDocumentId());
 
-        FinancialDocumentSummarizeResponse financialDocumentSummarizeResponse = financialDocumentItemListObject.stream().map(e -> FinancialDocumentSummarizeResponse.builder().recordsCount(Long.parseLong(e[0].toString()))
-                .sumDebitAmount(Double.valueOf(e[1].toString()).longValue())
-                .sumCreditAmount(Double.valueOf(e[2].toString()).longValue())
-                .remainAmount(Double.valueOf(e[3].toString()).longValue())
+        FinancialDocumentSummarizeResponse financialDocumentSummarizeResponse = financialDocumentItemListObject.stream().map(e -> FinancialDocumentSummarizeResponse.builder()
+                .recordsCount(e[0] == null ? 0 : Long.parseLong(e[0].toString()))
+                .sumDebitAmount(e[1] == null ? 0 : Double.valueOf(e[1].toString()).longValue())
+                .sumCreditAmount(e[2] == null ? 0 : Double.valueOf(e[2].toString()).longValue())
+                .remainAmount(e[3] == null ? 0 : Double.valueOf(e[3].toString()).longValue())
                 .build()).findAny().get();
-
         if (!financialDocumentSummarizeRequest.getFinancialDocumentItems().isEmpty()) {
             List<Object[]> financialDocumentIdList = financialDocumentItemRepository.findFinancialDocumentItemByFinancialDocumentIdList(financialDocumentSummarizeRequest.getFinancialDocumentId(), financialDocumentSummarizeRequest.getFinancialDocumentItems());
             financialDocumentIdList.forEach(e -> {

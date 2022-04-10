@@ -359,25 +359,26 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
         if (input instanceof String) {
-            try {
-                //                Date date = ISO8601Utils.parse((String) input);
-                Date date = ISO8601Utils.parse((String) input, new ParsePosition(0));
-                LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-                return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
-            } catch (Exception var4) {
-                if (((String) input).equalsIgnoreCase("current_date")) {
-                    return truncateDate ? DateUtil.truncate(LocalDateTime.now()) : LocalDateTime.now();
-                } else {
-                    return ((String) input).equalsIgnoreCase("current_timestamp") ? LocalDateTime.now() : LocalDateTime.parse((String) input);
-                }
-            }
+            return checkTry(input, truncateDate);
         } else if (input instanceof LocalDateTime) {
             return truncateDate ? DateUtil.truncate((LocalDateTime) input) : (LocalDateTime) input;
         } else {
             throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
         }
     }
-
+    private LocalDateTime checkTry(Object input, boolean truncateDate) {
+        try {
+            Date date = ISO8601Utils.parse((String) input, new ParsePosition(0));
+            LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+            return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
+        } catch (Exception var4) {
+            if (((String) input).equalsIgnoreCase("current_date")) {
+                return truncateDate ? DateUtil.truncate(LocalDateTime.now()) : LocalDateTime.now();
+            } else {
+                return ((String) input).equalsIgnoreCase("current_timestamp") ? LocalDateTime.now() : LocalDateTime.parse((String) input);
+            }
+        }
+    }
     @Override
     @Transactional(readOnly = true)
     public DataSourceResult getFinancialDocumentCentricTurnOver(DataSourceRequest dataSourceRequest) {
