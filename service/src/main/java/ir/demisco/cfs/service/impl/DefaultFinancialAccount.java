@@ -622,6 +622,14 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
+    private void checkFlgHasRemindSet(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentCentricTurnOverRequest.setFlgHasRemind((Boolean) (item.getValue()));
+        } else {
+            throw new RuleException("fin.document.flgHasRemind.is.null");
+        }
+    }
+
     private void getFinancialDocumentByNumberingTypeAndFromNumber(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest) {
         if (financialDocumentCentricTurnOverRequest.getDateFilterFlg() == 0) {
             setFromDateAndToDateCentricTurnOver(financialDocumentCentricTurnOverRequest);
@@ -721,11 +729,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
         List<FinancialAccountBalanceResponse> financialAccountBalanceResponse = list.stream().map(item ->
                 FinancialAccountBalanceResponse.builder()
-                        .financialAccountParentId(Long.parseLong(item[0] == null ? null : item[0].toString()))
-                        .financialAccountId(Long.parseLong(item[1] == null ? null : item[1].toString()))
-                        .financialAccountCode(item[2] == null ? null : item[2].toString())
-                        .financialAccountDescription(item[3] == null ? null : item[3].toString())
-                        .financialAccountLevel(Long.parseLong(item[4] == null ? null : item[4].toString()))
+                        .financialAccountParentId(getItemForLong(item, 0))
+                        .financialAccountId(getItemForLong(item, 1))
+                        .financialAccountCode(gatItemForString(item, 2))
+                        .financialAccountDescription(gatItemForString(item, 3))
+                        .financialAccountLevel(getItemForLong(item, 4))
                         .sumDebit(item[5] == null ? null : ((BigDecimal) item[5]).doubleValue())
                         .sumCredit(item[6] == null ? null : ((BigDecimal) item[6]).doubleValue())
                         .befDebit(item[7] == null ? null : ((BigDecimal) item[7]).doubleValue())
@@ -737,6 +745,14 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         dataSourceResult.setData(financialAccountBalanceResponse);
         dataSourceResult.setTotal(list.getTotalElements());
         return dataSourceResult;
+    }
+
+    private Long getItemForLong(Object[] item, int i) {
+        return item[i] == null ? null : Long.parseLong(item[i].toString());
+    }
+
+    private String gatItemForString(Object[] item, int i) {
+        return item[i] == null ? null : item[i].toString();
     }
 
     private FinancialAccountBalanceRequest setParameterBalanceReport(List<DataSourceRequest.FilterDescriptor> filters) {
