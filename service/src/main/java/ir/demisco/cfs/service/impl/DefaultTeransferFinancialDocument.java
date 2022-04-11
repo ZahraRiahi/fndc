@@ -162,7 +162,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
                     .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
             financialDocumentUpdate.setFinancialDocumentStatus(financialDocumentStatusRepository.getOne(1L));
         }
-         date  =financialDocumentTransferRequest.getDate();
+        date = financialDocumentTransferRequest.getDate();
         if (financialDocumentTransferRequest.getTransferType() == 2 || financialDocumentTransferRequest.getTransferType() == 4 || financialDocumentTransferRequest.getTransferType() == 6) {
             financialPeriodStatusRequest.setFinancialDocumentId(financialDocumentTransferRequest.getId());
             FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
@@ -302,7 +302,6 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
             FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentTransferRequest.getId() == null ? 0L : financialDocumentTransferRequest.getId()).orElse(new FinancialDocument());
             FinancialDocument financialDocumentUpdate;
             financialDocumentUpdate = financialDocument;
-//            financialDocumentUpdate.setDocumentDate(DateUtil.convertStringToDate(financialDocumentTransferRequest.getDate().format(DateTimeFormatter.ofPattern("YYYY/MM/DD"))));
             financialDocumentUpdate.setDocumentDate(DateUtil.convertStringToDate(financialDocumentTransferRequest.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))));
             financialDocumentUpdate.setFinancialPeriod(financialPeriodRepository.getOne(newFinancialPeriodId.get(0).getId()));
             financialDocumentUpdate = financialDocumentRepository.save(financialDocumentUpdate);
