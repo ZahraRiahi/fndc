@@ -79,26 +79,26 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
             if (item[17] != null && (Long.parseLong(item[17].toString()) == 1 || Long.parseLong(item[17].toString()) == 2)) {
                 FinancialAccountTurnOverRecordsResponse recordsResponse = new FinancialAccountTurnOverRecordsResponse();
-                recordsResponse.setDocumentDate(item[0] == null ? null : convertDate(item[0].toString()));
-                recordsResponse.setDocumentNumber(item[2] == null ? null : item[2].toString());
-                recordsResponse.setDescription(item[3] == null ? null : item[3].toString());
-                recordsResponse.setDebitAmount(item[7] == null ? null : Double.parseDouble(item[7].toString()));
-                recordsResponse.setCreditAmount(item[8] == null ? null : Double.parseDouble(item[8].toString()));
-                recordsResponse.setRemainDebit(item[9] == null ? null : Double.parseDouble(item[9].toString()));
-                recordsResponse.setRemainCredit(item[10] == null ? null : Double.parseDouble(item[10].toString()));
-                recordsResponse.setRemainAmount(item[11] == null ? null : Double.parseDouble(item[11].toString()));
-                recordsResponse.setRecordType(item[17] == null ? null : Long.parseLong(item[17].toString()));
+                recordsResponse.setDocumentDate(getItemForDate(item, 0));
+                recordsResponse.setDocumentNumber(gatItemForString(item, 2));
+                recordsResponse.setDescription(gatItemForString(item, 3));
+                recordsResponse.setDebitAmount(getItemForDouble(item, 7));
+                recordsResponse.setCreditAmount(getItemForDouble(item, 8));
+                recordsResponse.setRemainDebit(getItemForDouble(item, 9));
+                recordsResponse.setRemainCredit(getItemForDouble(item, 10));
+                recordsResponse.setRemainAmount(getItemForDouble(item, 11));
+                recordsResponse.setRecordType(getItemForLong(item, 17));
                 recordsResponseList.add(recordsResponse);
                 response.setFinancialAccountTurnOverRecordsResponseModel(recordsResponseList);
             } else {
                 FinancialAccountTurnOverSummarizeResponse accountTurnOverSummarizeResponse = new FinancialAccountTurnOverSummarizeResponse();
                 FinancialAccountTurnOverOutputResponse outputResponse = new FinancialAccountTurnOverOutputResponse();
-                accountTurnOverSummarizeResponse.setSumDebit(item[12] == null ? null : Double.parseDouble(item[12].toString()));
-                accountTurnOverSummarizeResponse.setSumCredit(item[13] == null ? null : Double.parseDouble(item[13].toString()));
-                accountTurnOverSummarizeResponse.setSummarizeDebit(item[14] == null ? null : Double.parseDouble(item[14].toString()));
-                accountTurnOverSummarizeResponse.setSummarizeCredit(item[15] == null ? null : Double.parseDouble(item[15].toString()));
-                accountTurnOverSummarizeResponse.setSummarizeAmount(item[16] == null ? null : Double.parseDouble(item[16].toString()));
-                accountTurnOverSummarizeResponse.setRecordType(item[17] == null ? null : Long.parseLong(item[17].toString()));
+                accountTurnOverSummarizeResponse.setSumDebit(getItemForDouble(item, 12));
+                accountTurnOverSummarizeResponse.setSumCredit(getItemForDouble(item, 13));
+                accountTurnOverSummarizeResponse.setSummarizeDebit(getItemForDouble(item, 14));
+                accountTurnOverSummarizeResponse.setSummarizeCredit(getItemForDouble(item, 15));
+                accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForDouble(item, 16));
+                accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 17));
                 outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
                 response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
             }
@@ -366,6 +366,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
         }
     }
+
     private LocalDateTime checkTry(Object input, boolean truncateDate) {
         try {
             Date date = ISO8601Utils.parse((String) input, new ParsePosition(0));
@@ -379,6 +380,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             }
         }
     }
+
     @Override
     @Transactional(readOnly = true)
     public DataSourceResult getFinancialDocumentCentricTurnOver(DataSourceRequest dataSourceRequest) {
@@ -417,37 +419,37 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
             if (item[25] != null && (Long.parseLong(item[25].toString()) == 1 || Long.parseLong(item[25].toString()) == 2)) {
                 FinancialAccountCentricTurnOverRecordsResponse recordsResponse = new FinancialAccountCentricTurnOverRecordsResponse();
-                recordsResponse.setAccountId(item[0] == null ? null : Long.parseLong(item[0].toString()));
-                recordsResponse.setAccountCode(item[1] == null ? null : item[1].toString());
-                recordsResponse.setAccountDescription(item[2] == null ? null : item[2].toString());
-                recordsResponse.setCentricAccountId1(item[3] == null ? null : Long.parseLong(item[3].toString()));
-                recordsResponse.setCentricAccountId2(item[4] == null ? null : Long.parseLong(item[4].toString()));
-                recordsResponse.setCentricAccountId3(item[5] == null ? null : Long.parseLong(item[5].toString()));
-                recordsResponse.setCentricAccountId4(item[6] == null ? null : Long.parseLong(item[6].toString()));
-                recordsResponse.setCentricAccountId5(item[7] == null ? null : Long.parseLong(item[7].toString()));
-                recordsResponse.setCentricAccountId6(item[8] == null ? null : Long.parseLong(item[8].toString()));
-                recordsResponse.setCentricAccountDes1(item[9] == null ? null : item[9].toString());
-                recordsResponse.setCentricAccountDes2(item[10] == null ? null : item[10].toString());
-                recordsResponse.setCentricAccountDes3(item[11] == null ? null : item[11].toString());
-                recordsResponse.setCentricAccountDes4(item[12] == null ? null : item[12].toString());
-                recordsResponse.setCentricAccountDes5(item[13] == null ? null : item[13].toString());
-                recordsResponse.setCentricAccountDes6(item[14] == null ? null : item[14].toString());
-                recordsResponse.setDebitAmount(item[15] == null ? null : Double.parseDouble(item[15].toString()));
-                recordsResponse.setCreditAmount(item[16] == null ? null : Double.parseDouble(item[16].toString()));
-                recordsResponse.setRemainDebit(item[17] == null ? null : Double.parseDouble(item[17].toString()));
-                recordsResponse.setRemainCredit(item[18] == null ? null : Double.parseDouble(item[18].toString()));
-                recordsResponse.setRemainAmount(item[19] == null ? null : Double.parseDouble(item[19].toString()));
+                recordsResponse.setAccountId(getItemForLong(item, 0));
+                recordsResponse.setAccountCode(gatItemForString(item, 1));
+                recordsResponse.setAccountDescription(gatItemForString(item, 2));
+                recordsResponse.setCentricAccountId1(getItemForLong(item, 3));
+                recordsResponse.setCentricAccountId2(getItemForLong(item, 4));
+                recordsResponse.setCentricAccountId3(getItemForLong(item, 5));
+                recordsResponse.setCentricAccountId4(getItemForLong(item, 6));
+                recordsResponse.setCentricAccountId5(getItemForLong(item, 7));
+                recordsResponse.setCentricAccountId6(getItemForLong(item, 8));
+                recordsResponse.setCentricAccountDes1(gatItemForString(item, 9));
+                recordsResponse.setCentricAccountDes2(gatItemForString(item, 10));
+                recordsResponse.setCentricAccountDes3(gatItemForString(item, 11));
+                recordsResponse.setCentricAccountDes4(gatItemForString(item, 12));
+                recordsResponse.setCentricAccountDes5(gatItemForString(item, 13));
+                recordsResponse.setCentricAccountDes6(gatItemForString(item, 14));
+                recordsResponse.setDebitAmount(getItemForDouble(item, 15));
+                recordsResponse.setCreditAmount(getItemForDouble(item, 16));
+                recordsResponse.setRemainDebit(getItemForDouble(item, 17));
+                recordsResponse.setRemainCredit(getItemForDouble(item, 18));
+                recordsResponse.setRemainAmount(getItemForDouble(item, 19));
                 recordsResponseList.add(recordsResponse);
                 response.setFinancialAccountCentricTurnOverRecordsModel(recordsResponseList);
             } else {
                 FinancialAccountTurnOverSummarizeResponse accountTurnOverSummarizeResponse = new FinancialAccountTurnOverSummarizeResponse();
                 FinancialAccountTurnOverOutputResponse outputResponse = new FinancialAccountTurnOverOutputResponse();
-                accountTurnOverSummarizeResponse.setSumDebit(item[20] == null ? null : Double.parseDouble(item[20].toString()));
-                accountTurnOverSummarizeResponse.setSumCredit(item[21] == null ? null : Double.parseDouble(item[21].toString()));
-                accountTurnOverSummarizeResponse.setSummarizeDebit(item[22] == null ? null : Double.parseDouble(item[22].toString()));
-                accountTurnOverSummarizeResponse.setSummarizeCredit(item[23] == null ? null : Double.parseDouble(item[23].toString()));
-                accountTurnOverSummarizeResponse.setSummarizeAmount(item[24] == null ? null : Double.parseDouble(item[24].toString()));
-                accountTurnOverSummarizeResponse.setRecordType(item[25] == null ? null : Long.parseLong(item[25].toString()));
+                accountTurnOverSummarizeResponse.setSumDebit(getItemForDouble(item, 20));
+                accountTurnOverSummarizeResponse.setSumCredit(getItemForDouble(item, 21));
+                accountTurnOverSummarizeResponse.setSummarizeDebit(getItemForDouble(item, 22));
+                accountTurnOverSummarizeResponse.setSummarizeCredit(getItemForDouble(item, 23));
+                accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForDouble(item, 24));
+                accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 25));
                 outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
                 response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
             }
@@ -501,9 +503,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                     checkDateFilterFlgSet(financialDocumentCentricTurnOverRequest, item);
                     break;
                 case "flgHasRemind":
-                    if (item.getValue() != null) {
-                        financialDocumentCentricTurnOverRequest.setFlgHasRemind((Boolean) (item.getValue()));
-                    }
+                    checkFlgHasRemindSet(financialDocumentCentricTurnOverRequest, item);
                     break;
                 case "flgRelatedOther":
                     if (item.getValue() != null) {
@@ -692,15 +692,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             throw new RuleException("fin.financialAccount.mandatoryFinancialAccountCode");
         }
         if (financialAccountBalanceRequest.getFromFinancialAccountCode() != null || financialAccountBalanceRequest.getToFinancialAccountCode() != null) {
-            if (financialAccountBalanceRequest.getFromFinancialAccountCode() == null) {
-                financialAccountBalanceRequest.setFromFinancialAccountCode("fin.financialAccount.fromOrToFinancialAccountCode");
-            }
-            if (financialAccountBalanceRequest.getToFinancialAccountCode() == null) {
-                financialAccountBalanceRequest.setToFinancialAccountCode("fin.financialAccount.fromOrToFinancialAccountCode");
-            }
-            if (financialAccountBalanceRequest.getFromFinancialAccountCode().length() != financialAccountBalanceRequest.getToFinancialAccountCode().length()) {
-                throw new RuleException("fin.financialAccount.financialAccountBalance");
-            }
+            checkFinancialAccountBalanceSet(financialAccountBalanceRequest);
             length = financialAccountBalanceRequest.getFromFinancialAccountCode().length();
         }
         getFinancialDocumentByNumberingTypeAndFromNumberBalance(financialAccountBalanceRequest);
@@ -748,12 +740,32 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         return dataSourceResult;
     }
 
+    private void checkFinancialAccountBalanceSet(FinancialAccountBalanceRequest financialAccountBalanceRequest) {
+        if (financialAccountBalanceRequest.getFromFinancialAccountCode() == null) {
+            financialAccountBalanceRequest.setFromFinancialAccountCode("fin.financialAccount.fromOrToFinancialAccountCode");
+        }
+        if (financialAccountBalanceRequest.getToFinancialAccountCode() == null) {
+            financialAccountBalanceRequest.setToFinancialAccountCode("fin.financialAccount.fromOrToFinancialAccountCode");
+        }
+        if (financialAccountBalanceRequest.getFromFinancialAccountCode().length() != financialAccountBalanceRequest.getToFinancialAccountCode().length()) {
+            throw new RuleException("fin.financialAccount.financialAccountBalance");
+        }
+    }
+
     private Long getItemForLong(Object[] item, int i) {
         return item[i] == null ? null : Long.parseLong(item[i].toString());
     }
 
     private String gatItemForString(Object[] item, int i) {
         return item[i] == null ? null : item[i].toString();
+    }
+
+    private Date getItemForDate(Object[] item, int i) {
+        return item[i] == null ? null : convertDate(item[i].toString());
+    }
+
+    private Double getItemForDouble(Object[] item, int i) {
+        return item[i] == null ? null : ((BigDecimal) item[i]).doubleValue();
     }
 
     private FinancialAccountBalanceRequest setParameterBalanceReport(List<DataSourceRequest.FilterDescriptor> filters) {
