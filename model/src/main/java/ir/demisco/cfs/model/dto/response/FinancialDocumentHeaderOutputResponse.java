@@ -19,6 +19,7 @@ public class FinancialDocumentHeaderOutputResponse {
     private String documentNumber;
     private Long departmentId;
     private Long financialSystemId;
+    private Long userId;
 
     public Long getId() {
         return id;
@@ -147,6 +148,15 @@ public class FinancialDocumentHeaderOutputResponse {
     public void setFinancialSystemId(Long financialSystemId) {
         this.financialSystemId = financialSystemId;
     }
+
+    public Long getUserId() {
+        return userId;
+    }
+
+    public void setUserId(Long userId) {
+        this.userId = userId;
+    }
+
     public static FinancialDocumentHeaderOutputResponse.Builder builder() {
         return new FinancialDocumentHeaderOutputResponse.Builder();
     }
@@ -240,7 +250,10 @@ public class FinancialDocumentHeaderOutputResponse {
             financialDocumentHeaderOutputResponse.setFinancialSystemId(financialSystemId);
             return this;
         }
-
+        public Builder userId(Long userId) {
+            financialDocumentHeaderOutputResponse.setUserId(userId);
+            return this;
+        }
         public FinancialDocumentHeaderOutputResponse build() {
             return financialDocumentHeaderOutputResponse;
         }

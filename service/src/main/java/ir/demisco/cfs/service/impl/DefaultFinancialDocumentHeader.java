@@ -6,6 +6,7 @@ import ir.demisco.cfs.model.entity.FinancialDocument;
 import ir.demisco.cfs.service.api.FinancialDocumentHeaderService;
 import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -60,6 +61,7 @@ public class DefaultFinancialDocumentHeader implements FinancialDocumentHeaderSe
                 .financialDepartmentId(financialDocument.getFinancialDepartment() == null ? 0 : financialDocument.getFinancialDepartment().getId())
                 .documentNumber(financialDocument.getDocumentNumber())
                 .creatorId(financialDocument.getCreator().getId())
+                .userId(SecurityHelper.getCurrentUser().getUserId())
                 .lastModifierId(financialDocument.getLastModifier().getId())
                 .departmentId(financialDocument.getFinancialDepartment().getDepartment() == null ? 0 : financialDocument.getFinancialDepartment().getDepartment().getId())
                 .financialSystemId(financialDocument.getFinancialDepartment().getFinancialSystem() == null ? 0 : financialDocument.getFinancialDepartment().getFinancialSystem().getId())
