@@ -31,6 +31,7 @@ public class DefaultDocumentTypeOrgRel implements DocumentTypeOrgRelService {
             documentTypeOrgRel.setOrganization(organizationRepository.getOne(SecurityHelper.getCurrentUser().getOrganizationId()));
             documentTypeOrgRel.setFinancialDocumentType(financialDocumentTypeRepository.getById(along));
             documentTypeOrgRel.setActiveFlag(1L);
+            documentTypeOrgRelRepository.save(documentTypeOrgRel).getId();
         }
     }
 }
