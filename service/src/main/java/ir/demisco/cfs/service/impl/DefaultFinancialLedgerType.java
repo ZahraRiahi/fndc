@@ -306,8 +306,8 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         financialLedgerTypeNew.setCode(financialLedgerTypeCodeByOrganizationId);
         FinancialCodingType financialCodingType = financialCodingTypeRepository.findById(financialLedgerTypeRequest.getFinancialCodingTypeId()).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidCodingType"));
         financialLedgerTypeNew.setFinancialCodingType(financialCodingType);
-        Optional<Organization> organization = organizationRepository.findById(financialLedgerTypeRequest.getOrganizationId());
-        financialLedgerTypeNew.setOrganization(organization.get());
+//        Optional<Organization> organization = organizationRepository.findById(financialLedgerTypeRequest.getOrganizationId());
+        financialLedgerTypeNew.setOrganization(organizationRepository.getOne(SecurityHelper.getCurrentUser().getOrganizationId()));
         financialLedgerTypeNew.setActiveFlag(financialLedgerTypeRequest.getActiveFlag());
         FinancialLedgerType financialLedgerType = financialLedgerTypeRepository.save(financialLedgerTypeNew);
         List<Long> financialNumberingTypeIdList = financialLedgerTypeRequest.getNumberingTypeIdList();
@@ -343,7 +343,6 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
             if (financialLedgerType.getId() != null) {
                 financialLedgerTypeFromInsert = financialLedgerTypeRepository.findById(financialLedgerType.getId()).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidNumberingType"));
             }
-            FinancialLedgerType financialLedgerTypeFromUpdate = financialLedgerTypeRepository.findById(financialLedgerTypeIdRequest).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidNumberingType"));
             LedgerNumberingType ledgerNumberingTypeNew = new LedgerNumberingType();
             FinancialNumberingType financialNumberingType = financialNumberingTypeRepository.findById(financialNumberingTypeId).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidNumberingType"));
             Long countByLedgerTypeIdAndNumberingTypeIdAndDeleteDate = ledgerNumberingTypeRepository.getCountByLedgerTypeIdAndNumberingTypeIdAndDeleteDate(financialLedgerTypeRequest.getFinancialLedgerTypeId()
@@ -354,7 +353,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
             if (financialLedgerTypeIdRequest == null) {
                 ledgerNumberingTypeNew.setFinancialLedgerType(financialLedgerTypeFromInsert);
             } else {
-                ledgerNumberingTypeNew.setFinancialLedgerType(financialLedgerTypeFromUpdate);
+                ledgerNumberingTypeNew.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialNumberingTypeId));
             }
             ledgerNumberingTypeNew.setFinancialNumberingType(financialNumberingType);
             ledgerNumberingTypeRepository.save(ledgerNumberingTypeNew);

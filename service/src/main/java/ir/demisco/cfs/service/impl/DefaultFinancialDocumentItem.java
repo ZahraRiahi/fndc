@@ -326,6 +326,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
 
     private LocalDateTime checkTry(Object input, boolean truncateDate) {
         try {
+            //                Date date = ISO8601Utils.parse((String) input);
             Date date = ISO8601Utils.parse((String) input, new ParsePosition(0));
             LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
             return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;

@@ -175,133 +175,47 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 case "startDate":
                     responseFinancialDocumentDto.setStartDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
                     break;
-
                 case "endDate":
                     responseFinancialDocumentDto.setEndDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
                     break;
-
                 case "financialNumberingType.id":
                     responseFinancialDocumentDto.setFinancialNumberingTypeId(Long.parseLong(item.getValue().toString()));
                     break;
-
                 case "priceType.id":
-                    if (item.getValue() != null) {
-                        map.put("priceType", "priceType");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("priceType", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setPriceTypeId(0L);
-                    }
+                    checkPriceTypeIdSet(responseFinancialDocumentDto, item);
                     break;
-
                 case "fromNumber.id":
-                    if (item.getValue() != null) {
-                        map.put("fromNumber", "fromNumber");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFromNumber(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("fromNumber", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFromNumber(0L);
-                    }
+                    checkFromNumberSet(responseFinancialDocumentDto, item);
                     break;
 
                 case "toNumber.id":
-                    if (item.getValue() != null) {
-                        map.put("toNumber", "toNumber");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setToNumber(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("toNumber", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setToNumber(0L);
-                    }
+                    checkToNumberSet(responseFinancialDocumentDto, item);
                     break;
 
                 case "financialDocumentStatusDtoList":
                     responseFinancialDocumentDto.setFinancialDocumentStatusDtoListId((List<Long>) item.getValue());
                     break;
-
                 case "description":
-                    if (item.getValue() != null) {
-                        responseFinancialDocumentDto.setDescription(item.getValue().toString());
-                    } else {
-                        responseFinancialDocumentDto.setDescription("");
-                    }
+                    checkDescriptionSet(responseFinancialDocumentDto, item);
                     break;
-
                 case "fromAccount.code":
-                    if (item.getValue() != null) {
-                        map.put("fromAccount", "fromAccount");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFromAccountCode(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("fromAccount", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFromAccountCode(0L);
-                    }
+                    checkFromAccountCodeSet(responseFinancialDocumentDto, item);
                     break;
-
                 case "toAccount.code":
-                    if (item.getValue() != null) {
-                        map.put("toAccount", "toAccount");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setToAccountCode(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("toAccount", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setToAccountCode(0L);
-                    }
+                    checkToAccountCodeSet(responseFinancialDocumentDto, item);
                     break;
-
                 case "centricAccount.id":
-                    if (item.getValue() != null) {
-                        map.put("centricAccount", "centricAccount");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setCentricAccountId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("centricAccount", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setCentricAccountId(0L);
-                    }
+                    checkCentricAccountIdSet(responseFinancialDocumentDto, item);
                     break;
                 case "centricAccountType.id":
-                    if (item.getValue() != null) {
-                        map.put("centricAccountType", "centricAccountType");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setCentricAccountTypeId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("centricAccountType", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setCentricAccountTypeId(0L);
-                    }
+                    checkCentricAccountTypeIdSet(responseFinancialDocumentDto, item);
                     break;
-
                 case "documentUser.id":
-                    if (item.getValue() != null) {
-                        map.put("documentUser", "documentUser");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setDocumentUserId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("documentUser", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setDocumentUserId(0L);
-                    }
+                    checkDocumentUserIdSet(responseFinancialDocumentDto, item);
                     break;
                 case "fromPriceAmount":
-                    if (item.getValue() != null) {
-                        map.put("fromPrice", "fromPrice");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFromPrice(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("fromPrice", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFromPrice(0L);
-                    }
+                    checkFromPriceSet(responseFinancialDocumentDto, item);
                     break;
-
                 case "toPriceAmount":
                     if (item.getValue() != null) {
                         map.put("toPrice", "toPrice");
@@ -335,22 +249,147 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     }
                     break;
                 default:
-
                     break;
             }
         }
         return responseFinancialDocumentDto;
     }
 
+    private void checkPriceTypeIdSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("priceType", "priceType");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("priceType", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setPriceTypeId(0L);
+        }
+    }
+
+    private void checkFromNumberSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("fromNumber", "fromNumber");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFromNumber(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("fromNumber", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFromNumber(0L);
+        }
+    }
+
+    private void checkToNumberSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("toNumber", "toNumber");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setToNumber(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("toNumber", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setToNumber(0L);
+        }
+    }
+
+    private void checkDescriptionSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            responseFinancialDocumentDto.setDescription(item.getValue().toString());
+        } else {
+            responseFinancialDocumentDto.setDescription("");
+        }
+    }
+
+    private void checkFromAccountCodeSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("fromAccount", "fromAccount");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFromAccountCode(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("fromAccount", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFromAccountCode(0L);
+        }
+    }
+
+    private void checkToAccountCodeSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("toAccount", "toAccount");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setToAccountCode(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("toAccount", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setToAccountCode(0L);
+        }
+    }
+
+    private void checkCentricAccountIdSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("centricAccount", "centricAccount");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setCentricAccountId(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("centricAccount", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setCentricAccountId(0L);
+        }
+    }
+
+    private void checkCentricAccountTypeIdSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("centricAccountType", "centricAccountType");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setCentricAccountTypeId(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("centricAccountType", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setCentricAccountTypeId(0L);
+        }
+    }
+
+    private void checkDocumentUserIdSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("documentUser", "documentUser");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setDocumentUserId(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("documentUser", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setDocumentUserId(0L);
+        }
+    }
+
+    private void checkFromPriceSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("fromPrice", "fromPrice");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFromPrice(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("fromPrice", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFromPrice(0L);
+        }
+    }
+
     private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
         if (input instanceof String) {
-            return checkTry(input,truncateDate);
+            return checkTry(input, truncateDate);
         } else if (input instanceof LocalDateTime) {
             return truncateDate ? DateUtil.truncate((LocalDateTime) input) : (LocalDateTime) input;
         } else {
             throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
         }
     }
+
     private LocalDateTime checkTry(Object input, boolean truncateDate) {
         try {
             //                Date date = ISO8601Utils.parse((String) input);
@@ -410,6 +449,79 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     private List<FinancialDocumentErrorDto> validationSetStatus(FinancialDocument financialDocument) {
+        List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = new ArrayList<>();
+        checkValidationSetStatus(financialDocument);
+        FinancialDocument document = financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocument.getId());
+        if (document == null) {
+            FinancialDocumentErrorDto activeMountStatus = new FinancialDocumentErrorDto();
+            activeMountStatus.setFinancialDocumentId(financialDocument.getId());
+            activeMountStatus.setMessage("دوره / ماه عملیاتی میبایست در وضعیت باز باشد");
+            financialDocumentErrorDtoList.add(activeMountStatus);
+        }
+
+        Long cost = financialDocumentItemRepository.getCostDocument(financialDocument.getId());
+        if (cost == null) {
+            FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
+            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
+            financialDocumentCost.setMessage("مجموع مبالغ بستانکار و بدهکار در ردیف های سند بالانس نیست.");
+            financialDocumentErrorDtoList.add(financialDocumentCost);
+        }
+
+        FinancialDocument documentPeriod = financialDocumentRepository.getActivePeriodInDocument(financialDocument.getId());
+        if (documentPeriod == null) {
+            FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
+            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
+            financialDocumentCost.setMessage("وضعیت دوره مالی مربوط به سند بسته است.");
+            financialDocumentErrorDtoList.add(financialDocumentCost);
+        }
+
+        ControlFinancialAccountNatureTypeInputRequest controlFinancialAccountNatureTypeInputRequest = new ControlFinancialAccountNatureTypeInputRequest();
+        controlFinancialAccountNatureTypeInputRequest.setFinancialDocumentId(financialDocument.getId());
+        List<ControlFinancialAccountNatureTypeOutputResponse> controlFinancialAccountNatureTypeList = controlFinancialAccountNatureTypeService.getControlFinancialAccountNatureType(controlFinancialAccountNatureTypeInputRequest);
+
+        controlFinancialAccountNatureTypeList.forEach(e -> {
+            FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
+            financialDocumentCost.setMessage(e.getResultMessage());
+            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
+            financialDocumentErrorDtoList.add(financialDocumentCost);
+        });
+
+
+        Long financialDocumentItemAccount = financialDocumentItemRepository.getFinancialAccount(financialDocument.getId());
+        if (financialDocumentItemAccount == null) {
+            FinancialDocumentErrorDto financialAccount = new FinancialDocumentErrorDto();
+            financialAccount.setFinancialDocumentId(financialDocument.getId());
+            financialAccount.setMessage(" حساب انتخاب شده  روی یک / چند ردیف از سند ، آخرین سطح حساب نمی باشد");
+            financialDocumentErrorDtoList.add(financialAccount);
+        }
+
+        Long financialDocumentItemCostHarmony = financialDocumentItemRepository.costHarmony(financialDocument.getId());
+        if (financialDocumentItemCostHarmony != null) {
+            FinancialDocumentErrorDto costHarmony = new FinancialDocumentErrorDto();
+            costHarmony.setFinancialDocumentId(financialDocument.getId());
+            costHarmony.setMessage(" مبالغ بدهکار یا بستانکار ردیف یا ردیفها با مبالغ بدهکار یا بستانکار ارزی همخوانی ندارد.");
+            financialDocumentErrorDtoList.add(costHarmony);
+        }
+
+        Long financialDocumentItemReferenceCode = financialDocumentItemRepository.referenceCode(financialDocument.getId());
+        if (financialDocumentItemReferenceCode != null) {
+            FinancialDocumentErrorDto referenceCode = new FinancialDocumentErrorDto();
+            referenceCode.setFinancialDocumentId(financialDocument.getId());
+            referenceCode.setMessage(" کدهای تمرکز ثبت شده باید با کد تمرکز مرجع خود همخوانی داشته باشد");
+            financialDocumentErrorDtoList.add(referenceCode);
+        }
+
+        if (financialDocument.getDescription() == null) {
+            FinancialDocumentErrorDto documentDescription = new FinancialDocumentErrorDto();
+            documentDescription.setFinancialDocumentId(financialDocument.getId());
+            documentDescription.setMessage("سند بدون شرح است.");
+            financialDocumentErrorDtoList.add(documentDescription);
+        }
+
+        return financialDocumentErrorDtoList;
+    }
+
+    private void checkValidationSetStatus(FinancialDocument financialDocument) {
         List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = new ArrayList<>();
         List<FinancialDocumentItem> documentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocument.getId());
         if (documentItemList.isEmpty()) {
@@ -499,75 +611,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
             });
         }
-
-        FinancialDocument document = financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocument.getId());
-        if (document == null) {
-            FinancialDocumentErrorDto activeMountStatus = new FinancialDocumentErrorDto();
-            activeMountStatus.setFinancialDocumentId(financialDocument.getId());
-            activeMountStatus.setMessage("دوره / ماه عملیاتی میبایست در وضعیت باز باشد");
-            financialDocumentErrorDtoList.add(activeMountStatus);
-        }
-
-        Long cost = financialDocumentItemRepository.getCostDocument(financialDocument.getId());
-        if (cost == null) {
-            FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
-            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
-            financialDocumentCost.setMessage("مجموع مبالغ بستانکار و بدهکار در ردیف های سند بالانس نیست.");
-            financialDocumentErrorDtoList.add(financialDocumentCost);
-        }
-
-        FinancialDocument documentPeriod = financialDocumentRepository.getActivePeriodInDocument(financialDocument.getId());
-        if (documentPeriod == null) {
-            FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
-            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
-            financialDocumentCost.setMessage("وضعیت دوره مالی مربوط به سند بسته است.");
-            financialDocumentErrorDtoList.add(financialDocumentCost);
-        }
-
-        ControlFinancialAccountNatureTypeInputRequest controlFinancialAccountNatureTypeInputRequest = new ControlFinancialAccountNatureTypeInputRequest();
-        controlFinancialAccountNatureTypeInputRequest.setFinancialDocumentId(financialDocument.getId());
-        List<ControlFinancialAccountNatureTypeOutputResponse> controlFinancialAccountNatureTypeList = controlFinancialAccountNatureTypeService.getControlFinancialAccountNatureType(controlFinancialAccountNatureTypeInputRequest);
-
-        controlFinancialAccountNatureTypeList.forEach(e -> {
-            FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
-            financialDocumentCost.setMessage(e.getResultMessage());
-            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
-            financialDocumentErrorDtoList.add(financialDocumentCost);
-        });
-
-
-        Long financialDocumentItemAccount = financialDocumentItemRepository.getFinancialAccount(financialDocument.getId());
-        if (financialDocumentItemAccount == null) {
-            FinancialDocumentErrorDto financialAccount = new FinancialDocumentErrorDto();
-            financialAccount.setFinancialDocumentId(financialDocument.getId());
-            financialAccount.setMessage(" حساب انتخاب شده  روی یک / چند ردیف از سند ، آخرین سطح حساب نمی باشد");
-            financialDocumentErrorDtoList.add(financialAccount);
-        }
-
-        Long financialDocumentItemCostHarmony = financialDocumentItemRepository.costHarmony(financialDocument.getId());
-        if (financialDocumentItemCostHarmony != null) {
-            FinancialDocumentErrorDto costHarmony = new FinancialDocumentErrorDto();
-            costHarmony.setFinancialDocumentId(financialDocument.getId());
-            costHarmony.setMessage(" مبالغ بدهکار یا بستانکار ردیف یا ردیفها با مبالغ بدهکار یا بستانکار ارزی همخوانی ندارد.");
-            financialDocumentErrorDtoList.add(costHarmony);
-        }
-
-        Long financialDocumentItemReferenceCode = financialDocumentItemRepository.referenceCode(financialDocument.getId());
-        if (financialDocumentItemReferenceCode != null) {
-            FinancialDocumentErrorDto referenceCode = new FinancialDocumentErrorDto();
-            referenceCode.setFinancialDocumentId(financialDocument.getId());
-            referenceCode.setMessage(" کدهای تمرکز ثبت شده باید با کد تمرکز مرجع خود همخوانی داشته باشد");
-            financialDocumentErrorDtoList.add(referenceCode);
-        }
-
-        if (financialDocument.getDescription() == null) {
-            FinancialDocumentErrorDto documentDescription = new FinancialDocumentErrorDto();
-            documentDescription.setFinancialDocumentId(financialDocument.getId());
-            documentDescription.setMessage("سند بدون شرح است.");
-            financialDocumentErrorDtoList.add(documentDescription);
-        }
-
-        return financialDocumentErrorDtoList;
     }
 
     private ResponseFinancialDocumentSetStatusDto convertFinancialDocumentToDto(FinancialDocument financialDocument) {
@@ -835,6 +878,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 } else if (documentItem.getCentricAccountId6() != null && centricAccountId.equals(documentItem.getCentricAccountId6().getId())) {
                     i.getAndIncrement();
                     documentItem.setCentricAccountId6(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
+                }else{
+
                 }
                 financialDocumentItemRepository.save(documentItem);
                 financialDocumentItemRepository.flush();
