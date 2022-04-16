@@ -369,6 +369,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private LocalDateTime checkTry(Object input, boolean truncateDate) {
         try {
+            //                Date date = ISO8601Utils.parse((String) input);
             Date date = ISO8601Utils.parse((String) input, new ParsePosition(0));
             LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
             return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
@@ -727,12 +728,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                         .financialAccountCode(gatItemForString(item, 2))
                         .financialAccountDescription(gatItemForString(item, 3))
                         .financialAccountLevel(getItemForLong(item, 4))
-                        .sumDebit(item[5] == null ? null : ((BigDecimal) item[5]).doubleValue())
-                        .sumCredit(item[6] == null ? null : ((BigDecimal) item[6]).doubleValue())
-                        .befDebit(item[7] == null ? null : ((BigDecimal) item[7]).doubleValue())
-                        .befCredit(item[8] == null ? null : ((BigDecimal) item[8]).doubleValue())
-                        .remDebit(item[9] == null ? null : ((BigDecimal) item[9]).doubleValue())
-                        .remCredit(item[10] == null ? null : ((BigDecimal) item[10]).doubleValue())
+                        .sumDebit(getItemForDouble(item, 5))
+                        .sumCredit(getItemForDouble(item, 6))
+                        .befDebit(getItemForDouble(item, 7))
+                        .befCredit(getItemForDouble(item, 8))
+                        .remDebit(getItemForDouble(item, 9))
+                        .remCredit(getItemForDouble(item, 10))
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialAccountBalanceResponse);
