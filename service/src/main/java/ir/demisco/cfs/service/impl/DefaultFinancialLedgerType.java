@@ -18,7 +18,6 @@ import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
 import ir.demisco.cfs.service.repository.FinancialNumberingTypeRepository;
 import ir.demisco.cfs.service.repository.LedgerNumberingTypeRepository;
 import ir.demisco.cfs.service.repository.OrganizationRepository;
-import ir.demisco.cloud.basic.model.entity.org.Organization;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -343,6 +342,10 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
             if (financialLedgerType.getId() != null) {
                 financialLedgerTypeFromInsert = financialLedgerTypeRepository.findById(financialLedgerType.getId()).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidNumberingType"));
             }
+            FinancialLedgerType financialLedgerTypeFromUpdate = null;
+            if (financialLedgerTypeRequest.getFinancialLedgerTypeId() != null) {
+                financialLedgerTypeFromUpdate = financialLedgerTypeRepository.findById(financialLedgerTypeIdRequest).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidNumberingType"));
+            }
             LedgerNumberingType ledgerNumberingTypeNew = new LedgerNumberingType();
             FinancialNumberingType financialNumberingType = financialNumberingTypeRepository.findById(financialNumberingTypeId).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidNumberingType"));
             Long countByLedgerTypeIdAndNumberingTypeIdAndDeleteDate = ledgerNumberingTypeRepository.getCountByLedgerTypeIdAndNumberingTypeIdAndDeleteDate(financialLedgerTypeRequest.getFinancialLedgerTypeId()
@@ -353,11 +356,13 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
             if (financialLedgerTypeIdRequest == null) {
                 ledgerNumberingTypeNew.setFinancialLedgerType(financialLedgerTypeFromInsert);
             } else {
-                ledgerNumberingTypeNew.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialNumberingTypeId));
+                ledgerNumberingTypeNew.setFinancialLedgerType(financialLedgerTypeFromUpdate);
             }
             ledgerNumberingTypeNew.setFinancialNumberingType(financialNumberingType);
             ledgerNumberingTypeRepository.save(ledgerNumberingTypeNew);
+            ledgerNumberingTypeRepository.flush();
         }
         return true;
     }
 }
+

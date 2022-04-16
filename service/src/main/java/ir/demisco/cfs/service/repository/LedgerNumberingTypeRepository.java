@@ -20,9 +20,8 @@ public interface LedgerNumberingTypeRepository extends JpaRepository<LedgerNumbe
             "  where fnnt.deleted_date is null", nativeQuery = true)
     List<Object[]> getLedgerNumberingType(Long financialLedgerTypeId, String financialLedgerType);
 
-
     @Query("select coalesce(COUNT(lnt.id),0) from LedgerNumberingType lnt where lnt.financialLedgerType.id=:financialLedgerTypeId" +
-            " and lnt.financialNumberingType.id=:financialNumberingTypeId " +
+            " and lnt.financialNumberingType.id =:financialNumberingTypeId " +
             " and lnt.deletedDate is null")
     Long getCountByLedgerTypeIdAndNumberingTypeIdAndDeleteDate(Long financialLedgerTypeId, Long financialNumberingTypeId);
 
