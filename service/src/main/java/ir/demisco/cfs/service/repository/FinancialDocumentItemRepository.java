@@ -124,7 +124,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       (:toPrice IS NULL OR " +
             "       (FNDI.CREDIT_AMOUNT <= " +
             "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0)))))  " +
-            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) "
+            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
+            " and FNSC.SEC_RESULT = 1 "
             , countQuery = " select count(FIDC.id)   " +
             "  FROM fndc.FINANCIAL_DOCUMENT FIDC " +
             " INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FNDI " +
@@ -219,7 +220,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       (:toPrice IS NULL OR " +
             "       (FNDI.CREDIT_AMOUNT <= " +
             "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0)))))  " +
-            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) "
+            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
+            " and FNSC.SEC_RESULT = 1 "
             , nativeQuery = true)
     List<Object[]> getFinancialDocumentItemList(Long organizationId, String activityCode, Long creatorUserId, Long departmentId, Long userId,LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
                                                 Long toAccountCode, Object centricAccount, Long centricAccountId, Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId, Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
