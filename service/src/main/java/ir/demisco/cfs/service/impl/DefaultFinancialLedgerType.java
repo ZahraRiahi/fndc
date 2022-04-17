@@ -72,7 +72,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         }
         return financialLedgerTypeRepository.findFinancialLedgerTypeByOrganizationId(
                 organizationId,
-                -1L,
+                organizationId,
                 financialSecurityFilterRequest.getActivityCode()
                 , new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialPeriodId())
                 , new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getDocumentTypeId())
