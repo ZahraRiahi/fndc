@@ -63,6 +63,7 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
                         .financialLedgerTypeId(Long.parseLong(item[3] == null ? "0" : item[3].toString()))
                         .ledgerTypeDescription(item[4] == null ? "" : item[4].toString())
                         .financialDepartmentLedgerId(Long.parseLong(item[5] == null ? "0" : item[5].toString()))
+                        .disabled(Integer.parseInt(item[6].toString()) == 1)
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialDepartmentResponses.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
