@@ -8,6 +8,7 @@ public class FinancialDepartmentResponse {
     private Long financialLedgerTypeId;
     private String ledgerTypeDescription;
     private Long financialDepartmentLedgerId;
+    private Boolean disabled;
 
     public Long getDepartmentId() {
         return departmentId;
@@ -56,6 +57,15 @@ public class FinancialDepartmentResponse {
     public void setFinancialDepartmentLedgerId(Long financialDepartmentLedgerId) {
         this.financialDepartmentLedgerId = financialDepartmentLedgerId;
     }
+
+    public Boolean getDisabled() {
+        return disabled;
+    }
+
+    public void setDisabled(Boolean disabled) {
+        this.disabled = disabled;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -100,7 +110,10 @@ public class FinancialDepartmentResponse {
             financialDepartmentResponse.setFinancialDepartmentLedgerId(financialDepartmentLedgerId);
             return this;
         }
-
+        public Builder disabled(Boolean disabled) {
+            financialDepartmentResponse.setDisabled(disabled);
+            return this;
+        }
         public FinancialDepartmentResponse build() {
             return financialDepartmentResponse;
         }
