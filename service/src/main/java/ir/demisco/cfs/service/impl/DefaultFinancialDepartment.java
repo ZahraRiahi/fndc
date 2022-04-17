@@ -45,7 +45,7 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
             throw new RuleException("fin.security.check.input.from.config.flag");
         }
         // comment jira FIN-1126 organ pakage -1
-        Long organizationIdPKG = -1L;
+        Long organizationIdPKG = SecurityHelper.getCurrentUser().getOrganizationId();
         List<Object[]> financialDocumentItemList = departmentRepository.getFinancialDocumentItemList(
                 SecurityHelper.getCurrentUser().getOrganizationId()
                 , organizationIdPKG
