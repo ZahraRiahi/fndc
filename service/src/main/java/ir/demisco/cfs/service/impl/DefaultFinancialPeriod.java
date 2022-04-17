@@ -57,7 +57,7 @@ public class DefaultFinancialPeriod implements FinancialPeriodService {
                 return financialPeriodStatusResponses;
             }
         } else {
-            throw new RuleException("fin.allMessage");
+
         }
         Long periodStatus = financialPeriodRepository.findFinancialPeriodById(financialPeriodStatusRequest.getFinancialPeriodId());
         Long monthStatus = financialPeriodRepository.findFinancialPeriodByFinancialPeriodIdAndDate(financialPeriodStatusRequest.getFinancialPeriodId(), financialPeriodStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
