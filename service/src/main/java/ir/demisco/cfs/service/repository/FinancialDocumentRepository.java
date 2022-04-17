@@ -100,7 +100,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
             "   and   (:toPrice is null  or " +
             "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))))" +
-            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) " +
+            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
+            " and FNSC.SEC_RESULT = 1 " +
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,fidc.financial_document_type_id,fndt.description," +
             " FINANCIAL_DOCUMENT_STATUS_ID, " +
             "          DS.NAME , " +
@@ -185,6 +186,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "   and   (:toPrice is null  or " +
             "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) " +
+            "  and FNSC.SEC_RESULT = 1" +
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description, " +
             "   FINANCIAL_DOCUMENT_STATUS_ID, " +
             "                      DS.NAME , " +
