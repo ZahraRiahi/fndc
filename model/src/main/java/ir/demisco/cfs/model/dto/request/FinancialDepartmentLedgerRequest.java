@@ -5,6 +5,7 @@ public class FinancialDepartmentLedgerRequest {
     private Long financialDepartmentLedgerId;
     private Long departmentId;
     private Long financialLedgerTypeId;
+    private Long financialDepartment;
 
     public Long getFinancialDepartmentLedgerId() {
         return financialDepartmentLedgerId;
@@ -30,4 +31,11 @@ public class FinancialDepartmentLedgerRequest {
         this.financialLedgerTypeId = financialLedgerTypeId;
     }
 
+    public Long getFinancialDepartment() {
+        return financialDepartment;
+    }
+
+    public void setFinancialDepartment(Long financialDepartment) {
+        this.financialDepartment = financialDepartment;
+    }
 }
