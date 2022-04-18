@@ -155,8 +155,7 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     @Override
     public ResponseFinancialDocumentTypeDto save(FinancialDocumentTypeDto financialDocumentTypeDto) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        FinancialDocumentType financialDocumentType = financialDocumentTypeRepository.
-                findById(financialDocumentTypeDto.getId() == null ? 0L : financialDocumentTypeDto.getId()).orElse(new FinancialDocumentType());
+        FinancialDocumentType financialDocumentType=new FinancialDocumentType();
         financialDocumentType.setDescription(financialDocumentTypeDto.getDescription());
         financialDocumentType.setOrganization(organizationRepository.getOne(organizationId));
         financialDocumentType.setActiveFlag(financialDocumentTypeDto.getActiveFlag());

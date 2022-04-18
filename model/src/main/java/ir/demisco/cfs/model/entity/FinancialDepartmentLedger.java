@@ -62,5 +62,6 @@ public class FinancialDepartmentLedger extends AuditModel<Long> {
     public void setDeletedDate(LocalDateTime deletedDate) {
         this.deletedDate = deletedDate;
     }
+
 }
 
