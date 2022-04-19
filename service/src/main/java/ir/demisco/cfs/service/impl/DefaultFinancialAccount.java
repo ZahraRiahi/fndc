@@ -541,11 +541,19 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     }
 
     private void checkFromDateForDate(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
-        financialDocumentCentricTurnOverRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        if (item.getValue() != null) {
+            financialDocumentCentricTurnOverRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        } else {
+            financialDocumentCentricTurnOverRequest.setFromDate(null);
+        }
     }
 
     private void checkToDateForDate(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
         financialDocumentCentricTurnOverRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        } else {
+            financialDocumentCentricTurnOverRequest.setToDate(null);
+        }
     }
 
     private void checkDocumentNumberingTypeIdSet(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
@@ -571,26 +579,42 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     }
 
     private void checkFromNumberSet(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
-        financialDocumentCentricTurnOverRequest.setFromNumber(item.getValue().toString());
+        if (item.getValue() != null) {
+            financialDocumentCentricTurnOverRequest.setFromNumber(item.getValue().toString());
+        } else {
+            financialDocumentCentricTurnOverRequest.setFromNumber(null);
+        }
     }
 
     private void checkToNumberSet(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
-        financialDocumentCentricTurnOverRequest.setToNumber(item.getValue().toString());
+        if (item.getValue() != null) {
+            financialDocumentCentricTurnOverRequest.setToNumber(item.getValue().toString());
+        } else {
+            financialDocumentCentricTurnOverRequest.setToNumber(null);
+        }
     }
 
-    private void checkLedgerTypeIdSet(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkLedgerTypeIdSet(FinancialDocumentCentricTurnOverRequest
+                                              financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         financialDocumentCentricTurnOverRequest.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
     }
 
-    private void checkDateFilterFlgSet(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkDateFilterFlgSet(FinancialDocumentCentricTurnOverRequest
+                                               financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         financialDocumentCentricTurnOverRequest.setDateFilterFlg(Long.parseLong(item.getValue().toString()));
     }
 
-    private void checkFlgHasRemindSet(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
-        financialDocumentCentricTurnOverRequest.setFlgHasRemind((Boolean) (item.getValue()));
+    private void checkFlgHasRemindSet(FinancialDocumentCentricTurnOverRequest
+                                              financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentCentricTurnOverRequest.setFlgHasRemind((Boolean) (item.getValue()));
+        }else{
+            financialDocumentCentricTurnOverRequest.setFlgHasRemind(null);
+        }
     }
 
-    private void getFinancialDocumentByNumberingTypeAndFromNumber(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest) {
+    private void getFinancialDocumentByNumberingTypeAndFromNumber(FinancialDocumentCentricTurnOverRequest
+                                                                          financialDocumentCentricTurnOverRequest) {
         if (financialDocumentCentricTurnOverRequest.getDateFilterFlg() == 0) {
             setFromDateAndToDateCentricTurnOver(financialDocumentCentricTurnOverRequest);
         } else {
@@ -615,7 +639,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         financialDocumentCentricTurnOverRequest.setPeriodStartDate(periodStartDate);
     }
 
-    private void setFromDateAndToDateCentricTurnOver(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest) {
+    private void setFromDateAndToDateCentricTurnOver(FinancialDocumentCentricTurnOverRequest
+                                                             financialDocumentCentricTurnOverRequest) {
         LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId()
                 , financialDocumentCentricTurnOverRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentCentricTurnOverRequest.setFromDate(fromDate);
@@ -628,7 +653,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     }
 
-    private void setFromNumberAndToNumberCentricTurnOver(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest) {
+    private void setFromNumberAndToNumberCentricTurnOver(FinancialDocumentCentricTurnOverRequest
+                                                                 financialDocumentCentricTurnOverRequest) {
         String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
                 financialDocumentCentricTurnOverRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentCentricTurnOverRequest.setFromNumber(fromNumber);
@@ -727,7 +753,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         return item[i] == null ? null : ((BigDecimal) item[i]).doubleValue();
     }
 
-    private FinancialAccountBalanceRequest setParameterBalanceReport(List<DataSourceRequest.FilterDescriptor> filters) {
+    private FinancialAccountBalanceRequest setParameterBalanceReport
+            (List<DataSourceRequest.FilterDescriptor> filters) {
         FinancialAccountBalanceRequest financialAccountBalanceRequest = new FinancialAccountBalanceRequest();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
@@ -790,43 +817,53 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     }
 
-    private void checkFromDateForDate(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkFromDateForDate(FinancialAccountBalanceRequest
+                                              financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
         financialAccountBalanceRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
     }
 
-    private void checkToDateForDate(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkToDateForDate(FinancialAccountBalanceRequest
+                                            financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
         financialAccountBalanceRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
     }
 
-    private void checkFromNumberSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkFromNumberSet(FinancialAccountBalanceRequest
+                                            financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
         financialAccountBalanceRequest.setFromNumber(item.getValue().toString());
     }
 
-    private void checkToNumberSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkToNumberSet(FinancialAccountBalanceRequest
+                                          financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
         financialAccountBalanceRequest.setToNumber(item.getValue().toString());
     }
 
-    private void checkDocumentNumberingTypeIdSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkDocumentNumberingTypeIdSet(FinancialAccountBalanceRequest
+                                                         financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
         financialAccountBalanceRequest.setDocumentNumberingTypeId(Long.parseLong(item.getValue().toString()));
     }
 
-    private void checkLedgerTypeIdSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkLedgerTypeIdSet(FinancialAccountBalanceRequest
+                                              financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
         financialAccountBalanceRequest.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
     }
 
-    private void checkStructureLevelIdSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkStructureLevelIdSet(FinancialAccountBalanceRequest
+                                                  financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
         financialAccountBalanceRequest.setStructureLevel(Long.parseLong(item.getValue().toString()));
     }
 
-    private void checkHasRemainSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkHasRemainSet(FinancialAccountBalanceRequest
+                                           financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
         financialAccountBalanceRequest.setHasRemain((Boolean) item.getValue());
     }
 
-    private void checkShowHigherLevelsSet(FinancialAccountBalanceRequest financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkShowHigherLevelsSet(FinancialAccountBalanceRequest
+                                                  financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
         financialAccountBalanceRequest.setShowHigherLevels((Boolean) item.getValue());
     }
 
-    private void getFinancialDocumentByNumberingTypeAndFromNumberBalance(FinancialAccountBalanceRequest financialAccountBalanceRequest) {
+    private void getFinancialDocumentByNumberingTypeAndFromNumberBalance(FinancialAccountBalanceRequest
+                                                                                 financialAccountBalanceRequest) {
 
         if (financialAccountBalanceRequest.getDateFilterFlg() == 0) {
             setFromDateAndToDateCentricTurnOverBalance(financialAccountBalanceRequest);
@@ -852,7 +889,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         financialAccountBalanceRequest.setPeriodStartDate(periodStartDate);
     }
 
-    private void setFromDateAndToDateCentricTurnOverBalance(FinancialAccountBalanceRequest financialAccountBalanceRequest) {
+    private void setFromDateAndToDateCentricTurnOverBalance(FinancialAccountBalanceRequest
+                                                                    financialAccountBalanceRequest) {
         LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialAccountBalanceRequest.getDocumentNumberingTypeId()
                 , financialAccountBalanceRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialAccountBalanceRequest.setFromDate(fromDate);
@@ -865,7 +903,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     }
 
-    private void setFromNumberAndToNumberCentricTurnOverBalance(FinancialAccountBalanceRequest financialAccountBalanceRequest) {
+    private void setFromNumberAndToNumberCentricTurnOverBalance(FinancialAccountBalanceRequest
+                                                                        financialAccountBalanceRequest) {
         String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialAccountBalanceRequest.getDocumentNumberingTypeId(),
                 financialAccountBalanceRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialAccountBalanceRequest.setFromNumber(fromNumber);
