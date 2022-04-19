@@ -305,7 +305,6 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         financialLedgerTypeNew.setCode(financialLedgerTypeCodeByOrganizationId);
         FinancialCodingType financialCodingType = financialCodingTypeRepository.findById(financialLedgerTypeRequest.getFinancialCodingTypeId()).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidCodingType"));
         financialLedgerTypeNew.setFinancialCodingType(financialCodingType);
-//        Optional<Organization> organization = organizationRepository.findById(financialLedgerTypeRequest.getOrganizationId());
         financialLedgerTypeNew.setOrganization(organizationRepository.getOne(SecurityHelper.getCurrentUser().getOrganizationId()));
         financialLedgerTypeNew.setActiveFlag(financialLedgerTypeRequest.getActiveFlag());
         FinancialLedgerType financialLedgerType = financialLedgerTypeRepository.save(financialLedgerTypeNew);
