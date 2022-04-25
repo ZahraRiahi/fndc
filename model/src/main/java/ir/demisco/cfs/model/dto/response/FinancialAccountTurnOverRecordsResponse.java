@@ -13,6 +13,9 @@ public class FinancialAccountTurnOverRecordsResponse {
     private Double remainAmount;
     private Long recordType;
 
+    private FinancialAccountTurnOverSummarizeResponse financialAccountTurnOverSummarizeModel;
+
+
     public Date getDocumentDate() {
         return documentDate;
     }
@@ -87,6 +90,15 @@ public class FinancialAccountTurnOverRecordsResponse {
     public static FinancialAccountTurnOverRecordsResponse.Builder builder() {
         return new FinancialAccountTurnOverRecordsResponse.Builder();
     }
+
+    public FinancialAccountTurnOverSummarizeResponse getFinancialAccountTurnOverSummarizeModel() {
+        return financialAccountTurnOverSummarizeModel;
+    }
+
+    public void setFinancialAccountTurnOverSummarizeModel(FinancialAccountTurnOverSummarizeResponse financialAccountTurnOverSummarizeModel) {
+        this.financialAccountTurnOverSummarizeModel = financialAccountTurnOverSummarizeModel;
+    }
+
     public static final class Builder {
         private FinancialAccountTurnOverRecordsResponse financialAccountTurnOverRecordsResponse;
 
