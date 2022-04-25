@@ -675,12 +675,12 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               3 AS RECORD_TYP " +
             "          FROM MAIN_QRY)abb "
             , nativeQuery = true)
-    Page<Object[]> findByFinancialPeriodByParam(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate,
+    List<Object[]> findByFinancialPeriodByParam(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate,
                                                 Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId,
                                                 String fromNumber, Object centricAccount1, Long centricAccountId1,
                                                 Object centricAccount2, Long centricAccountId2, Object referenceNumberObject,
                                                 Long referenceNumber, String toNumber, Long financialAccountId,
-                                                Long summarizingType, LocalDateTime toDate, Pageable pageable);
+                                                Long summarizingType, LocalDateTime toDate);
 
     @Query(value = " SELECT  MIN(FP.START_DATE)  " +
             "      FROM FNPR.FINANCIAL_PERIOD FP  " +

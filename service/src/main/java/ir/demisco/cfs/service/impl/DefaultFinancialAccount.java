@@ -31,7 +31,9 @@ import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
@@ -44,36 +46,27 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         this.financialPeriodRepository = financialPeriodRepository;
     }
 
+    private List<Object[]> getTurnOverReportList(FinancialDocumentReportRequest financialDocumentReportRequest, Map<String, Object> paramMap) {
+        return financialPeriodRepository.findByFinancialPeriodByParam(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentReportRequest.getLedgerTypeId(), financialDocumentReportRequest.getPeriodStartDate(), financialDocumentReportRequest.getDateFilterFlg(),
+                financialDocumentReportRequest.getFromDate(), financialDocumentReportRequest.getDocumentNumberingTypeId(), financialDocumentReportRequest.getFromNumber(), paramMap.get("centricAccount1"), financialDocumentReportRequest.getCentricAccountId1(),
+                paramMap.get("centricAccount2"), financialDocumentReportRequest.getCentricAccountId2(), paramMap.get("referenceNumberObject"), financialDocumentReportRequest.getReferenceNumber(),
+                financialDocumentReportRequest.getToNumber(), financialDocumentReportRequest.getFinancialAccountId(), financialDocumentReportRequest.getSummarizingType(), financialDocumentReportRequest.getToDate());
+    }
+
     @Override
     @Transactional(readOnly = true)
     public DataSourceResult getFinancialDocument(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialDocumentReportRequest financialDocumentReportRequest = setParameter(filters);
+        Map<String, Object> paramMap = financialDocumentReportRequest.getParamMap();
         financialDocumentReportRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setSummarizingType(financialDocumentReportRequest.getSummarizingType() == null ? 1 : financialDocumentReportRequest.getSummarizingType());
         getFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest);
         checkFinancialDocumentReport(financialDocumentReportRequest);
-        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
-        Page<Object[]> list = financialPeriodRepository.findByFinancialPeriodByParam(SecurityHelper.getCurrentUser().getOrganizationId(),
-                financialDocumentReportRequest.getLedgerTypeId(),
-                financialDocumentReportRequest.getPeriodStartDate(),
-                financialDocumentReportRequest.getDateFilterFlg(),
-                financialDocumentReportRequest.getFromDate(),
-                financialDocumentReportRequest.getDocumentNumberingTypeId(),
-                financialDocumentReportRequest.getFromNumber(),
-                financialDocumentReportRequest.getCentricAccount1(),
-                financialDocumentReportRequest.getCentricAccountId1(),
-                financialDocumentReportRequest.getCentricAccount2(),
-                financialDocumentReportRequest.getCentricAccountId2(),
-                financialDocumentReportRequest.getReferenceNumberObject(),
-                financialDocumentReportRequest.getReferenceNumber(),
-                financialDocumentReportRequest.getToNumber(),
-                financialDocumentReportRequest.getFinancialAccountId(),
-                financialDocumentReportRequest.getSummarizingType(),
-                financialDocumentReportRequest.getToDate(),
-                pageable);
+        List<Object[]> list = getTurnOverReportList(financialDocumentReportRequest, paramMap);
         List<FinancialAccountTurnOverOutputResponse> financialAccountTurnOverOutputResponses = new ArrayList<>();
         List<FinancialAccountTurnOverRecordsResponse> recordsResponseList = new ArrayList<>();
+        List<FinancialAccountTurnOverSummarizeResponse> recordsResponseList1 = new ArrayList<>();
         FinancialAccountTurnOverOutputResponse response = new FinancialAccountTurnOverOutputResponse();
         list.forEach(item -> {
 
@@ -106,8 +99,18 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         financialAccountTurnOverOutputResponses.add(response);
 
         DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(financialAccountTurnOverOutputResponses);
-        dataSourceResult.setTotal(list.getTotalElements());
+
+        List<FinancialAccountTurnOverRecordsResponse> collect = financialAccountTurnOverOutputResponses.get(0).getFinancialAccountTurnOverRecordsResponseModel()
+                .stream()
+                .limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip())
+                .skip(dataSourceRequest.getSkip())
+                .collect(Collectors.toList());
+
+        FinancialAccountTurnOverRecordsResponse recordsResponse = new FinancialAccountTurnOverRecordsResponse();
+        recordsResponse.setFinancialAccountTurnOverSummarizeModel(financialAccountTurnOverOutputResponses.get(0).getFinancialAccountTurnOverSummarizeModel());
+        collect.add(0,recordsResponse);
+        dataSourceResult.setData(collect);
+        dataSourceResult.setTotal(list.size());
         return dataSourceResult;
     }
 
@@ -191,6 +194,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private FinancialDocumentReportRequest setParameter(List<DataSourceRequest.FilterDescriptor> filters) {
         FinancialDocumentReportRequest financialDocumentReportRequest = new FinancialDocumentReportRequest();
+        Map<String, Object> map = new HashMap<>();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
                 case "financialAccountId":
@@ -267,54 +271,88 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     }
 
     private void checkFromDateForDate(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
+            map.put("fromDate", "fromDate");
+            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
         } else {
+            map.put("fromDate", null);
+            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setFromDate(null);
         }
     }
 
     private void checkToDateForDate(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
+            map.put("toDate", "toDate");
+            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
         } else {
+            map.put("toDate", null);
+            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setToDate(null);
         }
     }
 
     private void checkFinancialAccountIdSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
-        financialDocumentReportRequest.setFinancialAccountId(Long.parseLong(item.getValue().toString()));
+        if (item.getValue() != null) {
+            financialDocumentReportRequest.setFinancialAccountId(Long.parseLong(item.getValue().toString()));
+        } else {
+            financialDocumentReportRequest.setFinancialAccountId(null);
+        }
     }
 
     private void checkCentricAccountId1Set(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
+            map.put("centricAccount1", "centricAccount1");
+            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setCentricAccountId1(Long.parseLong(item.getValue().toString()));
         } else {
+            map.put("centricAccount1", null);
+            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setCentricAccountId1(null);
         }
     }
 
     private void checkCentricAccountId2Set(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
+            map.put("centricAccount2", "centricAccount2");
+            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setCentricAccountId2(Long.parseLong(item.getValue().toString()));
         } else {
+            map.put("centricAccount2", null);
+            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setCentricAccountId2(null);
         }
 
     }
 
     private void checkReferenceNumberSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
+            map.put("referenceNumberObject", "referenceNumberObject");
+            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setReferenceNumber(Long.parseLong(item.getValue().toString()));
         } else {
+            map.put("referenceNumberObject", null);
+            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setReferenceNumber(null);
         }
     }
 
     private void checkFromNumberSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
+            map.put("referenceNumberObject", "referenceNumberObject");
+            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setFromNumber(item.getValue().toString());
         } else {
+            map.put("referenceNumberObject", null);
+            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setFromNumber(null);
         }
     }
@@ -550,7 +588,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void checkToDateForDate(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
-        financialDocumentCentricTurnOverRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+            financialDocumentCentricTurnOverRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
         } else {
             financialDocumentCentricTurnOverRequest.setToDate(null);
         }
@@ -608,7 +646,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                                               financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
             financialDocumentCentricTurnOverRequest.setFlgHasRemind((Boolean) (item.getValue()));
-        }else{
+        } else {
             financialDocumentCentricTurnOverRequest.setFlgHasRemind(null);
         }
     }
