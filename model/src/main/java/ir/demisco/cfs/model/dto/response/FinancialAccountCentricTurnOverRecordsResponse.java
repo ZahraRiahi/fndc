@@ -21,6 +21,7 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
     private Long centricAccountId4;
     private Long centricAccountId5;
     private Long centricAccountId6;
+    private FinancialAccountTurnOverSummarizeResponse financialAccountTurnOverSummarizeModel;
 
     public String getAccountDescription() {
         return accountDescription;
@@ -180,6 +181,14 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
 
     public void setCentricAccountId6(Long centricAccountId6) {
         this.centricAccountId6 = centricAccountId6;
+    }
+
+    public FinancialAccountTurnOverSummarizeResponse getFinancialAccountTurnOverSummarizeModel() {
+        return financialAccountTurnOverSummarizeModel;
+    }
+
+    public void setFinancialAccountTurnOverSummarizeModel(FinancialAccountTurnOverSummarizeResponse financialAccountTurnOverSummarizeModel) {
+        this.financialAccountTurnOverSummarizeModel = financialAccountTurnOverSummarizeModel;
     }
 
     public static FinancialAccountCentricTurnOverRecordsResponse.Builder builder() {
