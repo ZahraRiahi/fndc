@@ -1,7 +1,5 @@
 package ir.demisco.cfs.model.dto.request;
 
-import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentItemDto;
-
 import java.time.LocalDateTime;
 import java.util.Map;
 
