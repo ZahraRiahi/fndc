@@ -1,6 +1,7 @@
 package ir.demisco.cfs.model.dto.request;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class FinancialDocumentCentricTurnOverRequest {
     private Long financialAccountId;
@@ -22,7 +23,7 @@ public class FinancialDocumentCentricTurnOverRequest {
     private Long referenceNumber;
     private Object referenceNumberObject;
     private Object financialAccount;
-
+    Map<String, Object> paramMap;
 
     public Long getFinancialAccountId() {
         return financialAccountId;
@@ -174,5 +175,13 @@ public class FinancialDocumentCentricTurnOverRequest {
 
     public void setFinancialAccount(Object financialAccount) {
         this.financialAccount = financialAccount;
+    }
+
+    public Map<String, Object> getParamMap() {
+        return paramMap;
+    }
+
+    public void setParamMap(Map<String, Object> paramMap) {
+        this.paramMap = paramMap;
     }
 }
