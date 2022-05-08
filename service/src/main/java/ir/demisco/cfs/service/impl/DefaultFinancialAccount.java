@@ -876,16 +876,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void checkFromDateForDate(FinancialAccountBalanceRequest
                                               financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("fromDate", "fromDate");
-            financialAccountBalanceRequest.setParamMap(map);
-            financialAccountBalanceRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
-        } else {
-            map.put("fromDate", null);
-            financialAccountBalanceRequest.setParamMap(map);
-            financialAccountBalanceRequest.setFromDate(null);
-        }
+        financialAccountBalanceRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+
     }
 
     private void checkToDateForDate(FinancialAccountBalanceRequest
