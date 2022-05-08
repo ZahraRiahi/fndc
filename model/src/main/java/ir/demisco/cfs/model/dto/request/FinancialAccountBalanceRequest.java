@@ -1,6 +1,7 @@
 package ir.demisco.cfs.model.dto.request;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class FinancialAccountBalanceRequest {
     private LocalDateTime fromDate;
@@ -129,5 +130,6 @@ public class FinancialAccountBalanceRequest {
     public void setPeriodStartDate(LocalDateTime periodStartDate) {
         this.periodStartDate = periodStartDate;
     }
+
 
 }
