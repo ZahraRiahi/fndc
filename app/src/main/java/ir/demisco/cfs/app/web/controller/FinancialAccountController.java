@@ -20,7 +20,8 @@ public class FinancialAccountController {
 
     @PostMapping("/turnOverReport")
     public ResponseEntity<DataSourceResult> financialDocumentResponseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
-        return ResponseEntity.ok(financialAccountService.getFinancialDocument(dataSourceRequest));
+        DataSourceResult financialDocument = financialAccountService.getFinancialDocument(dataSourceRequest);
+        return ResponseEntity.ok(financialDocument);
     }
 
     @PostMapping("/CentricTurnOverReport")
