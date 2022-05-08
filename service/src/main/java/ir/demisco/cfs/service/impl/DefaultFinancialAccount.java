@@ -24,7 +24,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.text.ParsePosition;
 import java.time.LocalDateTime;
@@ -41,7 +40,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     private final FinancialDocumentRepository financialDocumentRepository;
     private final FinancialPeriodRepository financialPeriodRepository;
 
-    public DefaultFinancialAccount(FinancialDocumentRepository financialDocumentRepository, FinancialPeriodRepository financialPeriodRepository, EntityManager entityManager) {
+    public DefaultFinancialAccount(FinancialDocumentRepository financialDocumentRepository, FinancialPeriodRepository financialPeriodRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.financialPeriodRepository = financialPeriodRepository;
     }
@@ -182,8 +181,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
                 , financialDocumentReportRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setFromDate(fromDate);
-        LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
-                , financialDocumentReportRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
+        LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingAndToNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
+                , financialDocumentReportRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setToDate(toDate);
         if (fromDate == null || toDate == null) {
             throw new RuleException("fin.financialAccount.notInformation");
@@ -594,13 +593,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     }
 
     private void checkToDateForDate(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
-//        if (item.getValue() != null) {
-//            financialDocumentCentricTurnOverRequest.getParamMap().put("toDate", "toDate");
-//            financialDocumentCentricTurnOverRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
-//        } else {
-//            financialDocumentCentricTurnOverRequest.getParamMap().put("toDate", null);
-//            financialDocumentCentricTurnOverRequest.setToDate(null);
-//        }
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("toDate", "toDate");
@@ -618,13 +610,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     }
 
     private void checkCentricAccountId1Set(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
-//        if (item.getValue() != null) {
-//            financialDocumentCentricTurnOverRequest.getParamMap().put("centricAccount1", "centricAccount1");
-//            financialDocumentCentricTurnOverRequest.setCentricAccountId1(Long.parseLong(item.getValue().toString()));
-//        } else {
-//            financialDocumentCentricTurnOverRequest.getParamMap().put("centricAccount1", null);
-//            financialDocumentCentricTurnOverRequest.setCentricAccountId1(null);
-//        }
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("centricAccount1", "centricAccount1");
@@ -716,7 +701,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId()
                 , financialDocumentCentricTurnOverRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentCentricTurnOverRequest.setFromDate(fromDate);
-        LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId()
+        LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingAndToNumber(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId()
                 , financialDocumentCentricTurnOverRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentCentricTurnOverRequest.setToDate(toDate);
         if (fromDate == null || toDate == null) {
@@ -891,7 +876,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void checkFromDateForDate(FinancialAccountBalanceRequest
                                               financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
-        financialAccountBalanceRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        financialAccountBalanceRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+
     }
 
     private void checkToDateForDate(FinancialAccountBalanceRequest
@@ -966,7 +952,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialAccountBalanceRequest.getDocumentNumberingTypeId()
                 , financialAccountBalanceRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialAccountBalanceRequest.setFromDate(fromDate);
-        LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialAccountBalanceRequest.getDocumentNumberingTypeId()
+        LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingAndToNumber(financialAccountBalanceRequest.getDocumentNumberingTypeId()
                 , financialAccountBalanceRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
         financialAccountBalanceRequest.setToDate(toDate);
         if (fromDate == null || toDate == null) {
