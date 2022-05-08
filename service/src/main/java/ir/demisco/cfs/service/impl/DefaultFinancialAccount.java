@@ -876,23 +876,41 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void checkFromDateForDate(FinancialAccountBalanceRequest
                                               financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
-        financialAccountBalanceRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        if (item.getValue() != null) {
+            financialAccountBalanceRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        } else {
+            financialAccountBalanceRequest.setFromDate(null);
+        }
 
     }
 
     private void checkToDateForDate(FinancialAccountBalanceRequest
                                             financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
-        financialAccountBalanceRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+
+        if (item.getValue() != null) {
+            financialAccountBalanceRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        } else {
+            financialAccountBalanceRequest.setToDate(null);
+        }
+
     }
 
     private void checkFromNumberSet(FinancialAccountBalanceRequest
                                             financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
-        financialAccountBalanceRequest.setFromNumber(item.getValue().toString());
+        if (item.getValue() != null) {
+            financialAccountBalanceRequest.setFromNumber(item.getValue().toString());
+        } else {
+            financialAccountBalanceRequest.setFromNumber(null);
+        }
     }
 
     private void checkToNumberSet(FinancialAccountBalanceRequest
                                           financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
-        financialAccountBalanceRequest.setToNumber(item.getValue().toString());
+        if (item.getValue() != null) {
+            financialAccountBalanceRequest.setToNumber(item.getValue().toString());
+        } else {
+            financialAccountBalanceRequest.setToNumber(null);
+        }
     }
 
     private void checkDocumentNumberingTypeIdSet(FinancialAccountBalanceRequest
