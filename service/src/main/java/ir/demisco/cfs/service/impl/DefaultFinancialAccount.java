@@ -890,44 +890,17 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void checkToDateForDate(FinancialAccountBalanceRequest
                                             financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("toDate", "toDate");
-            financialAccountBalanceRequest.setParamMap(map);
-            financialAccountBalanceRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
-        } else {
-            map.put("toDate", null);
-            financialAccountBalanceRequest.setParamMap(map);
-            financialAccountBalanceRequest.setToDate(null);
-        }
+        financialAccountBalanceRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
     }
 
     private void checkFromNumberSet(FinancialAccountBalanceRequest
                                             financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("fromNumber", "fromNumber");
-            financialAccountBalanceRequest.setParamMap(map);
-            financialAccountBalanceRequest.setFromNumber(item.getValue().toString());
-        } else {
-            map.put("fromNumber", null);
-            financialAccountBalanceRequest.setParamMap(map);
-            financialAccountBalanceRequest.setFromNumber(null);
-        }
+        financialAccountBalanceRequest.setFromNumber(item.getValue().toString());
     }
 
     private void checkToNumberSet(FinancialAccountBalanceRequest
                                           financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("toNumber", "toNumber");
-            financialAccountBalanceRequest.setParamMap(map);
-            financialAccountBalanceRequest.setToNumber(item.getValue().toString());
-        } else {
-            map.put("toNumber", null);
-            financialAccountBalanceRequest.setParamMap(map);
-            financialAccountBalanceRequest.setToNumber(null);
-        }
+        financialAccountBalanceRequest.setToNumber(item.getValue().toString());
     }
 
     private void checkDocumentNumberingTypeIdSet(FinancialAccountBalanceRequest
