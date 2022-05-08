@@ -231,6 +231,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                       end" +
             "                     )")
     FinancialDocument getActivePeriodAndMontInDocument(Long financialDocumentId);
+
     @Query(value = " SELECT " +
             "         NF_ID, " +
             "         FIRST_SERIAL, " +
@@ -331,7 +332,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     List<Object[]> findDocumentNumber(Long organizationId, Long financialDocumentId, Long numberingType);
 
-    @Query(value = "SELECT FD.DOCUMENT_DATE " +
+    @Query(value = "SELECT min(FD.DOCUMENT_DATE) " +
             "      FROM FNDC.FINANCIAL_DOCUMENT FD " +
             "     INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER DN " +
             "        ON FD.ID = DN.FINANCIAL_DOCUMENT_ID " +
@@ -343,8 +344,32 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     LocalDateTime findByFinancialDocumentByNumberingTypeAndFromNumber(Long documentNumberingTypeId, String fromNumber, Long organizationId);
 
+    @Query(value = "SELECT max(FD.DOCUMENT_DATE) " +
+            "      FROM FNDC.FINANCIAL_DOCUMENT FD " +
+            "     INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER DN " +
+            "        ON FD.ID = DN.FINANCIAL_DOCUMENT_ID " +
+            "     WHERE FD.DELETED_DATE IS NULL " +
+            "       AND FD.ORGANIZATION_ID = :organizationId" +
+            "       AND DN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
+            "       AND DN.DOCUMENT_NUMBER = NVL(:toNumber, DN.DOCUMENT_NUMBER) " +
+            "       AND DN.DELETED_DATE IS NULL "
+            , nativeQuery = true)
+    LocalDateTime findByFinancialDocumentByNumberingAndToNumber(Long documentNumberingTypeId, String toNumber, Long organizationId);
 
-    @Query(value = " SELECT MIN(DN.DOCUMENT_NUMBER) " +
+
+    @Query(value = "SELECT max(FD.DOCUMENT_DATE) " +
+            "      FROM FNDC.FINANCIAL_DOCUMENT FD " +
+            "     INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER DN " +
+            "        ON FD.ID = DN.FINANCIAL_DOCUMENT_ID " +
+            "     WHERE FD.DELETED_DATE IS NULL " +
+            "       AND FD.ORGANIZATION_ID = :organizationId" +
+            "       AND DN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
+            "       AND DN.DOCUMENT_NUMBER = NVL(:toNumber, DN.DOCUMENT_NUMBER) " +
+            "       AND DN.DELETED_DATE IS NULL "
+            , nativeQuery = true)
+    LocalDateTime findByFinancialDocumentByNumberingTypeAndToNumber(Long documentNumberingTypeId, String toNumber, Long organizationId);
+
+    @Query(value = " SELECT max(DN.DOCUMENT_NUMBER) " +
             "      FROM FNDC.FINANCIAL_DOCUMENT FD " +
             "     INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER DN " +
             "        ON FD.ID = DN.FINANCIAL_DOCUMENT_ID " +
