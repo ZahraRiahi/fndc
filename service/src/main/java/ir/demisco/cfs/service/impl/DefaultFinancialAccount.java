@@ -730,9 +730,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialAccountBalanceRequest financialAccountBalanceRequest = setParameterBalanceReport(filters);
         int length = 0;
-        if (financialAccountBalanceRequest.getFromFinancialAccountCode() == null || financialAccountBalanceRequest.getToFinancialAccountCode() == null) {
-            throw new RuleException("fin.financialAccount.mandatoryFinancialAccountCode");
-        }
+//        if (financialAccountBalanceRequest.getFromFinancialAccountCode() == null || financialAccountBalanceRequest.getToFinancialAccountCode() == null) {
+//            throw new RuleException("fin.financialAccount.mandatoryFinancialAccountCode");
+//        }
         if (financialAccountBalanceRequest.getFromFinancialAccountCode() != null || financialAccountBalanceRequest.getToFinancialAccountCode() != null) {
             checkFinancialAccountBalanceSet(financialAccountBalanceRequest);
             length = financialAccountBalanceRequest.getFromFinancialAccountCode().length();
