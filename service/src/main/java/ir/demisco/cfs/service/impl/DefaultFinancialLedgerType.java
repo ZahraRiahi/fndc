@@ -24,9 +24,11 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.hibernate.jpa.TypedParameterValue;
 import org.hibernate.type.StandardBasicTypes;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -108,7 +110,17 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         if (param.getInputFromConfigFlag() == null) {
             throw new RuleException("fin.security.check.input.from.config.flag");
         }
-
+        List<Sort.Order> sorts = new ArrayList<>();
+        dataSourceRequest.getSort()
+                .forEach(sortDescriptor ->
+                        {
+                            if (sortDescriptor.getDir().equals("asc")) {
+                                sorts.add(Sort.Order.asc(sortDescriptor.getField()));
+                            } else {
+                                sorts.add(Sort.Order.desc(sortDescriptor.getField()));
+                            }
+                        }
+                );
         List<Object[]> list = financialLedgerTypeRepository.financialLedgerTypeList(param.getOrganizationId(), -1L
                 , param.getActivityCode()
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialPeriodId())
