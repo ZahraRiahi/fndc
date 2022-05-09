@@ -20,9 +20,11 @@ import org.hibernate.type.StandardBasicTypes;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -95,7 +97,19 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialDocumentTypeRequest param = setParameterFinancialDocumentType(filters);
         Map<String, Object> paramMap = param.getParamMap();
-        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
+        List<Sort.Order> sorts = new ArrayList<>();
+        dataSourceRequest.getSort()
+                .forEach(sortDescriptor ->
+                {
+                    if (sortDescriptor.getDir().equals("asc")) {
+                        sorts.add(Sort.Order.asc(sortDescriptor.getField()));
+                    } else {
+                        sorts.add(Sort.Order.desc(sortDescriptor.getField()));
+                    }
+                }
+        );
+
+        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake(), Sort.by(sorts));
         Page<Object[]> list = financialDocumentTypeRepository.financialDocumentType(paramMap.get("financialSystem"), param.getFinancialSystemId(), SecurityHelper.getCurrentUser().getOrganizationId(),
                 paramMap.get("idObject"),
                 param.getId(), pageable);
@@ -155,7 +169,7 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     @Override
     public ResponseFinancialDocumentTypeDto save(FinancialDocumentTypeDto financialDocumentTypeDto) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        FinancialDocumentType financialDocumentType=new FinancialDocumentType();
+        FinancialDocumentType financialDocumentType = new FinancialDocumentType();
         financialDocumentType.setDescription(financialDocumentTypeDto.getDescription());
         financialDocumentType.setOrganization(organizationRepository.getOne(organizationId));
         financialDocumentType.setActiveFlag(financialDocumentTypeDto.getActiveFlag());
