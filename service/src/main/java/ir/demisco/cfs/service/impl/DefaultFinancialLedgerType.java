@@ -110,17 +110,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
         if (param.getInputFromConfigFlag() == null) {
             throw new RuleException("fin.security.check.input.from.config.flag");
         }
-        List<Sort.Order> sorts = new ArrayList<>();
-        dataSourceRequest.getSort()
-                .forEach(sortDescriptor ->
-                        {
-                            if (sortDescriptor.getDir().equals("asc")) {
-                                sorts.add(Sort.Order.asc(sortDescriptor.getField()));
-                            } else {
-                                sorts.add(Sort.Order.desc(sortDescriptor.getField()));
-                            }
-                        }
-                );
+
         List<Object[]> list = financialLedgerTypeRepository.financialLedgerTypeList(param.getOrganizationId(), -1L
                 , param.getActivityCode()
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialPeriodId())
@@ -133,6 +123,17 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                 , param.getFinancialCodingType()
                 , param.getFinancialLedgerTypeId()
                 , param.getFinancialLedgerType());
+        List<Sort.Order> sorts = new ArrayList<>();
+        dataSourceRequest.getSort()
+                .forEach(sortDescriptor ->
+                        {
+                            if (sortDescriptor.getDir().equals("asc")) {
+                                sorts.add(Sort.Order.asc(sortDescriptor.getField()));
+                            } else {
+                                sorts.add(Sort.Order.desc(sortDescriptor.getField()));
+                            }
+                        }
+                );
         List<FinancialLedgerTypeListResponse> financialLedgerTypeListResponses =
                 list.stream().map(item -> FinancialLedgerTypeListResponse.builder()
                         .financialLedgerTypeId(Long.parseLong(item[0].toString()))

@@ -15,24 +15,20 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "ACCOUNT_MONEY_TYPE", schema = "FNAC")
-public class AccountMoneyType  extends AuditModel<Long> {
+@Table(name = "ACCOUNT_MONEY_TYPE", schema = "fnac")
+public class AccountMoneyType extends AuditModel<Long> {
 
     private Long id;
     private MoneyType moneyType;
     private FinancialAccount financialAccount;
     private LocalDateTime deletedDate;
 
-
+    @Override
     @Id
     @SequenceGenerator(schema = "fnac", name = "account_money_type_generator", sequenceName = "sq_account_money_type", allocationSize = 50)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_money_type_generator")
     public Long getId() {
         return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

@@ -4,7 +4,10 @@ import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -25,11 +28,15 @@ public class CentricAccountType extends AuditModel<Long> {
     private Long parrentFlag;
     private LocalDateTime deletedDate;
 
+    @Override
     @Id
+    @SequenceGenerator(schema = "fnac", name = "centric_account_type_generator", sequenceName = "sq_centric_account_type", allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "centric_account_type_generator")
     public Long getId() {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

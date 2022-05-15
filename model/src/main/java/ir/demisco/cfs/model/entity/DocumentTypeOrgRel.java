@@ -22,14 +22,14 @@ public class DocumentTypeOrgRel extends AuditModel<Long> {
     private FinancialDocumentType financialDocumentType;
     private Organization organization;
     private Long activeFlag;
-
+    @Override
     @Id
     @SequenceGenerator(schema = "fndc", name = "document_type_org_rel_generator", sequenceName = "sq_document_type_org_rel", allocationSize = 50)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "document_type_org_rel_generator")
     public Long getId() {
         return id;
     }
-
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
