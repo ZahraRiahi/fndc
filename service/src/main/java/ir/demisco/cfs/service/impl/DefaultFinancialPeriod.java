@@ -8,7 +8,6 @@ import ir.demisco.cfs.service.api.FinancialPeriodService;
 import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
-import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
 
@@ -24,7 +23,7 @@ public class DefaultFinancialPeriod implements FinancialPeriodService {
     private final FinancialPeriodRepository financialPeriodRepository;
     private final FinancialDocumentRepository financialDocumentRepository;
 
-    public DefaultFinancialPeriod(GridFilterService gridFilterService, FinancialPeriodRepository financialPeriodRepository, FinancialDocumentRepository financialDocumentRepository) {
+    public DefaultFinancialPeriod(FinancialPeriodRepository financialPeriodRepository, FinancialDocumentRepository financialDocumentRepository) {
         this.financialPeriodRepository = financialPeriodRepository;
         this.financialDocumentRepository = financialDocumentRepository;
     }

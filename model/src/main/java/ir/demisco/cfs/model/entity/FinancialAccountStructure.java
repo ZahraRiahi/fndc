@@ -29,6 +29,7 @@ public class FinancialAccountStructure extends AuditModel<Long> {
     private Boolean flagShowInAcc;
     private Boolean flgPermanentStatus;
 
+    @Override
     @Id
     @SequenceGenerator(schema = "fnac", name = "financial_account_structure_generator", sequenceName = "sq_financial_account_structure", allocationSize = 50)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_account_structure_generator")
@@ -36,6 +37,7 @@ public class FinancialAccountStructure extends AuditModel<Long> {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

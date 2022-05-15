@@ -1,7 +1,6 @@
 package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.response.FinancialNumberingFormatDto;
-import ir.demisco.cfs.model.dto.response.ResponseFinancialNumberingFormatDto;
 import ir.demisco.cfs.model.entity.FinancialNumberingFormat;
 import ir.demisco.cfs.service.api.FinancialNumberingFormatService;
 import ir.demisco.cfs.service.repository.FinancialNumberingFormatRepository;
@@ -56,7 +55,6 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     @Transactional(rollbackOn = Throwable.class)
     public Boolean save(FinancialNumberingFormatDto financialNumberingFormatDto) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        Object formatType;
         checkValidParameter(financialNumberingFormatDto);
         FinancialNumberingFormat financialNumberingFormat =
                 financialNumberingFormatRepository.getFormatByType(organizationId,
@@ -95,20 +93,6 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     @Transactional(rollbackOn = Throwable.class)
     public Boolean upDate(FinancialNumberingFormatDto financialNumberingFormatDto) {
         throw new RuleException("fin.financialNumberingFormat.update");
-    }
-
-    private ResponseFinancialNumberingFormatDto convertNumberingFormatToDto(FinancialNumberingFormat updateFormat) {
-
-        return ResponseFinancialNumberingFormatDto.builder()
-                .id(updateFormat.getId())
-                .description(updateFormat.getDescription())
-                .financialNumberingFormatTypeId(updateFormat.getFinancialNumberingFormatType() != null ?
-                        updateFormat.getFinancialNumberingFormatType().getId() : null)
-                .financialNumberingFormatTypeDescription(updateFormat.getFinancialNumberingFormatType() != null ?
-                        updateFormat.getFinancialNumberingFormatType().getDescription() : null)
-                .financialNumberingTypeId(updateFormat.getFinancialNumberingType().getId())
-                .message("عملیات موفقیت آمیز بود")
-                .build();
     }
 
     @Override
