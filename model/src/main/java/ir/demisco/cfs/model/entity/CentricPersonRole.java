@@ -22,14 +22,14 @@ public class CentricPersonRole  extends AuditModel<Long> {
     private PersonRoleType personRoleType;
     private CentricAccount centricAccount;
     private LocalDateTime deletedDate;
-
+    @Override
     @Id
     @SequenceGenerator(schema = "fnac", name = "centric_person_role_generator", sequenceName = "sq_centric_person_role", allocationSize = 50)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "centric_person_role_generator")
     public Long getId() {
         return id;
     }
-
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

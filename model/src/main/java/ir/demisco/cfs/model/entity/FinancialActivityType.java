@@ -33,7 +33,7 @@ public class FinancialActivityType extends AuditModel<Long> {
     public Long getId() {
         return id;
     }
-
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

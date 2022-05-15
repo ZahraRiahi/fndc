@@ -35,7 +35,6 @@ import ir.demisco.cfs.service.api.ControlFinancialAccountNatureTypeService;
 import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.FinancialPeriodService;
-import ir.demisco.cfs.service.repository.AccountDefaultValueRepository;
 import ir.demisco.cfs.service.repository.CentricAccountRepository;
 import ir.demisco.cfs.service.repository.FinancialAccountRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemCurrencyRepository;
@@ -104,7 +103,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
                                     FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                     FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
-                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, AccountDefaultValueRepository accountDefaultValueRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialPeriodRepository financialPeriodRepository) {
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialPeriodRepository financialPeriodRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -449,8 +448,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     private List<FinancialDocumentErrorDto> validationSetStatus(FinancialDocument financialDocument) {
-        List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = new ArrayList<>();
-        checkValidationSetStatus(financialDocument);
+        List<FinancialDocumentErrorDto> financialDocumentErrorDtoList =  checkValidationSetStatus(financialDocument);
         FinancialDocument document = financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocument.getId());
         if (document == null) {
             FinancialDocumentErrorDto activeMountStatus = new FinancialDocumentErrorDto();
@@ -521,96 +519,103 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         return financialDocumentErrorDtoList;
     }
 
-    private void checkValidationSetStatus(FinancialDocument financialDocument) {
-        List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = new ArrayList<>();
+    List<FinancialDocumentErrorDto> check1(FinancialDocumentItem documentItem,FinancialDocument financialDocument,  List<FinancialDocumentErrorDto> financialDocumentErrorDtoList){
+        double creditAmount = documentItem.getCreditAmount() % 1;
+        double debitAmount = documentItem.getDebitAmount() % 1;
+        if ((documentItem.getCreditAmount() == 0) && (documentItem.getDebitAmount() == 0)) {
+            FinancialDocumentErrorDto checkZeroAmount = new FinancialDocumentErrorDto();
+            checkZeroAmount.setFinancialDocumentId(financialDocument.getId());
+            checkZeroAmount.setFinancialDocumentItemId(documentItem.getId());
+            checkZeroAmount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+            checkZeroAmount.setMessage("در ردیف  مبلغ بستانکار و بدهکار صفر می باشد");
+            financialDocumentErrorDtoList.add(checkZeroAmount);
+        }
+
+        if ((documentItem.getCreditAmount() != 0) && (documentItem.getDebitAmount() != 0)) {
+            FinancialDocumentErrorDto checkCostAmount = new FinancialDocumentErrorDto();
+            checkCostAmount.setFinancialDocumentId(financialDocument.getId());
+            checkCostAmount.setFinancialDocumentItemId(documentItem.getId());
+            checkCostAmount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+            checkCostAmount.setMessage("در ردیف  مبلغ بستانکار و بدهکار هر دو دارای مقدار می باشد.");
+            financialDocumentErrorDtoList.add(checkCostAmount);
+        }
+
+        if (documentItem.getDescription() == null) {
+            FinancialDocumentErrorDto documentItemDescription = new FinancialDocumentErrorDto();
+            documentItemDescription.setFinancialDocumentId(financialDocument.getId());
+            documentItemDescription.setFinancialDocumentItemId(documentItem.getId());
+            documentItemDescription.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+            documentItemDescription.setMessage("در سند ردیف بدون شرح وجود دارد.");
+            financialDocumentErrorDtoList.add(documentItemDescription);
+        }
+
+        if ((creditAmount != 0) || (debitAmount != 0)) {
+            FinancialDocumentErrorDto itemAmount = new FinancialDocumentErrorDto();
+            itemAmount.setFinancialDocumentId(financialDocument.getId());
+            itemAmount.setFinancialDocumentItemId(documentItem.getId());
+            itemAmount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+            itemAmount.setMessage("مبلغ در ردیف اعشاری است.");
+            financialDocumentErrorDtoList.add(itemAmount);
+        }
+
+        if ((documentItem.getCreditAmount() < 0) || (documentItem.getDebitAmount() < 0)) {
+            FinancialDocumentErrorDto documentItemAmount = new FinancialDocumentErrorDto();
+            documentItemAmount.setFinancialDocumentId(financialDocument.getId());
+            documentItemAmount.setFinancialDocumentItemId(documentItem.getId());
+            documentItemAmount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+            documentItemAmount.setMessage("در ردیف سند مبلغ بستانکار یا بدهکار  منفی می باشد.");
+            financialDocumentErrorDtoList.add(documentItemAmount);
+        }
+
+        Long documentReference = financialDocumentReferenceRepository.getDocumentReference(documentItem.getId());
+        if (documentReference != null) {
+            FinancialDocumentErrorDto financialDocumentReference = new FinancialDocumentErrorDto();
+            financialDocumentReference.setFinancialDocumentId(financialDocument.getId());
+            financialDocumentReference.setFinancialDocumentItemId(documentItem.getId());
+            financialDocumentReference.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+            financialDocumentReference.setMessage("تاریخ و شرح در مدارک مرجع پر نشده.");
+            financialDocumentErrorDtoList.add(financialDocumentReference);
+        }
+
+        Long financialDocumentItemInfoCurrency = financialDocumentItemRepository.getInfoCurrency(documentItem.getId());
+        if (financialDocumentItemInfoCurrency != null) {
+            FinancialDocumentErrorDto infoCurrency = new FinancialDocumentErrorDto();
+            infoCurrency.setFinancialDocumentId(financialDocument.getId());
+            infoCurrency.setFinancialDocumentItemId(documentItem.getId());
+            infoCurrency.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+            infoCurrency.setMessage("لطفا اطلاعات ارزی را برای ردیفهای ارزی ، به صورت کامل وارد نمایید");
+            financialDocumentErrorDtoList.add(infoCurrency);
+        }
+
+        Long financialDocumentEqualCurrency = financialDocumentItemRepository.equalCurrency(documentItem.getId());
+        if (financialDocumentEqualCurrency != null) {
+            FinancialDocumentErrorDto equalCurrency = new FinancialDocumentErrorDto();
+            equalCurrency.setFinancialDocumentId(financialDocument.getId());
+            equalCurrency.setFinancialDocumentItemId(documentItem.getId());
+            equalCurrency.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
+            equalCurrency.setMessage("نوع ارز انتخاب شده در ردیفهای ارزی سند ، با نوع ارز یکسان نمیباشد");
+            financialDocumentErrorDtoList.add(equalCurrency);
+        }
+        return financialDocumentErrorDtoList;
+    }
+
+    private  List<FinancialDocumentErrorDto> checkValidationSetStatus(FinancialDocument financialDocument) {
+        final List<FinancialDocumentErrorDto>[] financialDocumentErrorDtoList = new List[]{new ArrayList<>()};
         List<FinancialDocumentItem> documentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocument.getId());
         if (documentItemList.isEmpty()) {
             FinancialDocumentErrorDto documentItem = new FinancialDocumentErrorDto();
             documentItem.setFinancialDocumentId(financialDocument.getId());
             documentItem.setMessage("سند بدون ردیف است.");
-            financialDocumentErrorDtoList.add(documentItem);
+            financialDocumentErrorDtoList[0].add(documentItem);
         } else {
             documentItemList.forEach(documentItem -> {
-                double creditAmount = documentItem.getCreditAmount() % 1;
-                double debitAmount = documentItem.getDebitAmount() % 1;
 
-                if ((documentItem.getCreditAmount() == 0) && (documentItem.getDebitAmount() == 0)) {
-                    FinancialDocumentErrorDto checkZeroAmount = new FinancialDocumentErrorDto();
-                    checkZeroAmount.setFinancialDocumentId(financialDocument.getId());
-                    checkZeroAmount.setFinancialDocumentItemId(documentItem.getId());
-                    checkZeroAmount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-                    checkZeroAmount.setMessage("در ردیف  مبلغ بستانکار و بدهکار صفر می باشد");
-                    financialDocumentErrorDtoList.add(checkZeroAmount);
-                }
+                financialDocumentErrorDtoList[0] = check1(documentItem,financialDocument, financialDocumentErrorDtoList[0]);
 
-                if ((documentItem.getCreditAmount() != 0) && (documentItem.getDebitAmount() != 0)) {
-                    FinancialDocumentErrorDto checkCostAmount = new FinancialDocumentErrorDto();
-                    checkCostAmount.setFinancialDocumentId(financialDocument.getId());
-                    checkCostAmount.setFinancialDocumentItemId(documentItem.getId());
-                    checkCostAmount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-                    checkCostAmount.setMessage("در ردیف  مبلغ بستانکار و بدهکار هر دو دارای مقدار می باشد.");
-                    financialDocumentErrorDtoList.add(checkCostAmount);
-                }
-
-                if (documentItem.getDescription() == null) {
-                    FinancialDocumentErrorDto documentItemDescription = new FinancialDocumentErrorDto();
-                    documentItemDescription.setFinancialDocumentId(financialDocument.getId());
-                    documentItemDescription.setFinancialDocumentItemId(documentItem.getId());
-                    documentItemDescription.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-                    documentItemDescription.setMessage("در سند ردیف بدون شرح وجود دارد.");
-                    financialDocumentErrorDtoList.add(documentItemDescription);
-                }
-
-                if ((creditAmount != 0) || (debitAmount != 0)) {
-                    FinancialDocumentErrorDto itemAmount = new FinancialDocumentErrorDto();
-                    itemAmount.setFinancialDocumentId(financialDocument.getId());
-                    itemAmount.setFinancialDocumentItemId(documentItem.getId());
-                    itemAmount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-                    itemAmount.setMessage("مبلغ در ردیف اعشاری است.");
-                    financialDocumentErrorDtoList.add(itemAmount);
-                }
-
-                if ((documentItem.getCreditAmount() < 0) || (documentItem.getDebitAmount() < 0)) {
-                    FinancialDocumentErrorDto documentItemAmount = new FinancialDocumentErrorDto();
-                    documentItemAmount.setFinancialDocumentId(financialDocument.getId());
-                    documentItemAmount.setFinancialDocumentItemId(documentItem.getId());
-                    documentItemAmount.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-                    documentItemAmount.setMessage("در ردیف سند مبلغ بستانکار یا بدهکار  منفی می باشد.");
-                    financialDocumentErrorDtoList.add(documentItemAmount);
-                }
-
-                Long documentReference = financialDocumentReferenceRepository.getDocumentReference(documentItem.getId());
-                if (documentReference != null) {
-                    FinancialDocumentErrorDto financialDocumentReference = new FinancialDocumentErrorDto();
-                    financialDocumentReference.setFinancialDocumentId(financialDocument.getId());
-                    financialDocumentReference.setFinancialDocumentItemId(documentItem.getId());
-                    financialDocumentReference.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-                    financialDocumentReference.setMessage("تاریخ و شرح در مدارک مرجع پر نشده.");
-                    financialDocumentErrorDtoList.add(financialDocumentReference);
-                }
-
-                Long financialDocumentItemInfoCurrency = financialDocumentItemRepository.getInfoCurrency(documentItem.getId());
-                if (financialDocumentItemInfoCurrency != null) {
-                    FinancialDocumentErrorDto infoCurrency = new FinancialDocumentErrorDto();
-                    infoCurrency.setFinancialDocumentId(financialDocument.getId());
-                    infoCurrency.setFinancialDocumentItemId(documentItem.getId());
-                    infoCurrency.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-                    infoCurrency.setMessage("لطفا اطلاعات ارزی را برای ردیفهای ارزی ، به صورت کامل وارد نمایید");
-                    financialDocumentErrorDtoList.add(infoCurrency);
-                }
-
-                Long financialDocumentEqualCurrency = financialDocumentItemRepository.equalCurrency(documentItem.getId());
-                if (financialDocumentEqualCurrency != null) {
-                    FinancialDocumentErrorDto equalCurrency = new FinancialDocumentErrorDto();
-                    equalCurrency.setFinancialDocumentId(financialDocument.getId());
-                    equalCurrency.setFinancialDocumentItemId(documentItem.getId());
-                    equalCurrency.setFinancialDocumentItemSequence(documentItem.getSequenceNumber());
-                    equalCurrency.setMessage("نوع ارز انتخاب شده در ردیفهای ارزی سند ، با نوع ارز یکسان نمیباشد");
-                    financialDocumentErrorDtoList.add(equalCurrency);
-                }
 
             });
         }
+        return financialDocumentErrorDtoList[0];
     }
 
     private ResponseFinancialDocumentSetStatusDto convertFinancialDocumentToDto(FinancialDocument financialDocument) {
@@ -829,7 +834,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         FinancialDocument document = financialDocumentRepository.findById(financialCentricAccountDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         CentricAccount centricAccount = centricAccountRepository.findById(financialCentricAccountDto.getCentricAccountId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistCentricAccount"));
         CentricAccount newCentricAccount = centricAccountRepository.findById(financialCentricAccountDto.getNewCentricAccountId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistCentricAccount"));
-        AtomicInteger i = new AtomicInteger(0);
+        final AtomicInteger[] atomicInteger = {new AtomicInteger(0)};
         if (centricAccount.getCentricAccountType().getId().equals(newCentricAccount.getCentricAccountType().getId())) {
             List<FinancialDocumentItem> financialDocumentItemList =
                     financialDocumentItemRepository.getByDocumentIdAndCentricAccount(financialCentricAccountDto.getFinancialDocumentItemIdList(), financialCentricAccountDto.getNewCentricAccountId(), financialCentricAccountDto.getFinancialAccountId());
@@ -845,50 +850,15 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             Long centricAccountId = financialCentricAccountDto.getCentricAccountId();
             financialDocumentItemList.forEach(documentItem -> {
 
-                if ((documentItem.getCentricAccountId1() != null) && (centricAccountId.equals(documentItem.getCentricAccountId1().getId()))) {
-                    i.getAndIncrement();
-                    documentItem.setCentricAccountId1(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
-                    documentItem.setCentricAccountId2(null);
-                    documentItem.setCentricAccountId3(null);
-                    documentItem.setCentricAccountId4(null);
-                    documentItem.setCentricAccountId5(null);
-                    documentItem.setCentricAccountId6(null);
-                } else if (documentItem.getCentricAccountId2() != null && centricAccountId.equals(documentItem.getCentricAccountId2().getId())) {
-                    i.getAndIncrement();
-                    documentItem.setCentricAccountId2(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
-                    documentItem.setCentricAccountId3(null);
-                    documentItem.setCentricAccountId4(null);
-                    documentItem.setCentricAccountId5(null);
-                    documentItem.setCentricAccountId6(null);
-                } else if (documentItem.getCentricAccountId3() != null && centricAccountId.equals(documentItem.getCentricAccountId3().getId())) {
-                    i.getAndIncrement();
-                    documentItem.setCentricAccountId3(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
-                    documentItem.setCentricAccountId4(null);
-                    documentItem.setCentricAccountId5(null);
-                    documentItem.setCentricAccountId6(null);
-                } else if (documentItem.getCentricAccountId4() != null && centricAccountId.equals(documentItem.getCentricAccountId4().getId())) {
-                    i.getAndIncrement();
-                    documentItem.setCentricAccountId4(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
-                    documentItem.setCentricAccountId5(null);
-                    documentItem.setCentricAccountId6(null);
-                } else if (documentItem.getCentricAccountId5() != null && centricAccountId.equals(documentItem.getCentricAccountId5().getId())) {
-                    i.getAndIncrement();
-                    documentItem.setCentricAccountId5(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
-                    documentItem.setCentricAccountId6(null);
-                } else if (documentItem.getCentricAccountId6() != null && centricAccountId.equals(documentItem.getCentricAccountId6().getId())) {
-                    i.getAndIncrement();
-                    documentItem.setCentricAccountId6(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
-                }else{
 
-                }
-                financialDocumentItemRepository.save(documentItem);
-                financialDocumentItemRepository.flush();
+                atomicInteger[0] =check2(documentItem,centricAccountId,financialCentricAccountDto, atomicInteger[0]);
+
             });
 
         } else {
             throw new RuleException("fin.financialDocument.notExistCentricAccountType");
         }
-        if (i.get() > 0) {
+        if (atomicInteger[0].get() > 0) {
             document.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
             financialDocumentRepository.save(document);
             financialDocumentRepository.flush();
@@ -898,6 +868,50 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
 
     }
+
+    private AtomicInteger check2(FinancialDocumentItem documentItem, Long centricAccountId, FinancialCentricAccountDto financialCentricAccountDto,AtomicInteger atomicInteger) {
+
+        if ((documentItem.getCentricAccountId1() != null) && (centricAccountId.equals(documentItem.getCentricAccountId1().getId()))) {
+            atomicInteger.getAndIncrement();
+            documentItem.setCentricAccountId1(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
+            documentItem.setCentricAccountId2(null);
+            documentItem.setCentricAccountId3(null);
+            documentItem.setCentricAccountId4(null);
+            documentItem.setCentricAccountId5(null);
+            documentItem.setCentricAccountId6(null);
+        } else if (documentItem.getCentricAccountId2() != null && centricAccountId.equals(documentItem.getCentricAccountId2().getId())) {
+            atomicInteger.getAndIncrement();
+            documentItem.setCentricAccountId2(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
+            documentItem.setCentricAccountId3(null);
+            documentItem.setCentricAccountId4(null);
+            documentItem.setCentricAccountId5(null);
+            documentItem.setCentricAccountId6(null);
+        } else if (documentItem.getCentricAccountId3() != null && centricAccountId.equals(documentItem.getCentricAccountId3().getId())) {
+            atomicInteger.getAndIncrement();
+            documentItem.setCentricAccountId3(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
+            documentItem.setCentricAccountId4(null);
+            documentItem.setCentricAccountId5(null);
+            documentItem.setCentricAccountId6(null);
+        } else if (documentItem.getCentricAccountId4() != null && centricAccountId.equals(documentItem.getCentricAccountId4().getId())) {
+            atomicInteger.getAndIncrement();
+            documentItem.setCentricAccountId4(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
+            documentItem.setCentricAccountId5(null);
+            documentItem.setCentricAccountId6(null);
+        } else if (documentItem.getCentricAccountId5() != null && centricAccountId.equals(documentItem.getCentricAccountId5().getId())) {
+            atomicInteger.getAndIncrement();
+            documentItem.setCentricAccountId5(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
+            documentItem.setCentricAccountId6(null);
+        } else if (documentItem.getCentricAccountId6() != null && centricAccountId.equals(documentItem.getCentricAccountId6().getId())) {
+            atomicInteger.getAndIncrement();
+            documentItem.setCentricAccountId6(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
+        }else{
+            //nothing
+        }
+        financialDocumentItemRepository.save(documentItem);
+        financialDocumentItemRepository.flush();
+        return atomicInteger;
+    }
+
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
