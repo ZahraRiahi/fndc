@@ -4,9 +4,12 @@ import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
 
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -22,11 +25,14 @@ public class AccountStructureLevel extends AuditModel<Long> {
     private LocalDateTime deletedDate;
     private FinancialAccount relatedAccount;
 
+    @Override
     @Id
+    @SequenceGenerator(schema = "fnac", name = "ACCOUNT_STRUCTURE_LEVEL_generator", sequenceName = "sq_ACCOUNT_STRUCTURE_LEVEL", allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "ACCOUNT_STRUCTURE_LEVEL_generator")
     public Long getId() {
         return id;
     }
-
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

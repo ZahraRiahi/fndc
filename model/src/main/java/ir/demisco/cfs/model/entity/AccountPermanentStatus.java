@@ -5,7 +5,10 @@ import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -18,12 +21,15 @@ public class AccountPermanentStatus extends AuditModel<Long> {
     private String description;
     private LocalDateTime deletedDate;
 
+    @Override
     @Id
+    @SequenceGenerator(schema = "fnac", name = "account_permanent_status_generator", sequenceName = "sq_account_permanent_status", allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "account_permanent_status_generator")
     public Long getId() {
         return id;
     }
 
-
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
