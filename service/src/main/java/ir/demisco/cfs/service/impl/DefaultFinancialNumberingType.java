@@ -45,26 +45,7 @@ public class DefaultFinancialNumberingType implements FinancialNumberingTypeServ
                     .serialLength(0L)
                     .build()).collect(Collectors.toList());
         } else {
-            Object fromDateObject;
-            LocalDateTime fromDateFormat = null;
-            if (financialNumberingTypeRequest.getFromDate() == null) {
-                fromDateObject = null;
-                fromDateFormat=LocalDateTime.now();
-            } else {
-                fromDateObject = "fromDateObject";
-                fromDateFormat = financialNumberingTypeRequest.getFromDate();
-            }
-
-            Object toDateObject;
-            LocalDateTime toDateFormat = null;
-            if (financialNumberingTypeRequest.getToDate() == null) {
-                toDateObject = null;
-                toDateFormat=LocalDateTime.now();
-            } else {
-                toDateObject = "toDateObject";
-                toDateFormat = financialNumberingTypeRequest.getToDate();
-            }
-            List<Object[]> financialNumberingTypeList = financialNumberingTypeRepository.findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(SecurityHelper.getCurrentUser().getOrganizationId(), fromDateObject, fromDateFormat,toDateObject, toDateFormat, SecurityHelper.getCurrentUser().getUserId());
+            List<Object[]> financialNumberingTypeList = financialNumberingTypeRepository.findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(SecurityHelper.getCurrentUser().getOrganizationId(), DateUtil.convertStringToDate(financialNumberingTypeRequest.getFromDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))), DateUtil.convertStringToDate(financialNumberingTypeRequest.getToDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))), SecurityHelper.getCurrentUser().getUserId());
 
             return financialNumberingTypeList.stream().map(e -> FinancialNumberingTypeOutputResponse.builder().id(Long.parseLong(e[0].toString()))
                     .description(gatItemForString(e, 1))

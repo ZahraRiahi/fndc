@@ -45,11 +45,10 @@ public interface FinancialNumberingTypeRepository extends JpaRepository<Financia
             "         QRY.SERIAL_LENGTH, " +
             "       REPLACE(REPLACE(QRY.CODE," +
             "                       '$DAT'," +
-//            "                       TO_CHAR(TO_DATE(TO_CHAR(nvl(:fromDate,:fromDateObject), 'mm/dd/yyyy')," +
-//            "                                       'mm/dd/yyyy')," +
-//            "                               'yyyymmdd'," +
-//            "                               'NLS_CALENDAR=persian'))" +
-            " :fromDate) , " +
+            "                       TO_CHAR(TO_DATE(TO_CHAR(:fromDate, 'mm/dd/yyyy')," +
+            "                                       'mm/dd/yyyy')," +
+            "                               'yyyymmdd'," +
+            "                               'NLS_CALENDAR=persian'))," +
             "               '$PRI'," +
             "               (SELECT FP.CODE" +
             "                  FROM FNPR.FINANCIAL_PERIOD FP" +
@@ -59,12 +58,16 @@ public interface FinancialNumberingTypeRepository extends JpaRepository<Financia
             "                   AND FPT.ACTIVE_FLAG = 1" +
             "                 INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY" +
             "                    ON FPT.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID" +
-            "                 WHERE  (:fromDateObject is null or TO_DATE(TO_CHAR(:fromDate,'mm/dd/yyyy')) BETWEEN FP.START_DATE AND FP.END_DATE))) FROM_CODE" +
+            "                 WHERE TO_DATE(TO_CHAR(:fromDate, 'mm/dd/yyyy')," +
+            "                               'mm/dd/yyyy') BETWEEN FP.START_DATE AND" +
+            "                       FP.END_DATE ))" +
+            "       FROM_CODE," +
             "       REPLACE(REPLACE(QRY.CODE," +
             "                       '$DAT'," +
-
-            " :toDate) " +
-            "," +
+            "                       TO_CHAR(TO_DATE(TO_CHAR(:toDate, 'mm/dd/yyyy')," +
+            "                                       'mm/dd/yyyy')," +
+            "                               'yyyymmdd'," +
+            "                               'NLS_CALENDAR=persian'))," +
             "               '$PRI'," +
             "               (SELECT FP.CODE" +
             "                  FROM FNPR.FINANCIAL_PERIOD FP" +
@@ -74,12 +77,11 @@ public interface FinancialNumberingTypeRepository extends JpaRepository<Financia
             "                   AND FPT.ACTIVE_FLAG = 1" +
             "                 INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY" +
             "                    ON FPT.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID" +
-            "                 WHERE (:toDateObject is null or  TO_CHAR(:toDate, 'mm/dd/yyyy') BETWEEN" +
-            "                       FP.START_DATE AND FP.END_DATE))) TO_CODE" +
+            "                 WHERE TO_DATE(TO_CHAR(:toDate, 'mm/dd/yyyy'), 'mm/dd/yyyy') BETWEEN" +
+            "                       FP.START_DATE AND FP.END_DATE)) TO_CODE" +
             "  FROM QRY"
             , nativeQuery = true)
-    List<Object[]> findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(Long organizationId, Object fromDateObject, LocalDateTime fromDate
-            , Object toDateObject, LocalDateTime toDate, Long userId);
+    List<Object[]> findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(Long organizationId,Date fromDate, Date toDate, Long userId);
 
     @Query(value = "   SELECT *  " +
             "    FROM FNDC.FINANCIAL_NUMBERING_TYPE T "
