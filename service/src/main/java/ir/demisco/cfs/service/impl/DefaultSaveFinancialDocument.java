@@ -41,8 +41,6 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
@@ -50,7 +48,6 @@ import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -565,16 +562,16 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         List<Object[]> list = financialDocumentItemRepository.findByFinancialDocumentItemId(financialDocumentReportRequest.getFinancialDocumentId(),
                 financialDocumentItem,
                 financialDocumentReportRequest.getFinancialDocumentItemId());
-        dataSourceRequest.getSort()
-                .forEach(sortDescriptor ->
-                        {
-                            if (sortDescriptor.getDir().equals("asc")) {
-                                sorts.add(Sort.Order.asc(sortDescriptor.getField()));
-                            } else {
-                                sorts.add(Sort.Order.desc(sortDescriptor.getField()));
-                            }
-                        }
-                );
+//        dataSourceRequest.getSort()
+//                .forEach(sortDescriptor ->
+//                        {
+//                            if (sortDescriptor.getDir().equals("asc")) {
+//                                sorts.add(Sort.Order.asc(sortDescriptor.getField()));
+//                            } else {
+//                                sorts.add(Sort.Order.desc(sortDescriptor.getField()));
+//                            }
+//                        }
+//                );
 
         List<FinancialDocumentItemResponse> financialDocumentItemResponses = new ArrayList<>();
         list.forEach(documentItem -> {
@@ -594,7 +591,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
             financialDocumentItemResponses.add(documentItemToList);
         });
         DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(financialDocumentItemResponses.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).sorted(Comparator.comparing(FinancialDocumentItemResponse::getDescription)).collect(Collectors.toList()));
+        dataSourceResult.setData(financialDocumentItemResponses.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
 
 
         dataSourceResult.setTotal(list.size());
