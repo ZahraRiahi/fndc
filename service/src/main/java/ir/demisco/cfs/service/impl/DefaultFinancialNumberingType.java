@@ -46,23 +46,23 @@ public class DefaultFinancialNumberingType implements FinancialNumberingTypeServ
                     .build()).collect(Collectors.toList());
         } else {
             Object fromDateObject;
-            Date fromDateFormat = null;
+            LocalDateTime fromDateFormat = null;
             if (financialNumberingTypeRequest.getFromDate() == null) {
                 fromDateObject = null;
-                fromDateFormat=new Date();
+                fromDateFormat=LocalDateTime.now();
             } else {
                 fromDateObject = "fromDateObject";
-                fromDateFormat = DateUtil.convertStringToDate(financialNumberingTypeRequest.getFromDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+                fromDateFormat = financialNumberingTypeRequest.getFromDate();
             }
 
             Object toDateObject;
-            Date toDateFormat = null;
+            LocalDateTime toDateFormat = null;
             if (financialNumberingTypeRequest.getToDate() == null) {
                 toDateObject = null;
-                toDateFormat=new Date();
+                toDateFormat=LocalDateTime.now();
             } else {
                 toDateObject = "toDateObject";
-                toDateFormat = DateUtil.convertStringToDate(financialNumberingTypeRequest.getToDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+                toDateFormat = financialNumberingTypeRequest.getToDate();
             }
             List<Object[]> financialNumberingTypeList = financialNumberingTypeRepository.findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(SecurityHelper.getCurrentUser().getOrganizationId(), fromDateObject, fromDateFormat,toDateObject, toDateFormat, SecurityHelper.getCurrentUser().getUserId());
 
