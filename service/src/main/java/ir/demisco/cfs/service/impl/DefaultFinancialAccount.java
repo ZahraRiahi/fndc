@@ -730,9 +730,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialAccountBalanceRequest financialAccountBalanceRequest = setParameterBalanceReport(filters);
         int length = 0;
-//        if (financialAccountBalanceRequest.getFromFinancialAccountCode() == null || financialAccountBalanceRequest.getToFinancialAccountCode() == null) {
-//            throw new RuleException("fin.financialAccount.mandatoryFinancialAccountCode");
-//        }
         if (financialAccountBalanceRequest.getFromFinancialAccountCode() != null || financialAccountBalanceRequest.getToFinancialAccountCode() != null) {
             checkFinancialAccountBalanceSet(financialAccountBalanceRequest);
             length = financialAccountBalanceRequest.getFromFinancialAccountCode().length();
@@ -745,8 +742,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         if (financialAccountBalanceRequest.getDateFilterFlg() == null) {
             throw new RuleException("fin.financialAccount.selectDateFilterFlg");
         }
-        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake());
-        Page<Object[]> list = financialPeriodRepository.findByFinancialPeriodByBalanceReport(financialAccountBalanceRequest.getFromDate(),
+        List<Object[]> list = financialPeriodRepository.findByFinancialPeriodByBalanceReport(financialAccountBalanceRequest.getFromDate(),
                 financialAccountBalanceRequest.getToDate(),
                 financialAccountBalanceRequest.getFromNumber(),
                 financialAccountBalanceRequest.getToNumber(),
@@ -759,8 +755,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialAccountBalanceRequest.getFromFinancialAccountCode(),
                 financialAccountBalanceRequest.getToFinancialAccountCode(),
                 SecurityHelper.getCurrentUser().getOrganizationId(),
-                financialAccountBalanceRequest.getHasRemain(),
-                pageable);
+                financialAccountBalanceRequest.getHasRemain());
 
         List<FinancialAccountBalanceResponse> financialAccountBalanceResponse = list.stream().map(item ->
                 FinancialAccountBalanceResponse.builder()
@@ -776,10 +771,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                         .remDebit(getItemForDouble(item, 9))
                         .remCredit(getItemForDouble(item, 10))
                         .build()).collect(Collectors.toList());
+
         DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(financialAccountBalanceResponse);
-        dataSourceResult.setTotal(list.getTotalElements());
+        dataSourceResult.setData(financialAccountBalanceResponse.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
+        dataSourceResult.setTotal(list.size());
         return dataSourceResult;
+
     }
 
     private void checkFinancialAccountBalanceSet(FinancialAccountBalanceRequest financialAccountBalanceRequest) {
