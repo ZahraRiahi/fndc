@@ -484,7 +484,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     private List<Object[]> getCentricTurnOverReportList(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, Map<String, Object> paramMap) {
         return financialPeriodRepository.findByFinancialAccountCentricTurnOver(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentCentricTurnOverRequest.getLedgerTypeId(), financialDocumentCentricTurnOverRequest.getPeriodStartDate()
                 , financialDocumentCentricTurnOverRequest.getDateFilterFlg(),
-                financialDocumentCentricTurnOverRequest.getFromDate(), financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(), financialDocumentCentricTurnOverRequest.getFromNumber(), paramMap.get("centricAccount1"), financialDocumentCentricTurnOverRequest.getCentricAccountId1(), paramMap.get("centricAccount2"), financialDocumentCentricTurnOverRequest.getCentricAccountId2(),
+                financialDocumentCentricTurnOverRequest.getFromDate(), financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(), financialDocumentCentricTurnOverRequest.getFromNumber(),financialDocumentCentricTurnOverRequest.getCentricAccount1(), financialDocumentCentricTurnOverRequest.getCentricAccountId1(), financialDocumentCentricTurnOverRequest.getCentricAccountId2(), financialDocumentCentricTurnOverRequest.getCentricAccountId2(),
                 paramMap.get("referenceNumberObject"), financialDocumentCentricTurnOverRequest.getReferenceNumber(), paramMap.get("financialAccount")
                 , financialDocumentCentricTurnOverRequest.getFinancialAccountId()
                 , financialDocumentCentricTurnOverRequest.getToDate(), financialDocumentCentricTurnOverRequest.getToNumber());
@@ -559,11 +559,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             }
         }
         if (financialDocumentCentricTurnOverRequest.getCentricAccountId1() == null) {
-            financialDocumentCentricTurnOverRequest.setCentricAccount1(null);
+//            financialDocumentCentricTurnOverRequest.setCentricAccount1(null);
             financialDocumentCentricTurnOverRequest.setCentricAccountId1(0L);
         }
         if (financialDocumentCentricTurnOverRequest.getCentricAccountId2() == null) {
-            financialDocumentCentricTurnOverRequest.setCentricAccount2(null);
+//            financialDocumentCentricTurnOverRequest.setCentricAccount2(null);
             financialDocumentCentricTurnOverRequest.setCentricAccountId2(0L);
         }
         return financialDocumentCentricTurnOverRequest;
@@ -615,6 +615,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             map.put("centricAccount1", "centricAccount1");
             financialDocumentCentricTurnOverRequest.setParamMap(map);
             financialDocumentCentricTurnOverRequest.setCentricAccountId1(Long.parseLong(item.getValue().toString()));
+            financialDocumentCentricTurnOverRequest.setCentricAccount1(item.getValue().toString());
         } else {
             map.put("centricAccount1", null);
             financialDocumentCentricTurnOverRequest.setParamMap(map);
@@ -628,6 +629,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             map.put("centricAccount2", "centricAccount2");
             financialDocumentCentricTurnOverRequest.setParamMap(map);
             financialDocumentCentricTurnOverRequest.setCentricAccountId2(Long.parseLong(item.getValue().toString()));
+            financialDocumentCentricTurnOverRequest.setCentricAccount2(item.getValue().toString());
         } else {
             map.put("centricAccount2", null);
             financialDocumentCentricTurnOverRequest.setParamMap(map);
