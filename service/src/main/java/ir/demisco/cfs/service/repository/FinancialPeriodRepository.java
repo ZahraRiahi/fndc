@@ -1120,9 +1120,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "    OR :showHigherLevels= 1 " +
             " ORDER BY FINANCIAL_ACCOUNT_code "
             , nativeQuery = true)
-    Page<Object[]> findByFinancialPeriodByBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId,
+    List<Object[]> findByFinancialPeriodByBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId,
                                                         Long structureLevel, Boolean showHigherLevels, LocalDateTime periodStartDate, int length, String fromFinancialAccountCode,
-                                                        String toFinancialAccountCode, Long organizationId, Boolean hasRemain, Pageable pageable);
+                                                        String toFinancialAccountCode, Long organizationId, Boolean hasRemain);
 
     @Query(value = "select fp.id, " +
             "       ' دوره مالی از ' || case" +
