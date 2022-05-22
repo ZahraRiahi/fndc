@@ -223,7 +223,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
             " and FNSC.SEC_RESULT = 1 "
             , nativeQuery = true)
-    List<Object[]> getFinancialDocumentItemList(Long organizationId, String activityCode, Long creatorUserId, Long departmentId, Long userId,LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
+    List<Object[]> getFinancialDocumentItemList(Long organizationId, String activityCode, Long creatorUserId, Long departmentId, Long userId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
                                                 Long toAccountCode, Object centricAccount, Long centricAccountId, Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId, Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
                                                 Double tolerance, Object financialDocumentType, Long financialDocumentTypeId);
 
@@ -536,8 +536,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       SUM_CREDIT," +
             "       ACCOUNT_NATURE_TYPE_ID," +
             "       FINANCIAL_ACCOUNT_DESCRIPTION," +
-            "       'سرجمع حساب' || ' ''' || FINANCIAL_ACCOUNT_DESCRIPTION || " +
-            "       ''' با ماهیت آن همخوانی ندارد. ' RESULT_MESSAGE " +
+            "        'سرجمع حساب' || ' ''' || FINANCIAL_ACCOUNT_DESCRIPTION || " +
+            "         ''' با ماهیت ''' || ACN.DESCRIPTION || ''' همخوانی ندارد. '  " +
             "  FROM QRY " +
             " INNER JOIN FNAC.ACCOUNT_NATURE_TYPE ACN " +
             "    ON ACN.ID = QRY.ACCOUNT_NATURE_TYPE_ID " +
