@@ -4,12 +4,14 @@ import ir.demisco.cfs.model.dto.response.FinancialConfigDto;
 import ir.demisco.cfs.model.entity.FinancialConfig;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridDataProvider;
+import ir.demisco.core.utils.DateUtil;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Selection;
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -62,8 +64,8 @@ public class FinancialConfigListGridProvider implements GridDataProvider {
                     .financialPeriodId((Long) array[7])
                     .financialDepartmentCode((String) array[8])
                     .financialDepartmentName((String) array[9])
-                    .financialPeriodStartDate((LocalDateTime) array[10])
-                    .financialPeriodEndDate((LocalDateTime) array[11])
+                    .financialPeriodStartDate(((LocalDateTime) array[10]).toLocalDate())
+                    .financialPeriodEndDate(((LocalDateTime) array[11]).toLocalDate())
                     .financialPeriodDescription((String) array[12])
                     .financialDocumentTypeDescription((String) array[13])
                     .financialLedgerTypeDescription((String) array[14])
