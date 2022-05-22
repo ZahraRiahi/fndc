@@ -539,8 +539,10 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       'سرجمع حساب' || ' ''' || FINANCIAL_ACCOUNT_DESCRIPTION || " +
             "       ''' با ماهیت آن همخوانی ندارد. ' RESULT_MESSAGE " +
             "  FROM QRY " +
-            " WHERE (QRY.ACCOUNT_NATURE_TYPE_ID = 3 AND SUM_DEBIT > SUM_CREDIT)" +
-            "    OR (QRY.ACCOUNT_NATURE_TYPE_ID = 2 AND SUM_DEBIT < SUM_CREDIT) "
+            " INNER JOIN FNAC.ACCOUNT_NATURE_TYPE ACN " +
+            "    ON ACN.ID = QRY.ACCOUNT_NATURE_TYPE_ID " +
+            " WHERE (QRY.ACCOUNT_NATURE_TYPE_ID = 3 AND SUM_DEBIT < SUM_CREDIT)" +
+            "    OR (QRY.ACCOUNT_NATURE_TYPE_ID = 2 AND SUM_DEBIT > SUM_CREDIT) "
             , nativeQuery = true)
     List<Object[]> findByFinancialDocumentItemByIdAndFinancialDocumentId(Long financialDocumentId, Long financialDocumentItemId, Object financialDocumentItem, Object financialDocument);
 
