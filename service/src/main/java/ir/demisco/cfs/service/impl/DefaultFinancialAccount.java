@@ -18,9 +18,6 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -484,8 +481,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     private List<Object[]> getCentricTurnOverReportList(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, Map<String, Object> paramMap) {
         return financialPeriodRepository.findByFinancialAccountCentricTurnOver(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentCentricTurnOverRequest.getLedgerTypeId(), financialDocumentCentricTurnOverRequest.getPeriodStartDate()
                 , financialDocumentCentricTurnOverRequest.getDateFilterFlg(),
-                financialDocumentCentricTurnOverRequest.getFromDate(), financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(), financialDocumentCentricTurnOverRequest.getFromNumber(),financialDocumentCentricTurnOverRequest.getCentricAccount1(), financialDocumentCentricTurnOverRequest.getCentricAccountId1(), financialDocumentCentricTurnOverRequest.getCentricAccount2(), financialDocumentCentricTurnOverRequest.getCentricAccountId2(),
-                paramMap.get("referenceNumberObject"), financialDocumentCentricTurnOverRequest.getReferenceNumber(), paramMap.get("financialAccount")
+                financialDocumentCentricTurnOverRequest.getFromDate(), financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(), financialDocumentCentricTurnOverRequest.getFromNumber(), financialDocumentCentricTurnOverRequest.getCentricAccount1(), financialDocumentCentricTurnOverRequest.getCentricAccountId1(), financialDocumentCentricTurnOverRequest.getCentricAccount2(), financialDocumentCentricTurnOverRequest.getCentricAccountId2(),
+                paramMap.get("referenceNumberObject"), financialDocumentCentricTurnOverRequest.getReferenceNumber(),financialDocumentCentricTurnOverRequest.getFinancialAccount()
                 , financialDocumentCentricTurnOverRequest.getFinancialAccountId()
                 , financialDocumentCentricTurnOverRequest.getToDate(), financialDocumentCentricTurnOverRequest.getToNumber());
     }
@@ -573,10 +570,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         if (item.getValue() != null) {
             financialDocumentCentricTurnOverRequest.getParamMap().put("financialAccount", "financialAccount");
             financialDocumentCentricTurnOverRequest.setFinancialAccountId(Long.parseLong(item.getValue().toString()));
+            financialDocumentCentricTurnOverRequest.setFinancialAccount(item.getValue().toString());
         } else {
             financialDocumentCentricTurnOverRequest.getParamMap().put("financialAccount", null);
             financialDocumentCentricTurnOverRequest.setFinancialAccountId(0L);
         }
+
     }
 
     private void checkFromDateForDate(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
