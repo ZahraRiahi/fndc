@@ -1,5 +1,6 @@
 package ir.demisco.cfs.model.dto.response;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 
 public class FinancialConfigDto {
@@ -13,8 +14,8 @@ public class FinancialConfigDto {
     private Long financialPeriodId;
     private String financialDepartmentCode;
     private String financialDepartmentName;
-    private LocalDateTime financialPeriodStartDate;
-    private LocalDateTime financialPeriodEndDate;
+    private LocalDate financialPeriodStartDate;
+    private LocalDate financialPeriodEndDate;
     private String financialPeriodDescription;
     private String financialDocumentTypeDescription;
     private String financialLedgerTypeDescription;
@@ -102,19 +103,19 @@ public class FinancialConfigDto {
         this.financialDepartmentName = financialDepartmentName;
     }
 
-    public LocalDateTime getFinancialPeriodStartDate() {
+    public LocalDate getFinancialPeriodStartDate() {
         return financialPeriodStartDate;
     }
 
-    public void setFinancialPeriodStartDate(LocalDateTime financialPeriodStartDate) {
+    public void setFinancialPeriodStartDate(LocalDate financialPeriodStartDate) {
         this.financialPeriodStartDate = financialPeriodStartDate;
     }
 
-    public LocalDateTime getFinancialPeriodEndDate() {
+    public LocalDate getFinancialPeriodEndDate() {
         return financialPeriodEndDate;
     }
 
-    public void setFinancialPeriodEndDate(LocalDateTime financialPeriodEndDate) {
+    public void setFinancialPeriodEndDate(LocalDate financialPeriodEndDate) {
         this.financialPeriodEndDate = financialPeriodEndDate;
     }
 
@@ -231,12 +232,12 @@ public class FinancialConfigDto {
             return this;
         }
 
-        public Builder financialPeriodStartDate(LocalDateTime financialPeriodStartDate) {
+        public Builder financialPeriodStartDate(LocalDate financialPeriodStartDate) {
             financialConfigDto.setFinancialPeriodStartDate(financialPeriodStartDate);
             return this;
         }
 
-        public Builder financialPeriodEndDate(LocalDateTime financialPeriodEndDate) {
+        public Builder financialPeriodEndDate(LocalDate financialPeriodEndDate) {
             financialConfigDto.setFinancialPeriodEndDate(financialPeriodEndDate);
             return this;
         }
