@@ -3,9 +3,6 @@ package ir.demisco.cfs.service.repository;
 import ir.demisco.cfs.model.entity.FinancialNumberingType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
-
-import javax.xml.crypto.Data;
-import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
