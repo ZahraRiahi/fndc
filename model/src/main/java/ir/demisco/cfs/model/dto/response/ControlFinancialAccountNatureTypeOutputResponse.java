@@ -6,6 +6,7 @@ public class ControlFinancialAccountNatureTypeOutputResponse {
     private Long accountNatureTypeId;
     private String financialAccountDescription;
     private String resultMessage;
+    private String natureTypeDescription;
 
     public Double getSumDebit() {
         return sumDebit;
@@ -47,6 +48,14 @@ public class ControlFinancialAccountNatureTypeOutputResponse {
         this.resultMessage = resultMessage;
     }
 
+    public String getNatureTypeDescription() {
+        return natureTypeDescription;
+    }
+
+    public void setNatureTypeDescription(String natureTypeDescription) {
+        this.natureTypeDescription = natureTypeDescription;
+    }
+
     public static ControlFinancialAccountNatureTypeOutputResponse.Builder builder() {
         return new ControlFinancialAccountNatureTypeOutputResponse.Builder();
     }
@@ -86,7 +95,10 @@ public class ControlFinancialAccountNatureTypeOutputResponse {
             controlFinancialAccountNatureTypeOutputResponse.setResultMessage(resultMessage);
             return this;
         }
-
+        public Builder natureTypeDescription(String natureTypeDescription) {
+            controlFinancialAccountNatureTypeOutputResponse.setNatureTypeDescription(natureTypeDescription);
+            return this;
+        }
         public ControlFinancialAccountNatureTypeOutputResponse build() {
             return controlFinancialAccountNatureTypeOutputResponse;
         }
