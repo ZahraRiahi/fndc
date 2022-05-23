@@ -34,6 +34,7 @@ public class DefaultControlFinancialAccountNatureType implements ControlFinancia
         return controlFinancialAccountNatureTypeObject.stream().map(objects -> ControlFinancialAccountNatureTypeByAccountResponse.builder().sumDebit(objects[0] == null ? null : ((BigDecimal) objects[0]).doubleValue())
                 .sumCredit(objects[1] == null ? null : ((BigDecimal) objects[1]).doubleValue())
                 .accountNatureTypeId(objects[2] == null ? 0 : Long.parseLong(objects[2].toString()))
+                .natureTypeDescription(objects[3] == null ? null : objects[3].toString())
                 .build()).collect(Collectors.toList());
     }
 
