@@ -472,14 +472,16 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "      ON FS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
             "     AND FS.CODE > 10 " +
             "   WHERE FDI.FINANCIAL_ACCOUNT_ID = :financialAccountId) " +
-            "SELECT NVL(SUM_CREDIT, 0) SUM_CREDIT, " +
-            "       NVL(SUM_DEBIT, 0) SUM_DEBIT, " +
-            "       (SELECT ACN.ID " +
-            "          FROM FNAC.ACCOUNT_NATURE_TYPE ACN " +
-            "         INNER JOIN FNAC.FINANCIAL_ACCOUNT FA " +
-            "            ON ACN.ID = FA.ACCOUNT_NATURE_TYPE_ID " +
-            "         WHERE FA.ID = :financialAccountId) ACCOUNT_NATURE_TYPE_ID " +
-            "  FROM QRY "
+            " SELECT NVL(SUM_CREDIT, 0) SUM_CREDIT," +
+            "       NVL(SUM_DEBIT, 0) SUM_DEBIT," +
+            "       ACCOUNT_NATURE_TYPE.ID ACCOUNT_NATURE_TYPE_ID," +
+            "       ACCOUNT_NATURE_TYPE.DESCRIPTION NATURE_TYPE_DESC" +
+            "  FROM QRY " +
+            " OUTER APPLY (SELECT ACN.ID, ACN.DESCRIPTION " +
+            "                FROM FNAC.ACCOUNT_NATURE_TYPE ACN " +
+            "               INNER JOIN FNAC.FINANCIAL_ACCOUNT FA " +
+            "                  ON ACN.ID = FA.ACCOUNT_NATURE_TYPE_ID " +
+            "               WHERE FA.ID = :financialAccountId) ACCOUNT_NATURE_TYPE "
             , nativeQuery = true)
     List<Object[]> findByMoneyTypeAndFinancialAccountId(Long organizationId, Long financialLedgerTypeId, Long financialDepartmentId, Date date, Long financialAccountId);
 
