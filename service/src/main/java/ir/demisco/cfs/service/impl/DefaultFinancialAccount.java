@@ -167,21 +167,21 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         financialDocumentReportRequest.setPeriodStartDate(periodStartDate);
     }
 
-    private void setFromNumberAndToNumber(FinancialDocumentReportRequest financialDocumentReportRequest) {
-        String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
-                financialDocumentReportRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
-        String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
-                financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
-        if (financialDocumentReportRequest.getFromNumber() == null) {
-            financialDocumentReportRequest.setFromNumber(fromNumber);
-        }
-        if (financialDocumentReportRequest.getToNumber() == null) {
-            financialDocumentReportRequest.setToNumber(toNumber);
-        }
-        if (fromNumber == null || toNumber == null) {
-            throw new RuleException("fin.financialAccount.notInformation");
-        }
-    }
+//    private void setFromNumberAndToNumber(FinancialDocumentReportRequest financialDocumentReportRequest) {
+//        String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
+//                financialDocumentReportRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+//        String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
+//                financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+//        if (financialDocumentReportRequest.getFromNumber() == null) {
+//            financialDocumentReportRequest.setFromNumber(fromNumber);
+//        }
+//        if (financialDocumentReportRequest.getToNumber() == null) {
+//            financialDocumentReportRequest.setToNumber(toNumber);
+//        }
+//        if (fromNumber == null || toNumber == null) {
+//            throw new RuleException("fin.financialAccount.notInformation");
+//        }
+//    }
 
     private void setFromDateAndToDate(FinancialDocumentReportRequest financialDocumentReportRequest) {
         LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
