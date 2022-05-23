@@ -139,8 +139,15 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
         if (financialDocumentReportRequest.getDateFilterFlg() == 0) {
             setFromDateAndToDate(financialDocumentReportRequest);
-        } else {
-            setFromNumberAndToNumber(financialDocumentReportRequest);
+        } else  if (financialDocumentReportRequest.getDateFilterFlg() == 1 || financialDocumentReportRequest.getFromNumber() == null) {
+            String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
+                    financialDocumentReportRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+            financialDocumentReportRequest.setFromNumber(fromNumber);
+//            setFromNumberAndToNumber(financialDocumentReportRequest);
+        }else if(financialDocumentReportRequest.getDateFilterFlg() == 1 || financialDocumentReportRequest.getToNumber() == null) {
+            String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
+                    financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+            financialDocumentReportRequest.setToNumber(toNumber);
         }
         LocalDateTime startDate = financialDocumentReportRequest.getFromDate();
         LocalDateTime periodStartDate;
@@ -160,19 +167,21 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         financialDocumentReportRequest.setPeriodStartDate(periodStartDate);
     }
 
-    private void setFromNumberAndToNumber(FinancialDocumentReportRequest financialDocumentReportRequest) {
-        String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
-                financialDocumentReportRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
-        financialDocumentReportRequest.setFromNumber(fromNumber);
-
-        String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
-                financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
-        financialDocumentReportRequest.setToNumber(toNumber);
-
-        if (fromNumber == null || toNumber == null) {
-            throw new RuleException("fin.financialAccount.notInformation");
-        }
-    }
+//    private void setFromNumberAndToNumber(FinancialDocumentReportRequest financialDocumentReportRequest) {
+//        String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
+//                financialDocumentReportRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+//        String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
+//                financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+//        if (financialDocumentReportRequest.getFromNumber() == null) {
+//            financialDocumentReportRequest.setFromNumber(fromNumber);
+//        }
+//        if (financialDocumentReportRequest.getToNumber() == null) {
+//            financialDocumentReportRequest.setToNumber(toNumber);
+//        }
+//        if (fromNumber == null || toNumber == null) {
+//            throw new RuleException("fin.financialAccount.notInformation");
+//        }
+//    }
 
     private void setFromDateAndToDate(FinancialDocumentReportRequest financialDocumentReportRequest) {
         LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
@@ -259,12 +268,14 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         return financialDocumentReportRequest;
     }
 
-    private void checkDocumentNumberingTypeIdSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkDocumentNumberingTypeIdSet(FinancialDocumentReportRequest
+                                                         financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         financialDocumentReportRequest.setDocumentNumberingTypeId(Long.parseLong(item.getValue().toString()));
 
     }
 
-    private void checkFromDateForDate(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkFromDateForDate(FinancialDocumentReportRequest
+                                              financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("fromDate", "fromDate");
@@ -277,7 +288,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkToDateForDate(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkToDateForDate(FinancialDocumentReportRequest
+                                            financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("toDate", "toDate");
@@ -290,7 +302,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkFinancialAccountIdSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkFinancialAccountIdSet(FinancialDocumentReportRequest
+                                                    financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
             financialDocumentReportRequest.setFinancialAccountId(Long.parseLong(item.getValue().toString()));
         } else {
@@ -298,7 +311,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkCentricAccountId1Set(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkCentricAccountId1Set(FinancialDocumentReportRequest
+                                                   financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("centricAccount1", "centricAccount1");
@@ -311,7 +325,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkCentricAccountId2Set(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkCentricAccountId2Set(FinancialDocumentReportRequest
+                                                   financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("centricAccount2", "centricAccount2");
@@ -325,7 +340,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     }
 
-    private void checkReferenceNumberSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkReferenceNumberSet(FinancialDocumentReportRequest
+                                                 financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("referenceNumberObject", "referenceNumberObject");
@@ -338,7 +354,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkFromNumberSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkFromNumberSet(FinancialDocumentReportRequest
+                                            financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("referenceNumberObject", "referenceNumberObject");
@@ -351,7 +368,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkToNumberSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkToNumberSet(FinancialDocumentReportRequest
+                                          financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
             financialDocumentReportRequest.setToNumber(item.getValue().toString());
         } else {
@@ -359,11 +377,13 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkSummarizingTypeSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkSummarizingTypeSet(FinancialDocumentReportRequest
+                                                 financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         financialDocumentReportRequest.setSummarizingType(Long.parseLong(item.getValue().toString()));
     }
 
-    private void checkLedgerTypeIdSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkLedgerTypeIdSet(FinancialDocumentReportRequest
+                                              financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
             financialDocumentReportRequest.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
         } else {
@@ -371,7 +391,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkOrganizationIdSet(FinancialDocumentReportRequest financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkOrganizationIdSet(FinancialDocumentReportRequest
+                                                financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
             financialDocumentReportRequest.setOrganizationId(Long.parseLong(item.getValue().toString()));
         } else {
@@ -478,16 +499,18 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         return dataSourceResult;
     }
 
-    private List<Object[]> getCentricTurnOverReportList(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, Map<String, Object> paramMap) {
+    private List<Object[]> getCentricTurnOverReportList(FinancialDocumentCentricTurnOverRequest
+                                                                financialDocumentCentricTurnOverRequest, Map<String, Object> paramMap) {
         return financialPeriodRepository.findByFinancialAccountCentricTurnOver(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentCentricTurnOverRequest.getLedgerTypeId(), financialDocumentCentricTurnOverRequest.getPeriodStartDate()
                 , financialDocumentCentricTurnOverRequest.getDateFilterFlg(),
                 financialDocumentCentricTurnOverRequest.getFromDate(), financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(), financialDocumentCentricTurnOverRequest.getFromNumber(), financialDocumentCentricTurnOverRequest.getCentricAccount1(), financialDocumentCentricTurnOverRequest.getCentricAccountId1(), financialDocumentCentricTurnOverRequest.getCentricAccount2(), financialDocumentCentricTurnOverRequest.getCentricAccountId2(),
-                paramMap.get("referenceNumberObject"), financialDocumentCentricTurnOverRequest.getReferenceNumber(),financialDocumentCentricTurnOverRequest.getFinancialAccount()
+                paramMap.get("referenceNumberObject"), financialDocumentCentricTurnOverRequest.getReferenceNumber(), financialDocumentCentricTurnOverRequest.getFinancialAccount()
                 , financialDocumentCentricTurnOverRequest.getFinancialAccountId()
                 , financialDocumentCentricTurnOverRequest.getToDate(), financialDocumentCentricTurnOverRequest.getToNumber());
     }
 
-    private FinancialDocumentCentricTurnOverRequest setParameterCentricTurnOver(List<DataSourceRequest.FilterDescriptor> filters) {
+    private FinancialDocumentCentricTurnOverRequest setParameterCentricTurnOver
+            (List<DataSourceRequest.FilterDescriptor> filters) {
         FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest = new FinancialDocumentCentricTurnOverRequest();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
@@ -566,7 +589,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         return financialDocumentCentricTurnOverRequest;
     }
 
-    private void checkFinancialAccountIdSet(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkFinancialAccountIdSet(FinancialDocumentCentricTurnOverRequest
+                                                    financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
             financialDocumentCentricTurnOverRequest.getParamMap().put("financialAccount", "financialAccount");
             financialDocumentCentricTurnOverRequest.setFinancialAccountId(Long.parseLong(item.getValue().toString()));
@@ -578,7 +602,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     }
 
-    private void checkFromDateForDate(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkFromDateForDate(FinancialDocumentCentricTurnOverRequest
+                                              financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("fromDate", "fromDate");
@@ -591,7 +616,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkToDateForDate(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkToDateForDate(FinancialDocumentCentricTurnOverRequest
+                                            financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("toDate", "toDate");
@@ -604,11 +630,13 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkDocumentNumberingTypeIdSet(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkDocumentNumberingTypeIdSet(FinancialDocumentCentricTurnOverRequest
+                                                         financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         financialDocumentCentricTurnOverRequest.setDocumentNumberingTypeId(Long.parseLong(item.getValue().toString()));
     }
 
-    private void checkCentricAccountId1Set(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkCentricAccountId1Set(FinancialDocumentCentricTurnOverRequest
+                                                   financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("centricAccount1", "centricAccount1");
@@ -622,7 +650,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkCentricAccountId2Set(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkCentricAccountId2Set(FinancialDocumentCentricTurnOverRequest
+                                                   financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("centricAccount2", "centricAccount2");
@@ -636,7 +665,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkFromNumberSet(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkFromNumberSet(FinancialDocumentCentricTurnOverRequest
+                                            financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
             financialDocumentCentricTurnOverRequest.setFromNumber(item.getValue().toString());
         } else {
@@ -644,7 +674,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkToNumberSet(FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkToNumberSet(FinancialDocumentCentricTurnOverRequest
+                                          financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
             financialDocumentCentricTurnOverRequest.setToNumber(item.getValue().toString());
         } else {
