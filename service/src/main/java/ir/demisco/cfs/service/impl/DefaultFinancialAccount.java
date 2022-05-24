@@ -138,12 +138,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     private void getFinancialDocumentByNumberingTypeAndFromNumber(FinancialDocumentReportRequest financialDocumentReportRequest) {
 
         if (financialDocumentReportRequest.getDateFilterFlg() == 0) {
-            setFromDateAndToDate(financialDocumentReportRequest);
-        } else  if (financialDocumentReportRequest.getDateFilterFlg() == 1 || financialDocumentReportRequest.getFromNumber() == null) {
+            setFromDateAndToDate(financialDocumentReportRequest);}
+         if (financialDocumentReportRequest.getDateFilterFlg() == 1 || financialDocumentReportRequest.getFromNumber() == null) {
             String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
                     financialDocumentReportRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
             financialDocumentReportRequest.setFromNumber(fromNumber);
-//            setFromNumberAndToNumber(financialDocumentReportRequest);
         }else if(financialDocumentReportRequest.getDateFilterFlg() == 1 || financialDocumentReportRequest.getToNumber() == null) {
             String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
                     financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());

@@ -369,7 +369,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     LocalDateTime findByFinancialDocumentByNumberingTypeAndToNumber(Long documentNumberingTypeId, String toNumber, Long organizationId);
 
-    @Query(value = " SELECT max(DN.DOCUMENT_NUMBER) " +
+    @Query(value = " SELECT min(DN.DOCUMENT_NUMBER) " +
             "      FROM FNDC.FINANCIAL_DOCUMENT FD " +
             "     INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER DN " +
             "        ON FD.ID = DN.FINANCIAL_DOCUMENT_ID " +
