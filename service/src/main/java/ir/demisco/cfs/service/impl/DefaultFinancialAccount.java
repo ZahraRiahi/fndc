@@ -167,22 +167,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         financialDocumentReportRequest.setPeriodStartDate(periodStartDate);
     }
 
-//    private void setFromNumberAndToNumber(FinancialDocumentReportRequest financialDocumentReportRequest) {
-//        String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
-//                financialDocumentReportRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
-//        String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
-//                financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
-//        if (financialDocumentReportRequest.getFromNumber() == null) {
-//            financialDocumentReportRequest.setFromNumber(fromNumber);
-//        }
-//        if (financialDocumentReportRequest.getToNumber() == null) {
-//            financialDocumentReportRequest.setToNumber(toNumber);
-//        }
-//        if (fromNumber == null || toNumber == null) {
-//            throw new RuleException("fin.financialAccount.notInformation");
-//        }
-//    }
-
     private void setFromDateAndToDate(FinancialDocumentReportRequest financialDocumentReportRequest) {
         LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest.getDocumentNumberingTypeId()
                 , financialDocumentReportRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
@@ -579,11 +563,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             }
         }
         if (financialDocumentCentricTurnOverRequest.getCentricAccountId1() == null) {
-//            financialDocumentCentricTurnOverRequest.setCentricAccount1(null);
             financialDocumentCentricTurnOverRequest.setCentricAccountId1(0L);
         }
         if (financialDocumentCentricTurnOverRequest.getCentricAccountId2() == null) {
-//            financialDocumentCentricTurnOverRequest.setCentricAccount2(null);
             financialDocumentCentricTurnOverRequest.setCentricAccountId2(0L);
         }
         return financialDocumentCentricTurnOverRequest;
@@ -711,7 +693,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
                     financialDocumentCentricTurnOverRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
             financialDocumentCentricTurnOverRequest.setFromNumber(fromNumber);
-//            setFromNumberAndToNumberCentricTurnOver(financialDocumentCentricTurnOverRequest);
         } else if (financialDocumentCentricTurnOverRequest.getDateFilterFlg() == 1 || financialDocumentCentricTurnOverRequest.getToNumber() == null) {
             String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
                     financialDocumentCentricTurnOverRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
@@ -747,20 +728,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             throw new RuleException("fin.financialAccount.notCorrectDocumentNumber");
         }
 
-    }
-
-    private void setFromNumberAndToNumberCentricTurnOver(FinancialDocumentCentricTurnOverRequest
-                                                                 financialDocumentCentricTurnOverRequest) {
-        String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
-                financialDocumentCentricTurnOverRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
-        financialDocumentCentricTurnOverRequest.setFromNumber(fromNumber);
-
-        String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
-                financialDocumentCentricTurnOverRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
-        financialDocumentCentricTurnOverRequest.setToNumber(toNumber);
-        if (fromNumber == null || toNumber == null) {
-            throw new RuleException("fin.financialAccount.notExistDocumentInDate");
-        }
     }
 
     @Override
@@ -979,8 +946,15 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
         if (financialAccountBalanceRequest.getDateFilterFlg() == 0) {
             setFromDateAndToDateCentricTurnOverBalance(financialAccountBalanceRequest);
-        } else {
-            setFromNumberAndToNumberCentricTurnOverBalance(financialAccountBalanceRequest);
+        }
+        if (financialAccountBalanceRequest.getDateFilterFlg() == 1 || financialAccountBalanceRequest.getFromNumber() == null) {
+            String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialAccountBalanceRequest.getDocumentNumberingTypeId(),
+                    financialAccountBalanceRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+            financialAccountBalanceRequest.setFromNumber(fromNumber);
+        } else if (financialAccountBalanceRequest.getDateFilterFlg() == 1 || financialAccountBalanceRequest.getToNumber() == null) {
+            String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialAccountBalanceRequest.getDocumentNumberingTypeId(),
+                    financialAccountBalanceRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+            financialAccountBalanceRequest.setToNumber(toNumber);
         }
 
         LocalDateTime startDate = financialAccountBalanceRequest.getFromDate();
