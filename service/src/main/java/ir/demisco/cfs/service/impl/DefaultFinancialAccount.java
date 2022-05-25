@@ -138,12 +138,13 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     private void getFinancialDocumentByNumberingTypeAndFromNumber(FinancialDocumentReportRequest financialDocumentReportRequest) {
 
         if (financialDocumentReportRequest.getDateFilterFlg() == 0) {
-            setFromDateAndToDate(financialDocumentReportRequest);}
-         if (financialDocumentReportRequest.getDateFilterFlg() == 1 || financialDocumentReportRequest.getFromNumber() == null) {
+            setFromDateAndToDate(financialDocumentReportRequest);
+        }
+        if (financialDocumentReportRequest.getDateFilterFlg() == 1 || financialDocumentReportRequest.getFromNumber() == null) {
             String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
                     financialDocumentReportRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
             financialDocumentReportRequest.setFromNumber(fromNumber);
-        }else if(financialDocumentReportRequest.getDateFilterFlg() == 1 || financialDocumentReportRequest.getToNumber() == null) {
+        } else if (financialDocumentReportRequest.getDateFilterFlg() == 1 || financialDocumentReportRequest.getToNumber() == null) {
             String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
                     financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
             financialDocumentReportRequest.setToNumber(toNumber);
@@ -705,10 +706,17 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                                                                           financialDocumentCentricTurnOverRequest) {
         if (financialDocumentCentricTurnOverRequest.getDateFilterFlg() == 0) {
             setFromDateAndToDateCentricTurnOver(financialDocumentCentricTurnOverRequest);
-        } else {
-            setFromNumberAndToNumberCentricTurnOver(financialDocumentCentricTurnOverRequest);
         }
-
+        if (financialDocumentCentricTurnOverRequest.getDateFilterFlg() == 1 || financialDocumentCentricTurnOverRequest.getFromNumber() == null) {
+            String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
+                    financialDocumentCentricTurnOverRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+            financialDocumentCentricTurnOverRequest.setFromNumber(fromNumber);
+//            setFromNumberAndToNumberCentricTurnOver(financialDocumentCentricTurnOverRequest);
+        } else if (financialDocumentCentricTurnOverRequest.getDateFilterFlg() == 1 || financialDocumentCentricTurnOverRequest.getToNumber() == null) {
+            String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
+                    financialDocumentCentricTurnOverRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+            financialDocumentCentricTurnOverRequest.setToNumber(toNumber);
+        }
         LocalDateTime startDate = financialDocumentCentricTurnOverRequest.getFromDate();
         LocalDateTime periodStartDate;
         periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization(SecurityHelper.getCurrentUser().getOrganizationId());
