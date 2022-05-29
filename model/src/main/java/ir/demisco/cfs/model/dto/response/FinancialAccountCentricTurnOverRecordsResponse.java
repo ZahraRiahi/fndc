@@ -8,11 +8,11 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
     private String centricAccountDes4;
     private String centricAccountDes5;
     private String centricAccountDes6;
-    private Double debitAmount;
-    private Double creditAmount;
-    private Double remainDebit;
-    private Double remainCredit;
-    private Double remainAmount;
+    private Long debitAmount;
+    private Long creditAmount;
+    private Long remainDebit;
+    private Long remainCredit;
+    private Long remainAmount;
     private Long accountId;
     private String accountCode;
     private Long centricAccountId1;
@@ -79,43 +79,43 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
         this.centricAccountDes6 = centricAccountDes6;
     }
 
-    public Double getDebitAmount() {
+    public Long getDebitAmount() {
         return debitAmount;
     }
 
-    public void setDebitAmount(Double debitAmount) {
+    public void setDebitAmount(Long debitAmount) {
         this.debitAmount = debitAmount;
     }
 
-    public Double getCreditAmount() {
+    public Long getCreditAmount() {
         return creditAmount;
     }
 
-    public void setCreditAmount(Double creditAmount) {
+    public void setCreditAmount(Long creditAmount) {
         this.creditAmount = creditAmount;
     }
 
-    public Double getRemainDebit() {
+    public Long getRemainDebit() {
         return remainDebit;
     }
 
-    public void setRemainDebit(Double remainDebit) {
+    public void setRemainDebit(Long remainDebit) {
         this.remainDebit = remainDebit;
     }
 
-    public Double getRemainCredit() {
+    public Long getRemainCredit() {
         return remainCredit;
     }
 
-    public void setRemainCredit(Double remainCredit) {
+    public void setRemainCredit(Long remainCredit) {
         this.remainCredit = remainCredit;
     }
 
-    public Double getRemainAmount() {
+    public Long getRemainAmount() {
         return remainAmount;
     }
 
-    public void setRemainAmount(Double remainAmount) {
+    public void setRemainAmount(Long remainAmount) {
         this.remainAmount = remainAmount;
     }
 
@@ -241,27 +241,27 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
             return this;
         }
 
-        public Builder debitAmount(Double debitAmount) {
+        public Builder debitAmount(Long debitAmount) {
             financialAccountCentricTurnOverRecordsResponse.setDebitAmount(debitAmount);
             return this;
         }
 
-        public Builder creditAmount(Double creditAmount) {
+        public Builder creditAmount(Long creditAmount) {
             financialAccountCentricTurnOverRecordsResponse.setCreditAmount(creditAmount);
             return this;
         }
 
-        public Builder remainDebit(Double remainDebit) {
+        public Builder remainDebit(Long remainDebit) {
             financialAccountCentricTurnOverRecordsResponse.setRemainDebit(remainDebit);
             return this;
         }
 
-        public Builder remainCredit(Double remainCredit) {
+        public Builder remainCredit(Long remainCredit) {
             financialAccountCentricTurnOverRecordsResponse.setRemainCredit(remainCredit);
             return this;
         }
 
-        public Builder remainAmount(Double remainAmount) {
+        public Builder remainAmount(Long remainAmount) {
             financialAccountCentricTurnOverRecordsResponse.setRemainAmount(remainAmount);
             return this;
         }
