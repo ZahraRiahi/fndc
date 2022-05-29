@@ -1,7 +1,6 @@
 package ir.demisco.cfs.model.dto.request;
 
 import java.time.LocalDateTime;
-import java.util.Map;
 
 public class FinancialAccountBalanceRequest {
     private LocalDateTime fromDate;

@@ -1,8 +1,6 @@
 package ir.demisco.cfs.service.repository;
 
 import ir.demisco.cfs.model.entity.FinancialPeriod;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -816,7 +814,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "             AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
             " AND FD.DOCUMENT_DATE >= :periodStartDate " +
             " AND ((:dateFilterFlg = 1 AND FD.DOCUMENT_DATE < :fromDate) OR" +
-            "                 (:dateFilterFlg= 0 AND" +
+            "                 (:dateFilterFlg = 0 AND" +
             "                 FD.DOCUMENT_DATE <=" +
             "                 (SELECT INER_DOC.DOCUMENT_DATE" +
             "                      FROM FNDC.FINANCIAL_DOCUMENT INER_DOC" +
@@ -834,17 +832,15 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 FDI.CENTRIC_ACCOUNT_ID_2 = :centricAccountId2) " +
             "             AND (:referenceNumberObject IS NULL OR " +
             "                 FDR.REFRENCE_NUMBER = :referenceNumber) " +
-            "             AND ((:dateFilterFlg = 0 AND " +
-            "                 FDN.DOCUMENT_NUMBER >= " +
-            "                 NVL(:fromNumber, FDN.DOCUMENT_NUMBER) AND " +
-            "                 FDN.DOCUMENT_NUMBER <= NVL(:toNumber, FDN.DOCUMENT_NUMBER)) OR " +
-            "                 :dateFilterFlg = 1) " +
+            "  AND ((:dateFilterFlg = 0 AND " +
+            "                 FDN.DOCUMENT_NUMBER < " +
+            "                 NVL(:fromNumber, FDN.DOCUMENT_NUMBER)) OR " +
+            "                 :dateFilterFlg = 1)" +
             "             AND (EXISTS " +
             "                  (SELECT 1 " +
             "                     FROM FNAC.ACCOUNT_STRUCTURE_LEVEL ASL " +
             "                    WHERE ASL.FINANCIAL_ACCOUNT_ID = FA.ID " +
-            "                      AND (:financialAccount is null or  ASL.RELATED_ACCOUNT_ID = :financialAccountId ) " +
-            "                      and ( :financialAccount = 'financialAccount' or  ASL.RELATED_ACCOUNT_ID =   ASL.RELATED_ACCOUNT_ID  ) " +
+            "                              AND ASL.RELATED_ACCOUNT_ID = nvl(:financialAccountId,ASL.RELATED_ACCOUNT_ID) " +
             "                      AND ASL.DELETED_DATE IS NULL)) " +
             "             AND FDS.CODE > 10 " +
             "          UNION " +
@@ -941,8 +937,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 FDN.DOCUMENT_NUMBER <= NVL(:toNumber, FDN.DOCUMENT_NUMBER)) OR " +
             "                 :dateFilterFlg = 1) " +
 
-            "    AND (:financialAccount is null or  fdi.financial_account_id  = :financialAccountId ) " +
-            "                                and ( :financialAccount = 'financialAccount' or  FA2.ID =   fdi.financial_account_id ) " +
+            "     AND FA2.ID = " +
+            "                 nvl(:financialAccountId, fdi.financial_account_id) " +
 
             "             AND FDS.CODE > 10 " +
             "           GROUP BY FA.ID, " +
