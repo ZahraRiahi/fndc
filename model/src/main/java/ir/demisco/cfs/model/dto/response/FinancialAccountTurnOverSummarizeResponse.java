@@ -1,50 +1,50 @@
 package ir.demisco.cfs.model.dto.response;
 
 public class FinancialAccountTurnOverSummarizeResponse {
-    private Double sumDebit;
-    private Double sumCredit;
-    private Double summarizeDebit;
-    private Double summarizeCredit;
-    private Double summarizeAmount;
+    private Long sumDebit;
+    private Long sumCredit;
+    private Long summarizeDebit;
+    private Long summarizeCredit;
+    private Long summarizeAmount;
     private Long recordType;
 
-    public Double getSumDebit() {
+    public Long getSumDebit() {
         return sumDebit;
     }
 
-    public void setSumDebit(Double sumDebit) {
+    public void setSumDebit(Long sumDebit) {
         this.sumDebit = sumDebit;
     }
 
-    public Double getSumCredit() {
+    public Long getSumCredit() {
         return sumCredit;
     }
 
-    public void setSumCredit(Double sumCredit) {
+    public void setSumCredit(Long sumCredit) {
         this.sumCredit = sumCredit;
     }
 
-    public Double getSummarizeDebit() {
+    public Long getSummarizeDebit() {
         return summarizeDebit;
     }
 
-    public void setSummarizeDebit(Double summarizeDebit) {
+    public void setSummarizeDebit(Long summarizeDebit) {
         this.summarizeDebit = summarizeDebit;
     }
 
-    public Double getSummarizeCredit() {
+    public Long getSummarizeCredit() {
         return summarizeCredit;
     }
 
-    public void setSummarizeCredit(Double summarizeCredit) {
+    public void setSummarizeCredit(Long summarizeCredit) {
         this.summarizeCredit = summarizeCredit;
     }
 
-    public Double getSummarizeAmount() {
+    public Long getSummarizeAmount() {
         return summarizeAmount;
     }
 
-    public void setSummarizeAmount(Double summarizeAmount) {
+    public void setSummarizeAmount(Long summarizeAmount) {
         this.summarizeAmount = summarizeAmount;
     }
 
@@ -69,27 +69,27 @@ public class FinancialAccountTurnOverSummarizeResponse {
             return new Builder();
         }
 
-        public Builder sumDebit(Double sumDebit) {
+        public Builder sumDebit(Long sumDebit) {
             financialAccountTurnOverSummarizeResponse.setSumDebit(sumDebit);
             return this;
         }
 
-        public Builder sumCredit(Double sumCredit) {
+        public Builder sumCredit(Long sumCredit) {
             financialAccountTurnOverSummarizeResponse.setSumCredit(sumCredit);
             return this;
         }
 
-        public Builder summarizeDebit(Double summarizeDebit) {
+        public Builder summarizeDebit(Long summarizeDebit) {
             financialAccountTurnOverSummarizeResponse.setSummarizeDebit(summarizeDebit);
             return this;
         }
 
-        public Builder summarizeCredit(Double summarizeCredit) {
+        public Builder summarizeCredit(Long summarizeCredit) {
             financialAccountTurnOverSummarizeResponse.setSummarizeCredit(summarizeCredit);
             return this;
         }
 
-        public Builder summarizeAmount(Double summarizeAmount) {
+        public Builder summarizeAmount(Long summarizeAmount) {
             financialAccountTurnOverSummarizeResponse.setSummarizeAmount(summarizeAmount);
             return this;
         }
