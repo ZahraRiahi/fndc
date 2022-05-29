@@ -67,11 +67,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 recordsResponse.setDocumentDate(getItemForDate(item, 0));
                 recordsResponse.setDocumentNumber(gatItemForString(item, 2));
                 recordsResponse.setDescription(gatItemForString(item, 3));
-                recordsResponse.setDebitAmount(getItemForDouble(item, 7));
-                recordsResponse.setCreditAmount(getItemForDouble(item, 8));
-                recordsResponse.setRemainDebit(getItemForDouble(item, 9));
-                recordsResponse.setRemainCredit(getItemForDouble(item, 10));
-                recordsResponse.setRemainAmount(getItemForDouble(item, 11));
+                recordsResponse.setDebitAmount(getItemForLong(item, 7));
+                recordsResponse.setCreditAmount(getItemForLong(item, 8));
+                recordsResponse.setRemainDebit(getItemForLong(item, 9));
+                recordsResponse.setRemainCredit(getItemForLong(item, 10));
+                recordsResponse.setRemainAmount(getItemForLong(item, 11));
                 recordsResponse.setRecordType(getItemForLong(item, 17));
                 recordsResponseList.add(recordsResponse);
                 response.setFinancialAccountTurnOverRecordsResponseModel(recordsResponseList);
