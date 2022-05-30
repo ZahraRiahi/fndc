@@ -20,8 +20,6 @@ import ir.demisco.core.utils.DateUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.text.DecimalFormat;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Date;
@@ -551,13 +549,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                     break;
                 case "referenceNumber":
                     checkReferenceNumberSet(financialDocumentCentricTurnOverRequest, item);
-//                    if (item.getValue() != null) {
-//                        financialDocumentCentricTurnOverRequest.setReferenceNumber(Long.parseLong(item.getValue().toString()));
-//                    } else {
-//                        financialDocumentCentricTurnOverRequest.setReferenceNumber(0L);
-//                        financialDocumentCentricTurnOverRequest.setReferenceNumberObject(null);
-//                    }
-
                     break;
                 default:
 
@@ -582,16 +573,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void checkFinancialAccountIdSet(FinancialDocumentCentricTurnOverRequest
                                                     financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
-//        Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
-//            map.put("financialAccount", "financialAccount");
-//            financialDocumentCentricTurnOverRequest.getParamMap().put("financialAccount", "financialAccount");
             financialDocumentCentricTurnOverRequest.setFinancialAccountId(Long.parseLong(item.getValue().toString()));
-//            financialDocumentCentricTurnOverRequest.setFinancialAccount(null);
         } else {
-//            map.put("financialAccount", null);
-//            financialDocumentCentricTurnOverRequest.setParamMap(map);
-//            financialDocumentCentricTurnOverRequest.getParamMap().put("financialAccount", null);
             financialDocumentCentricTurnOverRequest.setFinancialAccountId(null);
         }
 
@@ -674,13 +658,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             financialDocumentCentricTurnOverRequest.setReferenceNumber(null);
         }
 
-
-        //                    if (item.getValue() != null) {
-//                        financialDocumentCentricTurnOverRequest.setReferenceNumber(Long.parseLong(item.getValue().toString()));
-//                    } else {
-//                        financialDocumentCentricTurnOverRequest.setReferenceNumber(0L);
-//                        financialDocumentCentricTurnOverRequest.setReferenceNumberObject(null);
-//                    }
     }
 
     private void checkFromNumberSet(FinancialDocumentCentricTurnOverRequest
@@ -851,7 +828,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 //        d.setMaximumFractionDigits(3);
 //
 //        return item[i] == null ? null : (d.format((BigDecimal) item[i]));
-        return item[i] == null ? null : ((BigDecimal) item[i]).doubleValue();
+        Double aDouble = item[i] == null ? null : (Double)  item[i];
+        return aDouble;
     }
 
     private FinancialAccountBalanceRequest setParameterBalanceReport
