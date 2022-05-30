@@ -6,11 +6,11 @@ public class FinancialAccountTurnOverRecordsResponse {
     private Date documentDate;
     private String documentNumber;
     private String description;
-    private Long debitAmount;
-    private Long creditAmount;
-    private Long remainDebit;
-    private Long remainCredit;
-    private Long remainAmount;
+    private String debitAmount;
+    private String creditAmount;
+    private String remainDebit;
+    private String remainCredit;
+    private String remainAmount;
     private Long recordType;
 
     private FinancialAccountTurnOverSummarizeResponse financialAccountTurnOverSummarizeModel;
@@ -40,43 +40,43 @@ public class FinancialAccountTurnOverRecordsResponse {
         this.description = description;
     }
 
-    public Long getDebitAmount() {
+    public String getDebitAmount() {
         return debitAmount;
     }
 
-    public void setDebitAmount(Long debitAmount) {
+    public void setDebitAmount(String debitAmount) {
         this.debitAmount = debitAmount;
     }
 
-    public Long getCreditAmount() {
+    public String getCreditAmount() {
         return creditAmount;
     }
 
-    public void setCreditAmount(Long creditAmount) {
+    public void setCreditAmount(String creditAmount) {
         this.creditAmount = creditAmount;
     }
 
-    public Long getRemainDebit() {
+    public String getRemainDebit() {
         return remainDebit;
     }
 
-    public void setRemainDebit(Long remainDebit) {
+    public void setRemainDebit(String remainDebit) {
         this.remainDebit = remainDebit;
     }
 
-    public Long getRemainCredit() {
+    public String getRemainCredit() {
         return remainCredit;
     }
 
-    public void setRemainCredit(Long remainCredit) {
+    public void setRemainCredit(String remainCredit) {
         this.remainCredit = remainCredit;
     }
 
-    public Long getRemainAmount() {
+    public String getRemainAmount() {
         return remainAmount;
     }
 
-    public void setRemainAmount(Long remainAmount) {
+    public void setRemainAmount(String remainAmount) {
         this.remainAmount = remainAmount;
     }
 
@@ -125,27 +125,27 @@ public class FinancialAccountTurnOverRecordsResponse {
             return this;
         }
 
-        public Builder debitAmount(Long debitAmount) {
+        public Builder debitAmount(String debitAmount) {
             financialAccountTurnOverRecordsResponse.setDebitAmount(debitAmount);
             return this;
         }
 
-        public Builder creditAmount(Long creditAmount) {
+        public Builder creditAmount(String creditAmount) {
             financialAccountTurnOverRecordsResponse.setCreditAmount(creditAmount);
             return this;
         }
 
-        public Builder remainDebit(Long remainDebit) {
+        public Builder remainDebit(String remainDebit) {
             financialAccountTurnOverRecordsResponse.setRemainDebit(remainDebit);
             return this;
         }
 
-        public Builder remainCredit(Long remainCredit) {
+        public Builder remainCredit(String remainCredit) {
             financialAccountTurnOverRecordsResponse.setRemainCredit(remainCredit);
             return this;
         }
 
-        public Builder remainAmount(Long remainAmount) {
+        public Builder remainAmount(String remainAmount) {
             financialAccountTurnOverRecordsResponse.setRemainAmount(remainAmount);
             return this;
         }
