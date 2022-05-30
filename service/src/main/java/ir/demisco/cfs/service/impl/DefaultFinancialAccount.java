@@ -21,7 +21,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
-
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -65,13 +64,13 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             if (item[17] != null && (Long.parseLong(item[17].toString()) == 1 || Long.parseLong(item[17].toString()) == 2)) {
                 FinancialAccountTurnOverRecordsResponse recordsResponse = new FinancialAccountTurnOverRecordsResponse();
                 recordsResponse.setDocumentDate(getItemForDate(item, 0));
-                recordsResponse.setDocumentNumber(gatItemForString(item, 2));
-                recordsResponse.setDescription(gatItemForString(item, 3));
-                recordsResponse.setDebitAmount(getItemForLong(item, 7));
-                recordsResponse.setCreditAmount(getItemForLong(item, 8));
-                recordsResponse.setRemainDebit(getItemForLong(item, 9));
-                recordsResponse.setRemainCredit(getItemForLong(item, 10));
-                recordsResponse.setRemainAmount(getItemForLong(item, 11));
+                recordsResponse.setDocumentNumber(getItemForString(item, 2));
+                recordsResponse.setDescription(getItemForString(item, 3));
+                recordsResponse.setDebitAmount(getItemForString(item, 7));
+                recordsResponse.setCreditAmount(getItemForString(item, 8));
+                recordsResponse.setRemainDebit(getItemForString(item, 9));
+                recordsResponse.setRemainCredit(getItemForString(item, 10));
+                recordsResponse.setRemainAmount(getItemForString(item, 11));
                 recordsResponse.setRecordType(getItemForLong(item, 17));
                 recordsResponseList.add(recordsResponse);
                 response.setFinancialAccountTurnOverRecordsResponseModel(recordsResponseList);
@@ -141,7 +140,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
                     financialDocumentReportRequest.getFromDate(), SecurityHelper.getCurrentUser().getOrganizationId());
             financialDocumentReportRequest.setFromNumber(fromNumber);
-        } else if (financialDocumentReportRequest.getDateFilterFlg() == 1 || financialDocumentReportRequest.getToNumber() == null) {
+        }
+        if (financialDocumentReportRequest.getDateFilterFlg() == 1 || financialDocumentReportRequest.getToNumber() == null) {
             String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentReportRequest.getDocumentNumberingTypeId(),
                     financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
             financialDocumentReportRequest.setToNumber(toNumber);
@@ -415,20 +415,20 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             if (item[25] != null && (Long.parseLong(item[25].toString()) == 1 || Long.parseLong(item[25].toString()) == 2)) {
                 FinancialAccountCentricTurnOverRecordsResponse recordsResponse = new FinancialAccountCentricTurnOverRecordsResponse();
                 recordsResponse.setAccountId(getItemForLong(item, 0));
-                recordsResponse.setAccountCode(gatItemForString(item, 1));
-                recordsResponse.setAccountDescription(gatItemForString(item, 2));
+                recordsResponse.setAccountCode(getItemForString(item, 1));
+                recordsResponse.setAccountDescription(getItemForString(item, 2));
                 recordsResponse.setCentricAccountId1(getItemForLong(item, 3));
                 recordsResponse.setCentricAccountId2(getItemForLong(item, 4));
                 recordsResponse.setCentricAccountId3(getItemForLong(item, 5));
                 recordsResponse.setCentricAccountId4(getItemForLong(item, 6));
                 recordsResponse.setCentricAccountId5(getItemForLong(item, 7));
                 recordsResponse.setCentricAccountId6(getItemForLong(item, 8));
-                recordsResponse.setCentricAccountDes1(gatItemForString(item, 9));
-                recordsResponse.setCentricAccountDes2(gatItemForString(item, 10));
-                recordsResponse.setCentricAccountDes3(gatItemForString(item, 11));
-                recordsResponse.setCentricAccountDes4(gatItemForString(item, 12));
-                recordsResponse.setCentricAccountDes5(gatItemForString(item, 13));
-                recordsResponse.setCentricAccountDes6(gatItemForString(item, 14));
+                recordsResponse.setCentricAccountDes1(getItemForString(item, 9));
+                recordsResponse.setCentricAccountDes2(getItemForString(item, 10));
+                recordsResponse.setCentricAccountDes3(getItemForString(item, 11));
+                recordsResponse.setCentricAccountDes4(getItemForString(item, 12));
+                recordsResponse.setCentricAccountDes5(getItemForString(item, 13));
+                recordsResponse.setCentricAccountDes6(getItemForString(item, 14));
                 recordsResponse.setDebitAmount(getItemForLong(item, 15));
                 recordsResponse.setCreditAmount(getItemForLong(item, 16));
                 recordsResponse.setRemainDebit(getItemForLong(item, 17));
@@ -549,13 +549,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                     break;
                 case "referenceNumber":
                     checkReferenceNumberSet(financialDocumentCentricTurnOverRequest, item);
-//                    if (item.getValue() != null) {
-//                        financialDocumentCentricTurnOverRequest.setReferenceNumber(Long.parseLong(item.getValue().toString()));
-//                    } else {
-//                        financialDocumentCentricTurnOverRequest.setReferenceNumber(0L);
-//                        financialDocumentCentricTurnOverRequest.setReferenceNumberObject(null);
-//                    }
-
                     break;
                 default:
 
@@ -580,16 +573,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void checkFinancialAccountIdSet(FinancialDocumentCentricTurnOverRequest
                                                     financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
-//        Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
-//            map.put("financialAccount", "financialAccount");
-//            financialDocumentCentricTurnOverRequest.getParamMap().put("financialAccount", "financialAccount");
             financialDocumentCentricTurnOverRequest.setFinancialAccountId(Long.parseLong(item.getValue().toString()));
-//            financialDocumentCentricTurnOverRequest.setFinancialAccount(null);
         } else {
-//            map.put("financialAccount", null);
-//            financialDocumentCentricTurnOverRequest.setParamMap(map);
-//            financialDocumentCentricTurnOverRequest.getParamMap().put("financialAccount", null);
             financialDocumentCentricTurnOverRequest.setFinancialAccountId(null);
         }
 
@@ -672,13 +658,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             financialDocumentCentricTurnOverRequest.setReferenceNumber(null);
         }
 
-
-        //                    if (item.getValue() != null) {
-//                        financialDocumentCentricTurnOverRequest.setReferenceNumber(Long.parseLong(item.getValue().toString()));
-//                    } else {
-//                        financialDocumentCentricTurnOverRequest.setReferenceNumber(0L);
-//                        financialDocumentCentricTurnOverRequest.setReferenceNumberObject(null);
-//                    }
     }
 
     private void checkFromNumberSet(FinancialDocumentCentricTurnOverRequest
@@ -802,8 +781,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 FinancialAccountBalanceResponse.builder()
                         .financialAccountParentId(getItemForLong(item, 0))
                         .financialAccountId(getItemForLong(item, 1))
-                        .financialAccountCode(gatItemForString(item, 2))
-                        .financialAccountDescription(gatItemForString(item, 3))
+                        .financialAccountCode(getItemForString(item, 2))
+                        .financialAccountDescription(getItemForString(item, 3))
                         .financialAccountLevel(getItemForLong(item, 4))
                         .sumDebit(getItemForLong(item, 5))
                         .sumCredit(getItemForLong(item, 6))
@@ -836,7 +815,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         return item[i] == null ? null : Long.parseLong(item[i].toString());
     }
 
-    private String gatItemForString(Object[] item, int i) {
+    private String getItemForString(Object[] item, int i) {
         return item[i] == null ? null : item[i].toString();
     }
 
@@ -845,7 +824,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     }
 
     private Double getItemForDouble(Object[] item, int i) {
-        return item[i] == null ? null : ((Long) item[i]).doubleValue();
+//        DecimalFormat d = new DecimalFormat("#");
+//        d.setMaximumFractionDigits(3);
+//
+//        return item[i] == null ? null : (d.format((BigDecimal) item[i]));
+        Double aDouble = item[i] == null ? null : (Double)  item[i];
+        return aDouble;
     }
 
     private FinancialAccountBalanceRequest setParameterBalanceReport
