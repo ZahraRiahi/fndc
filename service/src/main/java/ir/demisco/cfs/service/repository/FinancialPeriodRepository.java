@@ -812,8 +812,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           WHERE FD.ORGANIZATION_ID = :organizationId " +
             "             AND FD.DELETED_DATE IS NULL " +
             "             AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
-            " AND FD.DOCUMENT_DATE >= :periodStartDate " +
-            " AND ((:dateFilterFlg = 1 AND FD.DOCUMENT_DATE < :fromDate) OR" +
+            " AND FD.DOCUMENT_DATE >= trunc(:periodStartDate) " +
+            " AND ((:dateFilterFlg = 1 AND FD.DOCUMENT_DATE < trunc(:fromDate)) OR" +
             "                 (:dateFilterFlg = 0 AND" +
             "                 FD.DOCUMENT_DATE <=" +
             "                 (SELECT INER_DOC.DOCUMENT_DATE" +
@@ -840,6 +840,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                  (SELECT 1 " +
             "                     FROM FNAC.ACCOUNT_STRUCTURE_LEVEL ASL " +
             "                    WHERE ASL.FINANCIAL_ACCOUNT_ID = FA.ID " +
+            "                      AND (:financialAccount is null or  ASL.RELATED_ACCOUNT_ID = :financialAccountId ) " +
+            "                      and ( :financialAccount = 'financialAccount' or  ASL.RELATED_ACCOUNT_ID =   ASL.RELATED_ACCOUNT_ID  ) " +
             "                              AND ASL.RELATED_ACCOUNT_ID = nvl(:financialAccountId,ASL.RELATED_ACCOUNT_ID) " +
             "                      AND ASL.DELETED_DATE IS NULL)) " +
             "             AND FDS.CODE > 10 " +
@@ -911,8 +913,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           WHERE FD.ORGANIZATION_ID = :organizationId " +
             "             AND FD.DELETED_DATE IS NULL " +
             "             AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
-            " AND ((:dateFilterFlg = 1 AND FD.DOCUMENT_DATE BETWEEN :fromDate AND" +
-            "                 NVL(:toDate, SYSDATE) OR" +
+            " AND ((:dateFilterFlg = 1 AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND" +
+            "                 NVL(trunc(:toDate), SYSDATE) OR" +
             "                 (:dateFilterFlg = 0 AND" +
             "                 FD.DOCUMENT_DATE >=" +
             "                 (SELECT INER_DOC.DOCUMENT_DATE" +
@@ -937,8 +939,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 FDN.DOCUMENT_NUMBER <= NVL(:toNumber, FDN.DOCUMENT_NUMBER)) OR " +
             "                 :dateFilterFlg = 1) " +
 
-            "     AND FA2.ID = " +
-            "                 nvl(:financialAccountId, fdi.financial_account_id) " +
+            "    AND (:financialAccount is null or  fdi.financial_account_id  = :financialAccountId ) " +
+            "                                and ( :financialAccount = 'financialAccount' or  FA2.ID =   fdi.financial_account_id ) " +
 
             "             AND FDS.CODE > 10 " +
             "           GROUP BY FA.ID, " +
@@ -1016,7 +1018,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             , nativeQuery = true)
     List<Object[]> findByFinancialAccountCentricTurnOver(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate, Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId,
                                                          String fromNumber, Object centricAccount1, Long centricAccountId1, Object centricAccount2, Long centricAccountId2, Object referenceNumberObject,
-                                                         Long referenceNumber, Object financialAccount,Long financialAccountId, LocalDateTime toDate, String toNumber);
+                                                         Long referenceNumber, Object financialAccount, Long financialAccountId, LocalDateTime toDate, String toNumber);
 
 
     @Query(value = " SELECT FINANCIAL_ACCOUNT_PARENT_ID, " +
