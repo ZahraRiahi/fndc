@@ -33,7 +33,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "    INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY  " +
             "    ON FPT.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID  " +
             "    WHERE FP.DELETED_DATE IS NULL  " +
-            "    AND :startDate > = FP.START_DATE "
+            "    AND trunc(:startDate) > = FP.START_DATE "
             , nativeQuery = true)
     LocalDateTime findByFinancialPeriodByOrganizationStartDate(Long organizationId, LocalDateTime startDate);
 
@@ -131,8 +131,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "              ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
             "           WHERE FD.ORGANIZATION_ID = :organizationId " +
             "             AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
-            "             AND FD.DOCUMENT_DATE >= :periodStartDate " +
-            "             AND ((:dateFilterFlg = 1 AND FD.DOCUMENT_DATE < :fromDate) OR " +
+            "             AND FD.DOCUMENT_DATE >= trunc(:periodStartDate) " +
+            "             AND ((:dateFilterFlg = 1 AND FD.DOCUMENT_DATE < trunc(:fromDate)) OR " +
             "                 (:dateFilterFlg = 0 AND " +
             "                 FD.DOCUMENT_DATE < " +
             "                 (SELECT INER_DOC.DOCUMENT_DATE " +
@@ -271,8 +271,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           WHERE FD.ORGANIZATION_ID = :organizationId " +
             "             AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
             "             AND ((:dateFilterFlg = 1 AND " +
-            "                 FD.DOCUMENT_DATE BETWEEN :fromDate AND " +
-            "                 NVL(:toDate, SYSDATE) OR " +
+            "                 FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND " +
+            "                 NVL(trunc(:toDate), SYSDATE) OR " +
             "                 (:dateFilterFlg = 0 AND " +
             "                 FD.DOCUMENT_DATE >= " +
             "                 (SELECT INER_DOC.DOCUMENT_DATE " +
@@ -445,8 +445,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "              ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
             "           WHERE FD.ORGANIZATION_ID = :organizationId " +
             "             AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
-            "             AND FD.DOCUMENT_DATE >= :periodStartDate " +
-            "             AND ((:dateFilterFlg = 1 AND FD.DOCUMENT_DATE < :fromDate) OR " +
+            "             AND FD.DOCUMENT_DATE >= trunc(:periodStartDate) " +
+            "             AND ((:dateFilterFlg = 1 AND FD.DOCUMENT_DATE < trunc(:fromDate)) OR " +
             "                 (:dateFilterFlg = 0 AND " +
             "                 FD.DOCUMENT_DATE < " +
             "                 (SELECT INER_DOC.DOCUMENT_DATE " +
@@ -585,8 +585,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           WHERE FD.ORGANIZATION_ID = :organizationId " +
             "             AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
             "             AND ((:dateFilterFlg = 1 AND " +
-            "                 FD.DOCUMENT_DATE BETWEEN :fromDate AND " +
-            "                 NVL(:toDate, SYSDATE) OR " +
+            "                 FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND " +
+            "                 NVL(trunc(:toDate), SYSDATE) OR " +
             "                 (:dateFilterFlg = 0 AND " +
             "                 FD.DOCUMENT_DATE >= " +
             "                 (SELECT INER_DOC.DOCUMENT_DATE " +
