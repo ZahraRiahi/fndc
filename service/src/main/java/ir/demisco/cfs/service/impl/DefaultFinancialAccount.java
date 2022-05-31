@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.impl;
 
+import com.fasterxml.jackson.databind.util.StdDateFormat;
 import ir.demisco.cfs.model.dto.request.FinancialAccountBalanceRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentCentricTurnOverRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentReportRequest;
@@ -21,6 +22,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -383,10 +385,19 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
         if (input instanceof String) {
-            LocalDateTime localDateTime = LocalDateTime.parse(input.toString().replace("Z", ""));
-            return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
+            try {
+                Date date = StdDateFormat.instance.parse((String)input);
+                LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                return localDateTime;
+            } catch (Exception var4) {
+                if (((String)input).equalsIgnoreCase("current_date")) {
+                    return truncateDate ? DateUtil.truncate(LocalDateTime.now()) : LocalDateTime.now();
+                } else {
+                    return ((String)input).equalsIgnoreCase("current_timestamp") ? LocalDateTime.now() : LocalDateTime.parse((String)input);
+                }
+            }
         } else if (input instanceof LocalDateTime) {
-            return truncateDate ? DateUtil.truncate((LocalDateTime) input) : (LocalDateTime) input;
+            return truncateDate ? DateUtil.truncate((LocalDateTime)input) : (LocalDateTime) input;
         } else {
             throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
         }
@@ -828,7 +839,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 //        d.setMaximumFractionDigits(3);
 //
 //        return item[i] == null ? null : (d.format((BigDecimal) item[i]));
-        Double aDouble = item[i] == null ? null : (Double)  item[i];
+        Double aDouble = item[i] == null ? null : (Double) item[i];
         return aDouble;
     }
 
