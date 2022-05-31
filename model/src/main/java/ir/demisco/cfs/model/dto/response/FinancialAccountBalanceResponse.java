@@ -12,6 +12,7 @@ public class FinancialAccountBalanceResponse {
     private String befCredit;
     private String remDebit;
     private String remCredit;
+    private String color;
 
     public Long getFinancialAccountLevel() {
         return financialAccountLevel;
@@ -97,6 +98,14 @@ public class FinancialAccountBalanceResponse {
         return remCredit;
     }
 
+    public String getColor() {
+        return color;
+    }
+
+    public void setColor(String color) {
+        this.color = color;
+    }
+
     public void setRemCredit(String remCredit) {
         this.remCredit = remCredit;
     }
@@ -170,7 +179,10 @@ public class FinancialAccountBalanceResponse {
             financialAccountBalanceResponse.setRemCredit(remCredit);
             return this;
         }
-
+        public Builder color(String color) {
+            financialAccountBalanceResponse.setColor(color);
+            return this;
+        }
         public FinancialAccountBalanceResponse build() {
             return financialAccountBalanceResponse;
         }

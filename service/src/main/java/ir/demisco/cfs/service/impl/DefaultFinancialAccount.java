@@ -807,6 +807,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                         .befCredit(getItemForString(item, 8))
                         .remDebit(getItemForString(item, 9))
                         .remCredit(getItemForString(item, 10))
+                        .color((getItemForString(item, 11)))
                         .build()).collect(Collectors.toList());
 
         DataSourceResult dataSourceResult = new DataSourceResult();
