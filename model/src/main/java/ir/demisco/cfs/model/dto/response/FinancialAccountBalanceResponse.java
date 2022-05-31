@@ -6,12 +6,12 @@ public class FinancialAccountBalanceResponse {
     private Long financialAccountId;
     private String financialAccountCode;
     private String financialAccountDescription;
-    private Long sumDebit;
-    private Long sumCredit;
-    private Long befDebit;
-    private Long befCredit;
-    private Long remDebit;
-    private Long remCredit;
+    private String sumDebit;
+    private String sumCredit;
+    private String befDebit;
+    private String befCredit;
+    private String remDebit;
+    private String remCredit;
 
     public Long getFinancialAccountLevel() {
         return financialAccountLevel;
@@ -53,51 +53,51 @@ public class FinancialAccountBalanceResponse {
         this.financialAccountDescription = financialAccountDescription;
     }
 
-    public Long getSumDebit() {
+    public String getSumDebit() {
         return sumDebit;
     }
 
-    public void setSumDebit(Long sumDebit) {
+    public void setSumDebit(String sumDebit) {
         this.sumDebit = sumDebit;
     }
 
-    public Long getSumCredit() {
+    public String getSumCredit() {
         return sumCredit;
     }
 
-    public void setSumCredit(Long sumCredit) {
+    public void setSumCredit(String sumCredit) {
         this.sumCredit = sumCredit;
     }
 
-    public Long getBefDebit() {
+    public String getBefDebit() {
         return befDebit;
     }
 
-    public void setBefDebit(Long befDebit) {
+    public void setBefDebit(String befDebit) {
         this.befDebit = befDebit;
     }
 
-    public Long getBefCredit() {
+    public String getBefCredit() {
         return befCredit;
     }
 
-    public void setBefCredit(Long befCredit) {
+    public void setBefCredit(String befCredit) {
         this.befCredit = befCredit;
     }
 
-    public Long getRemDebit() {
+    public String getRemDebit() {
         return remDebit;
     }
 
-    public void setRemDebit(Long remDebit) {
+    public void setRemDebit(String remDebit) {
         this.remDebit = remDebit;
     }
 
-    public Long getRemCredit() {
+    public String getRemCredit() {
         return remCredit;
     }
 
-    public void setRemCredit(Long remCredit) {
+    public void setRemCredit(String remCredit) {
         this.remCredit = remCredit;
     }
 
@@ -141,32 +141,32 @@ public class FinancialAccountBalanceResponse {
             return this;
         }
 
-        public Builder sumDebit(Long sumDebit) {
+        public Builder sumDebit(String sumDebit) {
             financialAccountBalanceResponse.setSumDebit(sumDebit);
             return this;
         }
 
-        public Builder sumCredit(Long sumCredit) {
+        public Builder sumCredit(String sumCredit) {
             financialAccountBalanceResponse.setSumCredit(sumCredit);
             return this;
         }
 
-        public Builder befDebit(Long befDebit) {
+        public Builder befDebit(String befDebit) {
             financialAccountBalanceResponse.setBefDebit(befDebit);
             return this;
         }
 
-        public Builder befCredit(Long befCredit) {
+        public Builder befCredit(String befCredit) {
             financialAccountBalanceResponse.setBefCredit(befCredit);
             return this;
         }
 
-        public Builder remDebit(Long remDebit) {
+        public Builder remDebit(String remDebit) {
             financialAccountBalanceResponse.setRemDebit(remDebit);
             return this;
         }
 
-        public Builder remCredit(Long remCredit) {
+        public Builder remCredit(String remCredit) {
             financialAccountBalanceResponse.setRemCredit(remCredit);
             return this;
         }
