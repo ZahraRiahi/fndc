@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public interface FinancialDocumentRepository extends JpaRepository<FinancialDocument, Long> {
@@ -369,7 +370,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     LocalDateTime findByFinancialDocumentByNumberingTypeAndToNumber(Long documentNumberingTypeId, String toNumber, Long organizationId);
 
-    @Query(value = " SELECT min(DN.DOCUMENT_NUMBER) " +
+    @Query(value = " SELECT MIN(DN.DOCUMENT_NUMBER) " +
             "      FROM FNDC.FINANCIAL_DOCUMENT FD " +
             "     INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER DN " +
             "        ON FD.ID = DN.FINANCIAL_DOCUMENT_ID " +
