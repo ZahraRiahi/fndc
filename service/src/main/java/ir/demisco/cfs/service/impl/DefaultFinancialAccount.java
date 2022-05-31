@@ -802,12 +802,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                         .financialAccountCode(getItemForString(item, 2))
                         .financialAccountDescription(getItemForString(item, 3))
                         .financialAccountLevel(getItemForLong(item, 4))
-                        .sumDebit(getItemForLong(item, 5))
-                        .sumCredit(getItemForLong(item, 6))
-                        .befDebit(getItemForLong(item, 7))
-                        .befCredit(getItemForLong(item, 8))
-                        .remDebit(getItemForLong(item, 9))
-                        .remCredit(getItemForLong(item, 10))
+                        .sumDebit(getItemForString(item, 5))
+                        .sumCredit(getItemForString(item, 6))
+                        .befDebit(getItemForString(item, 7))
+                        .befCredit(getItemForString(item, 8))
+                        .remDebit(getItemForString(item, 9))
+                        .remCredit(getItemForString(item, 10))
                         .build()).collect(Collectors.toList());
 
         DataSourceResult dataSourceResult = new DataSourceResult();
