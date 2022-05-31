@@ -386,18 +386,18 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
         if (input instanceof String) {
             try {
-                Date date = StdDateFormat.instance.parse((String)input);
+                Date date = StdDateFormat.instance.parse((String) input);
                 LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
                 return localDateTime;
             } catch (Exception var4) {
-                if (((String)input).equalsIgnoreCase("current_date")) {
+                if (((String) input).equalsIgnoreCase("current_date")) {
                     return truncateDate ? DateUtil.truncate(LocalDateTime.now()) : LocalDateTime.now();
                 } else {
-                    return ((String)input).equalsIgnoreCase("current_timestamp") ? LocalDateTime.now() : LocalDateTime.parse((String)input);
+                    return ((String) input).equalsIgnoreCase("current_timestamp") ? LocalDateTime.now() : LocalDateTime.parse((String) input);
                 }
             }
         } else if (input instanceof LocalDateTime) {
-            return truncateDate ? DateUtil.truncate((LocalDateTime)input) : (LocalDateTime) input;
+            return truncateDate ? DateUtil.truncate((LocalDateTime) input) : (LocalDateTime) input;
         } else {
             throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
         }
@@ -493,8 +493,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                         financialDocumentCentricTurnOverRequest.getCentricAccount2(),
                         financialDocumentCentricTurnOverRequest.getCentricAccountId2(),
                         financialDocumentCentricTurnOverRequest.getReferenceNumberObject(),
-                        financialDocumentCentricTurnOverRequest.getReferenceNumber(),
-                        financialDocumentCentricTurnOverRequest.getFinancialAccount()
+                        financialDocumentCentricTurnOverRequest.getReferenceNumber()
+                        , financialDocumentCentricTurnOverRequest.getFinancialAccount()
                         , financialDocumentCentricTurnOverRequest.getFinancialAccountId()
                         , financialDocumentCentricTurnOverRequest.getToDate(),
                         financialDocumentCentricTurnOverRequest.getToNumber());
@@ -584,11 +584,18 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void checkFinancialAccountIdSet(FinancialDocumentCentricTurnOverRequest
                                                     financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
+            map.put("financialAccount", "financialAccount");
+            financialDocumentCentricTurnOverRequest.setParamMap(map);
             financialDocumentCentricTurnOverRequest.setFinancialAccountId(Long.parseLong(item.getValue().toString()));
+            financialDocumentCentricTurnOverRequest.setFinancialAccount(item.getValue().toString());
         } else {
+            map.put("financialAccount", null);
+            financialDocumentCentricTurnOverRequest.setParamMap(map);
             financialDocumentCentricTurnOverRequest.setFinancialAccountId(null);
         }
+
 
     }
 
