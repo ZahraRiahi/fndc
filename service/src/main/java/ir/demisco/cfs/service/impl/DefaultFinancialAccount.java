@@ -92,7 +92,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         financialAccountTurnOverOutputResponses.add(response);
 
         DataSourceResult dataSourceResult = new DataSourceResult();
-
         List<FinancialAccountTurnOverRecordsResponse> collect = financialAccountTurnOverOutputResponses.get(0).getFinancialAccountTurnOverRecordsResponseModel()
                 .stream()
                 .limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip())
