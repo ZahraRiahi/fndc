@@ -92,7 +92,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         financialAccountTurnOverOutputResponses.add(response);
 
         DataSourceResult dataSourceResult = new DataSourceResult();
-
         List<FinancialAccountTurnOverRecordsResponse> collect = financialAccountTurnOverOutputResponses.get(0).getFinancialAccountTurnOverRecordsResponseModel()
                 .stream()
                 .limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip())
@@ -440,11 +439,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 recordsResponse.setCentricAccountDes4(getItemForString(item, 12));
                 recordsResponse.setCentricAccountDes5(getItemForString(item, 13));
                 recordsResponse.setCentricAccountDes6(getItemForString(item, 14));
-                recordsResponse.setDebitAmount(getItemForLong(item, 15));
-                recordsResponse.setCreditAmount(getItemForLong(item, 16));
-                recordsResponse.setRemainDebit(getItemForLong(item, 17));
-                recordsResponse.setRemainCredit(getItemForLong(item, 18));
-                recordsResponse.setRemainAmount(getItemForLong(item, 19));
+                recordsResponse.setDebitAmount(getItemForString(item, 15));
+                recordsResponse.setCreditAmount(getItemForString(item, 16));
+                recordsResponse.setRemainDebit(getItemForString(item, 17));
+                recordsResponse.setRemainCredit(getItemForString(item, 18));
+                recordsResponse.setRemainAmount(getItemForString(item, 19));
                 recordsResponseList.add(recordsResponse);
                 response.setFinancialAccountCentricTurnOverRecordsModel(recordsResponseList);
             } else {
