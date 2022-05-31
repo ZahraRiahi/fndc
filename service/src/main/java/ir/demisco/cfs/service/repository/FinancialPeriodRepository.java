@@ -1037,7 +1037,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "       DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT), " +
             "              -1, " +
             "              ABS(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT), " +
-            "              0) REM_CREDIT " +
+            "              0) REM_CREDIT," +
+            " color " +
             "  FROM (SELECT FA2.FINANCIAL_ACCOUNT_PARENT_ID, " +
             "               FA2.ID FINANCIAL_ACCOUNT_ID, " +
             "               FA2.CODE FINANCIAL_ACCOUNT_code, " +
@@ -1072,7 +1073,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                      FDI.CREDIT_AMOUNT " +
             "                     ELSE " +
             "                      0 " +
-            "                   END) BEF_CREDIT " +
+            "                   END) BEF_CREDIT," +
+            " FAS.Color " +
             "          FROM FNDC.FINANCIAL_DOCUMENT FD " +
             "         INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FDI " +
             "            ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID " +
@@ -1110,7 +1112,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                  FA2.ID, " +
             "                  FA2.CODE, " +
             "                  FA2.DESCRIPTION, " +
-            "                  fas.sequence " +
+            "                  fas.sequence," +
+            " FAS.Color " +
             "        )" +
             "  WHERE (:hasRemain = 1 AND :showHigherLevels= 0 AND " +
             "       (SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT) <> 0) " +
