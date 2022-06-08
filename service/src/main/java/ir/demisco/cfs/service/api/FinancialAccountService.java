@@ -9,4 +9,6 @@ public interface FinancialAccountService {
     DataSourceResult getFinancialDocumentCentricTurnOver(DataSourceRequest dataSourceRequest);
 
     DataSourceResult getFinancialDocumentBalanceReport(DataSourceRequest dataSourceRequest);
+
+    DataSourceResult getFinancialDocumentCentricBalanceReport(DataSourceRequest dataSourceRequest);
 }

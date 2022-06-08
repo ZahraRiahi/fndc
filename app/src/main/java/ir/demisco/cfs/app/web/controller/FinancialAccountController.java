@@ -32,4 +32,9 @@ public class FinancialAccountController {
     public ResponseEntity<DataSourceResult> financialDocumentBalanceReportEntity(@RequestBody DataSourceRequest dataSourceRequest) {
         return ResponseEntity.ok(financialAccountService.getFinancialDocumentBalanceReport(dataSourceRequest));
     }
+
+    @PostMapping("/CentricBalanceReport")
+    public ResponseEntity<DataSourceResult> financialDocumentCentricBalanceReportEntity(@RequestBody DataSourceRequest dataSourceRequest) {
+        return ResponseEntity.ok(financialAccountService.getFinancialDocumentCentricBalanceReport(dataSourceRequest));
+    }
 }
