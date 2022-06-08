@@ -60,8 +60,6 @@ public class DefaultControlFinancialAccountNatureType implements ControlFinancia
                 .sumCredit(objects[1] == null ? null : ((BigDecimal) objects[1]).doubleValue())
                 .accountNatureTypeId(objects[2] == null ? 0 : Long.parseLong(objects[2].toString()))
                 .financialAccountDescription(objects[3] == null ? null : objects[3].toString())
-                .resultMessage(objects[4] == null ? null : objects[4].toString())
-                .natureTypeDescription(objects[5] == null ? null : objects[5].toString())
                 .build()).collect(Collectors.toList());
     }
 
