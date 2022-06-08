@@ -62,6 +62,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.ParsePosition;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -391,11 +392,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     private LocalDateTime checkTry(Object input, boolean truncateDate) {
         try {
-            //                Date date = ISO8601Utils.parse((String) input);
             Date date = ISO8601Utils.parse((String) input, new ParsePosition(0));
             LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
             return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
-        } catch (Exception var4) {
+        } catch (ParseException var4) {
             if (((String) input).equalsIgnoreCase("current_date")) {
                 return truncateDate ? DateUtil.truncate(LocalDateTime.now()) : LocalDateTime.now();
             } else {

@@ -1271,4 +1271,177 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "  FROM DUAL"
             , nativeQuery = true)
     Long findFinancialPeriodByIdAndLedgerTypeAndDate(Long financialPeriodId, Long financialLedgerTypeId, String date);
+
+    @Query(value = " WITH QRY AS" +
+            " (SELECT NVL(FINANCIAL_ACCOUNT_CODE, '') ||" +
+            "         NVL(FINANCIAL_ACCOUNT_DESCRIPTION, '') FINANCIAL_ACCOUNT_DESC," +
+            "         SUM_DEBIT," +
+            "         SUM_CREDIT," +
+            "         BEF_DEBIT," +
+            "         BEF_CREDIT," +
+            "         DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT)," +
+            "                1," +
+            "                SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT," +
+            "                0) REM_DEBIT," +
+            "         DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT)," +
+            "                -1," +
+            "                ABS(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT)," +
+            "                0) REM_CREDIT," +
+            "         NVL(CODE_CNAC1, '') || NVL(NAME_CNAC1, '') ||" +
+            "         NVL2(CODE_CNAC2, '-' || CODE_CNAC2, '') || NVL(NAME_CNAC2, '') ||" +
+            "         NVL2(CODE_CNAC3, '-' || CODE_CNAC3, '') || NVL(NAME_CNAC3, '') ||" +
+            "         NVL2(CODE_CNAC4, '-' || CODE_CNAC4, '') || NVL(NAME_CNAC4, '') ||" +
+            "         NVL2(CODE_CNAC5, '-' || CODE_CNAC5, '') || NVL(NAME_CNAC5, '') ||" +
+            "         NVL2(CODE_CNAC6, '-' || CODE_CNAC6, '') || NVL(NAME_CNAC6, '') CENTRIC_ACCOUNT_DES" +
+            "    FROM (SELECT FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
+            "                 FA2.ID                          FINANCIAL_ACCOUNT_ID," +
+            "                 FA2.CODE                        FINANCIAL_ACCOUNT_CODE," +
+            "                 FA2.DESCRIPTION                 FINANCIAL_ACCOUNT_DESCRIPTION," +
+            "                 SUM(CASE" +
+            "                       WHEN (FD.DOCUMENT_DATE BETWEEN :fromDate AND :toDate) AND" +
+            "                            (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND" +
+            "                            :toNumber) THEN" +
+            "                        FDI.DEBIT_AMOUNT" +
+            "                       ELSE" +
+            "                        0" +
+            "                     END) SUM_DEBIT," +
+            "                 SUM(CASE" +
+            "                       WHEN (FD.DOCUMENT_DATE BETWEEN :fromDate AND :toDate) AND" +
+            "                            (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND" +
+            "                            :toNumber) THEN" +
+            "                        FDI.CREDIT_AMOUNT" +
+            "                       ELSE" +
+            "                        0" +
+            "                     END) SUM_CREDIT," +
+            "                 SUM(CASE" +
+            "                       WHEN FD.DOCUMENT_DATE <= :fromDate AND" +
+            "                            FDN.DOCUMENT_NUMBER < :fromNumber THEN" +
+            "                        FDI.DEBIT_AMOUNT" +
+            "                       ELSE" +
+            "                        0" +
+            "                     END) BEF_DEBIT," +
+            "                 SUM(CASE" +
+            "                       WHEN FD.DOCUMENT_DATE <= :fromDate AND" +
+            "                            FDN.DOCUMENT_NUMBER < :fromNumber THEN" +
+            "                        FDI.CREDIT_AMOUNT" +
+            "                       ELSE" +
+            "                        0" +
+            "                     END) BEF_CREDIT," +
+            "                 CNAC1.CODE CODE_CNAC1," +
+            "                 CNAC2.CODE CODE_CNAC2," +
+            "                 CNAC3.CODE CODE_CNAC3," +
+            "                 CNAC4.CODE CODE_CNAC4," +
+            "                 CNAC5.CODE CODE_CNAC5," +
+            "                 CNAC6.CODE CODE_CNAC6," +
+            "                 CNAC1.NAME NAME_CNAC1," +
+            "                 CNAC2.NAME NAME_CNAC2," +
+            "                 CNAC3.NAME NAME_CNAC3," +
+            "                 CNAC4.NAME NAME_CNAC4," +
+            "                 CNAC5.NAME NAME_CNAC5," +
+            "                 CNAC6.NAME NAME_CNAC6" +
+            "            FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FDI" +
+            "              ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID" +
+            "             AND FDI.DELETED_DATE IS NULL" +
+            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA2" +
+            "              ON FDI.FINANCIAL_ACCOUNT_ID = FA2.ID" +
+            "           INNER JOIN fndc.FINANCIAL_DOCUMENT_NUMBER FDN" +
+            "              ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID" +
+            "             AND FDN.DELETED_DATE IS NULL" +
+            "             AND FDN.FINANCIAL_NUMBERING_TYPE_ID =" +
+            "                 :documentNumberingTypeId " +
+            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT_STRUCTURE FAS" +
+            "              ON FA2.FINANCIAL_ACCOUNT_STRUCTURE_ID = FAS.ID" +
+            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS" +
+            "              ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID" +
+            "             AND FDS.DELETED_DATE IS NULL" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC1" +
+            "              ON CNAC1.ID = FDI.CENTRIC_ACCOUNT_ID_1" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC2" +
+            "              ON CNAC2.ID = FDI.CENTRIC_ACCOUNT_ID_2" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC3" +
+            "              ON CNAC3.ID = FDI.CENTRIC_ACCOUNT_ID_3" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC4" +
+            "              ON CNAC4.ID = FDI.CENTRIC_ACCOUNT_ID_4" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC5" +
+            "              ON CNAC5.ID = FDI.CENTRIC_ACCOUNT_ID_5" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
+            "              ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6" +
+            "           WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId" +
+            "             AND FD.DOCUMENT_DATE BETWEEN :periodStartDate AND :toDate" +
+            "             AND (FDN.DOCUMENT_NUMBER <= :toNumber OR :toNumber IS NULL)" +
+            "             AND ((SUBSTR(FA2.CODE, 1, :length) >=" +
+            "                 :fromFinancialAccountCode) OR" +
+            "                 :fromFinancialAccountCode IS NULL)" +
+            "             AND ((SUBSTR(FA2.CODE, 1, :length) <= :toFinancialAccountCode) OR" +
+            "                 :toFinancialAccountCode IS NULL)" +
+            "             AND FD.DELETED_DATE IS NULL" +
+            "             AND FD.ORGANIZATION_ID = :organizationId" +
+            "             AND FDS.CODE > 10" +
+            "             AND ((:cnacIdObj1 IS NOT NULL AND :cnacIdObj2 IS NOT NULL AND" +
+            "                 ((:cnacId1 = CNAC1.ID AND cnac2.id = :cnacId2) or" +
+            "                 (:cnacId1 = CNAC2.ID AND cnac3.id = :cnacId2) OR" +
+            "                 (:cnacId1 = CNAC3.ID AND cnac4.id = :cnacId2) OR" +
+            "                 (:cnacId1 = CNAC4.ID AND cnac5.id = :cnacId2) OR" +
+            "                 (:cnacId1 = CNAC5.ID AND cnac6.id = :cnacId2)))" +
+            "                 OR " +
+            "                 ((:cnacIdObj1 IS NOT NULL AND :cnacIdObj2 IS NULL) AND" +
+            "                 (:cnacId1 = CNAC1.ID OR :cnacId1 = CNAC2.ID OR" +
+            "                 :cnacId1 = CNAC3.ID OR :cnacId1 = CNAC4.ID OR" +
+            "                 :cnacId1 = CNAC5.ID OR :cnacId1 = CNAC6.ID))" +
+            "                 OR (:cnacIdObj1 IS NULL AND :cnacIdObj2 IS NULL))" +
+            "           GROUP BY FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
+            "                    FA2.ID," +
+            "                    FA2.CODE," +
+            "                    FA2.DESCRIPTION," +
+            "                    FAS.SEQUENCE," +
+            "                    CNAC1.CODE," +
+            "                    CNAC2.CODE," +
+            "                    CNAC3.CODE," +
+            "                    CNAC4.CODE," +
+            "                    CNAC5.CODE," +
+            "                    CNAC6.CODE," +
+            "                    CNAC1.NAME," +
+            "                    CNAC2.NAME," +
+            "                    CNAC3.NAME," +
+            "                    CNAC4.NAME," +
+            "                    CNAC5.NAME," +
+            "                    CNAC6.NAME)" +
+            "   WHERE (:remainOption = 0)" +
+            "      OR (:remainOption = 1 AND" +
+            "         (SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT) <> 0)" +
+            "      OR (:remainOption = 2 AND" +
+            "         (SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT) > 0)" +
+            "      OR (:remainOption = 3 AND" +
+            "         (SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT) < 0)" +
+            "      OR (:remainOption = 4 AND" +
+            "         (SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT) = 0)" +
+            "   ORDER BY FINANCIAL_ACCOUNT_CODE)" +
+            "SELECT FINANCIAL_ACCOUNT_DESC," +
+            "       SUM_DEBIT," +
+            "       SUM_CREDIT," +
+            "       BEF_DEBIT," +
+            "       BEF_CREDIT," +
+            "       REM_DEBIT," +
+            "       REM_CREDIT," +
+            "       CENTRIC_ACCOUNT_DES," +
+            "       0                      SUMMERIZE_AMOUNT," +
+            "       1                      AS RECORD_TYPE" +
+            "  FROM QRY" +
+            " UNION " +
+            " SELECT NULL FINANCIAL_ACCOUNT_DESC," +
+            "       SUM(SUM_DEBIT) SUM_DEBIT," +
+            "       SUM(SUM_CREDIT) SUM_CREDIT," +
+            "       0 BEF_DEBIT," +
+            "       0 BEF_CREDIT," +
+            "       0 REM_DEBIT," +
+            "       0 REM_CREDIT," +
+            "       NULL CENTRIC_ACCOUNT_DES," +
+            "       SUM(SUM_CREDIT) - SUM(SUM_DEBIT) SUMMERIZE_AMOUNT," +
+            "       3 AS RECORD_TYPE" +
+            "  FROM QRY "
+            , nativeQuery = true)
+    List<Object[]> findByFinancialPeriodByCentricBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId
+            , LocalDateTime periodStartDate, int length, String fromFinancialAccountCode,
+                                                               String toFinancialAccountCode, Long organizationId,Object cnacIdObj1 ,Long cnacId1, Object cnacIdObj2,Long cnacId2, Long remainOption);
 }

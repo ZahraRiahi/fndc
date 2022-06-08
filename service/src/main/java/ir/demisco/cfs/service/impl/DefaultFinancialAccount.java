@@ -2,14 +2,17 @@ package ir.demisco.cfs.service.impl;
 
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import ir.demisco.cfs.model.dto.request.FinancialAccountBalanceRequest;
+import ir.demisco.cfs.model.dto.request.FinancialDocumentCentricBalanceReportRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentCentricTurnOverRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentReportRequest;
 import ir.demisco.cfs.model.dto.response.FinancialAccountBalanceResponse;
+import ir.demisco.cfs.model.dto.response.FinancialAccountCentricBalanceResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountCentricTurnOverOutputResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountCentricTurnOverRecordsResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountTurnOverOutputResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountTurnOverRecordsResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountTurnOverSummarizeResponse;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentCentricBalanceResponse;
 import ir.demisco.cfs.service.api.FinancialAccountService;
 import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
@@ -34,6 +37,7 @@ import java.util.stream.Collectors;
 public class DefaultFinancialAccount implements FinancialAccountService {
     private final FinancialDocumentRepository financialDocumentRepository;
     private final FinancialPeriodRepository financialPeriodRepository;
+    private int length = 0;
 
     public DefaultFinancialAccount(FinancialDocumentRepository financialDocumentRepository, FinancialPeriodRepository financialPeriodRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
@@ -468,7 +472,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 .limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip())
                 .skip(dataSourceRequest.getSkip())
                 .collect(Collectors.toList());
-
         FinancialAccountCentricTurnOverRecordsResponse recordsResponse = new FinancialAccountCentricTurnOverRecordsResponse();
         recordsResponse.setFinancialAccountTurnOverSummarizeModel(financialAccountCentricTurnOverOutputResponses.get(0).getFinancialAccountTurnOverSummarizeModel());
         collect.add(0, recordsResponse);
@@ -837,6 +840,10 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         return item[i] == null ? null : item[i].toString();
     }
 
+    private String getItemForString2(Object[] item, int i) {
+        return item[i] == null ? null : item[i].toString();
+    }
+
     private Date getItemForDate(Object[] item, int i) {
         return item[i] == null ? null : convertDate(item[i].toString());
     }
@@ -1028,6 +1035,301 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     }
 
+
+    @Override
+    @Transactional(readOnly = true)
+    public DataSourceResult getFinancialDocumentCentricBalanceReport(DataSourceRequest dataSourceRequest) {
+        List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
+        FinancialDocumentCentricBalanceReportRequest financialDocumentCentricBalanceReportRequest = setParameterCentricBalanceReport(filters);
+        if (financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode() != null || financialDocumentCentricBalanceReportRequest.getToFinancialAccountCode() != null) {
+            checkFinancialAccountCentricBalanceSet(financialDocumentCentricBalanceReportRequest);
+            length = financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode().length();
+        }
+        Map<String, Object> paramMap = financialDocumentCentricBalanceReportRequest.getParamMap();
+        getFinancialDocumentByNumberingTypeAndFromNumberCentricBalance(financialDocumentCentricBalanceReportRequest);
+        if (financialDocumentCentricBalanceReportRequest.getDocumentNumberingTypeId() == null) {
+            throw new RuleException("fin.financialAccount.insertDocumentNumberingType");
+        }
+
+        if (financialDocumentCentricBalanceReportRequest.getDateFilterFlg() == null) {
+            throw new RuleException("fin.financialAccount.selectDateFilterFlg");
+        }
+        financialDocumentCentricBalanceReportRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        List<Object[]> list = getCentricBalanceReportList(financialDocumentCentricBalanceReportRequest, paramMap);
+
+        List<FinancialAccountCentricBalanceResponse> financialAccountCentricBalanceResponses = new ArrayList<>();
+        List<FinancialDocumentCentricBalanceResponse> recordsResponseList = new ArrayList<>();
+        FinancialAccountCentricBalanceResponse response = new FinancialAccountCentricBalanceResponse();
+        list.forEach(item -> {
+
+            if (item[9] != null && (Long.parseLong(item[9].toString()) == 1 || Long.parseLong(item[9].toString()) == 2)) {
+                FinancialDocumentCentricBalanceResponse recordsResponse = new FinancialDocumentCentricBalanceResponse();
+                recordsResponse.setFinancialAccountDescription(getItemForString(item, 0));
+                recordsResponse.setSumDebit(getItemForString(item, 1));
+                recordsResponse.setSumCredit(getItemForString(item, 2));
+                recordsResponse.setBefDebit(getItemForString(item, 3));
+                recordsResponse.setBefCredit(getItemForString(item, 4));
+                recordsResponse.setRemDebit(getItemForString(item, 5));
+                recordsResponse.setRemCredit(getItemForString(item, 6));
+                recordsResponse.setCentricAccountDescription(getItemForString(item, 7));
+                recordsResponse.setRecordType(getItemForLong(item, 9));
+                recordsResponseList.add(recordsResponse);
+                response.setFinancialAccountCentricBalanceRecordsModel(recordsResponseList);
+            } else {
+                FinancialAccountTurnOverSummarizeResponse accountTurnOverSummarizeResponse = new FinancialAccountTurnOverSummarizeResponse();
+                FinancialAccountTurnOverOutputResponse outputResponse = new FinancialAccountTurnOverOutputResponse();
+                accountTurnOverSummarizeResponse.setSumDebit(getItemForLong(item, 1));
+                accountTurnOverSummarizeResponse.setSumCredit(getItemForLong(item, 2));
+                accountTurnOverSummarizeResponse.setSummarizeDebit(0L);
+                accountTurnOverSummarizeResponse.setSummarizeCredit(0L);
+                accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForLong(item, 8));
+                accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 9));
+                outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
+                response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
+            }
+        });
+        financialAccountCentricBalanceResponses.add(response);
+
+        DataSourceResult dataSourceResult = new DataSourceResult();
+
+        List<FinancialDocumentCentricBalanceResponse> collect = financialAccountCentricBalanceResponses.get(0).getFinancialAccountCentricBalanceRecordsModel()
+                .stream()
+                .limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip())
+                .skip(dataSourceRequest.getSkip())
+                .collect(Collectors.toList());
+
+        FinancialDocumentCentricBalanceResponse recordsResponse = new FinancialDocumentCentricBalanceResponse();
+        recordsResponse.setFinancialAccountTurnOverSummarizeModel(financialAccountCentricBalanceResponses.get(0).getFinancialAccountTurnOverSummarizeModel());
+        collect.add(0, recordsResponse);
+        dataSourceResult.setData(collect);
+        dataSourceResult.setTotal(list.size());
+        return dataSourceResult;
+
+    }
+
+    private FinancialDocumentCentricBalanceReportRequest setParameterCentricBalanceReport
+            (List<DataSourceRequest.FilterDescriptor> filters) {
+        FinancialDocumentCentricBalanceReportRequest financialDocumentCentricBalanceReportRequest = new FinancialDocumentCentricBalanceReportRequest();
+        for (DataSourceRequest.FilterDescriptor item : filters) {
+            switch (item.getField()) {
+                case "fromDate":
+                    checkFromDateForDateCentricBalance(financialDocumentCentricBalanceReportRequest, item);
+                    break;
+                case "toDate":
+                    checkToDateForDateCentricBalance(financialDocumentCentricBalanceReportRequest, item);
+                    break;
+                case "documentNumberingTypeId":
+                    checkDocumentNumberingTypeIdCentricBalance(financialDocumentCentricBalanceReportRequest, item);
+                    break;
+                case "fromNumber":
+                    checkFromNumberCentricBalanceReport(financialDocumentCentricBalanceReportRequest, item);
+                    break;
+                case "toNumber":
+                    checkToNumberCentricBalanceReport(financialDocumentCentricBalanceReportRequest, item);
+                    break;
+                case "ledgerTypeId":
+                    checkLedgerTypeCentricBalanceReport(financialDocumentCentricBalanceReportRequest, item);
+                    break;
+                case "remainOption":
+                    checkRemindOption(financialDocumentCentricBalanceReportRequest, item);
+                    break;
+                case "organizationId":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricBalanceReportRequest.setOrganizationId(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+
+                case "fromFinancialAccountCode":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricBalanceReportRequest.setFromFinancialAccountCode(item.getValue().toString());
+                    }
+                    break;
+                case "toFinancialAccountCode":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricBalanceReportRequest.setToFinancialAccountCode(item.getValue().toString());
+                    }
+                    break;
+                case "dateFilterFlg":
+                    if (item.getValue() != null) {
+                        financialDocumentCentricBalanceReportRequest.setDateFilterFlg(Long.parseLong(item.getValue().toString()));
+                    }
+                    break;
+                case "cnacId1":
+                    checkCnacId1Set(financialDocumentCentricBalanceReportRequest, item);
+                    break;
+                case "cnacId2":
+                    checkCnacId2Set(financialDocumentCentricBalanceReportRequest, item);
+                    break;
+                default:
+                    break;
+            }
+        }
+
+        return financialDocumentCentricBalanceReportRequest;
+
+    }
+
+    private void checkFromDateForDateCentricBalance(FinancialDocumentCentricBalanceReportRequest
+                                                            financialDocumentCentricBalanceReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentCentricBalanceReportRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        } else {
+            financialDocumentCentricBalanceReportRequest.setFromDate(null);
+        }
+    }
+
+    private void checkToDateForDateCentricBalance(FinancialDocumentCentricBalanceReportRequest
+                                                          financialDocumentCentricBalanceReportRequest, DataSourceRequest.FilterDescriptor item) {
+
+        if (item.getValue() != null) {
+            financialDocumentCentricBalanceReportRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        } else {
+            financialDocumentCentricBalanceReportRequest.setToDate(null);
+        }
+
+    }
+
+    private void checkDocumentNumberingTypeIdCentricBalance(FinancialDocumentCentricBalanceReportRequest
+                                                                    financialDocumentCentricBalanceReportRequest, DataSourceRequest.FilterDescriptor item) {
+        financialDocumentCentricBalanceReportRequest.setDocumentNumberingTypeId(Long.parseLong(item.getValue().toString()));
+    }
+
+    private void checkFromNumberCentricBalanceReport(FinancialDocumentCentricBalanceReportRequest
+                                                             financialDocumentCentricBalanceReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentCentricBalanceReportRequest.setFromNumber(item.getValue().toString());
+        } else {
+            financialDocumentCentricBalanceReportRequest.setFromNumber(null);
+        }
+    }
+
+    private void checkToNumberCentricBalanceReport(FinancialDocumentCentricBalanceReportRequest
+                                                           financialDocumentCentricBalanceReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentCentricBalanceReportRequest.setToNumber(item.getValue().toString());
+        } else {
+            financialDocumentCentricBalanceReportRequest.setToNumber(null);
+        }
+    }
+
+    private void checkLedgerTypeCentricBalanceReport(FinancialDocumentCentricBalanceReportRequest
+                                                             financialDocumentCentricBalanceReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentCentricBalanceReportRequest.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
+        } else {
+            financialDocumentCentricBalanceReportRequest.setLedgerTypeId(null);
+        }
+    }
+
+    private void checkRemindOption(FinancialDocumentCentricBalanceReportRequest
+                                           financialDocumentCentricBalanceReportRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialDocumentCentricBalanceReportRequest.setRemainOption(Long.parseLong(item.getValue().toString()));
+        } else {
+            financialDocumentCentricBalanceReportRequest.setRemainOption(null);
+        }
+    }
+
+    private void checkCnacId1Set(FinancialDocumentCentricBalanceReportRequest
+                                         financialDocumentCentricBalanceReportRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("cnacIdObj1", "cnacIdObj1");
+            financialDocumentCentricBalanceReportRequest.setParamMap(map);
+            financialDocumentCentricBalanceReportRequest.setCnacId1(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("cnacIdObj1", null);
+            financialDocumentCentricBalanceReportRequest.setParamMap(map);
+            financialDocumentCentricBalanceReportRequest.setCnacId1(0L);
+        }
+    }
+
+    private void checkCnacId2Set(FinancialDocumentCentricBalanceReportRequest
+                                         financialDocumentCentricBalanceReportRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("cnacIdObj2", "cnacIdObj2");
+            financialDocumentCentricBalanceReportRequest.setParamMap(map);
+            financialDocumentCentricBalanceReportRequest.setCnacId2(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("cnacIdObj2", null);
+            financialDocumentCentricBalanceReportRequest.setParamMap(map);
+            financialDocumentCentricBalanceReportRequest.setCnacId2(0L);
+        }
+    }
+
+    private void checkFinancialAccountCentricBalanceSet(FinancialDocumentCentricBalanceReportRequest financialDocumentCentricBalanceReportRequest) {
+        if (financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode() == null) {
+            financialDocumentCentricBalanceReportRequest.setFromFinancialAccountCode("fin.financialAccount.fromOrToFinancialAccountCode");
+        }
+        if (financialDocumentCentricBalanceReportRequest.getToFinancialAccountCode() == null) {
+            financialDocumentCentricBalanceReportRequest.setToFinancialAccountCode("fin.financialAccount.fromOrToFinancialAccountCode");
+        }
+        if (financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode().length() != financialDocumentCentricBalanceReportRequest.getToFinancialAccountCode().length()) {
+            throw new RuleException("fin.financialAccount.financialAccountBalance");
+        }
+    }
+
+    private void getFinancialDocumentByNumberingTypeAndFromNumberCentricBalance(FinancialDocumentCentricBalanceReportRequest
+                                                                                        financialDocumentCentricBalanceReportRequest) {
+
+        if (financialDocumentCentricBalanceReportRequest.getDateFilterFlg() == 0) {
+            setFromDateAndToDateCentricTurnOverCentricBalance(financialDocumentCentricBalanceReportRequest);
+        }
+        if (financialDocumentCentricBalanceReportRequest.getDateFilterFlg() == 1 || financialDocumentCentricBalanceReportRequest.getFromNumber() == null) {
+            String fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(financialDocumentCentricBalanceReportRequest.getDocumentNumberingTypeId(),
+                    financialDocumentCentricBalanceReportRequest.getFromDate()
+                    , SecurityHelper.getCurrentUser().getOrganizationId());
+            financialDocumentCentricBalanceReportRequest.setFromNumber(fromNumber);
+        }
+        if (financialDocumentCentricBalanceReportRequest.getDateFilterFlg() == 1 || financialDocumentCentricBalanceReportRequest.getToNumber() == null) {
+            String toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(financialDocumentCentricBalanceReportRequest.getDocumentNumberingTypeId(),
+                    financialDocumentCentricBalanceReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId());
+            financialDocumentCentricBalanceReportRequest.setToNumber(toNumber);
+        }
+
+        LocalDateTime startDate = financialDocumentCentricBalanceReportRequest.getFromDate();
+        LocalDateTime periodStartDate;
+        periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization(SecurityHelper.getCurrentUser().getOrganizationId());
+
+        if (startDate.isBefore(periodStartDate)) {
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganizationStartDate(SecurityHelper.getCurrentUser().getOrganizationId(), startDate);
+        }
+        if (periodStartDate == null) {
+            periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization2(SecurityHelper.getCurrentUser().getOrganizationId());
+        }
+
+        if (periodStartDate == null) {
+            throw new RuleException("fin.financialAccount.notExistPeriod");
+        }
+
+        financialDocumentCentricBalanceReportRequest.setPeriodStartDate(periodStartDate);
+    }
+
+    private void setFromDateAndToDateCentricTurnOverCentricBalance(FinancialDocumentCentricBalanceReportRequest
+                                                                           financialDocumentCentricBalanceReportRequest) {
+        LocalDateTime fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentCentricBalanceReportRequest.getDocumentNumberingTypeId()
+                , financialDocumentCentricBalanceReportRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
+        financialDocumentCentricBalanceReportRequest.setFromDate(fromDate);
+        LocalDateTime toDate = financialDocumentRepository.findByFinancialDocumentByNumberingAndToNumber(financialDocumentCentricBalanceReportRequest.getDocumentNumberingTypeId()
+                , financialDocumentCentricBalanceReportRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId());
+        financialDocumentCentricBalanceReportRequest.setToDate(toDate);
+        if (fromDate == null || toDate == null) {
+            throw new RuleException("fin.financialAccount.notCorrectDocumentNumber");
+        }
+
+    }
+
+    private List<Object[]> getCentricBalanceReportList(FinancialDocumentCentricBalanceReportRequest financialDocumentCentricBalanceReportRequest, Map<String, Object> paramMap) {
+        return financialPeriodRepository.findByFinancialPeriodByCentricBalanceReport(financialDocumentCentricBalanceReportRequest.getFromDate(),
+                financialDocumentCentricBalanceReportRequest.getToDate(), financialDocumentCentricBalanceReportRequest.getFromNumber(),
+                financialDocumentCentricBalanceReportRequest.getToNumber(), financialDocumentCentricBalanceReportRequest.getDocumentNumberingTypeId(),
+                financialDocumentCentricBalanceReportRequest.getLedgerTypeId(),
+                financialDocumentCentricBalanceReportRequest.getPeriodStartDate(), length
+                , financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode(), financialDocumentCentricBalanceReportRequest.getToFinancialAccountCode()
+                , SecurityHelper.getCurrentUser().getOrganizationId(), paramMap.get("cnacIdObj1"), financialDocumentCentricBalanceReportRequest.getCnacId1(), paramMap.get("cnacIdObj2"), financialDocumentCentricBalanceReportRequest.getCnacId2()
+                , financialDocumentCentricBalanceReportRequest.getRemainOption());
+    }
 }
 
 
