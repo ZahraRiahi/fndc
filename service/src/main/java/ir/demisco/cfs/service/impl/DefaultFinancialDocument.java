@@ -477,12 +477,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         controlFinancialAccountNatureTypeInputRequest.setFinancialDocumentId(financialDocument.getId());
         List<ControlFinancialAccountNatureTypeOutputResponse> controlFinancialAccountNatureTypeList = controlFinancialAccountNatureTypeService.getControlFinancialAccountNatureType(controlFinancialAccountNatureTypeInputRequest);
 
-        controlFinancialAccountNatureTypeList.forEach(e -> {
-            FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
-            financialDocumentCost.setMessage(e.getResultMessage());
-            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
-            financialDocumentErrorDtoList.add(financialDocumentCost);
-        });
+//        controlFinancialAccountNatureTypeList.forEach(e -> {
+//            FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
+//            financialDocumentCost.setMessage(e.getResultMessage());
+//            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
+//            financialDocumentErrorDtoList.add(financialDocumentCost);
+//        });
 
 
         Long financialDocumentItemAccount = financialDocumentItemRepository.getFinancialAccount(financialDocument.getId());
