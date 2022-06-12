@@ -9,6 +9,7 @@ import ir.demisco.cfs.model.dto.response.FinancialAccountBalanceResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountCentricBalanceResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountCentricTurnOverOutputResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountCentricTurnOverRecordsResponse;
+import ir.demisco.cfs.model.dto.response.FinancialAccountListBalanceResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountTurnOverOutputResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountTurnOverRecordsResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountTurnOverSummarizeResponse;
@@ -769,6 +770,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     public DataSourceResult getFinancialDocumentBalanceReport(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialAccountBalanceRequest financialAccountBalanceRequest = setParameterBalanceReport(filters);
+        Map<String, Object> paramMap = financialAccountBalanceRequest.getParamMap();
         int length = 0;
         if (financialAccountBalanceRequest.getFromFinancialAccountCode() != null || financialAccountBalanceRequest.getToFinancialAccountCode() != null) {
             checkFinancialAccountBalanceSet(financialAccountBalanceRequest);
@@ -782,42 +784,71 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         if (financialAccountBalanceRequest.getDateFilterFlg() == null) {
             throw new RuleException("fin.financialAccount.selectDateFilterFlg");
         }
-        List<Object[]> list = financialPeriodRepository.findByFinancialPeriodByBalanceReport(financialAccountBalanceRequest.getFromDate(),
-                financialAccountBalanceRequest.getToDate(),
-                financialAccountBalanceRequest.getFromNumber(),
-                financialAccountBalanceRequest.getToNumber(),
-                financialAccountBalanceRequest.getDocumentNumberingTypeId(),
+        List<Object[]> list = getBalanceReportList(financialAccountBalanceRequest, paramMap);
+        List<FinancialAccountListBalanceResponse> financialAccountListBalanceResponses = new ArrayList<>();
+        List<FinancialAccountBalanceResponse> recordsResponseList = new ArrayList<>();
+        FinancialAccountListBalanceResponse response = new FinancialAccountListBalanceResponse();
+        list.forEach(item -> {
+
+            if (item[13] != null && (Long.parseLong(item[13].toString()) == 1 || Long.parseLong(item[13].toString()) == 2)) {
+                FinancialAccountBalanceResponse recordsResponse = new FinancialAccountBalanceResponse();
+                recordsResponse.setFinancialAccountParentId(getItemForLong(item, 0));
+                recordsResponse.setFinancialAccountId(getItemForLong(item, 1));
+                recordsResponse.setFinancialAccountCode(getItemForString(item, 2));
+                recordsResponse.setFinancialAccountDescription(getItemForString(item, 3));
+                recordsResponse.setFinancialAccountLevel(getItemForLong(item, 4));
+                recordsResponse.setSumDebit(getItemForString(item, 5));
+                recordsResponse.setSumCredit(getItemForString(item, 6));
+                recordsResponse.setBefDebit(getItemForString(item, 7));
+                recordsResponse.setBefCredit(getItemForString(item, 8));
+                recordsResponse.setRemDebit(getItemForString(item, 9));
+                recordsResponse.setRemCredit(getItemForString(item, 10));
+                recordsResponse.setColor(getItemForString(item, 11));
+                recordsResponseList.add(recordsResponse);
+                response.setFinancialAccountBalanceRecordsModel(recordsResponseList);
+            } else {
+                FinancialAccountTurnOverSummarizeResponse accountTurnOverSummarizeResponse = new FinancialAccountTurnOverSummarizeResponse();
+                FinancialAccountTurnOverOutputResponse outputResponse = new FinancialAccountTurnOverOutputResponse();
+                accountTurnOverSummarizeResponse.setSumDebit(getItemForLong(item, 1));
+                accountTurnOverSummarizeResponse.setSumCredit(getItemForLong(item, 2));
+                accountTurnOverSummarizeResponse.setSummarizeDebit(getItemForLong(item, 5));
+                accountTurnOverSummarizeResponse.setSummarizeCredit(getItemForLong(item, 6));
+                accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForLong(item, 12));
+                accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 13));
+                outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
+                response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
+            }
+        });
+
+        financialAccountListBalanceResponses.add(response);
+
+        DataSourceResult dataSourceResult = new DataSourceResult();
+
+        List<FinancialAccountBalanceResponse> collect = financialAccountListBalanceResponses.get(0).getFinancialAccountBalanceRecordsModel()
+                .stream()
+                .limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip())
+                .skip(dataSourceRequest.getSkip())
+                .collect(Collectors.toList());
+
+        FinancialAccountBalanceResponse recordsResponse = new FinancialAccountBalanceResponse();
+        recordsResponse.setFinancialAccountTurnOverSummarizeModel(financialAccountListBalanceResponses.get(0).getFinancialAccountTurnOverSummarizeModel());
+        collect.add(0, recordsResponse);
+        dataSourceResult.setData(collect);
+        dataSourceResult.setTotal(list.size());
+        return dataSourceResult;
+    }
+
+    private List<Object[]> getBalanceReportList(FinancialAccountBalanceRequest financialAccountBalanceRequest, Map<String, Object> paramMap) {
+        return financialPeriodRepository.findByFinancialPeriodByBalanceReport(financialAccountBalanceRequest.getFromDate(),
+                financialAccountBalanceRequest.getToDate(), financialAccountBalanceRequest.getFromNumber(),
+                financialAccountBalanceRequest.getToNumber(), financialAccountBalanceRequest.getDocumentNumberingTypeId(),
                 financialAccountBalanceRequest.getLedgerTypeId(),
                 financialAccountBalanceRequest.getStructureLevel(),
                 financialAccountBalanceRequest.getShowHigherLevels(),
-                financialAccountBalanceRequest.getPeriodStartDate(),
-                length,
-                financialAccountBalanceRequest.getFromFinancialAccountCode(),
-                financialAccountBalanceRequest.getToFinancialAccountCode(),
-                SecurityHelper.getCurrentUser().getOrganizationId(),
-                financialAccountBalanceRequest.getHasRemain());
-
-        List<FinancialAccountBalanceResponse> financialAccountBalanceResponse = list.stream().map(item ->
-                FinancialAccountBalanceResponse.builder()
-                        .financialAccountParentId(getItemForLong(item, 0))
-                        .financialAccountId(getItemForLong(item, 1))
-                        .financialAccountCode(getItemForString(item, 2))
-                        .financialAccountDescription(getItemForString(item, 3))
-                        .financialAccountLevel(getItemForLong(item, 4))
-                        .sumDebit(getItemForString(item, 5))
-                        .sumCredit(getItemForString(item, 6))
-                        .befDebit(getItemForString(item, 7))
-                        .befCredit(getItemForString(item, 8))
-                        .remDebit(getItemForString(item, 9))
-                        .remCredit(getItemForString(item, 10))
-                        .color((getItemForString(item, 11)))
-                        .build()).collect(Collectors.toList());
-
-        DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(financialAccountBalanceResponse.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
-        dataSourceResult.setTotal(list.size());
-        return dataSourceResult;
-
+                financialAccountBalanceRequest.getPeriodStartDate(), length
+                , financialAccountBalanceRequest.getFromFinancialAccountCode(), financialAccountBalanceRequest.getToFinancialAccountCode()
+                , SecurityHelper.getCurrentUser().getOrganizationId()
+                , financialAccountBalanceRequest.getHasRemain());
     }
 
     private void checkFinancialAccountBalanceSet(FinancialAccountBalanceRequest financialAccountBalanceRequest) {
@@ -1056,7 +1087,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
         financialDocumentCentricBalanceReportRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         List<Object[]> list = getCentricBalanceReportList(financialDocumentCentricBalanceReportRequest, paramMap);
-
         List<FinancialAccountCentricBalanceResponse> financialAccountCentricBalanceResponses = new ArrayList<>();
         List<FinancialDocumentCentricBalanceResponse> recordsResponseList = new ArrayList<>();
         FinancialAccountCentricBalanceResponse response = new FinancialAccountCentricBalanceResponse();

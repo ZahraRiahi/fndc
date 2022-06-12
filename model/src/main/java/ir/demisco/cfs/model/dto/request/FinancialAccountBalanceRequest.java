@@ -1,6 +1,7 @@
 package ir.demisco.cfs.model.dto.request;
 
 import java.time.LocalDateTime;
+import java.util.Map;
 
 public class FinancialAccountBalanceRequest {
     private LocalDateTime fromDate;
@@ -17,6 +18,7 @@ public class FinancialAccountBalanceRequest {
     private String toFinancialAccountCode;
     private Long dateFilterFlg;
     private LocalDateTime periodStartDate;
+    Map<String, Object> paramMap;
 
     public LocalDateTime getFromDate() {
         return fromDate;
@@ -130,5 +132,11 @@ public class FinancialAccountBalanceRequest {
         this.periodStartDate = periodStartDate;
     }
 
+    public Map<String, Object> getParamMap() {
+        return paramMap;
+    }
 
+    public void setParamMap(Map<String, Object> paramMap) {
+        this.paramMap = paramMap;
+    }
 }

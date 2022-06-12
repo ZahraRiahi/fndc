@@ -28,7 +28,6 @@ public class DefaultApplicationUser implements ApplicationUserService {
     public DataSourceResult getUserList(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialApplicationUserRequest paramSearch = setParameterToDto(filters);
-        Map<String, Object> paramMap = paramSearch.getParamMap();
         List<Object[]> list = applicationUserRepository.getUserList(paramSearch.getNickName());
         List<ApplicationUserDto> applicationUserList = list.stream().map(objects ->
                 ApplicationUserDto.builder()
@@ -44,22 +43,29 @@ public class DefaultApplicationUser implements ApplicationUserService {
 
     private FinancialApplicationUserRequest setParameterToDto(List<DataSourceRequest.FilterDescriptor> filters) {
         FinancialApplicationUserRequest financialApplicationUserRequest = new FinancialApplicationUserRequest();
-        Map<String, Object> map = new HashMap<>();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
                 case "nickName":
-                    if (item.getValue() != null) {
-                        map.put("fromAccount", "fromAccount");
-                        financialApplicationUserRequest.setParamMap(map);
-                        financialApplicationUserRequest.setNickName(item.getValue().toString());
-                    } else {
-                        map.put("fromAccount", null);
-                        financialApplicationUserRequest.setParamMap(map);
-                        financialApplicationUserRequest.setNickName(null);
-                    }
+                    checkNickNameSet(financialApplicationUserRequest, item);
+                    break;
+                default:
                     break;
             }
         }
         return financialApplicationUserRequest;
+    }
+
+
+    private void checkNickNameSet(FinancialApplicationUserRequest financialApplicationUserRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("nickName", "nickName");
+            financialApplicationUserRequest.setParamMap(map);
+            financialApplicationUserRequest.setNickName(item.getValue().toString());
+        } else {
+            map.put("nickName", null);
+            financialApplicationUserRequest.setParamMap(map);
+            financialApplicationUserRequest.setNickName("");
+        }
     }
 }
