@@ -4,6 +4,7 @@ import ir.demisco.cfs.model.dto.response.FinancialConfigDto;
 import ir.demisco.cfs.model.entity.FinancialConfig;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridDataProvider;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -53,7 +54,7 @@ public class FinancialConfigListGridProvider implements GridDataProvider {
 
             return FinancialConfigDto.builder()
                     .id((Long) array[0])
-                    .organizationId((Long) array[1])
+                    .organizationId(SecurityHelper.getCurrentUser().getOrganizationId())
                     .financialDepartmentId((Long) array[2])
                     .userId((Long) array[3])
                     .financialDocumentTypeId((Long) array[4])
