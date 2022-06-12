@@ -1021,105 +1021,302 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
                                                          Long referenceNumber, Object financialAccount, Long financialAccountId, LocalDateTime toDate, String toNumber);
 
 
-    @Query(value = " SELECT FINANCIAL_ACCOUNT_PARENT_ID, " +
-            "       FINANCIAL_ACCOUNT_ID, " +
-            "       FINANCIAL_ACCOUNT_code, " +
-            "       FINANCIAL_ACCOUNT_DESCRIPTION, " +
-            "       FINANCIAL_ACCOUNT_Level, " +
-            "       SUM_DEBIT, " +
-            "       SUM_CREDIT, " +
-            "       BEF_DEBIT, " +
-            "       BEF_CREDIT, " +
-            "       DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT), " +
-            "              1, " +
-            "              SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT, " +
-            "              0) REM_DEBIT, " +
-            "       DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT), " +
-            "              -1, " +
-            "              ABS(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT), " +
-            "              0) REM_CREDIT," +
-            " color " +
-            "  FROM (SELECT FA2.FINANCIAL_ACCOUNT_PARENT_ID, " +
-            "               FA2.ID FINANCIAL_ACCOUNT_ID, " +
-            "               FA2.CODE FINANCIAL_ACCOUNT_code, " +
-            "               FA2.DESCRIPTION FINANCIAL_ACCOUNT_DESCRIPTION, " +
-            "               fas.sequence FINANCIAL_ACCOUNT_Level, " +
-            "               SUM(CASE " +
-            "                     WHEN (FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)) AND " +
-            "                          (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND " +
-            "                          :toNumber) THEN " +
-            "                      FDI.DEBIT_AMOUNT " +
-            "                     ELSE " +
-            "                      0 " +
-            "                   END) SUM_DEBIT, " +
-            "               SUM(CASE" +
-            "                     WHEN (FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)) AND " +
-            "                          (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND " +
-            "                          :toNumber) THEN " +
-            "                      FDI.CREDIT_AMOUNT " +
-            "                     ELSE " +
-            "                      0 " +
-            "                   END) SUM_CREDIT, " +
-            "               SUM(CASE " +
-            "                     WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND " +
-            "                          FDN.DOCUMENT_NUMBER < :fromNumber THEN " +
-            "                      FDI.DEBIT_AMOUNT " +
-            "                     ELSE " +
-            "                      0 " +
-            "                   END) BEF_DEBIT, " +
-            "               SUM(CASE " +
-            "                     WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND " +
-            "                          FDN.DOCUMENT_NUMBER < :fromNumber THEN " +
-            "                      FDI.CREDIT_AMOUNT " +
-            "                     ELSE " +
-            "                      0 " +
-            "                   END) BEF_CREDIT," +
-            " FAS.Color " +
-            "          FROM FNDC.FINANCIAL_DOCUMENT FD " +
-            "         INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FDI " +
-            "            ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID " +
-            "           AND FDI.DELETED_DATE IS NULL " +
-            "         INNER JOIN FNAC.FINANCIAL_ACCOUNT FA " +
-            "            ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID " +
-            "         INNER JOIN fndc.FINANCIAL_DOCUMENT_NUMBER FDN " +
-            "            ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID " +
-            "           AND FDN.DELETED_DATE IS NULL " +
-            "           AND FDN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
-            "         INNER JOIN FNAC.ACCOUNT_STRUCTURE_LEVEL ASL " +
-            "            ON ASL.FINANCIAL_ACCOUNT_ID = FA.ID " +
-            "           AND ASL.DELETED_DATE IS NULL " +
-            "         INNER JOIN FNAC.FINANCIAL_ACCOUNT FA2 " +
-            "            ON FA2.ID = ASL.RELATED_ACCOUNT_ID " +
-            "         INNER JOIN fnac.financial_account_structure fas " +
-            "            ON fa2.financial_account_structure_id = fas.id " +
-            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS " +
-            "            ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
-            "           AND FDS.DELETED_DATE IS NULL  " +
-            "         WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
+//    @Query(value = " SELECT FINANCIAL_ACCOUNT_PARENT_ID, " +
+//            "       FINANCIAL_ACCOUNT_ID, " +
+//            "       FINANCIAL_ACCOUNT_code, " +
+//            "       FINANCIAL_ACCOUNT_DESCRIPTION, " +
+//            "       FINANCIAL_ACCOUNT_Level, " +
+//            "       SUM_DEBIT, " +
+//            "       SUM_CREDIT, " +
+//            "       BEF_DEBIT, " +
+//            "       BEF_CREDIT, " +
+//            "       DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT), " +
+//            "              1, " +
+//            "              SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT, " +
+//            "              0) REM_DEBIT, " +
+//            "       DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT), " +
+//            "              -1, " +
+//            "              ABS(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT), " +
+//            "              0) REM_CREDIT," +
+//            " color " +
+//            "  FROM (SELECT FA2.FINANCIAL_ACCOUNT_PARENT_ID, " +
+//            "               FA2.ID FINANCIAL_ACCOUNT_ID, " +
+//            "               FA2.CODE FINANCIAL_ACCOUNT_code, " +
+//            "               FA2.DESCRIPTION FINANCIAL_ACCOUNT_DESCRIPTION, " +
+//            "               fas.sequence FINANCIAL_ACCOUNT_Level, " +
+//            "               SUM(CASE " +
+//            "                     WHEN (FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)) AND " +
+//            "                          (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND " +
+//            "                          :toNumber) THEN " +
+//            "                      FDI.DEBIT_AMOUNT " +
+//            "                     ELSE " +
+//            "                      0 " +
+//            "                   END) SUM_DEBIT, " +
+//            "               SUM(CASE" +
+//            "                     WHEN (FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)) AND " +
+//            "                          (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND " +
+//            "                          :toNumber) THEN " +
+//            "                      FDI.CREDIT_AMOUNT " +
+//            "                     ELSE " +
+//            "                      0 " +
+//            "                   END) SUM_CREDIT, " +
+//            "               SUM(CASE " +
+//            "                     WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND " +
+//            "                          FDN.DOCUMENT_NUMBER < :fromNumber THEN " +
+//            "                      FDI.DEBIT_AMOUNT " +
+//            "                     ELSE " +
+//            "                      0 " +
+//            "                   END) BEF_DEBIT, " +
+//            "               SUM(CASE " +
+//            "                     WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND " +
+//            "                          FDN.DOCUMENT_NUMBER < :fromNumber THEN " +
+//            "                      FDI.CREDIT_AMOUNT " +
+//            "                     ELSE " +
+//            "                      0 " +
+//            "                   END) BEF_CREDIT," +
+//            " FAS.Color " +
+//            "          FROM FNDC.FINANCIAL_DOCUMENT FD " +
+//            "         INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FDI " +
+//            "            ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID " +
+//            "           AND FDI.DELETED_DATE IS NULL " +
+//            "         INNER JOIN FNAC.FINANCIAL_ACCOUNT FA " +
+//            "            ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID " +
+//            "         INNER JOIN fndc.FINANCIAL_DOCUMENT_NUMBER FDN " +
+//            "            ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID " +
+//            "           AND FDN.DELETED_DATE IS NULL " +
+//            "           AND FDN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
+//            "         INNER JOIN FNAC.ACCOUNT_STRUCTURE_LEVEL ASL " +
+//            "            ON ASL.FINANCIAL_ACCOUNT_ID = FA.ID " +
+//            "           AND ASL.DELETED_DATE IS NULL " +
+//            "         INNER JOIN FNAC.FINANCIAL_ACCOUNT FA2 " +
+//            "            ON FA2.ID = ASL.RELATED_ACCOUNT_ID " +
+//            "         INNER JOIN fnac.financial_account_structure fas " +
+//            "            ON fa2.financial_account_structure_id = fas.id " +
+//            " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS " +
+//            "            ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
+//            "           AND FDS.DELETED_DATE IS NULL  " +
+//            "         WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
+//            "           AND ((fas.sequence = :structureLevel AND :showHigherLevels = 0) OR " +
+//            "               (fas.sequence <= :structureLevel AND " +
+//            "               :showHigherLevels = 1)) " +
+//            "           AND FD.DOCUMENT_DATE BETWEEN trunc(:periodStartDate) AND trunc(:toDate) " +
+//            "           AND (FDN.DOCUMENT_NUMBER <= :toNumber OR :toNumber IS NULL) " +
+//            "           and ((SUBSTR(fa.code, 1, :length) >= :fromFinancialAccountCode) or " +
+//            "               :fromFinancialAccountCode is null) " +
+//            "           and ((SUBSTR(fa.code, 1, :length) <= :toFinancialAccountCode) or " +
+//            "               :toFinancialAccountCode is null) " +
+//            "           AND FD.DELETED_DATE IS NULL " +
+//            "           AND FD.ORGANIZATION_ID = :organizationId" +
+//            " AND FDS.CODE > 10 " +
+//            "         GROUP BY FA2.FINANCIAL_ACCOUNT_PARENT_ID, " +
+//            "                  FA2.ID, " +
+//            "                  FA2.CODE, " +
+//            "                  FA2.DESCRIPTION, " +
+//            "                  fas.sequence," +
+//            " FAS.Color " +
+//            "        )" +
+//            "  WHERE (:hasRemain = 1 AND :showHigherLevels= 0 AND " +
+//            "       (SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT) <> 0) " +
+//            "    OR (:hasRemain = 0) " +
+//            "    OR :showHigherLevels= 1 " +
+//            " ORDER BY FINANCIAL_ACCOUNT_code "
+//            , nativeQuery = true)
+//    List<Object[]> findByFinancialPeriodByBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId,
+//                                                        Long structureLevel, Boolean showHigherLevels, LocalDateTime periodStartDate, int length, String fromFinancialAccountCode,
+//                                                        String toFinancialAccountCode, Long organizationId, Boolean hasRemain);
+
+    @Query(value = " WITH QRY AS " +
+            " (SELECT FINANCIAL_ACCOUNT_PARENT_ID," +
+            "         FINANCIAL_ACCOUNT_ID," +
+            "         FINANCIAL_ACCOUNT_CODE," +
+            "         FINANCIAL_ACCOUNT_DESCRIPTION," +
+            "         FINANCIAL_ACCOUNT_LEVEL," +
+            "         SUM_DEBIT," +
+            "         SUM_CREDIT," +
+            "         BEF_DEBIT," +
+            "         BEF_CREDIT," +
+            "         DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT)," +
+            "                1," +
+            "                SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT," +
+            "                0) REM_DEBIT," +
+            "         DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT)," +
+            "                -1," +
+            "                ABS(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT)," +
+            "                0) REM_CREDIT," +
+            "         color," +
+            "         0 SUMMERIZE_AMOUNT," +
+            "         1 AS RECORD_TYP" +
+            "    FROM (SELECT FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
+            "                 FA2.ID FINANCIAL_ACCOUNT_ID," +
+            "                 FA2.CODE FINANCIAL_ACCOUNT_CODE," +
+            "                 FA2.DESCRIPTION FINANCIAL_ACCOUNT_DESCRIPTION," +
+            "                 FAS.SEQUENCE FINANCIAL_ACCOUNT_LEVEL," +
+            "                 SUM(CASE" +
+            "                       WHEN (FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)) AND" +
+            "                            (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND" +
+            "                            :toNumber) THEN" +
+            "                        FDI.DEBIT_AMOUNT" +
+            "                       ELSE" +
+            "                        0" +
+            "                     END) SUM_DEBIT," +
+            "                 SUM(CASE" +
+            "                       WHEN (FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)) AND" +
+            "                            (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND" +
+            "                            :toNumber) THEN" +
+            "                        FDI.CREDIT_AMOUNT" +
+            "                       ELSE" +
+            "                        0" +
+            "                     END) SUM_CREDIT," +
+            "                 SUM(CASE" +
+            "                       WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND" +
+            "                            FDN.DOCUMENT_NUMBER < :fromNumber THEN" +
+            "                        FDI.DEBIT_AMOUNT" +
+            "                       ELSE" +
+            "                        0" +
+            "                     END) BEF_DEBIT," +
+            "                 SUM(CASE" +
+            "                       WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND" +
+            "                            FDN.DOCUMENT_NUMBER < :fromNumber THEN" +
+            "                        FDI.CREDIT_AMOUNT" +
+            "                       ELSE" +
+            "                        0" +
+            "                     END) BEF_CREDIT," +
+            "                 FAS.Color" +
+            "            FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FDI" +
+            "              ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID" +
+            "             AND FDI.DELETED_DATE IS NULL" +
+            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA" +
+            "              ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID" +
+            "           INNER JOIN fndc.FINANCIAL_DOCUMENT_NUMBER FDN" +
+            "              ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID" +
+            "             AND FDN.DELETED_DATE IS NULL" +
+            "             AND FDN.FINANCIAL_NUMBERING_TYPE_ID =" +
+            "                 :documentNumberingTypeId " +
+            "           INNER JOIN FNAC.ACCOUNT_STRUCTURE_LEVEL ASL" +
+            "              ON ASL.FINANCIAL_ACCOUNT_ID = FA.ID" +
+            "             AND ASL.DELETED_DATE IS NULL" +
+            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA2" +
+            "              ON FA2.ID = ASL.RELATED_ACCOUNT_ID" +
+            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT_STRUCTURE FAS" +
+            "              ON FA2.FINANCIAL_ACCOUNT_STRUCTURE_ID = FAS.ID" +
+            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS" +
+            "              ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID" +
+            "             AND FDS.DELETED_DATE IS NULL" +
+            "           WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId" +
             "           AND ((fas.sequence = :structureLevel AND :showHigherLevels = 0) OR " +
             "               (fas.sequence <= :structureLevel AND " +
             "               :showHigherLevels = 1)) " +
-            "           AND FD.DOCUMENT_DATE BETWEEN trunc(:periodStartDate) AND trunc(:toDate) " +
-            "           AND (FDN.DOCUMENT_NUMBER <= :toNumber OR :toNumber IS NULL) " +
+            "             AND FD.DOCUMENT_DATE BETWEEN trunc(:periodStartDate)  AND trunc(:toDate)" +
+            "             AND (FDN.DOCUMENT_NUMBER <= :toNumber OR :toNumber IS NULL)" +
             "           and ((SUBSTR(fa.code, 1, :length) >= :fromFinancialAccountCode) or " +
             "               :fromFinancialAccountCode is null) " +
             "           and ((SUBSTR(fa.code, 1, :length) <= :toFinancialAccountCode) or " +
             "               :toFinancialAccountCode is null) " +
-            "           AND FD.DELETED_DATE IS NULL " +
-            "           AND FD.ORGANIZATION_ID = :organizationId" +
-            " AND FDS.CODE > 10 " +
-            "         GROUP BY FA2.FINANCIAL_ACCOUNT_PARENT_ID, " +
-            "                  FA2.ID, " +
-            "                  FA2.CODE, " +
-            "                  FA2.DESCRIPTION, " +
-            "                  fas.sequence," +
-            " FAS.Color " +
-            "        )" +
+            "             AND FD.DELETED_DATE IS NULL" +
+            "             AND FD.ORGANIZATION_ID = :organizationId " +
+            "             AND FDS.CODE > 10" +
+            "           GROUP BY FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
+            "                    FA2.ID," +
+            "                    FA2.CODE," +
+            "                    FA2.DESCRIPTION," +
+            "                    FAS.SEQUENCE," +
+            "                    FAS.Color" +
+            "          )" +
             "  WHERE (:hasRemain = 1 AND :showHigherLevels= 0 AND " +
             "       (SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT) <> 0) " +
             "    OR (:hasRemain = 0) " +
             "    OR :showHigherLevels= 1 " +
-            " ORDER BY FINANCIAL_ACCOUNT_code "
+            "  union" +
+            "  SELECT null FINANCIAL_ACCOUNT_PARENT_ID," +
+            "         null FINANCIAL_ACCOUNT_ID," +
+            "         null FINANCIAL_ACCOUNT_CODE," +
+            "         null FINANCIAL_ACCOUNT_DESCRIPTION," +
+            "         null FINANCIAL_ACCOUNT_LEVEL," +
+            "         SUM(SUM_DEBIT) SUMMERIZE_DEBIT," +
+            "         SUM(SUM_CREDIT) SUMMERIZE_CREDIT," +
+            "         0 BEF_DEBIT," +
+            "         0 BEF_CREDIT," +
+            "         0 REM_DEBIT," +
+            "         0 REM_CREDIT," +
+            "         null color," +
+            "         SUM(SUM_CREDIT) - SUM(SUM_DEBIT) SUMMERIZE_AMOUNT," +
+            "         3 AS RECORD_TYP" +
+            "    FROM (SELECT FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
+            "                 FA2.ID FINANCIAL_ACCOUNT_ID," +
+            "                 FA2.CODE FINANCIAL_ACCOUNT_CODE," +
+            "                 FA2.DESCRIPTION FINANCIAL_ACCOUNT_DESCRIPTION," +
+            "                 FAS.SEQUENCE FINANCIAL_ACCOUNT_LEVEL," +
+            "                 SUM(CASE" +
+            "                       WHEN (FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)) AND" +
+            "                            (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND" +
+            "                            :toNumber) THEN" +
+            "                        FDI.DEBIT_AMOUNT" +
+            "                       ELSE" +
+            "                        0" +
+            "                     END) SUM_DEBIT," +
+            "                 SUM(CASE" +
+            "                       WHEN (FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)) AND" +
+            "                            (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND" +
+            "                            :toNumber) THEN" +
+            "                        FDI.CREDIT_AMOUNT" +
+            "                       ELSE" +
+            "                        0" +
+            "                     END) SUM_CREDIT," +
+            "                 SUM(CASE" +
+            "                       WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND" +
+            "                            FDN.DOCUMENT_NUMBER < :fromNumber THEN" +
+            "                        FDI.DEBIT_AMOUNT" +
+            "                       ELSE" +
+            "                        0" +
+            "                     END) BEF_DEBIT," +
+            "                 SUM(CASE" +
+            "                       WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND" +
+            "                            FDN.DOCUMENT_NUMBER < :fromNumber THEN" +
+            "                        FDI.CREDIT_AMOUNT" +
+            "                       ELSE" +
+            "                        0" +
+            "                     END) BEF_CREDIT," +
+            "                 FAS.Color" +
+            "            FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FDI" +
+            "              ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID" +
+            "             AND FDI.DELETED_DATE IS NULL" +
+            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA" +
+            "              ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID" +
+            "           INNER JOIN fndc.FINANCIAL_DOCUMENT_NUMBER FDN" +
+            "              ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID" +
+            "             AND FDN.DELETED_DATE IS NULL" +
+            "             AND FDN.FINANCIAL_NUMBERING_TYPE_ID =" +
+            "                 :documentNumberingTypeId " +
+            "           INNER JOIN FNAC.ACCOUNT_STRUCTURE_LEVEL ASL" +
+            "              ON ASL.FINANCIAL_ACCOUNT_ID = FA.ID" +
+            "             AND ASL.DELETED_DATE IS NULL" +
+            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA2" +
+            "              ON FA2.ID = ASL.RELATED_ACCOUNT_ID" +
+            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT_STRUCTURE FAS" +
+            "              ON FA2.FINANCIAL_ACCOUNT_STRUCTURE_ID = FAS.ID" +
+            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS" +
+            "              ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID" +
+            "             AND FDS.DELETED_DATE IS NULL" +
+            "           WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId" +
+            "             AND (FAS.SEQUENCE = :structureLevel)" +
+            "             AND FD.DOCUMENT_DATE BETWEEN trunc(:periodStartDate)  AND trunc(:toDate)" +
+            "             AND (FDN.DOCUMENT_NUMBER <= :toNumber OR :toNumber IS NULL)" +
+            "           and ((SUBSTR(fa.code, 1, :length) >= :fromFinancialAccountCode) or " +
+            "               :fromFinancialAccountCode is null) " +
+            "           and ((SUBSTR(fa.code, 1, :length) <= :toFinancialAccountCode) or " +
+            "               :toFinancialAccountCode is null) " +
+            "             AND FD.DELETED_DATE IS NULL" +
+            "             AND FD.ORGANIZATION_ID = :organizationId" +
+            "             AND FDS.CODE > 10" +
+            "           GROUP BY FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
+            "                    FA2.ID," +
+            "                    FA2.CODE," +
+            "                    FA2.DESCRIPTION," +
+            "                    FAS.SEQUENCE," +
+            "                    FAS.COLOR))" +
+            "SELECT * FROM QRY ORDER BY FINANCIAL_ACCOUNT_CODE "
             , nativeQuery = true)
     List<Object[]> findByFinancialPeriodByBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId,
                                                         Long structureLevel, Boolean showHigherLevels, LocalDateTime periodStartDate, int length, String fromFinancialAccountCode,
@@ -1443,5 +1640,5 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             , nativeQuery = true)
     List<Object[]> findByFinancialPeriodByCentricBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId
             , LocalDateTime periodStartDate, int length, String fromFinancialAccountCode,
-                                                               String toFinancialAccountCode, Long organizationId,Object cnacIdObj1 ,Long cnacId1, Object cnacIdObj2,Long cnacId2, Long remainOption);
+                                                               String toFinancialAccountCode, Long organizationId, Object cnacIdObj1, Long cnacId1, Object cnacIdObj2, Long cnacId2, Long remainOption);
 }
