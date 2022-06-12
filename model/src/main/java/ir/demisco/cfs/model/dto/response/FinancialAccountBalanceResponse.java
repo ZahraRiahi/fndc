@@ -13,6 +13,8 @@ public class FinancialAccountBalanceResponse {
     private String remDebit;
     private String remCredit;
     private String color;
+    private Long recordType;
+    private FinancialAccountTurnOverSummarizeResponse financialAccountTurnOverSummarizeModel;
 
     public Long getFinancialAccountLevel() {
         return financialAccountLevel;
@@ -114,6 +116,20 @@ public class FinancialAccountBalanceResponse {
         return new FinancialAccountBalanceResponse.Builder();
     }
 
+    public Long getRecordType() {
+        return recordType;
+    }
+
+    public void setRecordType(Long recordType) {
+        this.recordType = recordType;
+    }
+    public FinancialAccountTurnOverSummarizeResponse getFinancialAccountTurnOverSummarizeModel() {
+        return financialAccountTurnOverSummarizeModel;
+    }
+
+    public void setFinancialAccountTurnOverSummarizeModel(FinancialAccountTurnOverSummarizeResponse financialAccountTurnOverSummarizeModel) {
+        this.financialAccountTurnOverSummarizeModel = financialAccountTurnOverSummarizeModel;
+    }
     public static final class Builder {
         private FinancialAccountBalanceResponse financialAccountBalanceResponse;
 
@@ -179,10 +195,17 @@ public class FinancialAccountBalanceResponse {
             financialAccountBalanceResponse.setRemCredit(remCredit);
             return this;
         }
+
         public Builder color(String color) {
             financialAccountBalanceResponse.setColor(color);
             return this;
         }
+
+        public FinancialAccountBalanceResponse.Builder recordType(Long recordType) {
+            financialAccountBalanceResponse.setRecordType(recordType);
+            return this;
+        }
+
         public FinancialAccountBalanceResponse build() {
             return financialAccountBalanceResponse;
         }
