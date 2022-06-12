@@ -6,7 +6,6 @@ import ir.demisco.cfs.model.dto.request.ControlFinancialAccountNatureTypeInputRe
 import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
-import ir.demisco.cfs.model.dto.response.ControlFinancialAccountNatureTypeOutputResponse;
 import ir.demisco.cfs.model.dto.response.FinancialCentricAccountDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentAccountDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentChangeDescriptionDto;
@@ -31,7 +30,6 @@ import ir.demisco.cfs.model.entity.FinancialDocumentReference;
 import ir.demisco.cfs.model.entity.FinancialDocumentStatus;
 import ir.demisco.cfs.model.entity.FinancialNumberingFormat;
 import ir.demisco.cfs.model.entity.NumberingFormatSerial;
-import ir.demisco.cfs.service.api.ControlFinancialAccountNatureTypeService;
 import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.FinancialPeriodService;
@@ -95,7 +93,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialDocumentNumberRepository financialDocumentNumberRepository;
     private final FinancialNumberingTypeRepository financialNumberingTypeRepository;
     private final FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository;
-    private final ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService;
     private final FinancialPeriodService financialPeriodService;
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
     private final FinancialPeriodRepository financialPeriodRepository;
@@ -104,7 +101,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
                                     FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                     FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
-                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, ControlFinancialAccountNatureTypeService controlFinancialAccountNatureTypeService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialPeriodRepository financialPeriodRepository) {
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialPeriodRepository financialPeriodRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -118,7 +115,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.financialDocumentNumberRepository = financialDocumentNumberRepository;
         this.financialNumberingTypeRepository = financialNumberingTypeRepository;
         this.financialDocumentItemCurrencyRepository = financialDocumentItemCurrencyRepository;
-        this.controlFinancialAccountNatureTypeService = controlFinancialAccountNatureTypeService;
         this.financialPeriodService = financialPeriodService;
         this.financialDocumentSecurityService = financialDocumentSecurityService;
         this.financialPeriodRepository = financialPeriodRepository;
@@ -448,7 +444,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     private List<FinancialDocumentErrorDto> validationSetStatus(FinancialDocument financialDocument) {
-        List<FinancialDocumentErrorDto> financialDocumentErrorDtoList =  checkValidationSetStatus(financialDocument);
+        List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = checkValidationSetStatus(financialDocument);
         FinancialDocument document = financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocument.getId());
         if (document == null) {
             FinancialDocumentErrorDto activeMountStatus = new FinancialDocumentErrorDto();
@@ -475,16 +471,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
         ControlFinancialAccountNatureTypeInputRequest controlFinancialAccountNatureTypeInputRequest = new ControlFinancialAccountNatureTypeInputRequest();
         controlFinancialAccountNatureTypeInputRequest.setFinancialDocumentId(financialDocument.getId());
-        List<ControlFinancialAccountNatureTypeOutputResponse> controlFinancialAccountNatureTypeList = controlFinancialAccountNatureTypeService.getControlFinancialAccountNatureType(controlFinancialAccountNatureTypeInputRequest);
-
-//        controlFinancialAccountNatureTypeList.forEach(e -> {
-//            FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
-//            financialDocumentCost.setMessage(e.getResultMessage());
-//            financialDocumentCost.setFinancialDocumentId(financialDocument.getId());
-//            financialDocumentErrorDtoList.add(financialDocumentCost);
-//        });
-
-
         Long financialDocumentItemAccount = financialDocumentItemRepository.getFinancialAccount(financialDocument.getId());
         if (financialDocumentItemAccount == null) {
             FinancialDocumentErrorDto financialAccount = new FinancialDocumentErrorDto();
@@ -519,7 +505,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         return financialDocumentErrorDtoList;
     }
 
-    List<FinancialDocumentErrorDto> check1(FinancialDocumentItem documentItem,FinancialDocument financialDocument,  List<FinancialDocumentErrorDto> financialDocumentErrorDtoList){
+    List<FinancialDocumentErrorDto> check1(FinancialDocumentItem documentItem, FinancialDocument financialDocument, List<FinancialDocumentErrorDto> financialDocumentErrorDtoList) {
         double creditAmount = documentItem.getCreditAmount() % 1;
         double debitAmount = documentItem.getDebitAmount() % 1;
         if ((documentItem.getCreditAmount() == 0) && (documentItem.getDebitAmount() == 0)) {
@@ -599,7 +585,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         return financialDocumentErrorDtoList;
     }
 
-    private  List<FinancialDocumentErrorDto> checkValidationSetStatus(FinancialDocument financialDocument) {
+    private List<FinancialDocumentErrorDto> checkValidationSetStatus(FinancialDocument financialDocument) {
         final List<FinancialDocumentErrorDto>[] financialDocumentErrorDtoList = new List[]{new ArrayList<>()};
         List<FinancialDocumentItem> documentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocument.getId());
         if (documentItemList.isEmpty()) {
@@ -610,7 +596,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         } else {
             documentItemList.forEach(documentItem -> {
 
-                financialDocumentErrorDtoList[0] = check1(documentItem,financialDocument, financialDocumentErrorDtoList[0]);
+                financialDocumentErrorDtoList[0] = check1(documentItem, financialDocument, financialDocumentErrorDtoList[0]);
 
 
             });
@@ -851,7 +837,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             financialDocumentItemList.forEach(documentItem -> {
 
 
-                atomicInteger[0] =check2(documentItem,centricAccountId,financialCentricAccountDto, atomicInteger[0]);
+                atomicInteger[0] = check2(documentItem, centricAccountId, financialCentricAccountDto, atomicInteger[0]);
 
             });
 
@@ -869,7 +855,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     }
 
-    private AtomicInteger check2(FinancialDocumentItem documentItem, Long centricAccountId, FinancialCentricAccountDto financialCentricAccountDto,AtomicInteger atomicInteger) {
+    private AtomicInteger check2(FinancialDocumentItem documentItem, Long centricAccountId, FinancialCentricAccountDto financialCentricAccountDto, AtomicInteger atomicInteger) {
 
         if ((documentItem.getCentricAccountId1() != null) && (centricAccountId.equals(documentItem.getCentricAccountId1().getId()))) {
             atomicInteger.getAndIncrement();
@@ -904,7 +890,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         } else if (documentItem.getCentricAccountId6() != null && centricAccountId.equals(documentItem.getCentricAccountId6().getId())) {
             atomicInteger.getAndIncrement();
             documentItem.setCentricAccountId6(centricAccountRepository.getOne(financialCentricAccountDto.getNewCentricAccountId()));
-        }else{
+        } else {
             //nothing
         }
         financialDocumentItemRepository.save(documentItem);
