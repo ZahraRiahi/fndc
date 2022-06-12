@@ -819,20 +819,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
             }
         });
-//        SELECT null FINANCIAL_ACCOUNT_PARENT_ID," +
-//        "         null FINANCIAL_ACCOUNT_ID," +
-//                "         null FINANCIAL_ACCOUNT_CODE," +
-//                "         null FINANCIAL_ACCOUNT_DESCRIPTION," +
-//                "         null FINANCIAL_ACCOUNT_LEVEL," +
-//                "         SUM(SUM_DEBIT) SUMMERIZE_DEBIT," +
-//                "         SUM(SUM_CREDIT) SUMMERIZE_CREDIT," +
-//                "         0 BEF_DEBIT," +
-//                "         0 BEF_CREDIT," +
-//                "         0 REM_DEBIT," +
-//                "         0 REM_CREDIT," +
-//                "         null color," +
-//                "         SUM(SUM_CREDIT) - SUM(SUM_DEBIT) SUMMERIZE_AMOUNT," +
-//                "         3 AS RECORD_TYP
 
         financialAccountListBalanceResponses.add(response);
 

@@ -1,7 +1,6 @@
 package ir.demisco.cfs.model.dto.response;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
 
 public class FinancialConfigDto {
     private Long id;
