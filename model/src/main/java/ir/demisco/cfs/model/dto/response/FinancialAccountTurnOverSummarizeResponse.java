@@ -3,9 +3,9 @@ package ir.demisco.cfs.model.dto.response;
 public class FinancialAccountTurnOverSummarizeResponse {
     private Long sumDebit;
     private Long sumCredit;
-    private Long summarizeDebit;
-    private Long summarizeCredit;
-    private Long summarizeAmount;
+    private String summarizeDebit;
+    private String summarizeCredit;
+    private String summarizeAmount;
     private Long recordType;
 
     public Long getSumDebit() {
@@ -24,27 +24,27 @@ public class FinancialAccountTurnOverSummarizeResponse {
         this.sumCredit = sumCredit;
     }
 
-    public Long getSummarizeDebit() {
+    public String getSummarizeDebit() {
         return summarizeDebit;
     }
 
-    public void setSummarizeDebit(Long summarizeDebit) {
+    public void setSummarizeDebit(String summarizeDebit) {
         this.summarizeDebit = summarizeDebit;
     }
 
-    public Long getSummarizeCredit() {
+    public String getSummarizeCredit() {
         return summarizeCredit;
     }
 
-    public void setSummarizeCredit(Long summarizeCredit) {
+    public void setSummarizeCredit(String summarizeCredit) {
         this.summarizeCredit = summarizeCredit;
     }
 
-    public Long getSummarizeAmount() {
+    public String getSummarizeAmount() {
         return summarizeAmount;
     }
 
-    public void setSummarizeAmount(Long summarizeAmount) {
+    public void setSummarizeAmount(String summarizeAmount) {
         this.summarizeAmount = summarizeAmount;
     }
 
@@ -79,17 +79,17 @@ public class FinancialAccountTurnOverSummarizeResponse {
             return this;
         }
 
-        public Builder summarizeDebit(Long summarizeDebit) {
+        public Builder summarizeDebit(String summarizeDebit) {
             financialAccountTurnOverSummarizeResponse.setSummarizeDebit(summarizeDebit);
             return this;
         }
 
-        public Builder summarizeCredit(Long summarizeCredit) {
+        public Builder summarizeCredit(String summarizeCredit) {
             financialAccountTurnOverSummarizeResponse.setSummarizeCredit(summarizeCredit);
             return this;
         }
 
-        public Builder summarizeAmount(Long summarizeAmount) {
+        public Builder summarizeAmount(String summarizeAmount) {
             financialAccountTurnOverSummarizeResponse.setSummarizeAmount(summarizeAmount);
             return this;
         }
