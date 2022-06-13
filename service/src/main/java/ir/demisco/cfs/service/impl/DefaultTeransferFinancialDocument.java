@@ -201,12 +201,11 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         financialDocumentNumberDto.setNumberingType(1L);
         newNumber = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
         financialDocumentUpdate.setDocumentNumber(newNumber);
-        FinancialDocumentTransferOutputResponse financialDocumentTransferOutputResponse = FinancialDocumentTransferOutputResponse.builder()
+        return FinancialDocumentTransferOutputResponse.builder()
                 .documentId(financialDocumentUpdate.getId())
                 .date(DateUtil.convertStringToDate(financialDocumentTransferRequest.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))))
                 .documentNumber(newNumber)
                 .build();
-        return financialDocumentTransferOutputResponse;
     }
 
     private void check8(FinancialDocumentTransferRequest financialDocumentTransferRequest) {

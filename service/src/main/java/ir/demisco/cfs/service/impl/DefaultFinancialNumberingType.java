@@ -1,6 +1,5 @@
 package ir.demisco.cfs.service.impl;
 
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.request.FinancialNumberingTypeRequest;
 import ir.demisco.cfs.model.dto.response.FinancialNumberingTypeOutputResponse;
 import ir.demisco.cfs.service.api.FinancialNumberingTypeService;
@@ -13,11 +12,7 @@ import ir.demisco.core.utils.DateUtil;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.text.ParsePosition;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -55,31 +50,6 @@ public class DefaultFinancialNumberingType implements FinancialNumberingTypeServ
                     .build()).collect(Collectors.toList());
         }
 
-    }
-
-    private LocalDateTime checkTry(Object input, boolean truncateDate) {
-        try {
-            //                Date date = ISO8601Utils.parse((String) input);
-            Date date = ISO8601Utils.parse((String) input, new ParsePosition(0));
-            LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-            return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
-        } catch (Exception var4) {
-            if (((String) input).equalsIgnoreCase("current_date")) {
-                return truncateDate ? DateUtil.truncate(LocalDateTime.now()) : LocalDateTime.now();
-            } else {
-                return ((String) input).equalsIgnoreCase("current_timestamp") ? LocalDateTime.now() : LocalDateTime.parse((String) input);
-            }
-        }
-    }
-
-    private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
-        if (input instanceof String) {
-            return checkTry(input, truncateDate);
-        } else if (input instanceof LocalDateTime) {
-            return truncateDate ? DateUtil.truncate((LocalDateTime) input) : (LocalDateTime) input;
-        } else {
-            throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
-        }
     }
 
     private String gatItemForString(Object[] e, int i) {
