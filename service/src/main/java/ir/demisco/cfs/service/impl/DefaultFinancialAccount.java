@@ -397,7 +397,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         if (input instanceof String) {
             try {
                 Date date = StdDateFormat.instance.parse((String) input);
-                return  date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
+                return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
             } catch (Exception var4) {
                 if (((String) input).equalsIgnoreCase("current_date")) {
                     return truncateDate ? DateUtil.truncate(LocalDateTime.now()) : LocalDateTime.now();
@@ -488,7 +488,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private List<Object[]> getCentricTurnOverReportList(FinancialDocumentCentricTurnOverRequest
                                                                 financialDocumentCentricTurnOverRequest, Map<String, Object> paramMap) {
-       return financialPeriodRepository
+        return financialPeriodRepository
                 .findByFinancialAccountCentricTurnOver(SecurityHelper.getCurrentUser().getOrganizationId(),
                         financialDocumentCentricTurnOverRequest.getLedgerTypeId(),
                         financialDocumentCentricTurnOverRequest.getPeriodStartDate()
@@ -793,7 +793,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         if (financialAccountBalanceRequest.getDateFilterFlg() == null) {
             throw new RuleException("fin.financialAccount.selectDateFilterFlg");
         }
-        List<Object[]> list = getBalanceReportList(financialAccountBalanceRequest,length);
+        List<Object[]> list = getBalanceReportList(financialAccountBalanceRequest, length);
         List<FinancialAccountListBalanceResponse> financialAccountListBalanceResponses = new ArrayList<>();
         List<FinancialAccountBalanceResponse> recordsResponseList = new ArrayList<>();
         FinancialAccountListBalanceResponse response = new FinancialAccountListBalanceResponse();
@@ -854,7 +854,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialAccountBalanceRequest.getLedgerTypeId(),
                 financialAccountBalanceRequest.getStructureLevel(),
                 financialAccountBalanceRequest.getShowHigherLevels(),
-                financialAccountBalanceRequest.getPeriodStartDate(),   length
+                financialAccountBalanceRequest.getPeriodStartDate(), length
                 , financialAccountBalanceRequest.getFromFinancialAccountCode(), financialAccountBalanceRequest.getToFinancialAccountCode()
                 , SecurityHelper.getCurrentUser().getOrganizationId()
                 , financialAccountBalanceRequest.getHasRemain());
@@ -1076,7 +1076,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     @Override
     @Transactional(readOnly = true)
     public DataSourceResult getFinancialDocumentCentricBalanceReport(DataSourceRequest dataSourceRequest) {
-        int length=0;
+        int length = 0;
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialDocumentCentricBalanceReportRequest financialDocumentCentricBalanceReportRequest = setParameterCentricBalanceReport(filters);
         if (financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode() != null || financialDocumentCentricBalanceReportRequest.getToFinancialAccountCode() != null) {
@@ -1093,7 +1093,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             throw new RuleException("fin.financialAccount.selectDateFilterFlg");
         }
         financialDocumentCentricBalanceReportRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
-        List<Object[]> list = getCentricBalanceReportList(financialDocumentCentricBalanceReportRequest, paramMap,length);
+        List<Object[]> list = getCentricBalanceReportList(financialDocumentCentricBalanceReportRequest, paramMap, length);
         List<FinancialAccountCentricBalanceResponse> financialAccountCentricBalanceResponses = new ArrayList<>();
         List<FinancialDocumentCentricBalanceResponse> recordsResponseList = new ArrayList<>();
         FinancialAccountCentricBalanceResponse response = new FinancialAccountCentricBalanceResponse();
@@ -1126,9 +1126,10 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             }
         });
         financialAccountCentricBalanceResponses.add(response);
-
+if(financialAccountCentricBalanceResponses.get(0).getFinancialAccountCentricBalanceRecordsModel()==null){
+    throw new RuleException("fin.financialAccount.financialAccountCentricBalanceRecordsModel");
+}
         DataSourceResult dataSourceResult = new DataSourceResult();
-
         List<FinancialDocumentCentricBalanceResponse> collect = financialAccountCentricBalanceResponses.get(0).getFinancialAccountCentricBalanceRecordsModel()
                 .stream()
                 .limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip())
@@ -1364,7 +1365,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     }
 
-    private List<Object[]> getCentricBalanceReportList(FinancialDocumentCentricBalanceReportRequest financialDocumentCentricBalanceReportRequest, Map<String, Object> paramMap,int length) {
+    private List<Object[]> getCentricBalanceReportList(FinancialDocumentCentricBalanceReportRequest financialDocumentCentricBalanceReportRequest, Map<String, Object> paramMap, int length) {
         return financialPeriodRepository.findByFinancialPeriodByCentricBalanceReport(financialDocumentCentricBalanceReportRequest.getFromDate(),
                 financialDocumentCentricBalanceReportRequest.getToDate(), financialDocumentCentricBalanceReportRequest.getFromNumber(),
                 financialDocumentCentricBalanceReportRequest.getToNumber(), financialDocumentCentricBalanceReportRequest.getDocumentNumberingTypeId(),
