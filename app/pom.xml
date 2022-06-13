@@ -77,11 +77,6 @@
             <artifactId>spring-boot-starter-test</artifactId>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>-->
-<!--            <groupId>com.oracle.ojdbc</groupId>-->
-<!--            <artifactId>ojdbc8</artifactId>-->
-<!--        </dependency>-->
-
         <dependency>
             <groupId>ir.demisco.cloud.core</groupId>
             <artifactId>dms-middleware</artifactId>

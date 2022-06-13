@@ -4,7 +4,10 @@ import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
 
@@ -13,16 +16,18 @@ import java.time.LocalDateTime;
 public class MoneyType extends AuditModel<Long> {
 
     private Long id;
-    private String    code;
-    private String    description;
-    private String    shortDescription;
-    private Boolean   activeFlag;
-    private Boolean   nationalCurrencyFlag;
-    private String    symbol;
-    private Boolean   isBaseFlag;
+    private String code;
+    private String description;
+    private String shortDescription;
+    private Boolean activeFlag;
+    private Boolean nationalCurrencyFlag;
+    private String symbol;
+    private Boolean isBaseFlag;
     private LocalDateTime deletedDate;
 
     @Id
+    @SequenceGenerator(schema = "fncr", name = "money_type_generator", sequenceName = "sq_money_type", allocationSize = 50)
+    @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "money_type_generator")
     public Long getId() {
         return id;
     }
@@ -50,20 +55,21 @@ public class MoneyType extends AuditModel<Long> {
     }
 
     @Column(name = "SHORT_DESCRIPTION")
-    public String getShortDescription(){
+    public String getShortDescription() {
         return shortDescription;
     }
-    public void setShortDescription(String shortDescription){
-        this.shortDescription=shortDescription;
+
+    public void setShortDescription(String shortDescription) {
+        this.shortDescription = shortDescription;
     }
 
     @Column(name = "SYMBOL")
-    public String getSymbol(){
+    public String getSymbol() {
         return symbol;
     }
 
-    public void setSymbol(String symbol){
-        this.symbol=symbol;
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
     }
 
     @Column(name = "ACTIVE_FLAG")
