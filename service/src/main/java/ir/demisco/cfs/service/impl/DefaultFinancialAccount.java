@@ -830,7 +830,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         });
 
         financialAccountListBalanceResponses.add(response);
-
+        if (financialAccountListBalanceResponses.get(0).getFinancialAccountBalanceRecordsModel() == null) {
+            throw new RuleException("fin.financialAccount.financialAccountCentricBalanceRecordsModel");
+        }
         DataSourceResult dataSourceResult = new DataSourceResult();
 
         List<FinancialAccountBalanceResponse> collect = financialAccountListBalanceResponses.get(0).getFinancialAccountBalanceRecordsModel()
@@ -1126,9 +1128,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             }
         });
         financialAccountCentricBalanceResponses.add(response);
-if(financialAccountCentricBalanceResponses.get(0).getFinancialAccountCentricBalanceRecordsModel()==null){
-    throw new RuleException("fin.financialAccount.financialAccountCentricBalanceRecordsModel");
-}
+        if (financialAccountCentricBalanceResponses.get(0).getFinancialAccountCentricBalanceRecordsModel() == null) {
+            throw new RuleException("fin.financialAccount.financialAccountCentricBalanceRecordsModel");
+        }
         DataSourceResult dataSourceResult = new DataSourceResult();
         List<FinancialDocumentCentricBalanceResponse> collect = financialAccountCentricBalanceResponses.get(0).getFinancialAccountCentricBalanceRecordsModel()
                 .stream()
