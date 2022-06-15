@@ -1277,6 +1277,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             map.put("cnacIdObj1", "cnacIdObj1");
             financialDocumentCentricBalanceReportRequest.setParamMap(map);
             financialDocumentCentricBalanceReportRequest.setCnacId1(Long.parseLong(item.getValue().toString()));
+            financialDocumentCentricBalanceReportRequest.setCnacIdObj1(financialDocumentCentricBalanceReportRequest.getCnacId1());
         } else {
             map.put("cnacIdObj1", null);
             financialDocumentCentricBalanceReportRequest.setParamMap(map);
@@ -1291,6 +1292,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             map.put("cnacIdObj2", "cnacIdObj2");
             financialDocumentCentricBalanceReportRequest.setParamMap(map);
             financialDocumentCentricBalanceReportRequest.setCnacId2(Long.parseLong(item.getValue().toString()));
+            financialDocumentCentricBalanceReportRequest.setCnacIdObj2(financialDocumentCentricBalanceReportRequest.getCnacId2());
         } else {
             map.put("cnacIdObj2", null);
             financialDocumentCentricBalanceReportRequest.setParamMap(map);
@@ -1374,7 +1376,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialDocumentCentricBalanceReportRequest.getLedgerTypeId(),
                 financialDocumentCentricBalanceReportRequest.getPeriodStartDate(), length
                 , financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode(), financialDocumentCentricBalanceReportRequest.getToFinancialAccountCode()
-                , SecurityHelper.getCurrentUser().getOrganizationId(), paramMap.get("cnacIdObj1"), financialDocumentCentricBalanceReportRequest.getCnacId1(), paramMap.get("cnacIdObj2"), financialDocumentCentricBalanceReportRequest.getCnacId2()
+                , SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentCentricBalanceReportRequest.getCnacIdObj1(), financialDocumentCentricBalanceReportRequest.getCnacId1(), financialDocumentCentricBalanceReportRequest.getCnacIdObj2(), financialDocumentCentricBalanceReportRequest.getCnacId2()
                 , financialDocumentCentricBalanceReportRequest.getRemainOption());
     }
 }
