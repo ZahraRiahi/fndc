@@ -1390,7 +1390,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 FA2.CODE                        FINANCIAL_ACCOUNT_CODE," +
             "                 FA2.DESCRIPTION                 FINANCIAL_ACCOUNT_DESCRIPTION," +
             "                 SUM(CASE" +
-            "                       WHEN (FD.DOCUMENT_DATE BETWEEN :fromDate AND :toDate) AND" +
+            "                       WHEN (FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)) AND" +
             "                            (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND" +
             "                            :toNumber) THEN" +
             "                        FDI.DEBIT_AMOUNT" +
@@ -1398,7 +1398,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                        0" +
             "                     END) SUM_DEBIT," +
             "                 SUM(CASE" +
-            "                       WHEN (FD.DOCUMENT_DATE BETWEEN :fromDate AND :toDate) AND" +
+            "                       WHEN (FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)) AND" +
             "                            (FDN.DOCUMENT_NUMBER BETWEEN :fromNumber AND" +
             "                            :toNumber) THEN" +
             "                        FDI.CREDIT_AMOUNT" +
@@ -1406,14 +1406,14 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                        0" +
             "                     END) SUM_CREDIT," +
             "                 SUM(CASE" +
-            "                       WHEN FD.DOCUMENT_DATE <= :fromDate AND" +
+            "                       WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND" +
             "                            FDN.DOCUMENT_NUMBER < :fromNumber THEN" +
             "                        FDI.DEBIT_AMOUNT" +
             "                       ELSE" +
             "                        0" +
             "                     END) BEF_DEBIT," +
             "                 SUM(CASE" +
-            "                       WHEN FD.DOCUMENT_DATE <= :fromDate AND" +
+            "                       WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND" +
             "                            FDN.DOCUMENT_NUMBER < :fromNumber THEN" +
             "                        FDI.CREDIT_AMOUNT" +
             "                       ELSE" +
@@ -1460,7 +1460,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
             "              ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6" +
             "           WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId" +
-            "             AND FD.DOCUMENT_DATE BETWEEN :periodStartDate AND :toDate" +
+            "             AND FD.DOCUMENT_DATE BETWEEN trunc(:periodStartDate) AND trunc(:toDate)" +
             "             AND (FDN.DOCUMENT_NUMBER <= :toNumber OR :toNumber IS NULL)" +
             "             AND ((SUBSTR(FA2.CODE, 1, :length) >=" +
             "                 :fromFinancialAccountCode) OR" +
