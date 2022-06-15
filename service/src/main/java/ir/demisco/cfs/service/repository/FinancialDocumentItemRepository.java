@@ -59,7 +59,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN6 " +
             "    ON CN6.ID = FNDI.CENTRIC_ACCOUNT_ID_6  " +
             "    AND CN6.DELETED_DATE IS NULL," +
-            " TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationId," +
+            " TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(-1," +
             "                                                        :activityCode," +
             "                                                        FIDC.FINANCIAL_PERIOD_ID," +
             "                                                        FIDC.FINANCIAL_DOCUMENT_TYPE_ID," +
@@ -68,7 +68,9 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "                                                        FIDC.FINANCIAL_LEDGER_TYPE_ID," +
             "                                                        :departmentId," +
             "                                                        :userId)) FNSC " +
-            " WHERE FIDC.DOCUMENT_DATE >= :startDate " +
+            " WHERE FIDC.ORGANIZATION_ID = :organizationId and " +
+            " FIDC.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  and" +
+            " FIDC.DOCUMENT_DATE >= :startDate " +
             "   AND FIDC.DOCUMENT_DATE <= :endDate" +
             " AND FNDI.CREDIT_AMOUNT = CASE " +
             "         WHEN :priceTypeId = 1 THEN " +
@@ -155,7 +157,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CN6 " +
             "    ON CN6.ID = FNDI.CENTRIC_ACCOUNT_ID_6  " +
             "    AND CN6.DELETED_DATE IS NULL, " +
-            " TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationId," +
+            " TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(-1," +
             "                                                        :activityCode," +
             "                                                        FIDC.FINANCIAL_PERIOD_ID," +
             "                                                        FIDC.FINANCIAL_DOCUMENT_TYPE_ID," +
@@ -164,7 +166,9 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "                                                        FIDC.FINANCIAL_LEDGER_TYPE_ID," +
             "                                                        :departmentId," +
             "                                                        :userId)) FNSC " +
-            " WHERE FIDC.DOCUMENT_DATE >= :startDate " +
+            " WHERE FIDC.ORGANIZATION_ID = :organizationId and " +
+            " FIDC.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  and " +
+            " FIDC.DOCUMENT_DATE >= :startDate " +
             "   AND FIDC.DOCUMENT_DATE <= :endDate" +
             " AND FNDI.CREDIT_AMOUNT = CASE " +
             "         WHEN :priceTypeId = 1 THEN " +
@@ -223,7 +227,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
             " and FNSC.SEC_RESULT = 1 "
             , nativeQuery = true)
-    List<Object[]> getFinancialDocumentItemList(Long organizationId, String activityCode, Long creatorUserId, Long departmentId, Long userId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
+    List<Object[]> getFinancialDocumentItemList( String activityCode, Long creatorUserId, Long departmentId, Long userId,Long organizationId,Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
                                                 Long toAccountCode, Object centricAccount, Long centricAccountId, Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId, Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
                                                 Double tolerance, Object financialDocumentType, Long financialDocumentTypeId);
 

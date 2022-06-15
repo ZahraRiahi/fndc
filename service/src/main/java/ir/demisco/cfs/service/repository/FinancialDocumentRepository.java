@@ -40,7 +40,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "    ON USR.ID = FIDC.CREATOR_ID " +
             " INNER JOIN fndc.FINANCIAL_DOCUMENT_STATUS DS " +
             "    ON DS.ID = FINANCIAL_DOCUMENT_STATUS_ID," +
-            " TABLE(fnsc.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationId," +
+            " TABLE(fnsc.PKG_FINANCIAL_SECURITY.GET_PERMISSION(-1," +
             "                                 :activityCode," +
             "                                 fidc.financial_period_id," +
             "                                 FNDT.ID," +
@@ -49,7 +49,9 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       fidc.financial_ledger_type_id," +
             "                                :departmentId," +
             "                                 :userId)) FNSC " +
-            " where fidc.document_date >= :startDate " +
+            " where FIDC.ORGANIZATION_ID = :organizationId and " +
+            " FIDC.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  " +
+            " and fidc.document_date >= :startDate " +
             "   And fidc.document_date <= :endDate " +
             " AND FNDI.CREDIT_AMOUNT = CASE " +
             "         WHEN :priceTypeId = 1 THEN" +
@@ -125,7 +127,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "    on usr.id = fidc.creator_id " +
             " INNER JOIN fndc.FINANCIAL_DOCUMENT_STATUS DS " +
             "    ON DS.ID = FINANCIAL_DOCUMENT_STATUS_ID ," +
-            " TABLE(fnsc.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationId," +
+            " TABLE(fnsc.PKG_FINANCIAL_SECURITY.GET_PERMISSION(-1," +
             "                                 :activityCode," +
             "                                 fidc.financial_period_id," +
             "                                 FNDT.ID," +
@@ -134,7 +136,9 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                                 fidc.financial_ledger_type_id," +
             "                                :departmentId," +
             "                                 :userId)) FNSC " +
-            " where fidc.document_date >= :startDate " +
+            " where FIDC.ORGANIZATION_ID = :organizationId and " +
+            " FIDC.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  " +
+            " and fidc.document_date >= :startDate " +
             "   And fidc.document_date <= :endDate " +
             " AND FNDI.CREDIT_AMOUNT = CASE " +
             "         WHEN :priceTypeId = 1 THEN" +
@@ -193,7 +197,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                     DS.CODE " +
             " order by  fidc.document_date desc  "
             , nativeQuery = true)
-    List<Object[]> getFinancialDocumentList(Long organizationId, String activityCode, Long creatorUserId, Long departmentId, Long userId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
+    List<Object[]> getFinancialDocumentList(String activityCode, Long creatorUserId, Long departmentId, Long userId, Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
             , Object toNumber, Long toNumberId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
                                             Long toAccountCode, Object centricAccount, Long centricAccountId,
                                             Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId,

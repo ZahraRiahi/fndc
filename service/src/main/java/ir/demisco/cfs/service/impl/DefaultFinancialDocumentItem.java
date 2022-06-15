@@ -43,7 +43,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
         Map<String, Object> paramMap = paramSearch.getParamMap();
-        List<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getStartDate(),
+        List<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getLedgerTypeId(), paramSearch.getStartDate(),
                 paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
                 paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
                 paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId(), paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("documentUser"), paramSearch.getDocumentUserId(), paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
@@ -80,6 +80,9 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                     break;
                 case "departmentId":
                     responseFinancialDocumentDto.setDepartmentId(Long.parseLong(item.getValue().toString()));
+                    break;
+                case "ledgerTypeId":
+                    responseFinancialDocumentDto.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
                     break;
                 case "startDate":
                     responseFinancialDocumentDto.setStartDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
@@ -317,7 +320,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
 
     private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
         if (input instanceof String) {
-           return checkTry(input, truncateDate);
+            return checkTry(input, truncateDate);
         } else if (input instanceof LocalDateTime) {
             return truncateDate ? DateUtil.truncate((LocalDateTime) input) : (LocalDateTime) input;
         } else {
