@@ -127,7 +127,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
         Map<String, Object> paramMap = paramSearch.getParamMap();
-        List<Object[]> list = financialDocumentRepository.getFinancialDocumentList(SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getStartDate(),
+        List<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId()
+                , paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId()
+                , paramSearch.getLedgerTypeId(), paramSearch.getStartDate(),
                 paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
                 paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
                 paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId()
@@ -167,6 +169,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     break;
                 case "departmentId":
                     responseFinancialDocumentDto.setDepartmentId(Long.parseLong(item.getValue().toString()));
+                    break;
+                case "ledgerTypeId":
+                    responseFinancialDocumentDto.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
                     break;
                 case "startDate":
                     responseFinancialDocumentDto.setStartDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));

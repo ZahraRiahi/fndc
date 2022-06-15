@@ -27,6 +27,7 @@ public class ResponseFinancialDocumentDto {
     private Long financialDocumentTypeId;
     private String activityCode;
     private Long departmentId;
+    private Long ledgerTypeId;
     Map<String, Object> paramMap;
 
     public LocalDateTime getStartDate() {
@@ -189,6 +190,14 @@ public class ResponseFinancialDocumentDto {
         this.departmentId = departmentId;
     }
 
+    public Long getLedgerTypeId() {
+        return ledgerTypeId;
+    }
+
+    public void setLedgerTypeId(Long ledgerTypeId) {
+        this.ledgerTypeId = ledgerTypeId;
+    }
+
     public Map<String, Object> getParamMap() {
         return paramMap;
     }
@@ -317,7 +326,10 @@ public class ResponseFinancialDocumentDto {
             responseFinancialDocumentDto.setDepartmentId(departmentId);
             return this;
         }
-
+        public Builder ledgerTypeId(Long  ledgerTypeId) {
+            responseFinancialDocumentDto.setLedgerTypeId(ledgerTypeId);
+            return this;
+        }
         public Builder paramMap(Map<String, Object> paramMap) {
             responseFinancialDocumentDto.setParamMap(paramMap);
             return this;
