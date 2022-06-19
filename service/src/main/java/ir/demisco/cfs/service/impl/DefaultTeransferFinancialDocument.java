@@ -166,7 +166,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         financialDocumentRepository.save(financialDocumentUpdateTarget);
         List<FinancialDocumentNumber> financialDocumentNumberList = financialDocumentNumberRepository.findByFinancialDocumentNumberAndFinancialDocumentIdAndTarget(targetDocumentId, financialDocumentTransferRequest.getId());
         Long finalTargetDocumentId = targetDocumentId;
-        financialDocumentNumberList.forEach(e -> {
+        financialDocumentNumberList.forEach((FinancialDocumentNumber e) -> {
             if (e.getFinancialDocument().getId().equals(financialDocumentTransferRequest.getId())) {
                 e.setFinancialDocument(financialDocumentRepository.getOne(finalTargetDocumentId));
             } else {
@@ -225,10 +225,10 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
 
         Long finalTargetDocumentId1 = targetDocumentId;
         FinancialDocumentTransferOutputResponse finalFinancialDocumentTransferOutputResponse = financialDocumentTransferOutputResponse;
-        financialDocumentTransferRequest.getFinancialDocumentItemIdList().forEach(aLong -> {
+        financialDocumentTransferRequest.getFinancialDocumentItemIdList().forEach((Long aLong) -> {
             AtomicReference<FinancialDocumentItem> documentItem = new AtomicReference<>();
             financialDocumentItemRepository.findById(aLong)
-                    .ifPresent(financialDocumentItem1 -> {
+                    .ifPresent((FinancialDocumentItem financialDocumentItem1) -> {
                         FinancialDocumentItem financialDocumentItemSave;
                         financialDocumentItemSave = (FinancialDocumentItem) SerializationHelper.clone(financialDocumentItem1);
                         financialDocumentItemSave.setId(null);
@@ -240,7 +240,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
                         documentItem.set(financialDocumentItemRepository.save(financialDocumentItemSave));
                     });
             documentItemCurrencyRepository.findByFinancialDocumentItemId(aLong)
-                    .ifPresent(financialDocumentItemCurrency -> {
+                    .ifPresent((FinancialDocumentItemCurrency financialDocumentItemCurrency) -> {
                         FinancialDocumentItemCurrency documentItemCurrency;
                         documentItemCurrency = (FinancialDocumentItemCurrency) SerializationHelper.clone(financialDocumentItemCurrency);
                         documentItemCurrency.setId(null);

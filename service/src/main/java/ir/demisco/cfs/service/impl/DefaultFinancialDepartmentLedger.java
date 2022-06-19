@@ -36,7 +36,7 @@ public class DefaultFinancialDepartmentLedger implements FinancialDepartmentLedg
     @Transactional
     public Boolean saveFinancialDepartmentLedger(List<FinancialDepartmentLedgerRequest> financialDepartmentLedgerRequest) {
 
-        financialDepartmentLedgerRequest.forEach(financialDepartmentLedgerObject -> {
+        financialDepartmentLedgerRequest.forEach((FinancialDepartmentLedgerRequest financialDepartmentLedgerObject) -> {
             if (financialDepartmentLedgerObject.getFinancialLedgerTypeId() != null) {
                 saveFinancialDepartmentLedgerType(financialDepartmentLedgerObject);
             } else {
