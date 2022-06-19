@@ -22,14 +22,14 @@ public class FinancialPeriodType extends AuditModel<Long> {
     private Long calendarTypeId;
     private Boolean calendarYearFlag;
     private LocalDateTime deletedDate;
-
+    @Override
     @Id
     @SequenceGenerator(schema = "fnpr", name = "financial_period_type_generator", sequenceName = "sq_financial_period_type", allocationSize = 50)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_period_type_generator")
     public Long getId() {
         return id;
     }
-
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
