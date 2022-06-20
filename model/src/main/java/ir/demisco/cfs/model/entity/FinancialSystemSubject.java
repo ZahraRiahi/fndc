@@ -20,13 +20,14 @@ public class FinancialSystemSubject extends AuditModel<Long> {
     private String code;
     private String description;
     private FinancialSystem financialSystem;
-
+    @Override
     @Id
     @SequenceGenerator(schema = "fnsc", name = "financial_system_subject_generator", sequenceName = "sq_financial_system_subject")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_system_subject_generator")
     public Long getId() {
         return id;
     }
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

@@ -161,7 +161,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     private ResponseFinancialDocumentDto setParameter(List<DataSourceRequest.FilterDescriptor> filters) {
         ResponseFinancialDocumentDto responseFinancialDocumentDto = new ResponseFinancialDocumentDto();
-        Map<String, Object> map = new HashMap<>();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
                 case "activityCode":
@@ -218,42 +217,55 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     checkFromPriceSet(responseFinancialDocumentDto, item);
                     break;
                 case "toPriceAmount":
-                    if (item.getValue() != null) {
-                        map.put("toPrice", "toPrice");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setToPrice(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("toPrice", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setToPrice(0L);
-                    }
+                    checkToPrice(responseFinancialDocumentDto, item);
                     break;
 
                 case "tolerance":
-                    if (item.getValue() != null) {
-                        responseFinancialDocumentDto.setTolerance(Double.parseDouble(item.getValue().toString()));
-                    } else {
-                        responseFinancialDocumentDto.setTolerance(0D);
-                    }
-
+                    checkTolerance(responseFinancialDocumentDto, item);
                     break;
 
                 case "financialDocumentType.id":
-                    if (item.getValue() != null) {
-                        map.put("financialDocumentType", "financialDocumentType");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFinancialDocumentTypeId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("financialDocumentType", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFinancialDocumentTypeId(0L);
-                    }
+                    checkFinancialDocumentTypeId(responseFinancialDocumentDto, item);
                     break;
                 default:
                     break;
             }
         }
         return responseFinancialDocumentDto;
+    }
+
+    private void checkFinancialDocumentTypeId(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("financialDocumentType", "financialDocumentType");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFinancialDocumentTypeId(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("financialDocumentType", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFinancialDocumentTypeId(0L);
+        }
+    }
+
+    private void checkTolerance(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            responseFinancialDocumentDto.setTolerance(Double.parseDouble(item.getValue().toString()));
+        } else {
+            responseFinancialDocumentDto.setTolerance(0D);
+        }
+    }
+
+    private void checkToPrice(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("toPrice", "toPrice");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setToPrice(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("toPrice", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setToPrice(0L);
+        }
     }
 
     private void checkPriceTypeIdSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
@@ -511,8 +523,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     List<FinancialDocumentErrorDto> check1(FinancialDocumentItem documentItem, FinancialDocument financialDocument, List<FinancialDocumentErrorDto> financialDocumentErrorDtoList) {
-        double creditAmount = documentItem.getCreditAmount() % 1;
-        double debitAmount = documentItem.getDebitAmount() % 1;
+        Double creditAmount = documentItem.getCreditAmount() % 1;
+        Double debitAmount = documentItem.getDebitAmount() % 1;
         if ((documentItem.getCreditAmount() == 0) && (documentItem.getDebitAmount() == 0)) {
             FinancialDocumentErrorDto checkZeroAmount = new FinancialDocumentErrorDto();
             checkZeroAmount.setFinancialDocumentId(financialDocument.getId());
@@ -599,7 +611,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             documentItem.setMessage("سند بدون ردیف است.");
             financialDocumentErrorDtoList[0].add(documentItem);
         } else {
-            documentItemList.forEach(documentItem -> {
+            documentItemList.forEach((FinancialDocumentItem documentItem) -> {
 
                 financialDocumentErrorDtoList[0] = check1(documentItem, financialDocument, financialDocumentErrorDtoList[0]);
 
@@ -634,7 +646,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
         List<Object[]> list = financialDocumentRepository.getSerialNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         if (!list.isEmpty()) {
-            list.forEach(objects -> {
+            list.forEach((Object[] objects) -> {
                 FinancialNumberingFormat financialNumberingFormat =
                         financialNumberingFormatRepository.findById(Long.parseLong(objects[0].toString())).orElseThrow(() -> new RuleException("fin.financialDocument.notExistFinancialNumberingFormat"));
                 NumberingFormatSerial searchNumberingFormatSerial = numberingFormatSerialRepository.findByNumberingFormatAndDeletedDate(financialNumberingFormat.getId(), objects[2].toString(), Long.parseLong(objects[3].toString()));
@@ -654,14 +666,14 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
         List<NumberingFormatSerial> numberingFormatSerialList =
                 numberingFormatSerialRepository.findNumberingFormatSerialByParam(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
-        numberingFormatSerialList.forEach(numberingFormatSerial -> {
+        numberingFormatSerialList.forEach((NumberingFormatSerial numberingFormatSerial) -> {
             numberingFormatSerial.setLastSerial(numberingFormatSerial.getLastSerial() + 1);
             numberingFormatSerialRepository.save(numberingFormatSerial);
         });
 
         List<Object[]> listDocumentNumber =
                 financialDocumentRepository.findDocumentNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
-        listDocumentNumber.forEach(documentNumberObject -> {
+        listDocumentNumber.forEach((Object[] documentNumberObject) -> {
             FinancialDocumentNumber financialDocumentNumber = new FinancialDocumentNumber();
             FinancialNumberingRecordDto financialNumberingRecordDto = new FinancialNumberingRecordDto();
             financialNumberingRecordDto.setFinancialDocumentId(financialDocumentNumberDto.getFinancialDocumentId());
@@ -676,9 +688,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
         });
 
-        financialNumberingRecordDtoList.forEach(record -> {
-            if (record.getNumberingTypeId() == 2) {
-                documentNumber.set(record.getFinancialDocumentNumber());
+        financialNumberingRecordDtoList.forEach((FinancialNumberingRecordDto record1) -> {
+            if (record1.getNumberingTypeId() == 2) {
+                documentNumber.set(record1.getFinancialDocumentNumber());
             }
         });
         return documentNumber.get();
@@ -748,7 +760,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     }
 
     public void deleteDocumentItem(List<FinancialDocumentItem> financialDocumentItemList) {
-        financialDocumentItemList.forEach(documentItem -> {
+        financialDocumentItemList.forEach((FinancialDocumentItem documentItem) -> {
             Long documentItemByIdForDelete = financialDocumentItemRepository.getDocumentItemByIdForDelete(documentItem.getId());
             if (documentItemByIdForDelete > 0) {
                 FinancialDocumentReference financialDocumentReference = financialDocumentReferenceRepository.getByDocumentItemId(documentItem.getId());
@@ -787,7 +799,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialDocumentItemList.size() == 0) {
             throw new RuleException("ردیفی با این حساب یافت نشد.");
         }
-        financialDocumentItemList.forEach(documentItem -> {
+        financialDocumentItemList.forEach((FinancialDocumentItem documentItem) -> {
             documentItem.setFinancialAccount(financialAccountRepository.getOne(financialDocumentAccountDto.getNewFinancialAccountId()));
             financialDocumentItemRepository.save(documentItem);
             FinancialAccount financialAccount = financialAccountRepository.getFinancialAccountRelationType(financialDocumentAccountDto.getFinancialAccountId(),
@@ -839,7 +851,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 throw new RuleException("دوره مالی و ماه عملیاتی سند مبدا میبایست در وضعیت باز باشند");
             }
             Long centricAccountId = financialCentricAccountDto.getCentricAccountId();
-            financialDocumentItemList.forEach(documentItem -> {
+            financialDocumentItemList.forEach((FinancialDocumentItem documentItem) -> {
 
 
                 atomicInteger[0] = check2(documentItem, centricAccountId, financialCentricAccountDto, atomicInteger[0]);
@@ -924,7 +936,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
         List<FinancialDocumentItem> financialDocumentItemList =
                 financialDocumentItemRepository.findByFinancialDocumentItemIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
-        financialDocumentItemList.forEach(documentItem -> {
+        financialDocumentItemList.forEach((FinancialDocumentItem documentItem) -> {
             Double newAmount = documentItem.getCreditAmount();
             documentItem.setCreditAmount(documentItem.getDebitAmount());
             documentItem.setDebitAmount(newAmount);
@@ -932,7 +944,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         });
         List<FinancialDocumentItemCurrency> financialDocumentItemCurrencyList =
                 financialDocumentItemCurrencyRepository.findByFinancialDocumentItemCurrencyIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
-        financialDocumentItemCurrencyList.forEach(documentItem -> {
+        financialDocumentItemCurrencyList.forEach((FinancialDocumentItemCurrency documentItem) -> {
             Double newAmount2 = documentItem.getForeignCreditAmount();
             documentItem.setForeignCreditAmount(documentItem.getForeignDebitAmount());
             documentItem.setForeignDebitAmount(newAmount2);
@@ -962,7 +974,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
         }
         List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentItemIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
-        financialDocumentItemList.forEach(documentItem -> {
+        financialDocumentItemList.forEach((FinancialDocumentItem documentItem) -> {
             documentItem.setCreditAmount(0D);
             documentItem.setDebitAmount(0D);
             financialDocumentItemRepository.save(documentItem);
@@ -970,7 +982,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
         List<FinancialDocumentItemCurrency> financialDocumentItemCurrencyList =
                 financialDocumentItemCurrencyRepository.findByFinancialDocumentItemCurrencyIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
-        financialDocumentItemCurrencyList.forEach(documentItem -> {
+        financialDocumentItemCurrencyList.forEach((FinancialDocumentItemCurrency documentItem) -> {
             documentItem.setForeignDebitAmount(0D);
             documentItem.setForeignCreditAmount(0D);
             financialDocumentItemCurrencyRepository.save(documentItem);

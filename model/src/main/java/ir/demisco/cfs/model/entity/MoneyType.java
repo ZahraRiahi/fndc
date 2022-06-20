@@ -25,6 +25,7 @@ public class MoneyType extends AuditModel<Long> {
     private Boolean isBaseFlag;
     private LocalDateTime deletedDate;
 
+    @Override
     @Id
     @SequenceGenerator(schema = "fncr", name = "money_type_generator", sequenceName = "sq_money_type", allocationSize = 50)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "money_type_generator")
@@ -32,6 +33,7 @@ public class MoneyType extends AuditModel<Long> {
         return id;
     }
 
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

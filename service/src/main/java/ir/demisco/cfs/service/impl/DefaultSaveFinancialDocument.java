@@ -148,21 +148,21 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocument.setDocumentNumber(documentNumber);
         financialDocumentRepository.save(financialDocument);
         responseDocumentSaveDto = convertDocumentToDto(financialDocument);
-        requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().forEach(documentItem -> {
+        requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().forEach((ResponseFinancialDocumentItemDto documentItem) -> {
             List<FinancialDocumentReferenceDto> documentReferenceList = new ArrayList<>();
             List<FinancialDocumentItemCurrencyDto> responseDocumentItemCurrencyList = new ArrayList<>();
             FinancialDocumentItem financialDocumentItem = saveFinancialDocumentItem(financialDocument, documentItem);
             FinancialDocumentItem finalFinancialDocumentItem = financialDocumentItem;
             ResponseFinancialDocumentItemDto documentItemToList = convertDocumentItemToList(financialDocumentItem);
             if (documentItem.getDocumentReferenceList() != null) {
-                documentItem.getDocumentReferenceList().forEach(documentReference -> {
+                documentItem.getDocumentReferenceList().forEach((FinancialDocumentReferenceDto documentReference) -> {
                     FinancialDocumentReference financialDocumentReference = saveDocumentReference(finalFinancialDocumentItem, documentReference);
                     documentReferenceList.add(convertFinancialDocumentItemToDto(financialDocumentReference));
                     documentItemToList.setDocumentReferenceList(documentReferenceList);
                 });
             }
             if (documentItem.getDocumentItemCurrencyList() != null) {
-                documentItem.getDocumentItemCurrencyList().forEach(itemCurrency -> {
+                documentItem.getDocumentItemCurrencyList().forEach((FinancialDocumentItemCurrencyDto itemCurrency) -> {
                     FinancialDocumentItemCurrency documentItemCurrency = saveDocumentItemCurrency(finalFinancialDocumentItem, itemCurrency);
                     responseDocumentItemCurrencyList.add(convertDocumentItemCurrency(documentItemCurrency));
                     documentItemToList.setDocumentItemCurrencyList(responseDocumentItemCurrencyList);
@@ -214,8 +214,8 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
     private FinancialDocumentItem saveFinancialDocumentItem(FinancialDocument financialDocument, ResponseFinancialDocumentItemDto documentItem) {
 
-        double creditAmount = documentItem.getCreditAmount() % 1;
-        double debitAmount = documentItem.getDebitAmount() % 1;
+        Double creditAmount = documentItem.getCreditAmount() % 1;
+        Double debitAmount = documentItem.getDebitAmount() % 1;
         FinancialDocumentItem financialDocumentItem = new FinancialDocumentItem();
         financialDocumentItem.setFinancialDocument(financialDocument);
         financialDocumentItem.setSequenceNumber(documentItem.getSequenceNumber());
@@ -280,12 +280,12 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         FinancialDocument updateFinancialDocument = updateFinancialDocument(requestFinancialDocumentSaveDto);
         responseDocumentSaveDto = convertDocumentToDto(updateFinancialDocument);
         if (!requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().isEmpty()) {
-            requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().forEach(e -> {
+            requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().forEach((ResponseFinancialDocumentItemDto e) -> {
                 if (e.getId() != null) {
                     updateFinancialDocumentItemDto.add(e);
                     newDocumentReferenceList[0] = method1(e);
                     if (e.getDocumentItemCurrencyList() != null) {
-                        e.getDocumentItemCurrencyList().forEach(itemCurrency -> {
+                        e.getDocumentItemCurrencyList().forEach((FinancialDocumentItemCurrencyDto itemCurrency) -> {
                             itemCurrency.setFinancialDocumentItemId(e.getId());
                             newResponseDocumentItemCurrencyList.add(itemCurrency);
                         });
@@ -295,18 +295,18 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 }
             });
 
-            newFinancialDocumentItem.forEach(newFinancialDocument -> {
+            newFinancialDocumentItem.forEach((ResponseFinancialDocumentItemDto newFinancialDocument) -> {
                 FinancialDocumentItem financialDocumentItem = saveFinancialDocumentItem(updateFinancialDocument, newFinancialDocument);
                 ResponseFinancialDocumentItemDto documentItemToList = convertDocumentItemToList(financialDocumentItem);
                 if (newFinancialDocument.getDocumentReferenceList() != null) {
-                    newFinancialDocument.getDocumentReferenceList().forEach(newDocumentReference -> {
+                    newFinancialDocument.getDocumentReferenceList().forEach((FinancialDocumentReferenceDto newDocumentReference) -> {
                         FinancialDocumentReference financialDocumentReference = saveDocumentReference(financialDocumentItem, newDocumentReference);
                         documentReferenceList.add(convertFinancialDocumentItemToDto(financialDocumentReference));
                         documentItemToList.setDocumentReferenceList(documentReferenceList);
                     });
                 }
                 if (newFinancialDocument.getDocumentItemCurrencyList() != null) {
-                    newFinancialDocument.getDocumentItemCurrencyList().forEach(newItemCurrency -> {
+                    newFinancialDocument.getDocumentItemCurrencyList().forEach((FinancialDocumentItemCurrencyDto newItemCurrency) -> {
                         FinancialDocumentItemCurrency documentItemCurrency = saveDocumentItemCurrency(financialDocumentItem, newItemCurrency);
                         responseDocumentItemCurrencyList.add(convertDocumentItemCurrency(documentItemCurrency));
                         documentItemToList.setDocumentItemCurrencyList(responseDocumentItemCurrencyList);
@@ -316,16 +316,16 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 responseDocumentSaveDto.setFinancialDocumentItemDtoList(financialDocumentItemDtoList);
             });
             financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(updateFinancialDocument.getId())
-                    .forEach(financialDocumentItem -> {
+                    .forEach((FinancialDocumentItem financialDocumentItem) -> {
                         updateFinancialDocumentItemDto.stream().filter(e -> e.getId()
                                 .equals(financialDocumentItem.getId()))
-                                .findAny().ifPresent(responseFinancialDocumentItemDto -> {
+                                .findAny().ifPresent((ResponseFinancialDocumentItemDto responseFinancialDocumentItemDto) -> {
                             updateFinancialDocumentItem(financialDocumentItem, responseFinancialDocumentItemDto);
                             ResponseFinancialDocumentItemDto documentItemToList = convertDocumentItemToList(financialDocumentItem);
                             financialDocumentReferenceRepository.findByFinancialDocumentItemId(financialDocumentItem.getId())
                                     .forEach(documentReference -> financialDocumentReferenceRepository.deleteById(documentReference.getId()));
                             List<FinancialDocumentReferenceDto> documentReferenceNewList = new ArrayList<>();
-                            newDocumentReferenceList[0].forEach(e -> {
+                            newDocumentReferenceList[0].forEach((FinancialDocumentReferenceDto e) -> {
                                 if (e.getFinancialDocumentItemId().equals(financialDocumentItem.getId())) {
                                     documentReferenceNewList.add(convertFinancialDocumentItemToDto(saveDocumentReference(financialDocumentItem, e)));
                                 }
@@ -334,7 +334,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                             documentItemCurrencyRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(financialDocumentItem.getId())
                                     .forEach(itemCurrency -> documentItemCurrencyRepository.deleteById(itemCurrency.getId()));
                             List<FinancialDocumentItemCurrencyDto> responseDocumentItemCurrencyNewList = new ArrayList<>();
-                            newResponseDocumentItemCurrencyList.forEach(e -> {
+                            newResponseDocumentItemCurrencyList.forEach((FinancialDocumentItemCurrencyDto e) -> {
                                 if (e.getFinancialDocumentItemId().equals(financialDocumentItem.getId())) {
                                     responseDocumentItemCurrencyNewList.add(convertDocumentItemCurrency(saveDocumentItemCurrency(financialDocumentItem, e)));
                                 }
@@ -349,9 +349,9 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     }
 
     private List<FinancialDocumentReferenceDto> method1(ResponseFinancialDocumentItemDto e) {
-        List<FinancialDocumentReferenceDto> newDocumentReferenceList=new ArrayList<>();
+        List<FinancialDocumentReferenceDto> newDocumentReferenceList = new ArrayList<>();
         if (e.getDocumentReferenceList() != null) {
-            e.getDocumentReferenceList().forEach(referenceDocument -> {
+            e.getDocumentReferenceList().forEach((FinancialDocumentReferenceDto referenceDocument) -> {
                 referenceDocument.setFinancialDocumentItemId(e.getId());
                 newDocumentReferenceList.add(referenceDocument);
             });
@@ -362,8 +362,8 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private void updateFinancialDocumentItem(FinancialDocumentItem
                                                      financialDocumentItem, ResponseFinancialDocumentItemDto responseFinancialDocumentItemDto) {
 
-        double creditAmount = responseFinancialDocumentItemDto.getCreditAmount() % 1;
-        double debitAmount = responseFinancialDocumentItemDto.getDebitAmount() % 1;
+        Double creditAmount = responseFinancialDocumentItemDto.getCreditAmount() % 1;
+        Double debitAmount = responseFinancialDocumentItemDto.getDebitAmount() % 1;
         if (responseFinancialDocumentItemDto.getCreditAmount() < 0) {
             throw new RuleException("fin.financialDocument.saveDocument.creditAmountNegative");
         }
@@ -508,8 +508,8 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .moneyTypeDescription(documentItemCurrency.getMoneyType().getDescription())
                 .moneyPricingReferenceId(documentItemCurrency.getMoneyPricingReference().getId())
                 .moneyPricingReferenceDescription(documentItemCurrency.getMoneyPricingReference().getDescription())
-                .foreignCreditAmount(new BigDecimal(documentItemCurrency.getForeignDebitAmount()))
-                .foreignDebitAmount(new BigDecimal(documentItemCurrency.getForeignCreditAmount()))
+                .foreignCreditAmount(BigDecimal.valueOf(documentItemCurrency.getForeignDebitAmount()))
+                .foreignDebitAmount(BigDecimal.valueOf(documentItemCurrency.getForeignCreditAmount()))
                 .build();
     }
 
@@ -521,17 +521,17 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         responseDocumentSaveDto = convertDocumentToDto(financialDocument);
         List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocument.getId());
-        financialDocumentItemList.forEach(documentItem -> {
+        financialDocumentItemList.forEach((FinancialDocumentItem documentItem) -> {
             List<FinancialDocumentReferenceDto> documentReferenceList = new ArrayList<>();
             List<FinancialDocumentItemCurrencyDto> responseDocumentItemCurrencyList = new ArrayList<>();
             ResponseFinancialDocumentItemDto documentItemToList = convertDocumentItemToList(documentItem);
             financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItem.getId())
-                    .forEach(documentReference -> {
+                    .forEach((FinancialDocumentReference documentReference) -> {
                         documentReferenceList.add(convertFinancialDocumentItemToDto(documentReference));
                         documentItemToList.setDocumentReferenceList(documentReferenceList);
                     });
             documentItemCurrencyRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItem.getId())
-                    .forEach(documentItemCurrency -> {
+                    .forEach((FinancialDocumentItemCurrency documentItemCurrency) -> {
                         responseDocumentItemCurrencyList.add(convertDocumentItemCurrency(documentItemCurrency));
                         documentItemToList.setDocumentItemCurrencyList(responseDocumentItemCurrencyList);
                     });
@@ -558,17 +558,17 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 financialDocumentReportRequest.getFinancialDocumentItemId());
 
         List<FinancialDocumentItemResponse> financialDocumentItemResponses = new ArrayList<>();
-        list.forEach(documentItem -> {
+        list.forEach((Object[] documentItem) -> {
             List<FinancialDocumentReferenceOutPutModel> documentReferenceList = new ArrayList<>();
             List<FinancialDocumentItemCurrencyOutPutModel> responseDocumentItemCurrencyList = new ArrayList<>();
             FinancialDocumentItemResponse documentItemToList = convertDocumentItemToListUpdate(documentItem);
             financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItemToList.getId())
-                    .forEach(documentReference -> {
+                    .forEach((FinancialDocumentReference documentReference) -> {
                         documentReferenceList.add(convertFinancialDocumentItem(documentReference));
                         documentItemToList.setDocumentReferenceList(documentReferenceList);
                     });
             documentItemCurrencyRepository.findByFinancialDocumentItemCurrency(documentItemToList.getId())
-                    .forEach(documentItemCurrency -> {
+                    .forEach((Object[] documentItemCurrency) -> {
                         responseDocumentItemCurrencyList.add(convertDocumentItemCurrencyOutPut(documentItemCurrency));
                         documentItemToList.setDocumentItemCurrencyList(responseDocumentItemCurrencyList);
                     });

@@ -72,7 +72,6 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
 
     private ResponseFinancialDocumentDto setParameter(List<DataSourceRequest.FilterDescriptor> filters) {
         ResponseFinancialDocumentDto responseFinancialDocumentDto = new ResponseFinancialDocumentDto();
-        Map<String, Object> map = new HashMap<>();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
                 case "activityCode":
@@ -145,15 +144,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                     checkToleranceSet(responseFinancialDocumentDto, item);
                     break;
                 case "financialDocumentType.id":
-                    if (item.getValue() != null) {
-                        map.put("financialDocumentType", "financialDocumentType");
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFinancialDocumentTypeId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("financialDocumentType", null);
-                        responseFinancialDocumentDto.setParamMap(map);
-                        responseFinancialDocumentDto.setFinancialDocumentTypeId(0L);
-                    }
+                    checkFinancialDocumentTypeId(responseFinancialDocumentDto, item);
                     break;
                 default:
 
@@ -163,7 +154,18 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
 
         return responseFinancialDocumentDto;
     }
-
+    private void checkFinancialDocumentTypeId(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("financialDocumentType", "financialDocumentType");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFinancialDocumentTypeId(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("financialDocumentType", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFinancialDocumentTypeId(0L);
+        }
+    }
     private void checkActivityCodeSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
             responseFinancialDocumentDto.setActivityCode(item.getValue().toString());

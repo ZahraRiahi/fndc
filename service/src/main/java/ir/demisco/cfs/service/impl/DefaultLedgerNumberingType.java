@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
+import java.util.logging.Logger;
 import java.util.stream.Collectors;
 
 @Service
@@ -94,7 +95,8 @@ public class DefaultLedgerNumberingType implements LedgerNumberingTypeService {
             Long financialLedgerTypeIdPresent = ledgerNumberingType.getFinancialLedgerType().getId();
             if (financialLedgerTypeIdPresent.equals(financialLedgerTypeRequest)) {
                 Optional<FinancialLedgerType> financialLedgerTypeSame = financialLedgerTypeRepository.findById(financialLedgerTypeIdPresent);
-                ledgerNumberingType.setFinancialLedgerType(financialLedgerTypeSame.get());
+                if(financialLedgerTypeSame.isPresent()){
+                ledgerNumberingType.setFinancialLedgerType(financialLedgerTypeSame.get());}
             } else {
                 FinancialLedgerType financialLedgerTypeDifferent = financialLedgerTypeRepository.findById(financialLedgerTypeRequest).orElseThrow(() -> new RuleException("fin.ledgerNumberingType.notExistfinancialDepartmentLedgerType"));
                 ledgerNumberingType.setFinancialLedgerType(financialLedgerTypeDifferent);
@@ -112,7 +114,8 @@ public class DefaultLedgerNumberingType implements LedgerNumberingTypeService {
         ledgerNumberingTypeNew.setFinancialNumberingType(financialNumberingType);
         try {
             ledgerNumberingTypeRepository.save(ledgerNumberingTypeNew);
-        } catch (Exception e) {
+        } catch (RuleException e) {
+            Logger.getLogger(String.valueOf(e));
             throw new RuleException("fin.ledgerNumberingType.operationFailed");
         }
         return true;
