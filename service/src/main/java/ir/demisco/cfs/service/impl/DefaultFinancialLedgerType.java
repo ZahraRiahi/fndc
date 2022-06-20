@@ -125,7 +125,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                 , param.getFinancialLedgerType());
         List<Sort.Order> sorts = new ArrayList<>();
         dataSourceRequest.getSort()
-                .forEach(sortDescriptor ->
+                .forEach((DataSourceRequest.SortDescriptor sortDescriptor) ->
                         {
                             if (sortDescriptor.getDir().equals("asc")) {
                                 sorts.add(Sort.Order.asc(sortDescriptor.getField()));
@@ -183,11 +183,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                     checkActivityCodeSet(financialLedgerTypeParameterDto, item);
                     break;
                 case "inputFromConfigFlag":
-                    if (item.getValue() != null) {
-                        financialLedgerTypeParameterDto.setInputFromConfigFlag((Boolean) item.getValue());
-                    } else {
-                        financialLedgerTypeParameterDto.setInputFromConfigFlag(null);
-                    }
+                    checkInputFromConfigFlag(financialLedgerTypeParameterDto, item);
                     break;
                 default:
 
@@ -195,6 +191,14 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
             }
         }
         return financialLedgerTypeParameterDto;
+    }
+
+    private void checkInputFromConfigFlag(FinancialLedgerTypeParameterDto financialLedgerTypeParameterDto, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialLedgerTypeParameterDto.setInputFromConfigFlag((Boolean) item.getValue());
+        } else {
+            financialLedgerTypeParameterDto.setInputFromConfigFlag(null);
+        }
     }
 
     private void checkIdSet(FinancialLedgerTypeParameterDto financialLedgerTypeParameterDto, DataSourceRequest.FilterDescriptor item) {
@@ -355,7 +359,7 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
                 financialLedgerTypeFromInsert = financialLedgerTypeRepository.findById(financialLedgerType.getId()).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidNumberingType"));
             }
             FinancialLedgerType financialLedgerTypeFromUpdate = null;
-            if (financialLedgerTypeRequest.getFinancialLedgerTypeId() != null) {
+            if (financialLedgerTypeRequest.getFinancialLedgerTypeId() != null && financialLedgerTypeIdRequest!=null) {
                 financialLedgerTypeFromUpdate = financialLedgerTypeRepository.findById(financialLedgerTypeIdRequest).orElseThrow(() -> new RuleException("fin.financialLedgerType.notValidNumberingType"));
             }
             LedgerNumberingType ledgerNumberingTypeNew = new LedgerNumberingType();

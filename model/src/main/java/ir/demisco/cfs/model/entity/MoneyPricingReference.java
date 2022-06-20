@@ -21,14 +21,14 @@ public class MoneyPricingReference extends AuditModel<Long> {
     private Boolean interNationalFlag;
     private Boolean activeFlag;
     private LocalDateTime deletedDate;
-
+    @Override
     @Id
     @SequenceGenerator(schema = "fncr", name = "money_pricing_refrence_generator", sequenceName = "sq_money_pricing_refrence", allocationSize = 50)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "money_pricing_refrence_generator")
     public Long getId() {
         return id;
     }
-
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

@@ -91,31 +91,43 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
                     checkDocumentTypeId(financialSecurityFilterRequest, item);
                     break;
                 case "subjectId":
-                    if (item.getValue() != null) {
-                        financialSecurityFilterRequest.setSubjectId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        financialSecurityFilterRequest.setSubjectId(null);
-                    }
+                    checkSubjectId(financialSecurityFilterRequest, item);
                     break;
                 case "activityCode":
-                    if (item.getValue() != null) {
-                        financialSecurityFilterRequest.setActivityCode(item.getValue().toString());
-                    } else {
-                        financialSecurityFilterRequest.setActivityCode(null);
-                    }
+                    checkActivityCode(financialSecurityFilterRequest, item);
                     break;
 
                 case "inputFromConfigFlag":
-                    if (item.getValue() != null) {
-                        financialSecurityFilterRequest.setInputFromConfigFlag((Boolean) item.getValue());
-                    } else {
-                        financialSecurityFilterRequest.setInputFromConfigFlag(null);
-                    }
+                    checkInputFromConfigFlag(financialSecurityFilterRequest, item);
                     break;
                 default:
             }
         }
         return financialSecurityFilterRequest;
+    }
+
+    private void checkInputFromConfigFlag(FinancialSecurityFilterRequest financialSecurityFilterRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialSecurityFilterRequest.setInputFromConfigFlag((Boolean) item.getValue());
+        } else {
+            financialSecurityFilterRequest.setInputFromConfigFlag(null);
+        }
+    }
+
+    private void checkActivityCode(FinancialSecurityFilterRequest financialSecurityFilterRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialSecurityFilterRequest.setActivityCode(item.getValue().toString());
+        } else {
+            financialSecurityFilterRequest.setActivityCode(null);
+        }
+    }
+
+    private void checkSubjectId(FinancialSecurityFilterRequest financialSecurityFilterRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            financialSecurityFilterRequest.setSubjectId(Long.parseLong(item.getValue().toString()));
+        } else {
+            financialSecurityFilterRequest.setSubjectId(null);
+        }
     }
 
     private void checkDepartmentId(FinancialSecurityFilterRequest financialSecurityFilterRequest, DataSourceRequest.FilterDescriptor item) {

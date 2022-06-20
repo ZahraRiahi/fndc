@@ -28,7 +28,7 @@ public class DefaultFinancialNumberingFormatType  implements FinancialNumberingF
         dataSourceRequest.getFilter().getFilters().add(DataSourceRequest.FilterDescriptor.create("deletedDate", null, DataSourceRequest.Operators.IS_NULL));
         DataSourceResult dataSourceResult = gridFilterService.filter(dataSourceRequest, financialNumberingFormatTypeGridProvider);
         List<FinancialNumberingFormatTypeDto> formatTypeDtos =  (List<FinancialNumberingFormatTypeDto>) dataSourceResult.getData();
-        formatTypeDtos.forEach(financialNumberingFormatTypeDto -> {
+        formatTypeDtos.forEach((FinancialNumberingFormatTypeDto financialNumberingFormatTypeDto) -> {
             financialNumberingFormatTypeDto.setDefaultReset( financialNumberingFormatTypeDto.getFormat().replace("$SRL",""));
         });
         dataSourceResult.setData(formatTypeDtos);

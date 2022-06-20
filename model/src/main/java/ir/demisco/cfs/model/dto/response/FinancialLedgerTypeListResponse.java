@@ -29,7 +29,7 @@ public class FinancialLedgerTypeListResponse {
         this.description = description;
     }
 
-    public boolean isActiveFlag() {
+    public boolean activeFlag() {
         return activeFlag;
     }
 

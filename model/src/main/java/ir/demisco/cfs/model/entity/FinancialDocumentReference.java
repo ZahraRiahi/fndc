@@ -25,14 +25,14 @@ public class FinancialDocumentReference  extends AuditModel<Long> {
     private Date                   referenceDate;
     private String                 referenceDescription;
     private LocalDateTime          deletedDate;
-
+    @Override
     @Id
     @SequenceGenerator(schema = "fndc", name = "financial_document_reference_generator", sequenceName = "sq_financial_document_refrence")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_document_reference_generator")
     public Long getId() {
         return id;
     }
-
+    @Override
     public void setId(Long id) {
         this.id = id;
     }

@@ -99,15 +99,15 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
         Map<String, Object> paramMap = param.getParamMap();
         List<Sort.Order> sorts = new ArrayList<>();
         dataSourceRequest.getSort()
-                .forEach(sortDescriptor ->
-                {
-                    if (sortDescriptor.getDir().equals("asc")) {
-                        sorts.add(Sort.Order.asc(sortDescriptor.getField()));
-                    } else {
-                        sorts.add(Sort.Order.desc(sortDescriptor.getField()));
-                    }
-                }
-        );
+                .forEach((DataSourceRequest.SortDescriptor sortDescriptor) ->
+                        {
+                            if (sortDescriptor.getDir().equals("asc")) {
+                                sorts.add(Sort.Order.asc(sortDescriptor.getField()));
+                            } else {
+                                sorts.add(Sort.Order.desc(sortDescriptor.getField()));
+                            }
+                        }
+                );
 
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake(), Sort.by(sorts));
         Page<Object[]> list = financialDocumentTypeRepository.financialDocumentType(paramMap.get("financialSystem"), param.getFinancialSystemId(), SecurityHelper.getCurrentUser().getOrganizationId(),
@@ -117,8 +117,8 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
                 FinancialDocumentTypeDto.builder()
                         .id(Long.parseLong(item[0].toString()))
                         .description(item[1] == null ? null : item[1].toString())
-                        .activeFlag(item[2] == null ? null : Integer.parseInt(item[2].toString()) == 1)
-                        .automaticFlag(item[3] == null ? null : Integer.parseInt(item[3].toString()) == 1)
+                        .activeFlag(item[2] == null ? null : ((Integer.parseInt(item[2].toString())) == 1))
+                        .automaticFlag(item[3] == null ? null : ((Integer.parseInt(item[3].toString())) == 1))
                         .organizationId(item[4] == null ? null : Long.parseLong(item[4].toString()))
                         .financialSystemId(item[5] == null ? null : Long.parseLong(item[5].toString()))
                         .financialSystemDescription(item[6] == null ? null : item[6].toString())
@@ -132,31 +132,14 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
     private FinancialDocumentTypeRequest setParameterFinancialDocumentType
             (List<DataSourceRequest.FilterDescriptor> filters) {
         FinancialDocumentTypeRequest financialDocumentTypeRequest = new FinancialDocumentTypeRequest();
-        Map<String, Object> map = new HashMap<>();
         for (DataSourceRequest.FilterDescriptor item : filters) {
             switch (item.getField()) {
 
                 case "financialSystem.id":
-                    if (item.getValue() != null) {
-                        map.put("financialSystem", "financialSystem");
-                        financialDocumentTypeRequest.setParamMap(map);
-                        financialDocumentTypeRequest.setFinancialSystemId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("financialSystem", null);
-                        financialDocumentTypeRequest.setParamMap(map);
-                        financialDocumentTypeRequest.setFinancialSystemId(0L);
-                    }
+                    checkFinancialSystemId(financialDocumentTypeRequest, item);
                     break;
                 case "id":
-                    if (item.getValue() != null) {
-                        map.put("idObject", "idObject");
-                        financialDocumentTypeRequest.setParamMap(map);
-                        financialDocumentTypeRequest.setId(Long.parseLong(item.getValue().toString()));
-                    } else {
-                        map.put("idObject", null);
-                        financialDocumentTypeRequest.setParamMap(map);
-                        financialDocumentTypeRequest.setId(0L);
-                    }
+                    checkId(financialDocumentTypeRequest, item);
                     break;
                 default:
 
@@ -164,6 +147,32 @@ public class DefaultFinancialDocumentType implements FinancialDocumentTypeServic
             }
         }
         return financialDocumentTypeRequest;
+    }
+
+    private void checkId(FinancialDocumentTypeRequest financialDocumentTypeRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("idObject", "idObject");
+            financialDocumentTypeRequest.setParamMap(map);
+            financialDocumentTypeRequest.setId(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("idObject", null);
+            financialDocumentTypeRequest.setParamMap(map);
+            financialDocumentTypeRequest.setId(0L);
+        }
+    }
+
+    private void checkFinancialSystemId(FinancialDocumentTypeRequest financialDocumentTypeRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("financialSystem", "financialSystem");
+            financialDocumentTypeRequest.setParamMap(map);
+            financialDocumentTypeRequest.setFinancialSystemId(Long.parseLong(item.getValue().toString()));
+        } else {
+            map.put("financialSystem", null);
+            financialDocumentTypeRequest.setParamMap(map);
+            financialDocumentTypeRequest.setFinancialSystemId(0L);
+        }
     }
 
     @Override

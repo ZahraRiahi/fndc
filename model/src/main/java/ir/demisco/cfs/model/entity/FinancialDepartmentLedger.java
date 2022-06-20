@@ -22,14 +22,14 @@ public class FinancialDepartmentLedger extends AuditModel<Long> {
     private Department department;
     private FinancialLedgerType financialLedgerType;
     private LocalDateTime deletedDate;
-
+    @Override
     @Id
     @SequenceGenerator(schema = "fndc", name = "financial_department_ledger_generator", sequenceName = "sq_financial_department_ledger")
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_department_ledger_generator")
     public Long getId() {
         return id;
     }
-
+    @Override
     public void setId(Long id) {
         this.id = id;
     }
