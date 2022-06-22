@@ -43,6 +43,8 @@ import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
 import org.springframework.stereotype.Service;
 
+import javax.persistence.EntityManager;
+import javax.persistence.Query;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -70,6 +72,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private final FinancialDocumentService financialDocumentService;
     private final FinancialPeriodService financialPeriodService;
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
+    private final EntityManager entityManager;
 
     public DefaultSaveFinancialDocument(FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository,
                                         FinancialDocumentRepository financialDocumentRepository, FinancialDocumentItemRepository financialDocumentItemRepository,
@@ -78,7 +81,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                                         FinancialPeriodRepository financialPeriodRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository,
                                         FinancialDepartmentRepository financialDepartmentRepository, MoneyPrisingReferenceRepository prisingReferenceRepository,
                                         FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialDocumentStatusRepository documentStatusRepository,
-                                        FinancialDocumentService financialDocumentService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService) {
+                                        FinancialDocumentService financialDocumentService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, EntityManager entityManager) {
         this.financialAccountRepository = financialAccountRepository;
         this.centricAccountRepository = centricAccountRepository;
         this.financialDocumentRepository = financialDocumentRepository;
@@ -96,6 +99,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         this.financialDocumentService = financialDocumentService;
         this.financialPeriodService = financialPeriodService;
         this.financialDocumentSecurityService = financialDocumentSecurityService;
+        this.entityManager = entityManager;
     }
 
     @Override
@@ -552,16 +556,70 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         } else {
             financialDocumentReportRequest.setFinancialDocumentItemId(0L);
         }
+        String orderBy;
+        if (dataSourceRequest.getSort().isEmpty()) {
+            orderBy = "order by FNDI.Creation_Date asc";
+        } else {
+            orderBy = "order by " + dataSourceRequest.getSort().get(0).getField() + " " + dataSourceRequest.getSort().get(0).getDir();
+        }
 
-        List<Object[]> list = financialDocumentItemRepository.findByFinancialDocumentItemId(financialDocumentReportRequest.getFinancialDocumentId(),
-                financialDocumentItem,
-                financialDocumentReportRequest.getFinancialDocumentItemId());
+        String query = " SELECT FNDI.ID, " +
+                "       FNDI.FINANCIAL_DOCUMENT_ID, " +
+                "       FNDI.SEQUENCE_NUMBER," +
+                "       FNDI.FINANCIAL_ACCOUNT_ID," +
+                "       FNC.DESCRIPTION as FINANCIAL_ACCOUNT_DESCRIPTION," +
+                " FNC.CODE AS FINANCIAL_ACCOUNT_CODE, " +
+                "       FNDI.DEBIT_AMOUNT," +
+                "       FNDI.CREDIT_AMOUNT," +
+                "       FNDI.DESCRIPTION," +
+                "       NVL(CNAC1.CODE, '') || NVL(CNAC1.NAME, '') ||" +
+                "       NVL2(CNAC2.CODE, '-' || CNAC2.CODE, '') || NVL(CNAC2.NAME, '') ||" +
+                "       NVL2(CNAC3.CODE, '-' || CNAC3.CODE, '') || NVL(CNAC3.NAME, '')  ||" +
+                "       NVL2(CNAC4.CODE, '-' || CNAC4.CODE, '') || NVL(CNAC4.NAME, '')  ||" +
+                "       NVL2(CNAC5.CODE, '-' || CNAC5.CODE, '') || NVL(CNAC5.NAME, '')  ||" +
+                "       NVL2(CNAC6.CODE, '-' || CNAC6.CODE, '') || NVL(CNAC6.NAME, '')  AS CENTRICACCOUNTDESCRIPTION," +
+                "       FNC.ACCOUNT_RELATION_TYPE_ID," +
+                "       FNDI.CENTRIC_ACCOUNT_ID_1," +
+                "       CNAC1.NAME as CENTRIC_ACCOUNT_DESCRIPTION_1," +
+                "       FNDI.CENTRIC_ACCOUNT_ID_2," +
+                "       CNAC2.NAME as CENTRIC_ACCOUNT_DESCRIPTION_2," +
+                "       FNDI.CENTRIC_ACCOUNT_ID_3," +
+                "       CNAC3.NAME as CENTRIC_ACCOUNT_DESCRIPTION_3," +
+                "       FNDI.CENTRIC_ACCOUNT_ID_4," +
+                "       CNAC4.NAME as CENTRIC_ACCOUNT_DESCRIPTION_4," +
+                "       FNDI.CENTRIC_ACCOUNT_ID_5," +
+                "       CNAC5.NAME  as CENTRIC_ACCOUNT_DESCRIPTION_5," +
+                "       FNDI.CENTRIC_ACCOUNT_ID_6," +
+                "       CNAC6.NAME as CENTRIC_ACCOUNT_DESCRIPTION_6," +
+                " FNDI.CREATOR_ID " +
+                "  FROM FNDC.FINANCIAL_DOCUMENT_ITEM FNDI" +
+                " INNER JOIN FNAC.FINANCIAL_ACCOUNT FNC" +
+                "    ON FNC.ID = FNDI.FINANCIAL_ACCOUNT_ID" +
+                "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC1" +
+                "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_1" +
+                "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC2" +
+                "    ON CNAC2.ID = FNDI.CENTRIC_ACCOUNT_ID_2" +
+                "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC3" +
+                "    ON CNAC3.ID = FNDI.CENTRIC_ACCOUNT_ID_3" +
+                "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC4" +
+                "    ON CNAC4.ID = FNDI.CENTRIC_ACCOUNT_ID_4" +
+                "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC5" +
+                "    ON CNAC5.ID = FNDI.CENTRIC_ACCOUNT_ID_5" +
+                "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
+                "    ON CNAC6.ID = FNDI.CENTRIC_ACCOUNT_ID_6" +
+                " WHERE FNDI.FINANCIAL_DOCUMENT_ID = :financialDocumentId " +
+                " and  ( :financialDocumentItem is null or FNDI.ID = :financialDocumentItemId) " + orderBy;
 
+        Query nativeQuery = entityManager.createNativeQuery(query);
+        nativeQuery.setParameter("financialDocumentId", financialDocumentReportRequest.getFinancialDocumentId());
+        nativeQuery.setParameter("financialDocumentItem", financialDocumentItem);
+        nativeQuery.setParameter("financialDocumentItemId", financialDocumentReportRequest.getFinancialDocumentItemId());
+        List<Object[]> list = nativeQuery.getResultList();
         List<FinancialDocumentItemResponse> financialDocumentItemResponses = new ArrayList<>();
-        list.forEach((Object[] documentItem) -> {
+        list.forEach(Object -> {
             List<FinancialDocumentReferenceOutPutModel> documentReferenceList = new ArrayList<>();
             List<FinancialDocumentItemCurrencyOutPutModel> responseDocumentItemCurrencyList = new ArrayList<>();
-            FinancialDocumentItemResponse documentItemToList = convertDocumentItemToListUpdate(documentItem);
+            FinancialDocumentItemResponse documentItemToList = convertDocumentItemToListUpdate(Object);
             financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItemToList.getId())
                     .forEach((FinancialDocumentReference documentReference) -> {
                         documentReferenceList.add(convertFinancialDocumentItem(documentReference));
@@ -576,8 +634,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         });
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialDocumentItemResponses.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
-
-
         dataSourceResult.setTotal(list.size());
         return dataSourceResult;
     }

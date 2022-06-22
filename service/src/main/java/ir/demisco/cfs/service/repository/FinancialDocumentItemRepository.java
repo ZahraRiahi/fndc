@@ -438,7 +438,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
             "    ON CNAC6.ID = FNDI.CENTRIC_ACCOUNT_ID_6" +
             " WHERE FNDI.FINANCIAL_DOCUMENT_ID = :financialDocumentId " +
-            " and  ( :financialDocumentItem is null or FNDI.ID = :financialDocumentItemId)",
+            " and  ( :financialDocumentItem is null or FNDI.ID = :financialDocumentItemId) " +
+            " order by FNDI.Creation_Date asc ",
             nativeQuery = true)
     List<Object[]> findByFinancialDocumentItemId(Long financialDocumentId, Object financialDocumentItem, Long financialDocumentItemId);
 
