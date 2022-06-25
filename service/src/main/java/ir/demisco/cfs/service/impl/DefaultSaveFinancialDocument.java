@@ -569,8 +569,8 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 "       FNDI.FINANCIAL_ACCOUNT_ID," +
                 "       FNC.DESCRIPTION as FINANCIAL_ACCOUNT_DESCRIPTION," +
                 " FNC.CODE AS FINANCIAL_ACCOUNT_CODE, " +
-                "       FNDI.DEBIT_AMOUNT," +
-                "       FNDI.CREDIT_AMOUNT," +
+                "       FNDI.DEBIT_AMOUNT as DEBITAMOUNT," +
+                "       FNDI.CREDIT_AMOUNT as CREDITAMOUNT," +
                 "       FNDI.DESCRIPTION," +
                 "       NVL(CNAC1.CODE, '') || NVL(CNAC1.NAME, '') ||" +
                 "       NVL2(CNAC2.CODE, '-' || CNAC2.CODE, '') || NVL(CNAC2.NAME, '') ||" +
