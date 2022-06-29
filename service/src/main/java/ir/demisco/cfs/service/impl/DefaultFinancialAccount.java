@@ -265,7 +265,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     private void checkDocumentNumberingTypeIdSet(FinancialDocumentReportRequest
                                                          financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         financialDocumentReportRequest.setDocumentNumberingTypeId(Long.parseLong(item.getValue().toString()));
-
     }
 
     private void checkFromDateForDate(FinancialDocumentReportRequest
@@ -818,8 +817,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             } else {
                 FinancialAccountTurnOverSummarizeResponse accountTurnOverSummarizeResponse = new FinancialAccountTurnOverSummarizeResponse();
                 FinancialAccountTurnOverOutputResponse outputResponse = new FinancialAccountTurnOverOutputResponse();
-                accountTurnOverSummarizeResponse.setSumDebit(0L);
-                accountTurnOverSummarizeResponse.setSumCredit(0L);
+                accountTurnOverSummarizeResponse.setSumDebit(getItemForLong(item, 1));
+                accountTurnOverSummarizeResponse.setSumCredit(getItemForLong(item, 2));
                 accountTurnOverSummarizeResponse.setSummarizeDebit(getItemForString(item, 5));
                 accountTurnOverSummarizeResponse.setSummarizeCredit(getItemForString(item, 6));
                 accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForString(item, 12));
