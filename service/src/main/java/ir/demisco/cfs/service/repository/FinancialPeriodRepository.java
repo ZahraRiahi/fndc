@@ -1109,7 +1109,21 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 :showHigherLevels = 1)) " +
             "             AND FD.DOCUMENT_DATE BETWEEN trunc(:periodStartDate)  AND trunc(:toDate)" +
             "             AND (FDN.DOCUMENT_NUMBER <= :toNumber OR :toNumber IS NULL)" +
-            "           and ((SUBSTR(fa.code, 1, :length) >= :fromFinancialAccountCode) or " +
+            "       AND ((SUBSTR(" +
+            "                          case" +
+            "                            when (:showHigherLevels = 0 and" +
+            "                                 " +
+            "                                 (FAS.SEQUENCE = :structureLevel or" +
+            "                                 (FAS.SEQUENCE < :structureLevel and not exists" +
+            "                                  (select 1" +
+            "                                       from fnac.financial_account fa_iner" +
+            "                                      where fa_iner.financial_account_parent_id = FA2.ID)))" +
+            "                                 ) then" +
+            "                             rpad(FA.CODE, :length, '0')" +
+            "                            else" +
+            "                             FA.CODE" +
+            "                          end , " +
+            "            1, :length) >= :fromFinancialAccountCode) or " +
             "               :fromFinancialAccountCode is null) " +
             "           and ((SUBSTR(fa.code, 1, :length) <= :toFinancialAccountCode) or " +
             "               :toFinancialAccountCode is null) " +
@@ -1199,11 +1213,31 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS" +
             "              ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID" +
             "             AND FDS.DELETED_DATE IS NULL" +
-            "           WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId" +
-            "             AND (FAS.SEQUENCE = :structureLevel)" +
+            "           WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
+            "              AND (((FAS.SEQUENCE = :structureLevel or" +
+            "                 (FAS.SEQUENCE < :structureLevel and not exists" +
+            "                  (select 1" +
+            "                        from fnac.financial_account fa_iner" +
+            "                       where fa_iner.financial_account_parent_id = FA2.ID))) AND" +
+            "                 :showHigherLevels = 0)) " +
+
             "             AND FD.DOCUMENT_DATE BETWEEN trunc(:periodStartDate)  AND trunc(:toDate)" +
             "             AND (FDN.DOCUMENT_NUMBER <= :toNumber OR :toNumber IS NULL)" +
-            "           and ((SUBSTR(fa.code, 1, :length) >= :fromFinancialAccountCode) or " +
+            "       AND ((SUBSTR(" +
+            "                          case" +
+            "                            when (:showHigherLevels = 0 and" +
+            "                                 " +
+            "                                 (FAS.SEQUENCE = :structureLevel or" +
+            "                                 (FAS.SEQUENCE < :structureLevel and not exists" +
+            "                                  (select 1" +
+            "                                       from fnac.financial_account fa_iner" +
+            "                                      where fa_iner.financial_account_parent_id = FA2.ID)))" +
+            "                                 ) then" +
+            "                             rpad(FA.CODE, :length, '0')" +
+            "                            else" +
+            "                             FA.CODE" +
+            "                          end , " +
+            "            1, :length) >= :fromFinancialAccountCode) or " +
             "               :fromFinancialAccountCode is null) " +
             "           and ((SUBSTR(fa.code, 1, :length) <= :toFinancialAccountCode) or " +
             "               :toFinancialAccountCode is null) " +
