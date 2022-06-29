@@ -1099,9 +1099,14 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "              ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID" +
             "             AND FDS.DELETED_DATE IS NULL" +
             "           WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId" +
-            "           AND ((fas.sequence = :structureLevel AND :showHigherLevels = 0) OR " +
-            "               (fas.sequence <= :structureLevel AND " +
-            "               :showHigherLevels = 1)) " +
+            "          AND (((FAS.SEQUENCE = :structureLevel OR " +
+            "                 (FAS.SEQUENCE < :structureLevel AND NOT EXISTS " +
+            "                  (SELECT 1 " +
+            "                        FROM FNAC.FINANCIAL_ACCOUNT FA_INER " +
+            "                       WHERE FA_INER.FINANCIAL_ACCOUNT_PARENT_ID = FA2.ID))) AND " +
+            "                 :showHigherLevels = 0) OR " +
+            "                 (FAS.SEQUENCE <= :structureLevel AND " +
+            "                 :showHigherLevels = 1)) " +
             "             AND FD.DOCUMENT_DATE BETWEEN trunc(:periodStartDate)  AND trunc(:toDate)" +
             "             AND (FDN.DOCUMENT_NUMBER <= :toNumber OR :toNumber IS NULL)" +
             "           and ((SUBSTR(fa.code, 1, :length) >= :fromFinancialAccountCode) or " +
