@@ -265,7 +265,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     private void checkDocumentNumberingTypeIdSet(FinancialDocumentReportRequest
                                                          financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
         financialDocumentReportRequest.setDocumentNumberingTypeId(Long.parseLong(item.getValue().toString()));
-
     }
 
     private void checkFromDateForDate(FinancialDocumentReportRequest
