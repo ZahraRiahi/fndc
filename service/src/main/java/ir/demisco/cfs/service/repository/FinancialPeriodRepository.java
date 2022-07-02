@@ -1363,14 +1363,18 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               ON FNLM.FIN_LEDGER_MONTH_STAT_ID = FLMS.ID" +
             "            INNER JOIN FNPR.FINANCIAL_MONTH FNMN" +
             "               ON FNMN.ID = FNLM.FINANCIAL_MONTH_ID" +
+            "  INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD FLPR" +
+            "               ON FLPR.ID = FNLM.FINANCIAL_LEDGER_PERIOD_ID" +
             "            INNER JOIN FNPR.FINANCIAL_PERIOD FNP" +
             "               ON FNP.ID = FNMN.FINANCIAL_PERIOD_ID" +
+            "              AND FLPR.FINANCIAL_PERIOD_ID = FNP.ID" +
             "            INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FNPT" +
             "               ON FNPT.ID = FNP.FINANCIAL_PERIOD_TYPE_ID" +
             "            INNER JOIN FNPR.FINANCIAL_MONTH_TYPE FNMT" +
             "               ON FNMT.ID = FNMN.FINANCIAL_MONTH_TYPE_ID" +
             "            WHERE FNMN.FINANCIAL_PERIOD_ID = :financialPeriodId " +
             "              AND FNLM.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
+            " AND :date BETWEEN FNP.START_DATE AND FNP.END_DATE" +
             "              AND (CASE CALENDAR_TYPE_ID" +
             "                    WHEN 2 THEN" +
             "          EXTRACT(MONTH FROM " +
