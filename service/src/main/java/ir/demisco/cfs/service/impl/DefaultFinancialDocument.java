@@ -1103,7 +1103,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
         FinancialPeriodStatusResponse financialPeriodStatusResponses = new FinancialPeriodStatusResponse();
         Long periodStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerType(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId());
-        Long monthStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerTypeAndDate(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId(), financialPeriodLedgerStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+        Long monthStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerTypeAndDate(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId(),financialPeriodLedgerStatusRequest.getDate() ,financialPeriodLedgerStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
 
         financialPeriodStatusResponses.setPeriodStatus(periodStatus);
         financialPeriodStatusResponses.setMonthStatus(monthStatus);

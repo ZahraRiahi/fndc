@@ -1374,17 +1374,19 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               ON FNMT.ID = FNMN.FINANCIAL_MONTH_TYPE_ID" +
             "            WHERE FNMN.FINANCIAL_PERIOD_ID = :financialPeriodId " +
             "              AND FNLM.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
-            " AND :date BETWEEN FNP.START_DATE AND FNP.END_DATE" +
+            " AND :dateBetween BETWEEN FNP.START_DATE AND FNP.END_DATE" +
             "              AND (CASE CALENDAR_TYPE_ID" +
             "                    WHEN 2 THEN" +
-            "          EXTRACT(MONTH FROM " +
-            "                  to_date(:date, 'mm/dd/yyyy')) " +
-            "         WHEN 1 THEN " +
-            "          TO_NUMBER(SUBSTR(TO_CHAR(to_date(:date, 'mm/dd/yyyy')," +
-            "                                   'yyyy/mm/dd'," +
-            "                                   'NLS_CALENDAR=persian')," +
-            "                           6," +
-            "                           2))" +
+            "                     EXTRACT(MONTH FROM TO_DATE(TO_CHAR(:date, 'mm/dd/yyyy')," +
+            "                                     'mm/dd/yyyy'))" +
+            "                    WHEN 1 THEN" +
+            "                     TO_NUMBER(SUBSTR(TO_CHAR(TO_DATE(TO_CHAR(:date," +
+            "                                                              'mm/dd/yyyy')," +
+            "                                                      'mm/dd/yyyy')," +
+            "                                              'yyyy/mm/dd'," +
+            "                                              'NLS_CALENDAR=persian')," +
+            "                                      6," +
+            "                                      2))" +
             "                  END = CASE" +
             "                    WHEN FNPT.CURRENT_YEAR_FLAG = 1 THEN" +
             "                     FNPT.FROM_MONTH + FNMT.MONTH_NUMBER - 1" +
@@ -1396,10 +1398,10 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                        FNPT.FROM_MONTH + FNMT.MONTH_NUMBER - 1" +
             "                     END" +
             "                  END AND FNMN.FINANCIAL_MONTH_STATUS_ID = 1))," +
-            "           0) AS CODE" +
+            "           0) AS CODE " +
             "  FROM DUAL"
             , nativeQuery = true)
-    Long findFinancialPeriodByIdAndLedgerTypeAndDate(Long financialPeriodId, Long financialLedgerTypeId, String date);
+    Long findFinancialPeriodByIdAndLedgerTypeAndDate(Long financialPeriodId, Long financialLedgerTypeId, LocalDateTime dateBetween,String date);
 
     @Query(value = " WITH QRY AS" +
             " (SELECT NVL(FINANCIAL_ACCOUNT_CODE, '') ||" +
