@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod, Long> {
@@ -1374,7 +1375,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               ON FNMT.ID = FNMN.FINANCIAL_MONTH_TYPE_ID" +
             "            WHERE FNMN.FINANCIAL_PERIOD_ID = :financialPeriodId " +
             "              AND FNLM.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
-            " AND :dateBetween BETWEEN FNP.START_DATE AND FNP.END_DATE" +
+            " AND TO_DATE(TO_CHAR(:dateBetween, 'mm/dd/yyyy'), 'mm/dd/yyyy')  BETWEEN FNP.START_DATE AND FNP.END_DATE" +
             "              AND (CASE CALENDAR_TYPE_ID" +
             "                    WHEN 2 THEN" +
             "                     EXTRACT(MONTH FROM TO_DATE(TO_CHAR(:date, 'mm/dd/yyyy')," +
@@ -1401,7 +1402,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           0) AS CODE " +
             "  FROM DUAL"
             , nativeQuery = true)
-    Long findFinancialPeriodByIdAndLedgerTypeAndDate(Long financialPeriodId, Long financialLedgerTypeId, LocalDateTime dateBetween,String date);
+    Long findFinancialPeriodByIdAndLedgerTypeAndDate(Long financialPeriodId, Long financialLedgerTypeId, Date dateBetween, String date);
 
     @Query(value = " WITH QRY AS" +
             " (SELECT NVL(FINANCIAL_ACCOUNT_CODE, '') ||" +
