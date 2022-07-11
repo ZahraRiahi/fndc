@@ -31,7 +31,7 @@ public class FinancialDocumentDescriptionListGridProvider implements GridDataPro
 
     @Override
     public List<Object> mapToDto(List<Object> resultList) {
-        return resultList.stream().map(object -> {
+        return resultList.stream().map((Object object) -> {
             Object[] array = (Object[]) object;
             return FinancialDocumentDescriptionOrganizationDto.builder()
                     .id((Long) array[0])

@@ -616,10 +616,10 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         nativeQuery.setParameter("financialDocumentItemId", financialDocumentReportRequest.getFinancialDocumentItemId());
         List<Object[]> list = nativeQuery.getResultList();
         List<FinancialDocumentItemResponse> financialDocumentItemResponses = new ArrayList<>();
-        list.forEach(Object -> {
+        list.forEach(((Object[] object) -> {
             List<FinancialDocumentReferenceOutPutModel> documentReferenceList = new ArrayList<>();
             List<FinancialDocumentItemCurrencyOutPutModel> responseDocumentItemCurrencyList = new ArrayList<>();
-            FinancialDocumentItemResponse documentItemToList = convertDocumentItemToListUpdate(Object);
+            FinancialDocumentItemResponse documentItemToList = convertDocumentItemToListUpdate(object);
             financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItemToList.getId())
                     .forEach((FinancialDocumentReference documentReference) -> {
                         documentReferenceList.add(convertFinancialDocumentItem(documentReference));
@@ -631,7 +631,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                         documentItemToList.setDocumentItemCurrencyList(responseDocumentItemCurrencyList);
                     });
             financialDocumentItemResponses.add(documentItemToList);
-        });
+        }));
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialDocumentItemResponses.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
         dataSourceResult.setTotal(list.size());

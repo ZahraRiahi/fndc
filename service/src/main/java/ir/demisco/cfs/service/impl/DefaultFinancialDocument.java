@@ -1104,7 +1104,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             throw new RuleException("fin.financialPeriod.getStatus");
         }
         if (financialPeriodLedgerStatusRequest.getFinancialDocumentId() != null) {
-            List<Object[]> financialDocument = financialDocumentRepository.findFinancialDocumentByDocumentId(financialPeriodLedgerStatusRequest.getFinancialDocumentId());
             if (financialPeriodLedgerStatusRequest.getFinancialPeriodId() == null || financialPeriodLedgerStatusRequest.getDate() == null
                     || financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() == null) {
                 throw new RuleException("fin.financialPeriod.getStatusCheck");
@@ -1114,6 +1113,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             FinancialPeriodRequest financialPeriodRequest = new FinancialPeriodRequest();
             financialPeriodRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
             financialPeriodRequest.setDate(financialPeriodLedgerStatusRequest.getDate());
+        }else{
+            throw new RuleException("fin.financialDocument.notExistDocument");
         }
         FinancialPeriodStatusResponse financialPeriodStatusResponses = new FinancialPeriodStatusResponse();
         Long periodStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerType(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId());
