@@ -1,12 +1,10 @@
 package ir.demisco.cfs.model.dto.request;
 
-import java.time.LocalDateTime;
-
-public class FinancialPeriodLedgerStatusRequest {
+public class FinancialLedgerPeriodRequest {
     private Long financialPeriodId;
     private Long financialLedgerTypeId;
-    private LocalDateTime date;
-    private Long financialDocumentId;
+    private Long finLedgerPeriodStatId;
+    private Long id;
 
     public Long getFinancialPeriodId() {
         return financialPeriodId;
@@ -24,19 +22,19 @@ public class FinancialPeriodLedgerStatusRequest {
         this.financialLedgerTypeId = financialLedgerTypeId;
     }
 
-    public LocalDateTime getDate() {
-        return date;
+    public Long getFinLedgerPeriodStatId() {
+        return finLedgerPeriodStatId;
     }
 
-    public void setDate(LocalDateTime date) {
-        this.date = date;
+    public void setFinLedgerPeriodStatId(Long finLedgerPeriodStatId) {
+        this.finLedgerPeriodStatId = finLedgerPeriodStatId;
     }
 
-    public Long getFinancialDocumentId() {
-        return financialDocumentId;
+    public Long getId() {
+        return id;
     }
 
-    public void setFinancialDocumentId(Long financialDocumentId) {
-        this.financialDocumentId = financialDocumentId;
+    public void setId(Long id) {
+        this.id = id;
     }
 }

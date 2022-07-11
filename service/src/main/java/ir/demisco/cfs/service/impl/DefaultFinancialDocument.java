@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.request.ControlFinancialAccountNatureTypeInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
+import ir.demisco.cfs.model.dto.request.FinancialPeriodRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
 import ir.demisco.cfs.model.dto.response.FinancialCentricAccountDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentAccountDto;
@@ -1097,13 +1098,27 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public FinancialPeriodStatusResponse getFinancialPeriodStatus(FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest) {
-        if (financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() == null && financialPeriodLedgerStatusRequest.getFinancialPeriodId() == null
+        if (financialPeriodLedgerStatusRequest.getFinancialDocumentId() == null && financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() == null
+                && financialPeriodLedgerStatusRequest.getFinancialPeriodId() == null
                 && financialPeriodLedgerStatusRequest.getDate() == null) {
             throw new RuleException("fin.financialPeriod.getStatus");
         }
+        if (financialPeriodLedgerStatusRequest.getFinancialDocumentId() != null) {
+            if (financialPeriodLedgerStatusRequest.getFinancialPeriodId() == null || financialPeriodLedgerStatusRequest.getDate() == null
+                    || financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() == null) {
+                throw new RuleException("fin.financialPeriod.getStatusCheck");
+            }
+        } else if (financialPeriodLedgerStatusRequest.getFinancialDocumentId() == null && financialPeriodLedgerStatusRequest.getFinancialPeriodId() == null
+                && financialPeriodLedgerStatusRequest.getDate() != null && financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() != null) {
+            FinancialPeriodRequest financialPeriodRequest = new FinancialPeriodRequest();
+            financialPeriodRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+            financialPeriodRequest.setDate(financialPeriodLedgerStatusRequest.getDate());
+        }else{
+            throw new RuleException("fin.financialDocument.notExistDocument");
+        }
         FinancialPeriodStatusResponse financialPeriodStatusResponses = new FinancialPeriodStatusResponse();
         Long periodStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerType(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId());
-        Long monthStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerTypeAndDate(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId(),DateUtil.convertStringToDate(financialPeriodLedgerStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))), financialPeriodLedgerStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
+        Long monthStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerTypeAndDate(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId(), DateUtil.convertStringToDate(financialPeriodLedgerStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))), financialPeriodLedgerStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
 
         financialPeriodStatusResponses.setPeriodStatus(periodStatus);
         financialPeriodStatusResponses.setMonthStatus(monthStatus);

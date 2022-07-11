@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface FinancialDocumentRepository extends JpaRepository<FinancialDocument, Long> {
+public interface    FinancialDocumentRepository extends JpaRepository<FinancialDocument, Long> {
 
     @Query(value = " SELECT FIDC.ID," +
             "       FIDC.DOCUMENT_DATE," +
@@ -467,4 +467,12 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     List<Object[]> findFinancialDocumentById(Long documentId);
 
+
+    @Query(value = " SELECT T.FINANCIAL_PERIOD_ID, " +
+            "       T.DOCUMENT_DATE, " +
+            "       T.financial_ledger_type_id " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT T " +
+            " WHERE fndc.id = :documentId  "
+            , nativeQuery = true)
+    List<Object[]> findFinancialDocumentByDocumentId(Long documentId);
 }
