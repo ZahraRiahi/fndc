@@ -24,7 +24,7 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
     private final FinancialPeriodRepository financialPeriodRepository;
     private final FinancialLedgerTypeRepository financialLedgerTypeRepository;
     private final FinancialMonthRepository financialMonthRepository;
-    private  final FinancialLedgerMonthStatusRepository financialLedgerMonthStatusRepository;
+    private final FinancialLedgerMonthStatusRepository financialLedgerMonthStatusRepository;
     private final FinancialLedgerMonthRepository financialLedgerMonthRepository;
 
     public DefaultFinancialLedgerPeriod(FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialLedgerPeriodStatusRepository financialLedgerPeriodStatusRepository, FinancialPeriodRepository financialPeriodRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, FinancialMonthRepository financialMonthRepository, FinancialLedgerMonthStatusRepository financialLedgerMonthStatusRepository, FinancialLedgerMonthRepository financialLedgerMonthRepository) {
@@ -46,6 +46,11 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
         if (financialLedgerPeriodRequest.getFinancialLedgerTypeId() == null) {
             throw new RuleException("دفتر مالی را مشخص نمایید.");
         }
+        Long financialLedgerPeriodUniqueCount = financialLedgerPeriodRepository.getCountByFinancialLedgerPeriodByPeriodIdAndLedgerTypeId(financialLedgerPeriodRequest.getFinancialPeriodId(), financialLedgerPeriodRequest.getFinancialLedgerTypeId());
+        if (financialLedgerPeriodUniqueCount > 0) {
+            throw new RuleException("fin.financialLedgerPeriodUnique.save");
+        }
+
         FinancialLedgerPeriod financialLedgerPeriod = financialLedgerPeriodRepository.findById(financialLedgerPeriodRequest.getId() == null ? 0 : financialLedgerPeriodRequest.getId()).orElse(new FinancialLedgerPeriod());
         financialLedgerPeriod.setFinancialLedgerPeriodStatus(financialLedgerPeriodStatusRepository.getOne(1L));
         financialLedgerPeriod.setFinancialPeriod(financialPeriodRepository.getOne(financialLedgerPeriodRequest.getFinancialPeriodId()));
@@ -63,7 +68,7 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
             financialLedgerMonth.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialLedgerPeriodRequest.getFinancialLedgerTypeId()));
             financialLedgerMonth.setFinancialMonth(financialMonthRepository.getOne(e));
             financialLedgerMonth.setFinancialLedgerPeriod(financialLedgerPeriodRepository.getOne(financialLedgerPeriod.getId()));
-             financialLedgerMonthRepository.save(financialLedgerMonth);
+            financialLedgerMonthRepository.save(financialLedgerMonth);
 
         });
 
