@@ -1,6 +1,7 @@
 package ir.demisco.cfs.service.repository;
 
 import ir.demisco.cfs.model.entity.FinancialPeriod;
+import org.hibernate.jpa.TypedParameterValue;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -1312,7 +1313,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN PT " +
             "    ON PT.FINANCIAL_PERIOD_TYPE_ID = FNP.ID " +
             " INNER JOIN fnpr.FINANCIAL_PERIOD FP " +
-            "    ON FP.FINAN_PERIOD_TYPE_ASSIGN_ID = PT.ID " +
+            "   ON FP.FINANCIAL_PERIOD_TYPE_ID = fnp.id " +
             "   AND FMN.FINANCIAL_PERIOD_ID = FP.ID " +
             " WHERE FP.ID = :financialPeriodId " +
             "   AND (CASE CALENDAR_TYPE_ID " +
@@ -1576,4 +1577,10 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
     List<Object[]> findByFinancialPeriodByCentricBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId
             , LocalDateTime periodStartDate, int length, String fromFinancialAccountCode,
                                                                String toFinancialAccountCode, Long organizationId, Object cnacIdObj1, Long cnacId1, Object cnacIdObj2, Long cnacId2, Long remainOption);
+
+    @Query(value = " SELECT T.FINANCIAL_PERIOD_ID, T.DOCUMENT_DATE, T.financial_ledger_type_id " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT T " +
+            " WHERE T.ID = :financialDocumentId "
+            , nativeQuery = true)
+    List<Object[]> getFinancialPeriodByFinancialDocumentId(Long financialDocumentId);
 }

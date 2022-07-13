@@ -97,6 +97,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialPeriodService financialPeriodService;
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
     private final FinancialPeriodRepository financialPeriodRepository;
+//    private final FinancialDocumentService financialDocumentService;
+
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
@@ -119,6 +121,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.financialPeriodService = financialPeriodService;
         this.financialDocumentSecurityService = financialDocumentSecurityService;
         this.financialPeriodRepository = financialPeriodRepository;
+//        this.financialDocumentService = financialDocumentService;
     }
 
 
@@ -435,6 +438,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
         }
+        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+        financialPeriodLedgerStatusRequest.setFinancialDocumentId(responseFinancialDocumentStatusDto.getId());
+        FinancialPeriodStatusResponse financialPeriodStatusResponse = getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+        }
+
         FinancialDocument financialDocument = financialDocumentRepository.findById(responseFinancialDocumentStatusDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         FinancialDocumentStatus financialDocumentStatus =
                 documentStatusRepository.findFinancialDocumentStatusByCode(responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode());
@@ -463,7 +473,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     private List<FinancialDocumentErrorDto> validationSetStatus(FinancialDocument financialDocument) {
         List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = checkValidationSetStatus(financialDocument);
-        FinancialDocument document = financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocument.getId());
+        Long document = financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocument.getId());
         if (document == null) {
             FinancialDocumentErrorDto activeMountStatus = new FinancialDocumentErrorDto();
             activeMountStatus.setFinancialDocumentId(financialDocument.getId());
@@ -722,6 +732,15 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
         }
+
+        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+        financialPeriodLedgerStatusRequest.setFinancialDocumentId(financialDocumentDto.getId());
+        FinancialPeriodStatusResponse financialPeriodStatusResponse = getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+        }
+
+
         entityManager.createNativeQuery(" update fndc.financial_document_item " +
                 "   set description = replace(description,:description,:newDescription) " +
                 "   where id in (:FinancialDocumentItemIdList) " +
@@ -745,17 +764,23 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
         financialDocumentSecurityInputRequest.setSecurityModelRequest(null);
         financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
-
-        FinancialDocument financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
+        Long financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
+        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+        financialPeriodLedgerStatusRequest.setFinancialDocumentId(financialDocumentId);
+        FinancialPeriodStatusResponse financialPeriodStatusResponse = getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+        }
         if (financialDocument == null) {
             throw new RuleException("fin.financialDocument.openStatusPeriod");
+
         } else {
             List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocumentId);
             deleteDocumentItem(financialDocumentItemList);
             List<FinancialDocumentNumber> financialDocumentNumberList = financialDocumentNumberRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocumentId);
             financialDocumentNumberList.forEach(financialDocumentNumber -> financialDocumentNumberRepository.deleteById((financialDocumentNumber.getId())));
             financialDocumentNumberRepository.flush();
-            financialDocumentRepository.deleteById(financialDocument.getId());
+            financialDocumentRepository.deleteById(financialDocumentId);
         }
         return true;
     }
@@ -789,6 +814,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
         if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
+        }
+        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+        financialPeriodLedgerStatusRequest.setFinancialDocumentId(financialDocumentAccountDto.getId());
+        FinancialPeriodStatusResponse financialPeriodStatusResponse = getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
         }
         AtomicReference<String> message = new AtomicReference<>("");
         if (financialDocumentAccountDto.getFinancialAccountId().equals(financialDocumentAccountDto.getNewFinancialAccountId())) {
@@ -850,6 +881,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
             if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
                 throw new RuleException("دوره مالی و ماه عملیاتی سند مبدا میبایست در وضعیت باز باشند");
+            }
+            FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+            financialPeriodLedgerStatusRequest.setFinancialDocumentId(financialCentricAccountDto.getId());
+            FinancialPeriodStatusResponse financialPeriodStatusResponse = getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+            if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+                throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
             }
             Long centricAccountId = financialCentricAccountDto.getCentricAccountId();
             financialDocumentItemList.forEach((FinancialDocumentItem documentItem) -> {
@@ -935,6 +972,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
         }
+
+        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+        financialPeriodLedgerStatusRequest.setFinancialDocumentId(financialCentricAccountDto.getId());
+        FinancialPeriodStatusResponse financialPeriodStatusResponse = getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+        }
         List<FinancialDocumentItem> financialDocumentItemList =
                 financialDocumentItemRepository.findByFinancialDocumentItemIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
         financialDocumentItemList.forEach((FinancialDocumentItem documentItem) -> {
@@ -974,6 +1018,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
         }
+        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+        financialPeriodLedgerStatusRequest.setFinancialDocumentId(financialCentricAccountDto.getId());
+        FinancialPeriodStatusResponse financialPeriodStatusResponse = getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+        }
         List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentItemIdList(financialCentricAccountDto.getFinancialDocumentItemIdList());
         financialDocumentItemList.forEach((FinancialDocumentItem documentItem) -> {
             documentItem.setCreditAmount(0D);
@@ -1011,6 +1061,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مبدا میبایست در وضعیت باز باشند");
         }
+        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+        financialPeriodLedgerStatusRequest.setFinancialDocumentId(financialDocumentDto.getId());
+        FinancialPeriodStatusResponse financialPeriodStatusResponse = getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+        }
+
         entityManager.createNativeQuery("update fndc.financial_document_item  fndi_outer " +
                 "   set fndi_outer.sequence_number = " +
                 "       (select rn " +
@@ -1104,6 +1161,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             throw new RuleException("fin.financialPeriod.getStatus");
         }
         if (financialPeriodLedgerStatusRequest.getFinancialDocumentId() != null) {
+            List<Object[]> financialPeriodListObject = financialPeriodRepository.getFinancialPeriodByFinancialDocumentId(financialPeriodLedgerStatusRequest.getFinancialDocumentId());
+            financialPeriodLedgerStatusRequest.setFinancialPeriodId(financialPeriodListObject.get(0)[0] == null ? financialPeriodLedgerStatusRequest.getFinancialPeriodId() : Long.parseLong(financialPeriodListObject.get(0)[0].toString()));
+            financialPeriodLedgerStatusRequest.setDate(financialPeriodListObject.get(0)[1] == null ? financialPeriodLedgerStatusRequest.getDate() : LocalDateTime.parse(financialPeriodListObject.get(0)[1].toString().substring(0, 10) + "T00:00"));
+            financialPeriodLedgerStatusRequest.setFinancialLedgerTypeId(financialPeriodListObject.get(0)[0] == null ? financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() : Long.parseLong(financialPeriodListObject.get(0)[0].toString()));
+
             if (financialPeriodLedgerStatusRequest.getFinancialPeriodId() == null || financialPeriodLedgerStatusRequest.getDate() == null
                     || financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() == null) {
                 throw new RuleException("fin.financialPeriod.getStatusCheck");
@@ -1113,9 +1175,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             FinancialPeriodRequest financialPeriodRequest = new FinancialPeriodRequest();
             financialPeriodRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
             financialPeriodRequest.setDate(financialPeriodLedgerStatusRequest.getDate());
-        }else{
-            throw new RuleException("fin.financialDocument.notExistDocument");
         }
+
         FinancialPeriodStatusResponse financialPeriodStatusResponses = new FinancialPeriodStatusResponse();
         Long periodStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerType(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId());
         Long monthStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerTypeAndDate(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId(), DateUtil.convertStringToDate(financialPeriodLedgerStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))), financialPeriodLedgerStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));

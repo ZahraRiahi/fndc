@@ -12,7 +12,6 @@ import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-
 @Service
 public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecurityService {
     private final FinancialDocumentHeaderService financialDocumentHeaderService;
@@ -68,6 +67,7 @@ public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecuri
             return true;
         }
     }
+
     private void checkFinancialDocumentSecurity(FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest) {
         if (financialDocumentSecurityInputRequest.getSecurityModelRequest().getUserId() == null) {
             throw new RuleException("لطفا شناسه ی کاربر را وارد نمایید.");

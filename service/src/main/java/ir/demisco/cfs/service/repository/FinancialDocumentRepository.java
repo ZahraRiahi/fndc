@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.time.LocalDateTime;
 import java.util.List;
 
-public interface    FinancialDocumentRepository extends JpaRepository<FinancialDocument, Long> {
+public interface FinancialDocumentRepository extends JpaRepository<FinancialDocument, Long> {
 
     @Query(value = " SELECT FIDC.ID," +
             "       FIDC.DOCUMENT_DATE," +
@@ -218,23 +218,71 @@ public interface    FinancialDocumentRepository extends JpaRepository<FinancialD
     @Query("select fd from FinancialDocument fd where fd.id=:financialDocumentId and fd.deletedDate is null")
     FinancialDocument getActiveDocumentById(Long financialDocumentId);
 
-    @Query(" select fd from FinancialDocument fd join fd.financialPeriod fp where fp.financialPeriodStatus.id=1 and fd.id=:financialDocumentId " +
-            " and exists ( select fm from FinancialMonth fm " +
-            "              join FinancialMonthType fmt on fmt.id=fm.financialMonthType.id " +
-            "              join FinancialPeriodType fpt on fpt.id=fmt.financialPeriodType.id " +
-            "              join FinancialPeriodTypeAssign fpts on fpts.financialPeriodType.id=fpt.id " +
-            "              join FinancialPeriod fp on fp.financialPeriodTypeAssign.id=fpts.id " +
-            "              join FinancialDocument fd on fd.financialPeriod.id=fp.id " +
-            "            where fd.id=:financialDocumentId " +
-            "                  and fm.financialMonthStatus.id=1" +
-            "                  and case fpt.calendarTypeId when 2 then extract(month from TO_DATE(TO_char(fd.documentDate,'mm/dd/yyyy'),'mm/dd/yyyy'))" +
-            "                                              when 1 then TO_NUMBER(substr(TO_CHAR(TO_DATE(TO_char(fd.documentDate,'mm/dd/yyyy'),'mm/dd/yyyy'),'yyyy/mm/dd','NLS_CALENDAR=persian'),6,2)) " +
-            "                       end = case when fpt.calendarYearFlag = 1 then (fpt.fromMonth + (fmt.monthNumber-1)) " +
-            "                       else  " +
-            "                       case when (fpt.fromMonth + (fmt.monthNumber-1)) > 12 then (fpt.fromMonth + (fmt.monthNumber-13)) else (fpt.fromMonth+(fmt.monthNumber-1)) end" +
-            "                       end" +
-            "                     )")
-    FinancialDocument getActivePeriodAndMontInDocument(Long financialDocumentId);
+    //    @Query(" select fd from FinancialDocument fd join fd.financialPeriod fp where fp.financialPeriodStatus.id=1 and fd.id=:financialDocumentId " +
+//            " and exists ( select fm from FinancialMonth fm " +
+//            "              join FinancialMonthType fmt on fmt.id=fm.financialMonthType.id " +
+//            "              join FinancialPeriodType fpt on fpt.id=fmt.financialPeriodType.id " +
+//            "              join FinancialPeriod fp on fp.financialPeriodType.id=fpt.id " +
+//            "              join FinancialPeriodTypeAssign fpts on fpts.financialPeriod.id=fp.id " +
+//            "              join FinancialDocument fd on fd.financialPeriod.id=fp.id " +
+//            "            where fd.id=:financialDocumentId " +
+//            "                  and fm.financialMonthStatus.id=1" +
+//            "                  and case fpt.calendarTypeId when 2 then extract(month from TO_DATE(TO_char(fd.documentDate,'mm/dd/yyyy'),'mm/dd/yyyy'))" +
+//            "                                              when 1 then TO_NUMBER(substr(TO_CHAR(TO_DATE(TO_char(fd.documentDate,'mm/dd/yyyy'),'mm/dd/yyyy'),'yyyy/mm/dd','NLS_CALENDAR=persian'),6,2)) " +
+//            "                       end = case when fpt.calendarYearFlag = 1 then (fpt.fromMonth + (fmt.monthNumber-1)) " +
+//            "                       else  " +
+//            "                       case when (fpt.fromMonth + (fmt.monthNumber-1)) > 12 then (fpt.fromMonth + (fmt.monthNumber-13)) else (fpt.fromMonth+(fmt.monthNumber-1)) end" +
+//            "                       end" +
+//            "                     )")
+//    FinancialDocument getActivePeriodAndMontInDocument(Long financialDocumentId);
+
+    @Query(value = " select 1" +
+            "  from fndc.financial_document fd" +
+            " inner join fnpr.financial_period t" +
+            "    on t.id = fd.financial_period_id" +
+            " where t.financial_period_status_id = 1" +
+            "   and fd.id = :financialDocumentId " +
+            "   and exists (select 1" +
+            "          from fnpr.financial_month fm" +
+            "         inner join fnpr.financial_month_type fmt" +
+            "            on fmt.id = fm.financial_month_type_id" +
+            "         inner join fnpr.financial_period_type fpt" +
+            "            on fpt.id = fmt.financial_period_type_id" +
+            "         inner join fnpr.financial_period fp" +
+            "            on fp.financial_period_type_id = fpt.id" +
+            "         inner join fnpr.financial_period_type_assign fpts" +
+            "            on fpts.financial_period_id = fp.id" +
+            "         inner join fndc.financial_document fd" +
+            "            on fp.id = fd.financial_period_id" +
+            "         where fd.id=:financialDocumentId" +
+            " and case fpt.calendar_type_id" +
+            "                 when 2 then" +
+            "                  extract(month from TO_DATE(TO_char(fd.document_date," +
+            "                                          'mm/dd/yyyy')," +
+            "                                  'mm/dd/yyyy'))" +
+            "                 when 1 then" +
+            "                  TO_NUMBER(substr(TO_CHAR(TO_DATE(TO_char(fd.document_date," +
+            "                                                           'mm/dd/yyyy')," +
+            "                                                   'mm/dd/yyyy')," +
+            "                                           'yyyy/mm/dd'," +
+            "                                           'NLS_CALENDAR=persian')," +
+            "                                   6," +
+            "                                   2))" +
+            "               end = case" +
+            "                 when fpt.current_year_flag = 1 then" +
+            "                  fpt.from_month + fmt.month_number - 1" +
+            "                 else" +
+            "                  case" +
+            "                    when fpt.from_month + fmt.month_number - 1 > 12 then" +
+            "                     fpt.from_month + fmt.month_number - 13" +
+            "                    else" +
+            "                     fpt.from_month + fmt.month_number - 1" +
+            "                  end" +
+            "               end" +
+            "           and fm.financial_month_status_id = 1" +
+            "        " +
+            "        ) ", nativeQuery = true)
+    Long getActivePeriodAndMontInDocument(Long financialDocumentId);
 
     @Query(value = " SELECT " +
             "         NF_ID, " +
