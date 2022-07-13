@@ -2,6 +2,7 @@ package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.request.FinancialDocumentItemRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
+import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
 import ir.demisco.cfs.model.dto.request.SecurityModelRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentDto;
@@ -142,6 +143,18 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
         }
+
+
+        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+        financialPeriodLedgerStatusRequest.setDate(LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/", "-") + "T00:00"));
+        financialPeriodLedgerStatusRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
+        financialPeriodLedgerStatusRequest.setFinancialLedgerTypeId(requestFinancialDocumentSaveDto.getFinancialLedgerTypeId());
+        FinancialPeriodStatusResponse financialPeriodStatusResponse = financialDocumentService.getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+        }
+
+
         String documentNumber;
         FinancialDocument financialDocument = saveFinancialDocument(requestFinancialDocumentSaveDto);
         financialDocumentNumberDto.setOrganizationId(financialDocument.getOrganization().getId());
@@ -616,10 +629,10 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         nativeQuery.setParameter("financialDocumentItemId", financialDocumentReportRequest.getFinancialDocumentItemId());
         List<Object[]> list = nativeQuery.getResultList();
         List<FinancialDocumentItemResponse> financialDocumentItemResponses = new ArrayList<>();
-        list.forEach(Object -> {
+        list.forEach(((Object[] object) -> {
             List<FinancialDocumentReferenceOutPutModel> documentReferenceList = new ArrayList<>();
             List<FinancialDocumentItemCurrencyOutPutModel> responseDocumentItemCurrencyList = new ArrayList<>();
-            FinancialDocumentItemResponse documentItemToList = convertDocumentItemToListUpdate(Object);
+            FinancialDocumentItemResponse documentItemToList = convertDocumentItemToListUpdate(object);
             financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItemToList.getId())
                     .forEach((FinancialDocumentReference documentReference) -> {
                         documentReferenceList.add(convertFinancialDocumentItem(documentReference));
@@ -631,7 +644,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                         documentItemToList.setDocumentItemCurrencyList(responseDocumentItemCurrencyList);
                     });
             financialDocumentItemResponses.add(documentItemToList);
-        });
+        }));
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialDocumentItemResponses.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
         dataSourceResult.setTotal(list.size());
