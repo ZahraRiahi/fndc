@@ -125,7 +125,6 @@ public class FinancialDocumentController {
         } else {
             return ResponseEntity.ok(saveFinancialDocumentService.updateDocument(requestFinancialDocumentSaveDto));
         }
-
     }
 
     @PostMapping("/ArrangeSequence")
@@ -133,7 +132,6 @@ public class FinancialDocumentController {
         boolean result;
         result = financialDocumentService.setArrangeSequence(financialDocumentDto);
         return ResponseEntity.ok(result);
-
     }
 
     @PostMapping("/TransferDocument")
@@ -143,15 +141,17 @@ public class FinancialDocumentController {
         financialDocumentTransferRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(transferFinancialDocumentService.transferDocument(financialDocumentTransferRequest));
     }
+
     private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
         if (input instanceof String) {
-            return checkTry(input,truncateDate);
+            return checkTry(input, truncateDate);
         } else if (input instanceof LocalDateTime) {
             return truncateDate ? DateUtil.truncate((LocalDateTime) input) : (LocalDateTime) input;
         } else {
             throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
         }
     }
+
     private LocalDateTime checkTry(Object input, boolean truncateDate) {
         try {
             Date date = ISO8601Utils.parse((String) input, new ParsePosition(0));
@@ -165,6 +165,7 @@ public class FinancialDocumentController {
             }
         }
     }
+
     @PostMapping("/Get")
     public ResponseEntity<FinancialDocumentSaveDto> getFinancialDocumentInfo(@RequestBody FinancialDocumentDto financialDocumentDto) {
         return ResponseEntity.ok(saveFinancialDocumentService.getFinancialDocumentInfo(financialDocumentDto));

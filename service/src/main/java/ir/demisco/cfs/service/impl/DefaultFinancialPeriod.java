@@ -41,7 +41,9 @@ public class DefaultFinancialPeriod implements FinancialPeriodService {
             if (financialPeriodStatusRequest.getFinancialPeriodId() == null || financialPeriodStatusRequest.getDate() == null) {
                 throw new RuleException("fin.financialPeriod.list");
             }
-        } else if (financialPeriodStatusRequest.getFinancialPeriodId() == null && financialPeriodStatusRequest.getDate() != null && financialPeriodStatusRequest.getOrganizationId() != null) {
+        }
+        if (financialPeriodStatusRequest.getFinancialDocumentId() == null && financialPeriodStatusRequest.getFinancialPeriodId() == null
+                && financialPeriodStatusRequest.getDate() != null && financialPeriodStatusRequest.getOrganizationId() != null) {
             FinancialPeriodRequest financialPeriodRequest = new FinancialPeriodRequest();
             financialPeriodRequest.setDate(financialPeriodStatusRequest.getDate());
             List<FinancialPeriodResponse> accountByDateAndOrgan = this.getFinancialAccountByDateAndOrgan(financialPeriodRequest, SecurityHelper.getCurrentUser().getOrganizationId());
@@ -55,14 +57,10 @@ public class DefaultFinancialPeriod implements FinancialPeriodService {
                 financialPeriodStatusResponses.setPeriodStatus(0L);
                 return financialPeriodStatusResponses;
             }
-        } else {
-            throw new RuleException("fin.financialAccount.notInformation");
         }
         Long periodStatus = financialPeriodRepository.findFinancialPeriodById(financialPeriodStatusRequest.getFinancialPeriodId());
-        Long monthStatus = financialPeriodRepository.findFinancialPeriodByFinancialPeriodIdAndDate(financialPeriodStatusRequest.getFinancialPeriodId(), financialPeriodStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy")));
-
         financialPeriodStatusResponses.setPeriodStatus(periodStatus);
-        financialPeriodStatusResponses.setMonthStatus(monthStatus);
+        financialPeriodStatusResponses.setMonthStatus(1L);
         return financialPeriodStatusResponses;
     }
 

@@ -2,6 +2,7 @@ package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentTransferRequest;
+import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
 import ir.demisco.cfs.model.dto.request.FinancialSecurityFilterRequest;
@@ -59,7 +60,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
     public DefaultTeransferFinancialDocument(FinancialDocumentService financialDocumentService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentItemRepository financialDocumentItemRepository,
                                              FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                              FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository,
-                                              FinancialPeriodService financialPeriodService, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository,  FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialPeriodRepository financialPeriodRepository1, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialDocumentHeaderService financialDocumentHeaderService) {
+                                             FinancialPeriodService financialPeriodService, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialPeriodRepository financialPeriodRepository1, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialDocumentHeaderService financialDocumentHeaderService) {
         this.financialDocumentService = financialDocumentService;
         this.financialDocumentRepository = financialDocumentRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -98,38 +99,38 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         Long targetDocumentId = null;
 
         if (financialDocumentTransferRequest.getTransferType() == 1 || financialDocumentTransferRequest.getTransferType() == 2 || financialDocumentTransferRequest.getTransferType() == 6) {
-            targetDocumentId=check1(financialDocumentTransferRequest,financialDocumentSecurityInputRequest,financialPeriodStatusRequest);
+            targetDocumentId = check1(financialDocumentTransferRequest, financialDocumentSecurityInputRequest, financialPeriodStatusRequest);
         }
 
         if (financialDocumentTransferRequest.getTransferType() == 2 || financialDocumentTransferRequest.getTransferType() == 4 || financialDocumentTransferRequest.getTransferType() == 5 || financialDocumentTransferRequest.getTransferType() == 6) {
-          check2(financialDocumentTransferRequest,financialDocumentSecurityInputRequest);
+            check2(financialDocumentTransferRequest, financialDocumentSecurityInputRequest);
         }
 
         if (financialDocumentTransferRequest.getTransferType() == 2 || financialDocumentTransferRequest.getTransferType() == 4 || financialDocumentTransferRequest.getTransferType() == 6) {
-            financialPeriodStatusRequest=check3(financialPeriodStatusRequest,financialDocumentTransferRequest);
+            financialPeriodStatusRequest = check3(financialPeriodStatusRequest, financialDocumentTransferRequest);
         }
 
         if (financialDocumentTransferRequest.getTransferType() == 5) {
-            financialPeriodStatusRequest=check4(financialPeriodStatusRequest,financialDocumentTransferRequest);
+            financialPeriodStatusRequest = check4(financialPeriodStatusRequest, financialDocumentTransferRequest);
         }
 
         if (financialDocumentTransferRequest.getAllItemFlag().equals(true) || financialDocumentTransferRequest.getTransferType() == 7) {
-            financialDocumentTransferRequest= check5(financialDocumentTransferRequest);
+            financialDocumentTransferRequest = check5(financialDocumentTransferRequest);
         }
 
         if (financialDocumentTransferRequest.getTransferType() == 3 || financialDocumentTransferRequest.getTransferType() == 4 || financialDocumentTransferRequest.getTransferType() == 7) {
-            financialDocumentTransferOutputResponse=check6(financialDocumentTransferRequest,financialDocumentSecurityInputRequest,financialPeriodStatusRequest,financialDocumentTransferOutputResponse);
+            financialDocumentTransferOutputResponse = check6(financialDocumentTransferRequest, financialDocumentSecurityInputRequest, financialPeriodStatusRequest, financialDocumentTransferOutputResponse);
         }
 
-             checkAndSave(financialDocumentTransferRequest,targetDocumentId,financialDocumentTransferOutputResponse);
+        checkAndSave(financialDocumentTransferRequest, targetDocumentId, financialDocumentTransferOutputResponse);
 
         if (financialDocumentTransferRequest.getTransferType() == 5) {
-            financialDocumentTransferOutputResponse=check9(financialDocumentTransferRequest);
+            financialDocumentTransferOutputResponse = check9(financialDocumentTransferRequest);
 
         }
 
         if (financialDocumentTransferRequest.getTransferType() == 6) {
-           check10(financialDocumentTransferRequest,targetDocumentId);
+            check10(financialDocumentTransferRequest, targetDocumentId);
         }
 
         return financialDocumentTransferOutputResponse;
@@ -137,7 +138,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
 
     private void checkAndSave(FinancialDocumentTransferRequest financialDocumentTransferRequest, Long targetDocumentId, FinancialDocumentTransferOutputResponse financialDocumentTransferOutputResponse) {
         if (financialDocumentTransferRequest.getTransferType() != 5 && financialDocumentTransferRequest.getTransferType() != 6) {
-            check7(targetDocumentId,financialDocumentTransferOutputResponse,financialDocumentTransferRequest);
+            check7(targetDocumentId, financialDocumentTransferOutputResponse, financialDocumentTransferRequest);
 
         }
 
@@ -282,6 +283,12 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         if (financialPeriodStatusOutPut.getPeriodStatus() == null || financialPeriodStatusOutPut.getMonthStatus() == null) {
             throw new RuleException("دوره مالی و ماه عملیاتی در تاریخ انتخاب شده میبایست در وضعیت باز باشند");
         }
+        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+        financialPeriodLedgerStatusRequest.setFinancialDocumentId(financialDocumentTransferRequest.getId());
+        FinancialPeriodStatusResponse financialPeriodStatusResponse = financialDocumentService.getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی سند مبداء میبایست در وضعیت باز باشند");
+        }
         FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentTransferRequest.getId() == null ? 0L : financialDocumentTransferRequest.getId()).orElse(new FinancialDocument());
         FinancialDocument financialDocumentSave;
         financialDocumentSave = (FinancialDocument) SerializationHelper.clone(financialDocument);
@@ -321,6 +328,12 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         if (financialPeriodStatus.getPeriodStatus() == null || financialPeriodStatus.getMonthStatus() == null) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مبداء میبایست در وضعیت باز باشند");
         }
+        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+        financialPeriodLedgerStatusRequest.setFinancialDocumentId(financialDocumentTransferRequest.getId());
+        FinancialPeriodStatusResponse financialPeriodStatusResponse = financialDocumentService.getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی سند مبداء میبایست در وضعیت باز باشند");
+        }
         financialPeriodStatusRequest.setDate(financialDocumentTransferRequest.getDate());
         financialPeriodStatusRequest.setOrganizationId(financialDocumentTransferRequest.getOrganizationId());
         FinancialPeriodStatusResponse financialPeriodStatusOutPut = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
@@ -335,6 +348,12 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
         if (financialPeriodStatus.getPeriodStatus() == null || financialPeriodStatus.getMonthStatus() == null) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مبدا میبایست در وضعیت باز باشند");
+        }
+        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+        financialPeriodLedgerStatusRequest.setFinancialDocumentId(financialDocumentTransferRequest.getId());
+        FinancialPeriodStatusResponse financialPeriodStatusResponse = financialDocumentService.getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی سند مبداء میبایست در وضعیت باز باشند");
         }
         return financialPeriodStatusRequest;
     }
@@ -400,6 +419,12 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
         if (financialPeriodStatus.getPeriodStatus() == null || financialPeriodStatus.getMonthStatus() == null) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
+        }
+        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+        financialPeriodLedgerStatusRequest.setFinancialDocumentId(Long.parseLong(financialDocument.get(0)[0].toString()));
+        FinancialPeriodStatusResponse financialPeriodStatusResponse = financialDocumentService.getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
         }
         FinancialDocument financialDocumentUpdate = financialDocumentRepository.findById(targetDocumentId)
                 .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
