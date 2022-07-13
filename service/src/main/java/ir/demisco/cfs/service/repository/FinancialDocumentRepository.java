@@ -218,24 +218,6 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
     @Query("select fd from FinancialDocument fd where fd.id=:financialDocumentId and fd.deletedDate is null")
     FinancialDocument getActiveDocumentById(Long financialDocumentId);
 
-    //    @Query(" select fd from FinancialDocument fd join fd.financialPeriod fp where fp.financialPeriodStatus.id=1 and fd.id=:financialDocumentId " +
-//            " and exists ( select fm from FinancialMonth fm " +
-//            "              join FinancialMonthType fmt on fmt.id=fm.financialMonthType.id " +
-//            "              join FinancialPeriodType fpt on fpt.id=fmt.financialPeriodType.id " +
-//            "              join FinancialPeriod fp on fp.financialPeriodType.id=fpt.id " +
-//            "              join FinancialPeriodTypeAssign fpts on fpts.financialPeriod.id=fp.id " +
-//            "              join FinancialDocument fd on fd.financialPeriod.id=fp.id " +
-//            "            where fd.id=:financialDocumentId " +
-//            "                  and fm.financialMonthStatus.id=1" +
-//            "                  and case fpt.calendarTypeId when 2 then extract(month from TO_DATE(TO_char(fd.documentDate,'mm/dd/yyyy'),'mm/dd/yyyy'))" +
-//            "                                              when 1 then TO_NUMBER(substr(TO_CHAR(TO_DATE(TO_char(fd.documentDate,'mm/dd/yyyy'),'mm/dd/yyyy'),'yyyy/mm/dd','NLS_CALENDAR=persian'),6,2)) " +
-//            "                       end = case when fpt.calendarYearFlag = 1 then (fpt.fromMonth + (fmt.monthNumber-1)) " +
-//            "                       else  " +
-//            "                       case when (fpt.fromMonth + (fmt.monthNumber-1)) > 12 then (fpt.fromMonth + (fmt.monthNumber-13)) else (fpt.fromMonth+(fmt.monthNumber-1)) end" +
-//            "                       end" +
-//            "                     )")
-//    FinancialDocument getActivePeriodAndMontInDocument(Long financialDocumentId);
-
     @Query(value = " select 1" +
             "  from fndc.financial_document fd" +
             " inner join fnpr.financial_period t" +

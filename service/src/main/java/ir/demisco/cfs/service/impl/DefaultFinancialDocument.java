@@ -97,8 +97,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialPeriodService financialPeriodService;
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
     private final FinancialPeriodRepository financialPeriodRepository;
-//    private final FinancialDocumentService financialDocumentService;
-
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
@@ -121,7 +119,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.financialPeriodService = financialPeriodService;
         this.financialDocumentSecurityService = financialDocumentSecurityService;
         this.financialPeriodRepository = financialPeriodRepository;
-//        this.financialDocumentService = financialDocumentService;
     }
 
 
@@ -1170,7 +1167,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     || financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() == null) {
                 throw new RuleException("fin.financialPeriod.getStatusCheck");
             }
-        } else if (financialPeriodLedgerStatusRequest.getFinancialDocumentId() == null && financialPeriodLedgerStatusRequest.getFinancialPeriodId() == null
+        }
+        if (financialPeriodLedgerStatusRequest.getFinancialDocumentId() == null && financialPeriodLedgerStatusRequest.getFinancialPeriodId() == null
                 && financialPeriodLedgerStatusRequest.getDate() != null && financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() != null) {
             FinancialPeriodRequest financialPeriodRequest = new FinancialPeriodRequest();
             financialPeriodRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
