@@ -61,17 +61,18 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
         financialLedgerPeriodRepository.save(financialLedgerPeriod);
 
         List<Long> financialMonth = financialMonthRepository.findByFinancialMonth(financialLedgerPeriodRequest.getFinancialPeriodId());
-
+        if (financialMonth.size() == 0) {
+            throw new RuleException("به ازای این دوره مالی ماه عملیاتی یافت نشد");
+        }
         financialMonth.forEach((Long e) -> {
             FinancialLedgerMonth financialLedgerMonth = new FinancialLedgerMonth();
             financialLedgerMonth.setFinancialLedgerMonthStatus(financialLedgerMonthStatusRepository.getOne(1L));
             financialLedgerMonth.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialLedgerPeriodRequest.getFinancialLedgerTypeId()));
-            financialLedgerMonth.setFinancialMonth(financialMonthRepository.getOne(e));
+            financialLedgerMonth.setFinancialMonth(financialMonthRepository.getOne(financialMonth.get(0)));
             financialLedgerMonth.setFinancialLedgerPeriod(financialLedgerPeriodRepository.getOne(financialLedgerPeriod.getId()));
             financialLedgerMonthRepository.save(financialLedgerMonth);
 
         });
-
 
         return true;
     }
