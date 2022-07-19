@@ -10,19 +10,21 @@ import java.util.List;
 
 public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod, Long> {
 
-    @Query(value = " SELECT  MIN(FP.START_DATE)  " +
-            "  FROM FNPR.FINANCIAL_PERIOD FP  " +
-            " INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT  " +
-            "    ON FP.FINAN_PERIOD_TYPE_ASSIGN_ID = FPT.ID  " +
-            "   AND FPT.ORGANIZATION_ID = :organizationId  " +
-            "   AND FPT.DELETED_DATE IS NULL  " +
-            "   AND FPT.ACTIVE_FLAG = 1  " +
-            " INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY  " +
-            "    ON FPT.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID  " +
-            " WHERE FP.FINANCIAL_PERIOD_STATUS_ID = 1  " +
+    @Query(value = " SELECT " +
+            " MIN(FP.START_DATE)" +
+            "  FROM FNPR.FINANCIAL_PERIOD FP" +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT" +
+            "    ON FP.ID = FPT.FINANCIAL_PERIOD_ID" +
+            "   AND FPT.ORGANIZATION_ID = :organizationId" +
+            "   AND FPT.DELETED_DATE IS NULL" +
+            "   AND FPT.ACTIVE_FLAG = 1" +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY" +
+            "    ON FP.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID" +
+            " WHERE FP.FINANCIAL_PERIOD_STATUS_ID = 1" +
             "   AND FP.DELETED_DATE IS NULL "
             , nativeQuery = true)
     LocalDateTime findByFinancialPeriodByOrganization(Long organizationId);
+
 
     @Query(value = " SELECT  MAX(FP.START_DATE)  " +
             "    FROM FNPR.FINANCIAL_PERIOD FP  " +
@@ -42,6 +44,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " (SELECT DOCUMENT_DATE, " +
             "         DOCUMENT_SEQUENCE, " +
             "         DOCUMENT_NUMBER, " +
+            "         FINANCIAL_DOCUMENT_ID, " +
             "         DESCRIPTION, " +
             "         ID FINANCIAL_ACCOUNT_ID, " +
             "         FINANCIAL_ACCOUNT_CODE, " +
@@ -316,7 +319,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "          FROM MAIN_QRY " +
             "        UNION " +
             "        SELECT NULL AS DOCUMENT_DATE, " +
-            "               NULL AS DOCUMENT_NUMBER, " +
+            "               NULL AS DOCUMENT_NUMBER," +
+            "               NULL AS FINANCIAL_DOCUMENT_ID " +
             "               NULL AS DOCUMENT_SEQUENCE, " +
             "               NULL AS DESCRIPTION, " +
             "               NULL AS FINANCIAL_ACCOUNT_ID, " +
@@ -356,6 +360,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " (SELECT DOCUMENT_DATE, " +
             "         DOCUMENT_SEQUENCE, " +
             "         DOCUMENT_NUMBER, " +
+            "         FINANCIAL_DOCUMENT_ID, " +
             "         DESCRIPTION, " +
             "         ID FINANCIAL_ACCOUNT_ID, " +
             "         FINANCIAL_ACCOUNT_CODE, " +
@@ -631,6 +636,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "        UNION " +
             "        SELECT NULL AS DOCUMENT_DATE, " +
             "               NULL AS DOCUMENT_NUMBER, " +
+            "  NULL AS FINANCIAL_DOCUMENT_ID " +
             "               NULL AS DOCUMENT_SEQUENCE, " +
             "               NULL AS DESCRIPTION, " +
             "               NULL AS FINANCIAL_ACCOUNT_ID, " +
@@ -1375,13 +1381,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               ON FNMT.ID = FNMN.FINANCIAL_MONTH_TYPE_ID" +
             "            WHERE FNMN.FINANCIAL_PERIOD_ID = :financialPeriodId " +
             "              AND FNLM.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
-//            " AND TO_DATE(TO_CHAR(trunc(:dateBetween), 'mm/dd/yyyy'), 'mm/dd/yyyy')  BETWEEN FNP.START_DATE AND FNP.END_DATE" +
-
-
-
             "        and :dateBetween  BETWEEN FNP.START_DATE AND FNP.END_DATE  " +
-
-
             "              AND (CASE CALENDAR_TYPE_ID" +
             "                    WHEN 2 THEN" +
             "                     EXTRACT(MONTH FROM TO_DATE(TO_CHAR(trunc(:date), 'mm/dd/yyyy')," +
