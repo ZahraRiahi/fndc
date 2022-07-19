@@ -29,12 +29,11 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
     @Query(value = " SELECT  MAX(FP.START_DATE)  " +
             "    FROM FNPR.FINANCIAL_PERIOD FP  " +
             "    INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT  " +
-            "    ON FP.FINAN_PERIOD_TYPE_ASSIGN_ID = FPT.ID  " +
+            "    ON FP.id = FPT.FINANCIAL_PERIOD_ID  " +
             "    AND FPT.ORGANIZATION_ID = :organizationId  " +
-            "    AND FPT.DELETED_DATE IS NULL  " +
             "    AND FPT.ACTIVE_FLAG = 1  " +
             "    INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY  " +
-            "    ON FPT.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID  " +
+            "    ON FP.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID  " +
             "    WHERE FP.DELETED_DATE IS NULL  " +
             "    AND trunc(:startDate) > = FP.START_DATE "
             , nativeQuery = true)
@@ -677,12 +676,11 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
     @Query(value = " SELECT  MIN(FP.START_DATE)  " +
             "      FROM FNPR.FINANCIAL_PERIOD FP  " +
             "     INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT  " +
-            "        ON FP.FINAN_PERIOD_TYPE_ASSIGN_ID = FPT.ID  " +
+            "       ON FP.ID = FPT.FINANCIAL_PERIOD_ID  " +
             "       AND FPT.ORGANIZATION_ID = :organizationId  " +
-            "       AND FPT.DELETED_DATE IS NULL  " +
             "       AND FPT.ACTIVE_FLAG = 1  " +
             "     INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY  " +
-            "        ON FPT.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID  " +
+            " ON FP.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID " +
             "     WHERE FP.DELETED_DATE IS NULL  "
             , nativeQuery = true)
     LocalDateTime findByFinancialPeriodByOrganization2(Long organizationId);
@@ -1413,6 +1411,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
     @Query(value = " WITH QRY AS" +
             " (SELECT NVL(FINANCIAL_ACCOUNT_CODE, '') ||" +
             "         NVL(FINANCIAL_ACCOUNT_DESCRIPTION, '') FINANCIAL_ACCOUNT_DESC," +
+            "         FINANCIAL_ACCOUNT_ID, " +
             "         SUM_DEBIT," +
             "         SUM_CREDIT," +
             "         BEF_DEBIT," +
@@ -1504,7 +1503,19 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC5" +
             "              ON CNAC5.ID = FDI.CENTRIC_ACCOUNT_ID_5" +
             "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
-            "              ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6" +
+            "              ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6 " +
+            " LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT1" +
+            "              ON CNAC1.CENTRIC_ACCOUNT_TYPE_ID = CNAT1.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT2" +
+            "              ON CNAC2.CENTRIC_ACCOUNT_TYPE_ID = CNAT2.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT3" +
+            "              ON CNAC3.CENTRIC_ACCOUNT_TYPE_ID = CNAT3.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT4" +
+            "              ON CNAC4.CENTRIC_ACCOUNT_TYPE_ID = CNAT4.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT5" +
+            "              ON CNAC5.CENTRIC_ACCOUNT_TYPE_ID = CNAT5.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT6" +
+            "              ON CNAC6.CENTRIC_ACCOUNT_TYPE_ID = CNAT6.ID" +
             "           WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId" +
             "             AND FD.DOCUMENT_DATE BETWEEN trunc(:periodStartDate) AND trunc(:toDate)" +
             "             AND (FDN.DOCUMENT_NUMBER <= :toNumber OR :toNumber IS NULL)" +
@@ -1527,7 +1538,21 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 (:cnacId1 = CNAC1.ID OR :cnacId1 = CNAC2.ID OR" +
             "                 :cnacId1 = CNAC3.ID OR :cnacId1 = CNAC4.ID OR" +
             "                 :cnacId1 = CNAC5.ID OR :cnacId1 = CNAC6.ID))" +
-            "                 OR (:cnacIdObj1 IS NULL AND :cnacIdObj2 IS NULL))" +
+            "                 OR (:cnacIdObj1 IS NULL AND :cnacIdObj2 IS NULL)) " +
+
+            "             AND ((:cnatIdObj1 IS NOT NULL AND :cnatIdObj2 IS NOT NULL AND" +
+            "                 ((:cnatId1 = CNAT1.ID AND CNAT2.ID = :cnatId2) OR" +
+            "                 (:cnatId1 = CNAT2.ID AND CNAT3.ID = :cnatId2) OR" +
+            "                 (:cnatId1 = CNAT3.ID AND CNAT4.ID = :cnatId2) OR" +
+            "                 (:cnatId1 = CNAT4.ID AND CNAT5.ID = :cnatId2) OR" +
+            "                 (:cnatId1 = CNAT5.ID AND CNAT6.ID = :cnatId2)))" +
+            "                 OR " +
+            "                 ((:cnatIdObj1 IS NOT NULL AND :cnatIdObj2 IS NULL) AND" +
+            "                 (:cnatId1 = CNAT1.ID OR :cnatId1 = CNAT2.ID OR" +
+            "                 :cnatId1 = CNAT3.ID OR :cnatId1 = CNAT4.ID OR" +
+            "                 :cnatId1 = CNAT5.ID OR :cnatId1 = CNAT6.ID))" +
+            "                 OR (:cnatIdObj1 IS NULL AND :cnatIdObj2 IS NULL))" +
+
             "           GROUP BY FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
             "                    FA2.ID," +
             "                    FA2.CODE," +
@@ -1556,6 +1581,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         (SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT) = 0)" +
             "   ORDER BY FINANCIAL_ACCOUNT_CODE)" +
             "SELECT FINANCIAL_ACCOUNT_DESC," +
+            "FINANCIAL_ACCOUNT_ID, " +
             "       SUM_DEBIT," +
             "       SUM_CREDIT," +
             "       BEF_DEBIT," +
@@ -1568,6 +1594,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "  FROM QRY" +
             " UNION " +
             " SELECT NULL FINANCIAL_ACCOUNT_DESC," +
+            " NULL FINANCIAL_ACCOUNT_ID," +
             "       SUM(SUM_DEBIT) SUM_DEBIT," +
             "       SUM(SUM_CREDIT) SUM_CREDIT," +
             "       0 BEF_DEBIT," +
@@ -1581,7 +1608,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             , nativeQuery = true)
     List<Object[]> findByFinancialPeriodByCentricBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId
             , LocalDateTime periodStartDate, int length, String fromFinancialAccountCode,
-                                                               String toFinancialAccountCode, Long organizationId, Object cnacIdObj1, Long cnacId1, Object cnacIdObj2, Long cnacId2, Long remainOption);
+                                                               String toFinancialAccountCode, Long organizationId, Object cnacIdObj1, Long cnacId1, Object cnacIdObj2, Long cnacId2, Object cnatIdObj1, Long cnatId1, Object cnatIdObj2, Long cnatId2, Long remainOption);
 
     @Query(value = " SELECT T.FINANCIAL_PERIOD_ID, T.DOCUMENT_DATE, T.financial_ledger_type_id " +
             "  FROM FNDC.FINANCIAL_DOCUMENT T " +

@@ -6,6 +6,7 @@ public class FinancialAccountTurnOverRecordsResponse {
     private Date documentDate;
     private String documentNumber;
     private String description;
+    private Long financialDocumentId;
     private String debitAmount;
     private String creditAmount;
     private String remainDebit;
@@ -38,6 +39,14 @@ public class FinancialAccountTurnOverRecordsResponse {
 
     public void setDescription(String description) {
         this.description = description;
+    }
+
+    public Long getFinancialDocumentId() {
+        return financialDocumentId;
+    }
+
+    public void setFinancialDocumentId(Long financialDocumentId) {
+        this.financialDocumentId = financialDocumentId;
     }
 
     public String getDebitAmount() {
@@ -124,7 +133,10 @@ public class FinancialAccountTurnOverRecordsResponse {
             financialAccountTurnOverRecordsResponse.setDescription(description);
             return this;
         }
-
+        public Builder financialDocumentId(Long financialDocumentId) {
+            financialAccountTurnOverRecordsResponse.setFinancialDocumentId(financialDocumentId);
+            return this;
+        }
         public Builder debitAmount(String debitAmount) {
             financialAccountTurnOverRecordsResponse.setDebitAmount(debitAmount);
             return this;
