@@ -2,6 +2,7 @@ package ir.demisco.cfs.model.dto.response;
 
 public class FinancialDocumentCentricBalanceResponse {
     private String financialAccountDescription;
+    private Long financialAccountId;
     private String sumDebit;
     private String sumCredit;
     private String befDebit;
@@ -18,6 +19,14 @@ public class FinancialDocumentCentricBalanceResponse {
 
     public void setFinancialAccountDescription(String financialAccountDescription) {
         this.financialAccountDescription = financialAccountDescription;
+    }
+
+    public Long getFinancialAccountId() {
+        return financialAccountId;
+    }
+
+    public void setFinancialAccountId(Long financialAccountId) {
+        this.financialAccountId = financialAccountId;
     }
 
     public String getSumDebit() {
@@ -110,7 +119,10 @@ public class FinancialDocumentCentricBalanceResponse {
             financialDocumentCentricBalanceResponse.setFinancialAccountDescription(financialAccountDescription);
             return this;
         }
-
+        public Builder financialAccountId(Long financialAccountId) {
+            financialDocumentCentricBalanceResponse.setFinancialAccountId(financialAccountId);
+            return this;
+        }
         public Builder sumDebit(String sumDebit) {
             financialDocumentCentricBalanceResponse.setSumDebit(sumDebit);
             return this;

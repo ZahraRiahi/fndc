@@ -17,9 +17,13 @@ public class FinancialDocumentCentricBalanceReportRequest {
     private Long dateFilterFlg;
     private Long cnacId1;
     private Long cnacId2;
+    private Long cnatId1;
+    private Long cnatId2;
     private LocalDateTime periodStartDate;
     private Object cnacIdObj1;
     private Object cnacIdObj2;
+    private Object cnatIdObj1;
+    private Object cnatIdObj2;
     Map<String, Object> paramMap;
 
     public LocalDateTime getFromDate() {
@@ -126,6 +130,22 @@ public class FinancialDocumentCentricBalanceReportRequest {
         this.cnacId2 = cnacId2;
     }
 
+    public Long getCnatId1() {
+        return cnatId1;
+    }
+
+    public void setCnatId1(Long cnatId1) {
+        this.cnatId1 = cnatId1;
+    }
+
+    public Long getCnatId2() {
+        return cnatId2;
+    }
+
+    public void setCnatId2(Long cnatId2) {
+        this.cnatId2 = cnatId2;
+    }
+
     public LocalDateTime getPeriodStartDate() {
         return periodStartDate;
     }
@@ -148,6 +168,22 @@ public class FinancialDocumentCentricBalanceReportRequest {
 
     public void setCnacIdObj2(Object cnacIdObj2) {
         this.cnacIdObj2 = cnacIdObj2;
+    }
+
+    public Object getCnatIdObj1() {
+        return cnatIdObj1;
+    }
+
+    public void setCnatIdObj1(Object cnatIdObj1) {
+        this.cnatIdObj1 = cnatIdObj1;
+    }
+
+    public Object getCnatIdObj2() {
+        return cnatIdObj2;
+    }
+
+    public void setCnatIdObj2(Object cnatIdObj2) {
+        this.cnatIdObj2 = cnatIdObj2;
     }
 
     public Map<String, Object> getParamMap() {

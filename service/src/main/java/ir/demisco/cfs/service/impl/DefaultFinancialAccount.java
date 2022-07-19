@@ -73,13 +73,14 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 FinancialAccountTurnOverRecordsResponse recordsResponse = new FinancialAccountTurnOverRecordsResponse();
                 recordsResponse.setDocumentDate(getItemForDate(item, 0));
                 recordsResponse.setDocumentNumber(getItemForString(item, 2));
-                recordsResponse.setDescription(getItemForString(item, 3));
-                recordsResponse.setDebitAmount(getItemForString(item, 7));
-                recordsResponse.setCreditAmount(getItemForString(item, 8));
-                recordsResponse.setRemainDebit(getItemForString(item, 9));
-                recordsResponse.setRemainCredit(getItemForString(item, 10));
-                recordsResponse.setRemainAmount(getItemForString(item, 11));
-                recordsResponse.setRecordType(getItemForLong(item, 17));
+                recordsResponse.setFinancialDocumentId(getItemForLong(item, 3));
+                recordsResponse.setDescription(getItemForString(item, 4));
+                recordsResponse.setDebitAmount(getItemForString(item, 8));
+                recordsResponse.setCreditAmount(getItemForString(item, 9));
+                recordsResponse.setRemainDebit(getItemForString(item, 10));
+                recordsResponse.setRemainCredit(getItemForString(item, 11));
+                recordsResponse.setRemainAmount(getItemForString(item, 12));
+                recordsResponse.setRecordType(getItemForLong(item, 18));
                 recordsResponseList.add(recordsResponse);
                 response.setFinancialAccountTurnOverRecordsResponseModel(recordsResponseList);
             } else {
@@ -1098,14 +1099,16 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             if (item[9] != null && (Long.parseLong(item[9].toString()) == 1 || Long.parseLong(item[9].toString()) == 2)) {
                 FinancialDocumentCentricBalanceResponse recordsResponse = new FinancialDocumentCentricBalanceResponse();
                 recordsResponse.setFinancialAccountDescription(getItemForString(item, 0));
-                recordsResponse.setSumDebit(getItemForString(item, 1));
-                recordsResponse.setSumCredit(getItemForString(item, 2));
-                recordsResponse.setBefDebit(getItemForString(item, 3));
-                recordsResponse.setBefCredit(getItemForString(item, 4));
-                recordsResponse.setRemDebit(getItemForString(item, 5));
-                recordsResponse.setRemCredit(getItemForString(item, 6));
-                recordsResponse.setCentricAccountDescription(getItemForString(item, 7));
-                recordsResponse.setRecordType(getItemForLong(item, 9));
+                recordsResponse.setFinancialAccountId(getItemForLong(item, 1));
+
+                recordsResponse.setSumDebit(getItemForString(item, 2));
+                recordsResponse.setSumCredit(getItemForString(item, 3));
+                recordsResponse.setBefDebit(getItemForString(item, 4));
+                recordsResponse.setBefCredit(getItemForString(item, 5));
+                recordsResponse.setRemDebit(getItemForString(item, 6));
+                recordsResponse.setRemCredit(getItemForString(item, 7));
+                recordsResponse.setCentricAccountDescription(getItemForString(item, 8));
+                recordsResponse.setRecordType(getItemForLong(item, 10));
                 recordsResponseList.add(recordsResponse);
                 response.setFinancialAccountCentricBalanceRecordsModel(recordsResponseList);
             } else {
@@ -1371,6 +1374,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialDocumentCentricBalanceReportRequest.getPeriodStartDate(), length
                 , financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode(), financialDocumentCentricBalanceReportRequest.getToFinancialAccountCode()
                 , SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentCentricBalanceReportRequest.getCnacIdObj1(), financialDocumentCentricBalanceReportRequest.getCnacId1(), financialDocumentCentricBalanceReportRequest.getCnacIdObj2(), financialDocumentCentricBalanceReportRequest.getCnacId2()
+                , financialDocumentCentricBalanceReportRequest.getCnatIdObj1(), financialDocumentCentricBalanceReportRequest.getCnatId1(),
+                financialDocumentCentricBalanceReportRequest.getCnatIdObj2(), financialDocumentCentricBalanceReportRequest.getCnatId2()
                 , financialDocumentCentricBalanceReportRequest.getRemainOption());
     }
 }
