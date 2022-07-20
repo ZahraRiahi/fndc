@@ -536,13 +536,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                     checkDocumentNumberingTypeIdSet(financialDocumentCentricTurnOverRequest, item);
                     break;
 
-//                case "centricAccountId1":
-//                    checkCentricAccountId1Set(financialDocumentCentricTurnOverRequest, item);
-//                    break;
-//                case "centricAccountId2":
-//                    checkCentricAccountId2Set(financialDocumentCentricTurnOverRequest, item);
-//                    break;
-
                 case "fromNumber":
                     checkFromNumberSet(financialDocumentCentricTurnOverRequest, item);
                     break;
@@ -653,36 +646,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         financialDocumentCentricTurnOverRequest.setDocumentNumberingTypeId(Long.parseLong(item.getValue().toString()));
     }
 
-//    private void checkCentricAccountId1Set(FinancialDocumentCentricTurnOverRequest
-//                                                   financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
-//        Map<String, Object> map = new HashMap<>();
-//        if (item.getValue() != null) {
-//            map.put("centricAccount1", "centricAccount1");
-//            financialDocumentCentricTurnOverRequest.setParamMap(map);
-//            financialDocumentCentricTurnOverRequest.setCentricAccountId1(Long.parseLong(item.getValue().toString()));
-//            financialDocumentCentricTurnOverRequest.setCentricAccount1(item.getValue().toString());
-//        } else {
-//            map.put("centricAccount1", null);
-//            financialDocumentCentricTurnOverRequest.setParamMap(map);
-//            financialDocumentCentricTurnOverRequest.setCentricAccountId1(null);
-//        }
-//    }
-
-//    private void checkCentricAccountId2Set(FinancialDocumentCentricTurnOverRequest
-//                                                   financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
-//        Map<String, Object> map = new HashMap<>();
-//        if (item.getValue() != null) {
-//            map.put("centricAccount2", "centricAccount2");
-//            financialDocumentCentricTurnOverRequest.setParamMap(map);
-//            financialDocumentCentricTurnOverRequest.setCentricAccountId2(Long.parseLong(item.getValue().toString()));
-//            financialDocumentCentricTurnOverRequest.setCentricAccount2(item.getValue().toString());
-//        } else {
-//            map.put("centricAccount2", null);
-//            financialDocumentCentricTurnOverRequest.setParamMap(map);
-//            financialDocumentCentricTurnOverRequest.setCentricAccountId2(null);
-//        }
-//    }
-
     private void checkReferenceNumberSet(FinancialDocumentCentricTurnOverRequest
                                                  financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
@@ -713,6 +676,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             financialDocumentCentricTurnOverRequest.setCnatId1(0L);
         }
     }
+
     private void checkCnatId2Set(FinancialDocumentCentricTurnOverRequest
                                          financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
@@ -727,6 +691,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             financialDocumentCentricTurnOverRequest.setCnatId2(0L);
         }
     }
+
     private void checkFromNumberSet(FinancialDocumentCentricTurnOverRequest
                                             financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
