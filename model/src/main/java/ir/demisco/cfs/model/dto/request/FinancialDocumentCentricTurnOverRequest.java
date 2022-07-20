@@ -8,10 +8,6 @@ public class FinancialDocumentCentricTurnOverRequest {
     private LocalDateTime fromDate;
     private LocalDateTime toDate;
     private Long documentNumberingTypeId;
-    private Long centricAccountId1;
-    private Long centricAccountId2;
-    private Object centricAccount1;
-    private Object centricAccount2;
     private String fromNumber;
     private String toNumber;
     private Boolean flgHasRemind;
@@ -23,6 +19,14 @@ public class FinancialDocumentCentricTurnOverRequest {
     private Long referenceNumber;
     private Object referenceNumberObject;
     private Object financialAccount;
+    private Object cnacIdObj1;
+    private Object cnacIdObj2;
+    private Object cnatIdObj1;
+    private Object cnatIdObj2;
+    private Long cnacId1;
+    private Long cnacId2;
+    private Long cnatId1;
+    private Long cnatId2;
     Map<String, Object> paramMap;
 
     public Long getFinancialAccountId() {
@@ -55,38 +59,6 @@ public class FinancialDocumentCentricTurnOverRequest {
 
     public void setDocumentNumberingTypeId(Long documentNumberingTypeId) {
         this.documentNumberingTypeId = documentNumberingTypeId;
-    }
-
-    public Long getCentricAccountId1() {
-        return centricAccountId1;
-    }
-
-    public void setCentricAccountId1(Long centricAccountId1) {
-        this.centricAccountId1 = centricAccountId1;
-    }
-
-    public Long getCentricAccountId2() {
-        return centricAccountId2;
-    }
-
-    public void setCentricAccountId2(Long centricAccountId2) {
-        this.centricAccountId2 = centricAccountId2;
-    }
-
-    public Object getCentricAccount1() {
-        return centricAccount1;
-    }
-
-    public void setCentricAccount1(Object centricAccount1) {
-        this.centricAccount1 = centricAccount1;
-    }
-
-    public Object getCentricAccount2() {
-        return centricAccount2;
-    }
-
-    public void setCentricAccount2(Object centricAccount2) {
-        this.centricAccount2 = centricAccount2;
     }
 
     public String getFromNumber() {
@@ -175,6 +147,70 @@ public class FinancialDocumentCentricTurnOverRequest {
 
     public void setFinancialAccount(Object financialAccount) {
         this.financialAccount = financialAccount;
+    }
+
+    public Object getCnacIdObj1() {
+        return cnacIdObj1;
+    }
+
+    public void setCnacIdObj1(Object cnacIdObj1) {
+        this.cnacIdObj1 = cnacIdObj1;
+    }
+
+    public Object getCnacIdObj2() {
+        return cnacIdObj2;
+    }
+
+    public void setCnacIdObj2(Object cnacIdObj2) {
+        this.cnacIdObj2 = cnacIdObj2;
+    }
+
+    public Object getCnatIdObj1() {
+        return cnatIdObj1;
+    }
+
+    public void setCnatIdObj1(Object cnatIdObj1) {
+        this.cnatIdObj1 = cnatIdObj1;
+    }
+
+    public Object getCnatIdObj2() {
+        return cnatIdObj2;
+    }
+
+    public void setCnatIdObj2(Object cnatIdObj2) {
+        this.cnatIdObj2 = cnatIdObj2;
+    }
+
+    public Long getCnacId1() {
+        return cnacId1;
+    }
+
+    public void setCnacId1(Long cnacId1) {
+        this.cnacId1 = cnacId1;
+    }
+
+    public Long getCnacId2() {
+        return cnacId2;
+    }
+
+    public void setCnacId2(Long cnacId2) {
+        this.cnacId2 = cnacId2;
+    }
+
+    public Long getCnatId1() {
+        return cnatId1;
+    }
+
+    public void setCnatId1(Long cnatId1) {
+        this.cnatId1 = cnatId1;
+    }
+
+    public Long getCnatId2() {
+        return cnatId2;
+    }
+
+    public void setCnatId2(Long cnatId2) {
+        this.cnatId2 = cnatId2;
     }
 
     public Map<String, Object> getParamMap() {
