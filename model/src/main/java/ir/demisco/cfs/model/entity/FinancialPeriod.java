@@ -23,7 +23,6 @@ public class FinancialPeriod extends AuditModel<Long> {
     private LocalDateTime endDate;
     private Long openMonthCount;
     private FinancialPeriodStatus financialPeriodStatus;
-    private FinancialPeriodTypeAssign financialPeriodTypeAssign;
     private String description;
     private LocalDateTime deletedDate;
     private String code;
@@ -76,16 +75,6 @@ public class FinancialPeriod extends AuditModel<Long> {
 
     public void setEndDate(LocalDateTime endDate) {
         this.endDate = endDate;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FINAN_PERIOD_TYPE_ASSIGN_ID")
-    public FinancialPeriodTypeAssign getFinancialPeriodTypeAssign() {
-        return financialPeriodTypeAssign;
-    }
-
-    public void setFinancialPeriodTypeAssign(FinancialPeriodTypeAssign financialPeriodTypeAssign) {
-        this.financialPeriodTypeAssign = financialPeriodTypeAssign;
     }
 
     @Column(name = "DELETED_DATE")
