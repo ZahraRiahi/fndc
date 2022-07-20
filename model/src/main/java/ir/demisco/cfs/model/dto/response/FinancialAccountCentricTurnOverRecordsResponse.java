@@ -21,6 +21,8 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
     private Long centricAccountId4;
     private Long centricAccountId5;
     private Long centricAccountId6;
+    private Long documentNumber;
+    private Long financialDocumentId;
     private FinancialAccountTurnOverSummarizeResponse financialAccountTurnOverSummarizeModel;
 
     public String getAccountDescription() {
@@ -183,6 +185,22 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
         this.centricAccountId6 = centricAccountId6;
     }
 
+    public Long getDocumentNumber() {
+        return documentNumber;
+    }
+
+    public void setDocumentNumber(Long documentNumber) {
+        this.documentNumber = documentNumber;
+    }
+
+    public Long getFinancialDocumentId() {
+        return financialDocumentId;
+    }
+
+    public void setFinancialDocumentId(Long financialDocumentId) {
+        this.financialDocumentId = financialDocumentId;
+    }
+
     public FinancialAccountTurnOverSummarizeResponse getFinancialAccountTurnOverSummarizeModel() {
         return financialAccountTurnOverSummarizeModel;
     }
@@ -301,11 +319,18 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
             return this;
         }
 
+        public Builder documentNumber(Long documentNumber) {
+            financialAccountCentricTurnOverRecordsResponse.setDocumentNumber(documentNumber);
+            return this;
+        }
         public Builder centricAccountId6(Long centricAccountId6) {
             financialAccountCentricTurnOverRecordsResponse.setCentricAccountId6(centricAccountId6);
             return this;
         }
-
+        public Builder financialDocumentId(Long financialDocumentId) {
+            financialAccountCentricTurnOverRecordsResponse.setFinancialDocumentId(financialDocumentId);
+            return this;
+        }
         public FinancialAccountCentricTurnOverRecordsResponse build() {
             return financialAccountCentricTurnOverRecordsResponse;
         }

@@ -686,7 +686,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
     LocalDateTime findByFinancialPeriodByOrganization2(Long organizationId);
 
     @Query(value = " WITH MAIN_QRY AS " +
-            " (SELECT ID ACCOUNT_ID, " +
+            " (SELECT DOCUMENT_NUMBER, " +
+            "         FINANCIAL_DOCUMENT_ID, " +
+            "         ID ACCOUNT_ID, " +
             "         CODE ACCOUNT_CODE, " +
             "         DESCRIPTION ACCOUNT_DESCRIPTION, " +
             "         CENTRIC_ACCOUNT_ID_1, " +
@@ -752,7 +754,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         0 SUMMERIZE_CREDIT, " +
             "         0 SUMMERIZE_AMOUNT, " +
             "         RECORD_TYP " +
-            "    FROM (SELECT NULL AS CENTRIC_ACCOUNT_ID_1, " +
+            "    FROM (SELECT  NULL DOCUMENT_NUMBER, " +
+            "                 NULL FINANCIAL_DOCUMENT_ID, " +
+            "                 NULL AS CENTRIC_ACCOUNT_ID_1, " +
             "                 NULL AS CENTRIC_ACCOUNT_ID_2, " +
             "                 NULL AS CENTRIC_ACCOUNT_ID_3, " +
             "                 NULL AS CENTRIC_ACCOUNT_ID_4, " +
@@ -814,11 +818,23 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "              ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6 " +
             "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS " +
             "              ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT1" +
+            "              ON CNAC1.CENTRIC_ACCOUNT_TYPE_ID = CNAT1.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT2" +
+            "              ON CNAC2.CENTRIC_ACCOUNT_TYPE_ID = CNAT2.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT3" +
+            "              ON CNAC3.CENTRIC_ACCOUNT_TYPE_ID = CNAT3.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT4" +
+            "              ON CNAC4.CENTRIC_ACCOUNT_TYPE_ID = CNAT4.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT5" +
+            "              ON CNAC5.CENTRIC_ACCOUNT_TYPE_ID = CNAT5.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT6" +
+            "              ON CNAC6.CENTRIC_ACCOUNT_TYPE_ID = CNAT6.ID" +
             "           WHERE FD.ORGANIZATION_ID = :organizationId " +
             "             AND FD.DELETED_DATE IS NULL " +
             "             AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
-            " AND FD.DOCUMENT_DATE >= trunc(:periodStartDate) " +
-            " AND ((:dateFilterFlg = 1 AND FD.DOCUMENT_DATE < trunc(:fromDate)) OR" +
+            "             AND FD.DOCUMENT_DATE >= trunc(:periodStartDate) " +
+            "             AND ((:dateFilterFlg = 1 AND FD.DOCUMENT_DATE < trunc(:fromDate)) OR" +
             "                 (:dateFilterFlg = 0 AND" +
             "                 FD.DOCUMENT_DATE <=" +
             "                 (SELECT INER_DOC.DOCUMENT_DATE" +
@@ -830,11 +846,42 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                       AND INER_NUM.DOCUMENT_NUMBER = :fromNumber" +
             "                     WHERE INER_DOC.DELETED_DATE IS NULL" +
             "                       AND INER_NUM.DELETED_DATE IS NULL)))" +
-            "             AND FDN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
-            "             AND (:centricAccount1 IS NULL OR " +
-            "                 FDI.CENTRIC_ACCOUNT_ID_1 = :centricAccountId1) " +
-            "             AND (:centricAccount2 IS NULL OR " +
-            "                 FDI.CENTRIC_ACCOUNT_ID_2 = :centricAccountId2) " +
+            "             AND FDN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId" +
+            "              AND ((:cnacIdObj1 IS NOT NULL AND" +
+            "                 :cnacIdObj2 IS NOT NULL AND" +
+            "                 ((:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_1 AND" +
+            "                 FDI.CENTRIC_ACCOUNT_ID_2 = :cnacId2) OR" +
+            "                 (:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_2 AND" +
+            "                 FDI.CENTRIC_ACCOUNT_ID_3 = :cnacId2) OR" +
+            "                 (:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_3 AND" +
+            "                 FDI.CENTRIC_ACCOUNT_ID_4 = :cnacId2) OR" +
+            "                 (:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_4 AND" +
+            "                 FDI.CENTRIC_ACCOUNT_ID_5 = :cnacId2) OR" +
+            "                 (:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_5 AND" +
+            "                 FDI.CENTRIC_ACCOUNT_ID_6 = :cnacId2)))" +
+            "                 OR" +
+            "                 ((:cnacIdObj1 IS NOT NULL AND" +
+            "                 :cnacIdObj2 IS NULL) AND" +
+            "                 (:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_1 OR" +
+            "                 :cnacId1 = FDI.CENTRIC_ACCOUNT_ID_2 OR" +
+            "                 :cnacId1 = FDI.CENTRIC_ACCOUNT_ID_3 OR" +
+            "                 :cnacId1 = FDI.CENTRIC_ACCOUNT_ID_4 OR" +
+            "                 :cnacId1 = FDI.CENTRIC_ACCOUNT_ID_5 OR" +
+            "                 :cnacId1 = FDI.CENTRIC_ACCOUNT_ID_6))" +
+            "                 OR (:cnacIdObj1 IS NULL AND" +
+            "                 :cnacIdObj2 IS NULL))" +
+            "             AND ((:cnatIdObj1 IS NOT NULL AND :cnatIdObj2 IS NOT NULL AND" +
+            "                 ((:cnatId1 = CNAT1.ID AND CNAT2.ID = :cnatId2) OR" +
+            "                 (:cnatId1 = CNAT2.ID AND CNAT3.ID = :cnatId2) OR" +
+            "                 (:cnatId1 = CNAT3.ID AND CNAT4.ID = :cnatId2) OR" +
+            "                 (:cnatId1 = CNAT4.ID AND CNAT5.ID = :cnatId2) OR" +
+            "                 (:cnatId1= CNAT5.ID AND CNAT6.ID = :cnatId2)))" +
+            "                 OR" +
+            "                 ((:cnatIdObj1 IS NOT NULL AND :cnatIdObj2 IS NULL) AND" +
+            "                 (:cnatId1 = CNAT1.ID OR :cnatId1 = CNAT2.ID OR" +
+            "                 :cnatId1 = CNAT3.ID OR :cnatId1 = CNAT4.ID OR" +
+            "                 :cnatId1 = CNAT5.ID OR :cnatId1 = CNAT6.ID))" +
+            "                 OR (:cnatIdObj1 IS NULL AND :cnatIdObj2 IS NULL)) " +
             "             AND (:referenceNumberObject IS NULL OR " +
             "                 FDR.REFRENCE_NUMBER = :referenceNumber) " +
             "  AND ((:dateFilterFlg = 0 AND " +
@@ -851,7 +898,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                      AND ASL.DELETED_DATE IS NULL)) " +
             "             AND FDS.CODE > 10 " +
             "          UNION " +
-            "          SELECT FDI.CENTRIC_ACCOUNT_ID_1, " +
+            "          SELECT FD.DOCUMENT_NUMBER," +
+            "                 FD.ID  FINANCIAL_DOCUMENT_ID," +
+            "                 FDI.CENTRIC_ACCOUNT_ID_1, " +
             "                 FDI.CENTRIC_ACCOUNT_ID_2, " +
             "                 FDI.CENTRIC_ACCOUNT_ID_3, " +
             "                 FDI.CENTRIC_ACCOUNT_ID_4, " +
@@ -911,14 +960,26 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC5 " +
             "              ON CNAC5.ID = FDI.CENTRIC_ACCOUNT_ID_5 " +
             "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6 " +
-            "              ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6 " +
+            "              ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT1" +
+            "              ON CNAC1.CENTRIC_ACCOUNT_TYPE_ID = CNAT1.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT2" +
+            "              ON CNAC2.CENTRIC_ACCOUNT_TYPE_ID = CNAT2.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT3" +
+            "              ON CNAC3.CENTRIC_ACCOUNT_TYPE_ID = CNAT3.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT4" +
+            "              ON CNAC4.CENTRIC_ACCOUNT_TYPE_ID = CNAT4.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT5" +
+            "              ON CNAC5.CENTRIC_ACCOUNT_TYPE_ID = CNAT5.ID" +
+            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT6" +
+            "              ON CNAC6.CENTRIC_ACCOUNT_TYPE_ID = CNAT6.ID " +
             "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS " +
             "              ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
             "             AND FDS.DELETED_DATE IS NULL " +
             "           WHERE FD.ORGANIZATION_ID = :organizationId " +
             "             AND FD.DELETED_DATE IS NULL " +
             "             AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
-            " AND ((:dateFilterFlg = 1 AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND" +
+            "             AND ((:dateFilterFlg = 1 AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND" +
             "                 NVL(trunc(:toDate), SYSDATE) OR" +
             "                 (:dateFilterFlg = 0 AND" +
             "                 FD.DOCUMENT_DATE >=" +
@@ -932,10 +993,41 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                      WHERE INER_DOC.DELETED_DATE IS NULL" +
             "                        AND INER_NUM.DELETED_DATE IS NULL))))" +
             "             AND FDN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
-            "             AND (:centricAccount1 IS NULL OR " +
-            "                 FDI.CENTRIC_ACCOUNT_ID_1 = :centricAccountId1) " +
-            "             AND (:centricAccount2 IS NULL OR " +
-            "                 FDI.CENTRIC_ACCOUNT_ID_2 = :centricAccountId2) " +
+            "              AND ((:cnacIdObj1 IS NOT NULL AND" +
+            "                 :cnacIdObj2 IS NOT NULL AND" +
+            "                 ((:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_1 AND" +
+            "                 FDI.CENTRIC_ACCOUNT_ID_2 = :cnacId2) OR" +
+            "                 (:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_2 AND" +
+            "                 FDI.CENTRIC_ACCOUNT_ID_3 = :cnacId2) OR" +
+            "                 (:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_3 AND" +
+            "                 FDI.CENTRIC_ACCOUNT_ID_4 = :cnacId2) OR" +
+            "                 (:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_4 AND" +
+            "                 FDI.CENTRIC_ACCOUNT_ID_5 = :cnacId2) OR" +
+            "                 (:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_5 AND" +
+            "                 FDI.CENTRIC_ACCOUNT_ID_6 = :cnacId2)))" +
+            "                 OR" +
+            "                 ((:cnacIdObj1 IS NOT NULL AND" +
+            "                 :cnacIdObj2 IS NULL) AND" +
+            "                 (:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_1 OR" +
+            "                 :cnacId1 = FDI.CENTRIC_ACCOUNT_ID_2 OR" +
+            "                 :cnacId1 = FDI.CENTRIC_ACCOUNT_ID_3 OR" +
+            "                 :cnacId1 = FDI.CENTRIC_ACCOUNT_ID_4 OR" +
+            "                 :cnacId1 = FDI.CENTRIC_ACCOUNT_ID_5 OR" +
+            "                 :cnacId1 = FDI.CENTRIC_ACCOUNT_ID_6))" +
+            "                 OR (:cnacIdObj1 IS NULL AND" +
+            "                 :cnacIdObj2 IS NULL))" +
+            "             AND ((:cnatIdObj1 IS NOT NULL AND :cnatIdObj2 IS NOT NULL AND" +
+            "                 ((:cnatId1 = CNAT1.ID AND CNAT2.ID = :cnatId2) OR" +
+            "                 (:cnatId1 = CNAT2.ID AND CNAT3.ID = :cnatId2) OR" +
+            "                 (:cnatId1 = CNAT3.ID AND CNAT4.ID = :cnatId2) OR" +
+            "                 (:cnatId1 = CNAT4.ID AND CNAT5.ID = :cnatId2) OR" +
+            "                 (:cnatId1= CNAT5.ID AND CNAT6.ID = :cnatId2)))" +
+            "                 OR" +
+            "                 ((:cnatIdObj1 IS NOT NULL AND :cnatIdObj2 IS NULL) AND" +
+            "                 (:cnatId1 = CNAT1.ID OR :cnatId1 = CNAT2.ID OR" +
+            "                 :cnatId1 = CNAT3.ID OR :cnatId1 = CNAT4.ID OR" +
+            "                 :cnatId1 = CNAT5.ID OR :cnatId1 = CNAT6.ID))" +
+            "                 OR (:cnatIdObj1 IS NULL AND :cnatIdObj2 IS NULL)) " +
             "             AND (:referenceNumberObject IS NULL OR " +
             "                 FDR.REFRENCE_NUMBER = :referenceNumber) " +
             "             AND ((:dateFilterFlg = 0 AND " +
@@ -943,44 +1035,46 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 NVL(:fromNumber, FDN.DOCUMENT_NUMBER) AND " +
             "                 FDN.DOCUMENT_NUMBER <= NVL(:toNumber, FDN.DOCUMENT_NUMBER)) OR " +
             "                 :dateFilterFlg = 1) " +
-
             "    AND (:financialAccount is null or  fdi.financial_account_id  = :financialAccountId ) " +
             "                                and ( :financialAccount = 'financialAccount' or  FA2.ID =   fdi.financial_account_id ) " +
-
             "             AND FDS.CODE > 10 " +
-            "           GROUP BY FA.ID, " +
-            "                    FA.CODE, " +
-            "                    FA.DESCRIPTION, " +
-            "                    CASE " +
-            "                      WHEN FDI.CREDIT_AMOUNT > 0 THEN " +
-            "                       1 " +
-            "                      WHEN FDI.DEBIT_AMOUNT > 0 THEN " +
-            "                       0 " +
-            "                    END, " +
-            "                    FDI.CENTRIC_ACCOUNT_ID_1, " +
-            "                    FDI.CENTRIC_ACCOUNT_ID_2, " +
-            "                    FDI.CENTRIC_ACCOUNT_ID_3, " +
-            "                    FDI.CENTRIC_ACCOUNT_ID_4, " +
-            "                    FDI.CENTRIC_ACCOUNT_ID_5, " +
-            "                    FDI.CENTRIC_ACCOUNT_ID_6, " +
-            "                    CNAC1.CODE, " +
-            "                    CNAC2.CODE, " +
-            "                    CNAC3.CODE, " +
-            "                    CNAC4.CODE, " +
-            "                    CNAC5.CODE, " +
-            "                    CNAC6.CODE, " +
-            "                    CNAC1.NAME, " +
-            "                    CNAC2.NAME, " +
-            "                    CNAC3.NAME, " +
-            "                    CNAC4.NAME, " +
-            "                    CNAC5.NAME, " +
+            "           GROUP BY FD.DOCUMENT_NUMBER," +
+            "                    FD.ID," +
+            "                    FA.ID," +
+            "                    FA.CODE," +
+            "                    FA.DESCRIPTION," +
+            "                    CASE" +
+            "                      WHEN FDI.CREDIT_AMOUNT > 0 THEN" +
+            "                       1" +
+            "                      WHEN FDI.DEBIT_AMOUNT > 0 THEN" +
+            "                       0" +
+            "                    END," +
+            "                    FDI.CENTRIC_ACCOUNT_ID_1," +
+            "                    FDI.CENTRIC_ACCOUNT_ID_2," +
+            "                    FDI.CENTRIC_ACCOUNT_ID_3," +
+            "                    FDI.CENTRIC_ACCOUNT_ID_4," +
+            "                    FDI.CENTRIC_ACCOUNT_ID_5," +
+            "                    FDI.CENTRIC_ACCOUNT_ID_6," +
+            "                    CNAC1.CODE," +
+            "                    CNAC2.CODE," +
+            "                    CNAC3.CODE," +
+            "                    CNAC4.CODE," +
+            "                    CNAC5.CODE," +
+            "                    CNAC6.CODE," +
+            "                    CNAC1.NAME," +
+            "                    CNAC2.NAME," +
+            "                    CNAC3.NAME," +
+            "                    CNAC4.NAME," +
+            "                    CNAC5.NAME," +
             "                    CNAC6.NAME) " +
             "   ORDER BY ID) " +
             " SELECT * " +
             "  FROM (SELECT * " +
             "          FROM MAIN_QRY " +
             "        UNION " +
-            "        SELECT NULL ACCOUNT_ID, " +
+            "        SELECT NULL DOCUMENT_NUMBER," +
+            "               NULL FINANCIAL_DOCUMENT_ID," +
+            "               NULL ACCOUNT_ID, " +
             "               NULL ACCOUNT_CODE, " +
             "               NULL ACCOUNT_DESCRIPTION, " +
             "               NULL CENTRIC_ACCOUNT_ID_1, " +
@@ -1021,8 +1115,10 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "          FROM MAIN_QRY) " +
             " ORDER BY RECORD_TYP "
             , nativeQuery = true)
-    List<Object[]> findByFinancialAccountCentricTurnOver(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate, Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId,
-                                                         String fromNumber, Object centricAccount1, Long centricAccountId1, Object centricAccount2, Long centricAccountId2, Object referenceNumberObject,
+    List<Object[]> findByFinancialAccountCentricTurnOver(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate, Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId,String fromNumber,
+                                                         Object cnacIdObj1, Object cnacIdObj2, Long cnacId1, Long cnacId2, Object cnatIdObj1, Object cnatIdObj2,
+                                                         Long cnatId1, Long cnatId2,
+                                                         Object referenceNumberObject,
                                                          Long referenceNumber, Object financialAccount, Long financialAccountId, LocalDateTime toDate, String toNumber);
 
     @Query(value = " WITH QRY AS " +
