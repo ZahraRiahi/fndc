@@ -676,22 +676,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             financialDocumentCentricTurnOverRequest.setCnatId1(0L);
         }
     }
-
-    private void checkCnatId2Set(FinancialDocumentCentricTurnOverRequest
-                                         financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("cnatIdObj2", "cnatIdObj2");
-            financialDocumentCentricTurnOverRequest.setParamMap(map);
-            financialDocumentCentricTurnOverRequest.setCnatId2(Long.parseLong(item.getValue().toString()));
-            financialDocumentCentricTurnOverRequest.setCnatIdObj2(financialDocumentCentricTurnOverRequest.getCnatId2());
-        } else {
-            map.put("cnatIdObj2", null);
-            financialDocumentCentricTurnOverRequest.setParamMap(map);
-            financialDocumentCentricTurnOverRequest.setCnatId2(0L);
-        }
-    }
-
     private void checkFromNumberSet(FinancialDocumentCentricTurnOverRequest
                                             financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
