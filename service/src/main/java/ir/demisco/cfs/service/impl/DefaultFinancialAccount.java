@@ -704,7 +704,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     }
 
     private void checkCnacId1CentricTurnOverSet(FinancialDocumentCentricTurnOverRequest
-                                         financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+                                                        financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("cnacIdObj1", "cnacIdObj1");
@@ -717,8 +717,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             financialDocumentCentricTurnOverRequest.setCnacId1(0L);
         }
     }
+
     private void checkCnacId2CentricTurnOverSet(FinancialDocumentCentricTurnOverRequest
-                                         financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+                                                        financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("cnacIdObj2", "cnacIdObj2");
@@ -1143,7 +1144,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         FinancialAccountCentricBalanceResponse response = new FinancialAccountCentricBalanceResponse();
         list.forEach((Object[] item) -> {
 
-            if (item[9] != null && (Long.parseLong(item[9].toString()) == 1 || Long.parseLong(item[9].toString()) == 2)) {
+            if (item[10] != null && (Long.parseLong(item[10].toString()) == 1 || Long.parseLong(item[10].toString()) == 2)) {
                 FinancialDocumentCentricBalanceResponse recordsResponse = new FinancialDocumentCentricBalanceResponse();
                 recordsResponse.setFinancialAccountDescription(getItemForString(item, 0));
                 recordsResponse.setFinancialAccountId(getItemForLong(item, 1));
@@ -1161,12 +1162,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             } else {
                 FinancialAccountTurnOverSummarizeResponse accountTurnOverSummarizeResponse = new FinancialAccountTurnOverSummarizeResponse();
                 FinancialAccountTurnOverOutputResponse outputResponse = new FinancialAccountTurnOverOutputResponse();
-                accountTurnOverSummarizeResponse.setSumDebit(getItemForLong(item, 1));
-                accountTurnOverSummarizeResponse.setSumCredit(getItemForLong(item, 2));
+                accountTurnOverSummarizeResponse.setSumDebit(getItemForLong(item, 2));
+                accountTurnOverSummarizeResponse.setSumCredit(getItemForLong(item, 3));
                 accountTurnOverSummarizeResponse.setSummarizeDebit(null);
                 accountTurnOverSummarizeResponse.setSummarizeCredit(null);
-                accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForString(item, 8));
-                accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 9));
+                accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForString(item, 9));
+                accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 10));
                 outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
                 response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
             }
@@ -1244,6 +1245,14 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 case "cnacId2":
                     checkCnacId2Set(financialDocumentCentricBalanceReportRequest, item);
                     break;
+                case "cnatId1":
+                    checkCnacId1CentricBalanceSet(financialDocumentCentricBalanceReportRequest, item);
+                    break;
+
+                case "cnatId2":
+                    checkCnacId2CentricBalanceSet(financialDocumentCentricBalanceReportRequest, item);
+                    break;
+
                 default:
                     break;
             }
@@ -1344,6 +1353,34 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
+    private void checkCnacId1CentricBalanceSet(FinancialDocumentCentricBalanceReportRequest
+                                                       financialDocumentCentricBalanceReportRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("cnatIdObj1", "cnatIdObj1");
+            financialDocumentCentricBalanceReportRequest.setParamMap(map);
+            financialDocumentCentricBalanceReportRequest.setCnatId1(Long.parseLong(item.getValue().toString()));
+            financialDocumentCentricBalanceReportRequest.setCnatIdObj1(financialDocumentCentricBalanceReportRequest.getCnatId1());
+        } else {
+            map.put("cnatIdObj1", null);
+            financialDocumentCentricBalanceReportRequest.setParamMap(map);
+            financialDocumentCentricBalanceReportRequest.setCnatId1(0L);
+        }
+    }
+    private void checkCnacId2CentricBalanceSet(FinancialDocumentCentricBalanceReportRequest
+                                                       financialDocumentCentricBalanceReportRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("cnatIdObj2", "cnatIdObj2");
+            financialDocumentCentricBalanceReportRequest.setParamMap(map);
+            financialDocumentCentricBalanceReportRequest.setCnatId2(Long.parseLong(item.getValue().toString()));
+            financialDocumentCentricBalanceReportRequest.setCnatIdObj2(financialDocumentCentricBalanceReportRequest.getCnatId2());
+        } else {
+            map.put("cnatIdObj2", null);
+            financialDocumentCentricBalanceReportRequest.setParamMap(map);
+            financialDocumentCentricBalanceReportRequest.setCnatId2(0L);
+        }
+    }
     private void checkFinancialAccountCentricBalanceSet(FinancialDocumentCentricBalanceReportRequest financialDocumentCentricBalanceReportRequest) {
         if (financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode() == null) {
             financialDocumentCentricBalanceReportRequest.setFromFinancialAccountCode("fin.financialAccount.fromOrToFinancialAccountCode");
