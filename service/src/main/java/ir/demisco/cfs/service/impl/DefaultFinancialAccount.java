@@ -432,7 +432,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         FinancialAccountCentricTurnOverOutputResponse response = new FinancialAccountCentricTurnOverOutputResponse();
         list.forEach((Object[] item) -> {
 
-            if (item[25] != null && (Long.parseLong(item[25].toString()) == 1 || Long.parseLong(item[25].toString()) == 2)) {
+            if (item[27] != null && (Long.parseLong(item[27].toString()) == 1 || Long.parseLong(item[27].toString()) == 2)) {
                 FinancialAccountCentricTurnOverRecordsResponse recordsResponse = new FinancialAccountCentricTurnOverRecordsResponse();
                 recordsResponse.setDocumentNumber(getItemForLong(item, 0));
                 recordsResponse.setFinancialDocumentId(getItemForLong(item, 1));
@@ -570,6 +570,17 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 case "cnatId1":
                     checkCnatId1Set(financialDocumentCentricTurnOverRequest, item);
                     break;
+                case "cnatId2":
+                    checkCnatId2Set(financialDocumentCentricTurnOverRequest, item);
+                    break;
+                case "cnacId1":
+                    checkCnacId1Set(financialDocumentCentricTurnOverRequest, item);
+                    break;
+
+                case "cnacId2":
+                    checkCnacId2Set(financialDocumentCentricTurnOverRequest, item);
+                    break;
+
                 default:
 
                     break;
@@ -671,11 +682,56 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             financialDocumentCentricTurnOverRequest.setCnatId1(Long.parseLong(item.getValue().toString()));
             financialDocumentCentricTurnOverRequest.setCnatIdObj1(financialDocumentCentricTurnOverRequest.getCnatId1());
         } else {
-            map.put("cnacIdObj1", null);
+            map.put("cnatIdObj1", null);
             financialDocumentCentricTurnOverRequest.setParamMap(map);
             financialDocumentCentricTurnOverRequest.setCnatId1(0L);
         }
     }
+
+    private void checkCnatId2Set(FinancialDocumentCentricTurnOverRequest
+                                         financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("cnatIdObj1", "cnatIdObj1");
+            financialDocumentCentricTurnOverRequest.setParamMap(map);
+            financialDocumentCentricTurnOverRequest.setCnatId2(Long.parseLong(item.getValue().toString()));
+            financialDocumentCentricTurnOverRequest.setCnatIdObj2(financialDocumentCentricTurnOverRequest.getCnatId2());
+        } else {
+            map.put("cnatIdObj1", null);
+            financialDocumentCentricTurnOverRequest.setParamMap(map);
+            financialDocumentCentricTurnOverRequest.setCnatId2(0L);
+        }
+    }
+
+    private void checkCnacId1Set(FinancialDocumentCentricTurnOverRequest
+                                         financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("cnacIdObj1", "cnacIdObj1");
+            financialDocumentCentricTurnOverRequest.setParamMap(map);
+            financialDocumentCentricTurnOverRequest.setCnacId1(Long.parseLong(item.getValue().toString()));
+            financialDocumentCentricTurnOverRequest.setCnacIdObj1(financialDocumentCentricTurnOverRequest.getCnacId1());
+        } else {
+            map.put("cnacIdObj1", null);
+            financialDocumentCentricTurnOverRequest.setParamMap(map);
+            financialDocumentCentricTurnOverRequest.setCnacId1(0L);
+        }
+    }
+    private void checkCnacId2Set(FinancialDocumentCentricTurnOverRequest
+                                         financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("cnacIdObj2", "cnacIdObj2");
+            financialDocumentCentricTurnOverRequest.setParamMap(map);
+            financialDocumentCentricTurnOverRequest.setCnacId2(Long.parseLong(item.getValue().toString()));
+            financialDocumentCentricTurnOverRequest.setCnacIdObj2(financialDocumentCentricTurnOverRequest.getCnacId2());
+        } else {
+            map.put("cnacIdObj2", null);
+            financialDocumentCentricTurnOverRequest.setParamMap(map);
+            financialDocumentCentricTurnOverRequest.setCnacId2(0L);
+        }
+    }
+
     private void checkFromNumberSet(FinancialDocumentCentricTurnOverRequest
                                             financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
