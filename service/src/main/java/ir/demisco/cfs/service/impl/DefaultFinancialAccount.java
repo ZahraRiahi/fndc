@@ -574,11 +574,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                     checkCnatId2Set(financialDocumentCentricTurnOverRequest, item);
                     break;
                 case "cnacId1":
-                    checkCnacId1Set(financialDocumentCentricTurnOverRequest, item);
+                    checkCnacId1CentricTurnOverSet(financialDocumentCentricTurnOverRequest, item);
                     break;
 
                 case "cnacId2":
-                    checkCnacId2Set(financialDocumentCentricTurnOverRequest, item);
+                    checkCnacId2CentricTurnOverSet(financialDocumentCentricTurnOverRequest, item);
                     break;
 
                 default:
@@ -703,7 +703,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         }
     }
 
-    private void checkCnacId1Set(FinancialDocumentCentricTurnOverRequest
+    private void checkCnacId1CentricTurnOverSet(FinancialDocumentCentricTurnOverRequest
                                          financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
@@ -717,7 +717,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             financialDocumentCentricTurnOverRequest.setCnacId1(0L);
         }
     }
-    private void checkCnacId2Set(FinancialDocumentCentricTurnOverRequest
+    private void checkCnacId2CentricTurnOverSet(FinancialDocumentCentricTurnOverRequest
                                          financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
