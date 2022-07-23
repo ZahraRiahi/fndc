@@ -1600,17 +1600,17 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "              ON CNAC5.ID = FDI.CENTRIC_ACCOUNT_ID_5" +
             "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
             "              ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6 " +
-            " LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT1" +
+            " LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT1" +
             "              ON CNAC1.CENTRIC_ACCOUNT_TYPE_ID = CNAT1.ID" +
-            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT2" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT2" +
             "              ON CNAC2.CENTRIC_ACCOUNT_TYPE_ID = CNAT2.ID" +
-            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT3" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT3" +
             "              ON CNAC3.CENTRIC_ACCOUNT_TYPE_ID = CNAT3.ID" +
-            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT4" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT4" +
             "              ON CNAC4.CENTRIC_ACCOUNT_TYPE_ID = CNAT4.ID" +
-            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT5" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT5" +
             "              ON CNAC5.CENTRIC_ACCOUNT_TYPE_ID = CNAT5.ID" +
-            "            LEFT OUTER JOIN FNAC.FINANCIAL_ACCOUNT_TYPE CNAT6" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT6" +
             "              ON CNAC6.CENTRIC_ACCOUNT_TYPE_ID = CNAT6.ID" +
             "           WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId" +
             "             AND FD.DOCUMENT_DATE BETWEEN trunc(:periodStartDate) AND trunc(:toDate)" +
@@ -1677,7 +1677,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         (SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT) = 0)" +
             "   ORDER BY FINANCIAL_ACCOUNT_CODE)" +
             "SELECT FINANCIAL_ACCOUNT_DESC," +
-            "FINANCIAL_ACCOUNT_ID, " +
+            " FINANCIAL_ACCOUNT_ID, " +
             "       SUM_DEBIT," +
             "       SUM_CREDIT," +
             "       BEF_DEBIT," +
