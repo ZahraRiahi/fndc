@@ -69,7 +69,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         FinancialAccountTurnOverOutputResponse response = new FinancialAccountTurnOverOutputResponse();
         list.forEach((Object[] item) -> {
 
-            if (item[17] != null && (Long.parseLong(item[17].toString()) == 1 || Long.parseLong(item[17].toString()) == 2)) {
+            if (item[18] != null && (Long.parseLong(item[18].toString()) == 1 || Long.parseLong(item[18].toString()) == 2)) {
                 FinancialAccountTurnOverRecordsResponse recordsResponse = new FinancialAccountTurnOverRecordsResponse();
                 recordsResponse.setDocumentDate(getItemForDate(item, 0));
                 recordsResponse.setDocumentNumber(getItemForString(item, 2));
@@ -86,12 +86,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             } else {
                 FinancialAccountTurnOverSummarizeResponse accountTurnOverSummarizeResponse = new FinancialAccountTurnOverSummarizeResponse();
                 FinancialAccountTurnOverOutputResponse outputResponse = new FinancialAccountTurnOverOutputResponse();
-                accountTurnOverSummarizeResponse.setSumDebit(getItemForLong(item, 12));
-                accountTurnOverSummarizeResponse.setSumCredit(getItemForLong(item, 13));
-                accountTurnOverSummarizeResponse.setSummarizeDebit(getItemForString(item, 14));
-                accountTurnOverSummarizeResponse.setSummarizeCredit(getItemForString(item, 15));
-                accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForString(item, 16));
-                accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 17));
+                accountTurnOverSummarizeResponse.setSumDebit(getItemForLong(item, 13));
+                accountTurnOverSummarizeResponse.setSumCredit(getItemForLong(item, 14));
+                accountTurnOverSummarizeResponse.setSummarizeDebit(getItemForString(item, 15));
+                accountTurnOverSummarizeResponse.setSummarizeCredit(getItemForString(item, 16));
+                accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForString(item, 17));
+                accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 18));
                 outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
                 response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
             }
