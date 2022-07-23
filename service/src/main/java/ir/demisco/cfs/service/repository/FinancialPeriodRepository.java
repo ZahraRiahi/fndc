@@ -319,7 +319,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "        UNION " +
             "        SELECT NULL AS DOCUMENT_DATE, " +
             "               NULL AS DOCUMENT_NUMBER," +
-            "               NULL AS FINANCIAL_DOCUMENT_ID " +
+            "               NULL AS FINANCIAL_DOCUMENT_ID, " +
             "               NULL AS DOCUMENT_SEQUENCE, " +
             "               NULL AS DESCRIPTION, " +
             "               NULL AS FINANCIAL_ACCOUNT_ID, " +
