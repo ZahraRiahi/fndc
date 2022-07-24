@@ -421,6 +421,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     public DataSourceResult getFinancialDocumentCentricTurnOver(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialDocumentCentricTurnOverRequest financialDocumentCentricTurnOverRequest = setParameterCentricTurnOver(filters);
+        financialDocumentCentricTurnOverRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         getFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentCentricTurnOverRequest);
         if (financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId() == null) {
             throw new RuleException("fin.financialAccount.insertDocumentNumberingType");
@@ -701,12 +702,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                                          financialDocumentCentricTurnOverRequest, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
-            map.put("cnatIdObj1", "cnatIdObj1");
+            map.put("cnatIdObj2", "cnatIdObj2");
             financialDocumentCentricTurnOverRequest.setParamMap(map);
             financialDocumentCentricTurnOverRequest.setCnatId2(Long.parseLong(item.getValue().toString()));
             financialDocumentCentricTurnOverRequest.setCnatIdObj2(financialDocumentCentricTurnOverRequest.getCnatId2());
         } else {
-            map.put("cnatIdObj1", null);
+            map.put("cnatIdObj2", null);
             financialDocumentCentricTurnOverRequest.setParamMap(map);
             financialDocumentCentricTurnOverRequest.setCnatId2(0L);
         }

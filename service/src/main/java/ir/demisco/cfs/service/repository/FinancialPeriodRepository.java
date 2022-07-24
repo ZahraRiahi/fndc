@@ -888,13 +888,12 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 FDN.DOCUMENT_NUMBER < " +
             "                 NVL(:fromNumber, FDN.DOCUMENT_NUMBER)) OR " +
             "                 :dateFilterFlg = 1)" +
-            "             AND (EXISTS " +
-            "                  (SELECT 1 " +
-            "                     FROM FNAC.ACCOUNT_STRUCTURE_LEVEL ASL " +
-            "                    WHERE ASL.FINANCIAL_ACCOUNT_ID = FA.ID " +
-            "                      AND (:financialAccount is null or  ASL.RELATED_ACCOUNT_ID = :financialAccountId ) " +
-            "                      and ( :financialAccount = 'financialAccount' or  ASL.RELATED_ACCOUNT_ID =   ASL.RELATED_ACCOUNT_ID  ) " +
-            "                              AND ASL.RELATED_ACCOUNT_ID = nvl(:financialAccountId,ASL.RELATED_ACCOUNT_ID) " +
+            "   AND (EXISTS" +
+            "                  (SELECT 1" +
+            "                     FROM FNAC.ACCOUNT_STRUCTURE_LEVEL ASL" +
+            "                    WHERE ASL.FINANCIAL_ACCOUNT_ID = FA.ID" +
+            "                      AND ASL.RELATED_ACCOUNT_ID =" +
+            "                          nvl(:financialAccountId, ASL.RELATED_ACCOUNT_ID)" +
             "                      AND ASL.DELETED_DATE IS NULL)) " +
             "             AND FDS.CODE > 10 " +
             "          UNION " +
@@ -1035,8 +1034,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 NVL(:fromNumber, FDN.DOCUMENT_NUMBER) AND " +
             "                 FDN.DOCUMENT_NUMBER <= NVL(:toNumber, FDN.DOCUMENT_NUMBER)) OR " +
             "                 :dateFilterFlg = 1) " +
-            "    AND (:financialAccount is null or  fdi.financial_account_id  = :financialAccountId ) " +
-            "                                and ( :financialAccount = 'financialAccount' or  FA2.ID =   fdi.financial_account_id ) " +
+            "    AND FA2.ID =" +
+            "                 nvl(:financialAccountId, fdi.financial_account_id) " +
             "             AND FDS.CODE > 10 " +
             "           GROUP BY FD.DOCUMENT_NUMBER," +
             "                    FD.ID," +
@@ -1115,7 +1114,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "          FROM MAIN_QRY) " +
             " ORDER BY RECORD_TYP "
             , nativeQuery = true)
-    List<Object[]> findByFinancialAccountCentricTurnOver(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate, Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId,String fromNumber,
+    List<Object[]> findByFinancialAccountCentricTurnOver(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate, Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId, String fromNumber,
                                                          Object cnacIdObj1, Object cnacIdObj2, Long cnacId1, Long cnacId2, Object cnatIdObj1, Object cnatIdObj2,
                                                          Long cnatId1, Long cnatId2,
                                                          Object referenceNumberObject,

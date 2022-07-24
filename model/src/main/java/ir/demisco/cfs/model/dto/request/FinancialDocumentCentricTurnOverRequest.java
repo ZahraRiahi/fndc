@@ -27,6 +27,7 @@ public class FinancialDocumentCentricTurnOverRequest {
     private Long cnacId2;
     private Long cnatId1;
     private Long cnatId2;
+    private Long organizationId;
     Map<String, Object> paramMap;
 
     public Long getFinancialAccountId() {
@@ -211,6 +212,14 @@ public class FinancialDocumentCentricTurnOverRequest {
 
     public void setCnatId2(Long cnatId2) {
         this.cnatId2 = cnatId2;
+    }
+
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 
     public Map<String, Object> getParamMap() {
