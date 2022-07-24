@@ -457,7 +457,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "         (SELECT MIN(FP.START_DATE) AS FINANCIALPERIODSTARTDATE " +
             "            FROM FNPR.FINANCIAL_PERIOD FP " +
             "           INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT " +
-            "              ON FP.FINAN_PERIOD_TYPE_ASSIGN_ID = FPT.ID " +
+            " ON FP.ID = FPT.FINANCIAL_PERIOD_ID " +
             "             AND FPT.ORGANIZATION_ID = FD.ORGANIZATION_ID " +
             "             AND FPT.ACTIVE_FLAG = 1 " +
             "           INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY " +

@@ -207,14 +207,6 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
     @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:financialDocumentId")
     FinancialDocument getActivePeriodInDocument(Long financialDocumentId);
 
-    @Query("select to_char(:date, 'yyyymmdd', 'NLS_CALENDAR=persian') ||" +
-            "      nvl(lpad(max(to_number(substr(to_char(fd.documentNumber), 9, 3)) + 1),3,'0'),'001')" +
-            " from FinancialDocument fd" +
-            " where fd.organization.id=:organizationId" +
-            "       and (fd.financialPeriod.id=:financialPeriodId)" +
-            "       and  substr(to_char(fd.documentNumber),0,8)=to_char(:date, 'yyyymmdd', 'NLS_CALENDAR=persian')")
-    String getDocumentNumber(Long organizationId, LocalDateTime date, Long financialPeriodId);
-
     @Query("select fd from FinancialDocument fd where fd.id=:financialDocumentId and fd.deletedDate is null")
     FinancialDocument getActiveDocumentById(Long financialDocumentId);
 
@@ -390,19 +382,6 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     LocalDateTime findByFinancialDocumentByNumberingAndToNumber(Long documentNumberingTypeId, String toNumber, Long organizationId);
 
-
-    @Query(value = "SELECT max(FD.DOCUMENT_DATE) " +
-            "      FROM FNDC.FINANCIAL_DOCUMENT FD " +
-            "     INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER DN " +
-            "        ON FD.ID = DN.FINANCIAL_DOCUMENT_ID " +
-            "     WHERE FD.DELETED_DATE IS NULL " +
-            "       AND FD.ORGANIZATION_ID = :organizationId" +
-            "       AND DN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
-            "       AND DN.DOCUMENT_NUMBER = NVL(:toNumber, DN.DOCUMENT_NUMBER) " +
-            "       AND DN.DELETED_DATE IS NULL "
-            , nativeQuery = true)
-    LocalDateTime findByFinancialDocumentByNumberingTypeAndToNumber(Long documentNumberingTypeId, String toNumber, Long organizationId);
-
     @Query(value = " SELECT MIN(DN.DOCUMENT_NUMBER) " +
             "      FROM FNDC.FINANCIAL_DOCUMENT FD " +
             "     INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER DN " +
@@ -487,7 +466,6 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     String findByFinancialDocumentByDocumentId(Long documentId);
 
-
     @Query(value = " SELECT FNDC.Document_Date, " +
             "       FNDC.DOCUMENT_NUMBER, " +
             "       FNDC.FINANCIAL_PERIOD_ID, " +
@@ -497,12 +475,4 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     List<Object[]> findFinancialDocumentById(Long documentId);
 
-
-    @Query(value = " SELECT T.FINANCIAL_PERIOD_ID, " +
-            "       T.DOCUMENT_DATE, " +
-            "       T.financial_ledger_type_id " +
-            "  FROM FNDC.FINANCIAL_DOCUMENT T " +
-            " WHERE fndc.id = :documentId  "
-            , nativeQuery = true)
-    List<Object[]> findFinancialDocumentByDocumentId(Long documentId);
 }
