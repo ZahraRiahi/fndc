@@ -46,7 +46,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         this.financialPeriodRepository = financialPeriodRepository;
     }
 
-    private List<Object[]> getTurnOverReportList(FinancialDocumentReportRequest financialDocumentReportRequest, Map<String, Object> paramMap) {
+    private List<Object[]> getTurnOverReportList(FinancialDocumentReportRequest financialDocumentReportRequest) {
         return financialPeriodRepository.findByFinancialPeriodByParam(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentReportRequest.getLedgerTypeId(), financialDocumentReportRequest.getPeriodStartDate(), financialDocumentReportRequest.getDateFilterFlg(),
                 financialDocumentReportRequest.getFromDate(), financialDocumentReportRequest.getDocumentNumberingTypeId(), financialDocumentReportRequest.getFromNumber(), financialDocumentReportRequest.getCentricAccount1(), financialDocumentReportRequest.getCentricAccountId1(),
                 financialDocumentReportRequest.getCentricAccount2(), financialDocumentReportRequest.getCentricAccountId2(), financialDocumentReportRequest.getReferenceNumberObject(), financialDocumentReportRequest.getReferenceNumber(),
@@ -58,12 +58,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     public DataSourceResult getFinancialDocument(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialDocumentReportRequest financialDocumentReportRequest = setParameter(filters);
-        Map<String, Object> paramMap = financialDocumentReportRequest.getParamMap();
         financialDocumentReportRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentReportRequest.setSummarizingType(financialDocumentReportRequest.getSummarizingType() == null ? 1 : financialDocumentReportRequest.getSummarizingType());
         getFinancialDocumentByNumberingTypeAndFromNumber(financialDocumentReportRequest);
         checkFinancialDocumentReport(financialDocumentReportRequest);
-        List<Object[]> list = getTurnOverReportList(financialDocumentReportRequest, paramMap);
+        List<Object[]> list = getTurnOverReportList(financialDocumentReportRequest);
         List<FinancialAccountTurnOverOutputResponse> financialAccountTurnOverOutputResponses = new ArrayList<>();
         List<FinancialAccountTurnOverRecordsResponse> recordsResponseList = new ArrayList<>();
         FinancialAccountTurnOverOutputResponse response = new FinancialAccountTurnOverOutputResponse();
