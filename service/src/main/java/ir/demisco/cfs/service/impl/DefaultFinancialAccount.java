@@ -590,23 +590,29 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             }
         }
         if (financialDocumentCentricTurnOverRequest.getCnatId1() == null) {
+            financialDocumentCentricTurnOverRequest.setCnatIdObj1(null);
             financialDocumentCentricTurnOverRequest.setCnatId1(0L);
         }
 
         if (financialDocumentCentricTurnOverRequest.getCnatId2() == null) {
+            financialDocumentCentricTurnOverRequest.setCnatIdObj2(null);
             financialDocumentCentricTurnOverRequest.setCnatId2(0L);
         }
         if (financialDocumentCentricTurnOverRequest.getCnacId1() == null) {
+            financialDocumentCentricTurnOverRequest.setCnacIdObj1(null);
             financialDocumentCentricTurnOverRequest.setCnacId1(0L);
         }
 
         if (financialDocumentCentricTurnOverRequest.getCnacId2() == null) {
+            financialDocumentCentricTurnOverRequest.setCnacIdObj2(null);
             financialDocumentCentricTurnOverRequest.setCnacId2(0L);
         }
         if (financialDocumentCentricTurnOverRequest.getReferenceNumber() == null) {
+            financialDocumentCentricTurnOverRequest.setReferenceNumberObject(null);
             financialDocumentCentricTurnOverRequest.setReferenceNumber(0L);
         }
         if (financialDocumentCentricTurnOverRequest.getFinancialAccountId() == null) {
+            financialDocumentCentricTurnOverRequest.setFinancialAccount(null);
             financialDocumentCentricTurnOverRequest.setFinancialAccountId(0L);
         }
         return financialDocumentCentricTurnOverRequest;
