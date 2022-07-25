@@ -475,4 +475,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     List<Object[]> findFinancialDocumentById(Long documentId);
 
+    @Query(value = " select t.financial_document_status_id from fndc.financial_document t where t.id=:documentId "
+            , nativeQuery = true)
+    Long findByFinancialDocumentStatusByDocumentId(Long documentId);
 }
