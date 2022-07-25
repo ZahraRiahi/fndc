@@ -888,12 +888,13 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 FDN.DOCUMENT_NUMBER < " +
             "                 NVL(:fromNumber, FDN.DOCUMENT_NUMBER)) OR " +
             "                 :dateFilterFlg = 1)" +
-            "   AND (EXISTS" +
-            "                  (SELECT 1" +
-            "                     FROM FNAC.ACCOUNT_STRUCTURE_LEVEL ASL" +
-            "                    WHERE ASL.FINANCIAL_ACCOUNT_ID = FA.ID" +
-            "                      AND ASL.RELATED_ACCOUNT_ID =" +
-            "                          nvl(:financialAccountId, ASL.RELATED_ACCOUNT_ID)" +
+            "             AND (EXISTS " +
+            "                  (SELECT 1 " +
+            "                     FROM FNAC.ACCOUNT_STRUCTURE_LEVEL ASL " +
+            "                    WHERE ASL.FINANCIAL_ACCOUNT_ID = FA.ID " +
+            "                      AND (:financialAccount is null or  ASL.RELATED_ACCOUNT_ID = :financialAccountId ) " +
+            "                      and (  ASL.RELATED_ACCOUNT_ID =   ASL.RELATED_ACCOUNT_ID  ) " +
+            "                              AND ASL.RELATED_ACCOUNT_ID = nvl(:financialAccountId,ASL.RELATED_ACCOUNT_ID) " +
             "                      AND ASL.DELETED_DATE IS NULL)) " +
             "             AND FDS.CODE > 10 " +
             "          UNION " +
@@ -1034,8 +1035,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 NVL(:fromNumber, FDN.DOCUMENT_NUMBER) AND " +
             "                 FDN.DOCUMENT_NUMBER <= NVL(:toNumber, FDN.DOCUMENT_NUMBER)) OR " +
             "                 :dateFilterFlg = 1) " +
-            "    AND FA2.ID =" +
-            "                 nvl(:financialAccountId, fdi.financial_account_id) " +
+            "    AND (:financialAccount is null or  fdi.financial_account_id  = :financialAccountId ) " +
+            "                                and (  FA2.ID =   fdi.financial_account_id ) " +
             "             AND FDS.CODE > 10 " +
             "           GROUP BY FD.DOCUMENT_NUMBER," +
             "                    FD.ID," +
