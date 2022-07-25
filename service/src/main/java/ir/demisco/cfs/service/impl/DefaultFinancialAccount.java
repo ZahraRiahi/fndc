@@ -678,7 +678,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         } else {
             map.put("referenceNumberObject", null);
             financialDocumentCentricTurnOverRequest.setParamMap(map);
-            financialDocumentCentricTurnOverRequest.setReferenceNumber(null);
+            financialDocumentCentricTurnOverRequest.setReferenceNumber(0L);
         }
 
     }
