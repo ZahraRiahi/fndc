@@ -1161,7 +1161,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             List<Object[]> financialPeriodListObject = financialPeriodRepository.getFinancialPeriodByFinancialDocumentId(financialPeriodLedgerStatusRequest.getFinancialDocumentId());
             financialPeriodLedgerStatusRequest.setFinancialPeriodId(financialPeriodListObject.get(0)[0] == null ? financialPeriodLedgerStatusRequest.getFinancialPeriodId() : Long.parseLong(financialPeriodListObject.get(0)[0].toString()));
             financialPeriodLedgerStatusRequest.setDate(financialPeriodListObject.get(0)[1] == null ? financialPeriodLedgerStatusRequest.getDate() : LocalDateTime.parse(financialPeriodListObject.get(0)[1].toString().substring(0, 10) + "T00:00"));
-            financialPeriodLedgerStatusRequest.setFinancialLedgerTypeId(financialPeriodListObject.get(0)[0] == null ? financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() : Long.parseLong(financialPeriodListObject.get(0)[0].toString()));
+            financialPeriodLedgerStatusRequest.setFinancialLedgerTypeId(financialPeriodListObject.get(0)[2] == null ? financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() : Long.parseLong(financialPeriodListObject.get(0)[2].toString()));
 
             if (financialPeriodLedgerStatusRequest.getFinancialPeriodId() == null || financialPeriodLedgerStatusRequest.getDate() == null
                     || financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() == null) {
