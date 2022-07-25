@@ -569,13 +569,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         } else {
             financialDocumentReportRequest.setFinancialDocumentItemId(0L);
         }
-        String orderBy;
-//        if (dataSourceRequest.getSort().isEmpty()) {
-//            orderBy = "order by FNDI.Creation_Date asc";
-//        } else {
-//            orderBy = "order by " + dataSourceRequest.getSort().get(0).getField() + " " + dataSourceRequest.getSort().get(0).getDir();
-//        }
-
         String query = " SELECT FNDI.ID, " +
                 "       FNDI.FINANCIAL_DOCUMENT_ID, " +
                 "       FNDI.SEQUENCE_NUMBER," +
