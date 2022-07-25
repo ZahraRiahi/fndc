@@ -569,13 +569,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         } else {
             financialDocumentReportRequest.setFinancialDocumentItemId(0L);
         }
-        String orderBy;
-        if (dataSourceRequest.getSort().isEmpty()) {
-            orderBy = "order by FNDI.Creation_Date asc";
-        } else {
-            orderBy = "order by " + dataSourceRequest.getSort().get(0).getField() + " " + dataSourceRequest.getSort().get(0).getDir();
-        }
-
         String query = " SELECT FNDI.ID, " +
                 "       FNDI.FINANCIAL_DOCUMENT_ID, " +
                 "       FNDI.SEQUENCE_NUMBER," +
@@ -621,7 +614,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
                 "    ON CNAC6.ID = FNDI.CENTRIC_ACCOUNT_ID_6" +
                 " WHERE FNDI.FINANCIAL_DOCUMENT_ID = :financialDocumentId " +
-                " and  ( :financialDocumentItem is null or FNDI.ID = :financialDocumentItemId) " + orderBy;
+                " and  ( :financialDocumentItem is null or FNDI.ID = :financialDocumentItemId) ";
 
         Query nativeQuery = entityManager.createNativeQuery(query);
         nativeQuery.setParameter("financialDocumentId", financialDocumentReportRequest.getFinancialDocumentId());
