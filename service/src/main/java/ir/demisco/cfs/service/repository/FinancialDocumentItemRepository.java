@@ -227,7 +227,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
             " and FNSC.SEC_RESULT = 1 "
             , nativeQuery = true)
-    List<Object[]> getFinancialDocumentItemList( String activityCode, Long creatorUserId, Long departmentId, Long userId,Long organizationId,Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
+    List<Object[]> getFinancialDocumentItemList(String activityCode, Long creatorUserId, Long departmentId, Long userId, Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
                                                 Long toAccountCode, Object centricAccount, Long centricAccountId, Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId, Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
                                                 Double tolerance, Object financialDocumentType, Long financialDocumentTypeId);
 
@@ -461,7 +461,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "             AND FPT.ORGANIZATION_ID = FD.ORGANIZATION_ID " +
             "             AND FPT.ACTIVE_FLAG = 1 " +
             "           INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY " +
-            "              ON FPT.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID " +
+            " ON FP.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID " +
             "           WHERE FP.FINANCIAL_PERIOD_STATUS_ID = 1) " +
             "     AND (FD.DOCUMENT_NUMBER <= " +
             "         (SELECT MAX(FD_INER.DOCUMENT_NUMBER) " +
