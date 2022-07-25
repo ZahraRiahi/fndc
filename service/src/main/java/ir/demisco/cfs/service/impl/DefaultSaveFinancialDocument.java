@@ -446,11 +446,16 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
 
     private FinancialDocument updateFinancialDocument(FinancialDocumentSaveDto requestFinancialDocumentSaveDto) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        Long documentStatus = financialDocumentRepository.findByFinancialDocumentStatusByDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
         FinancialDocument financialDocument = financialDocumentRepository.
                 findById(requestFinancialDocumentSaveDto.getFinancialDocumentId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         financialDocument.setDocumentDate(requestFinancialDocumentSaveDto.getDocumentDate());
         financialDocument.setDescription(requestFinancialDocumentSaveDto.getDescription());
-        financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDocumentStatusId()));
+        if (documentStatus == 20) {
+            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(10L));
+        } else {
+            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDocumentStatusId()));
+        }
         financialDocument.setAutomaticFlag(requestFinancialDocumentSaveDto.getAutomaticFlag());
         financialDocument.setOrganization(organizationRepository.getOne(organizationId));
         financialDocument.setFinancialDocumentType(financialDocumentTypeRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDocumentTypeId()));
