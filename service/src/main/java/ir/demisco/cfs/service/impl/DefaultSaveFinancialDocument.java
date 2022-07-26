@@ -451,8 +451,8 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 findById(requestFinancialDocumentSaveDto.getFinancialDocumentId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         financialDocument.setDocumentDate(requestFinancialDocumentSaveDto.getDocumentDate());
         financialDocument.setDescription(requestFinancialDocumentSaveDto.getDescription());
-        if (documentStatus == 20) {
-            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(10L));
+        if (documentStatus == 2) {
+            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
         } else {
             financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDocumentStatusId()));
         }
