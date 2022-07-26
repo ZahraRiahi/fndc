@@ -582,13 +582,13 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         }
         String query = " SELECT FNDI.ID, " +
                 "       FNDI.FINANCIAL_DOCUMENT_ID, " +
-                "       FNDI.SEQUENCE_NUMBER," +
-                "       FNDI.FINANCIAL_ACCOUNT_ID," +
+                "       FNDI.SEQUENCE_NUMBER as sequenceNumber," +
+                "       FNDI.FINANCIAL_ACCOUNT_ID as financialAccountId," +
                 "       FNC.DESCRIPTION as FINANCIAL_ACCOUNT_DESCRIPTION," +
                 " FNC.CODE AS FINANCIAL_ACCOUNT_CODE, " +
                 "       FNDI.DEBIT_AMOUNT as DEBITAMOUNT," +
                 "       FNDI.CREDIT_AMOUNT as CREDITAMOUNT," +
-                "       FNDI.DESCRIPTION," +
+                "       FNDI.DESCRIPTION as description," +
                 "       NVL(CNAC1.CODE, '') || NVL(CNAC1.NAME, '') ||" +
                 "       NVL2(CNAC2.CODE, '-' || CNAC2.CODE, '') || NVL(CNAC2.NAME, '') ||" +
                 "       NVL2(CNAC3.CODE, '-' || CNAC3.CODE, '') || NVL(CNAC3.NAME, '')  ||" +
