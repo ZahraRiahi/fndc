@@ -470,14 +470,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     private List<FinancialDocumentErrorDto>  validationSetStatus(FinancialDocument financialDocument) {
         List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = checkValidationSetStatus(financialDocument);
-//        Long document = financialDocumentRepository.getActivePeriodAndMontInDocument(financialDocument.getId());
-//        if (document == null) {
-//            FinancialDocumentErrorDto activeMountStatus = new FinancialDocumentErrorDto();
-//            activeMountStatus.setFinancialDocumentId(financialDocument.getId());
-//            activeMountStatus.setMessage("دوره / ماه عملیاتی میبایست در وضعیت باز باشد");
-//            financialDocumentErrorDtoList.add(activeMountStatus);
-//        }
-
         Long cost = financialDocumentItemRepository.getCostDocument(financialDocument.getId());
         if (cost == null) {
             FinancialDocumentErrorDto financialDocumentCost = new FinancialDocumentErrorDto();
