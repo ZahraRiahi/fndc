@@ -64,6 +64,10 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
         if (financialMonth.size() == 0) {
             throw new RuleException("به ازای این دوره مالی ماه عملیاتی یافت نشد");
         }
+        Long count = financialLedgerMonthRepository.getCountByFinancialLedgerMonthByIdAndLedgerTypeIdAndLedgerPeriod(financialMonth.get(0), financialLedgerPeriodRequest.getFinancialLedgerTypeId(), financialLedgerPeriod.getId());
+        if (count == 0) {
+            throw new RuleException("عملیات ماهیانه دفتر مالی سازمان با این شناسه دوره دفتر مالی و شناسه ماه عملیاتی و شناسه انوع دفتر مالی سازمان قبلا ثبت شده است.");
+        }
         financialMonth.forEach((Long e) -> {
             FinancialLedgerMonth financialLedgerMonth = new FinancialLedgerMonth();
             financialLedgerMonth.setFinancialLedgerMonthStatus(financialLedgerMonthStatusRepository.getOne(1L));
