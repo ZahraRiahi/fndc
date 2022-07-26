@@ -495,28 +495,56 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private List<Object[]> getCentricTurnOverReportList(FinancialDocumentCentricTurnOverRequest
                                                                 financialDocumentCentricTurnOverRequest) {
-        return financialPeriodRepository
-                .findByFinancialAccountCentricTurnOver(SecurityHelper.getCurrentUser().getOrganizationId(),
-                        financialDocumentCentricTurnOverRequest.getLedgerTypeId(),
-                        financialDocumentCentricTurnOverRequest.getPeriodStartDate()
-                        , financialDocumentCentricTurnOverRequest.getDateFilterFlg(),
-                        financialDocumentCentricTurnOverRequest.getFromDate(),
-                        financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
-                        financialDocumentCentricTurnOverRequest.getFromNumber(),
-                        financialDocumentCentricTurnOverRequest.getCnacIdObj1(),
-                        financialDocumentCentricTurnOverRequest.getCnacIdObj2(),
-                        financialDocumentCentricTurnOverRequest.getCnacId1(),
-                        financialDocumentCentricTurnOverRequest.getCnacId2(),
-                        financialDocumentCentricTurnOverRequest.getCnatIdObj1(),
-                        financialDocumentCentricTurnOverRequest.getCnatIdObj2(),
-                        financialDocumentCentricTurnOverRequest.getCnatId1(),
-                        financialDocumentCentricTurnOverRequest.getCnatId2(),
-                        financialDocumentCentricTurnOverRequest.getReferenceNumberObject(),
-                        financialDocumentCentricTurnOverRequest.getReferenceNumber()
-                        , financialDocumentCentricTurnOverRequest.getFinancialAccount()
-                        , financialDocumentCentricTurnOverRequest.getFinancialAccountId()
-                        , financialDocumentCentricTurnOverRequest.getToDate(),
-                        financialDocumentCentricTurnOverRequest.getToNumber());
+        if ( financialDocumentCentricTurnOverRequest.getFinancialAccountId() != 0 && financialDocumentCentricTurnOverRequest.getCnacId1() == 0 && financialDocumentCentricTurnOverRequest.getCnacId2() == 0
+                && financialDocumentCentricTurnOverRequest.getCnatId1() == 0
+                && financialDocumentCentricTurnOverRequest.getCnatId2() == 0) {
+            return financialPeriodRepository
+                    .findByFinancialAccountCentricTurnOver2(SecurityHelper.getCurrentUser().getOrganizationId(),
+                            financialDocumentCentricTurnOverRequest.getLedgerTypeId(),
+                            financialDocumentCentricTurnOverRequest.getPeriodStartDate()
+                            , financialDocumentCentricTurnOverRequest.getDateFilterFlg(),
+                            financialDocumentCentricTurnOverRequest.getFromDate(),
+                            financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
+                            financialDocumentCentricTurnOverRequest.getFromNumber(),
+                            financialDocumentCentricTurnOverRequest.getCnacIdObj1(),
+                            financialDocumentCentricTurnOverRequest.getCnacIdObj2(),
+                            financialDocumentCentricTurnOverRequest.getCnacId1(),
+                            financialDocumentCentricTurnOverRequest.getCnacId2(),
+                            financialDocumentCentricTurnOverRequest.getCnatIdObj1(),
+                            financialDocumentCentricTurnOverRequest.getCnatIdObj2(),
+                            financialDocumentCentricTurnOverRequest.getCnatId1(),
+                            financialDocumentCentricTurnOverRequest.getCnatId2(),
+                            financialDocumentCentricTurnOverRequest.getReferenceNumberObject(),
+                            financialDocumentCentricTurnOverRequest.getReferenceNumber()
+                            , financialDocumentCentricTurnOverRequest.getFinancialAccountId()
+                            , financialDocumentCentricTurnOverRequest.getToDate(),
+                            financialDocumentCentricTurnOverRequest.getToNumber());
+        } else {
+
+
+            return financialPeriodRepository
+                    .findByFinancialAccountCentricTurnOver(SecurityHelper.getCurrentUser().getOrganizationId(),
+                            financialDocumentCentricTurnOverRequest.getLedgerTypeId(),
+                            financialDocumentCentricTurnOverRequest.getPeriodStartDate()
+                            , financialDocumentCentricTurnOverRequest.getDateFilterFlg(),
+                            financialDocumentCentricTurnOverRequest.getFromDate(),
+                            financialDocumentCentricTurnOverRequest.getDocumentNumberingTypeId(),
+                            financialDocumentCentricTurnOverRequest.getFromNumber(),
+                            financialDocumentCentricTurnOverRequest.getCnacIdObj1(),
+                            financialDocumentCentricTurnOverRequest.getCnacIdObj2(),
+                            financialDocumentCentricTurnOverRequest.getCnacId1(),
+                            financialDocumentCentricTurnOverRequest.getCnacId2(),
+                            financialDocumentCentricTurnOverRequest.getCnatIdObj1(),
+                            financialDocumentCentricTurnOverRequest.getCnatIdObj2(),
+                            financialDocumentCentricTurnOverRequest.getCnatId1(),
+                            financialDocumentCentricTurnOverRequest.getCnatId2(),
+                            financialDocumentCentricTurnOverRequest.getReferenceNumberObject(),
+                            financialDocumentCentricTurnOverRequest.getReferenceNumber()
+                            , financialDocumentCentricTurnOverRequest.getFinancialAccount()
+                            , financialDocumentCentricTurnOverRequest.getFinancialAccountId()
+                            , financialDocumentCentricTurnOverRequest.getToDate(),
+                            financialDocumentCentricTurnOverRequest.getToNumber());
+        }
     }
 
     private FinancialDocumentCentricTurnOverRequest setParameterCentricTurnOver
