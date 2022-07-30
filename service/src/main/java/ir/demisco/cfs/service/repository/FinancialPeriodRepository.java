@@ -1122,7 +1122,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
                                                          Long referenceNumber, Object financialAccount, Long financialAccountId, LocalDateTime toDate, String toNumber);
 
 
-
     @Query(value = " WITH MAIN_QRY AS " +
             " (SELECT DOCUMENT_NUMBER, " +
             "         FINANCIAL_DOCUMENT_ID, " +
@@ -1552,10 +1551,10 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " ORDER BY RECORD_TYP "
             , nativeQuery = true)
     List<Object[]> findByFinancialAccountCentricTurnOver2(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate, Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId, String fromNumber,
-                                                         Object cnacIdObj1, Object cnacIdObj2, Long cnacId1, Long cnacId2, Object cnatIdObj1, Object cnatIdObj2,
-                                                         Long cnatId1, Long cnatId2,
-                                                         Object referenceNumberObject,
-                                                         Long referenceNumber, Long financialAccountId, LocalDateTime toDate, String toNumber);
+                                                          Object cnacIdObj1, Object cnacIdObj2, Long cnacId1, Long cnacId2, Object cnatIdObj1, Object cnatIdObj2,
+                                                          Long cnatId1, Long cnatId2,
+                                                          Object referenceNumberObject,
+                                                          Long referenceNumber, Long financialAccountId, LocalDateTime toDate, String toNumber);
 
 
     @Query(value = " WITH QRY AS " +
@@ -1830,8 +1829,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "          1 " +
             "       END " +
             "  FROM FNPR.FINANCIAL_PERIOD T" +
-            " WHERE T.ID = :financialPeriodId " +
-            " and t.deleted_date is null "
+            " WHERE T.ID = :financialPeriodId "
             , nativeQuery = true)
     Long findFinancialPeriodById(Long financialPeriodId);
 
