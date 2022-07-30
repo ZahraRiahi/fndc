@@ -28,7 +28,7 @@ public interface FinancialDocumentService {
 
     String changeDescription(FinancialDocumentChangeDescriptionDto financialDocumentDto);
 
-    boolean deleteFinancialDocumentById(Long financialDocumentId);
+    Boolean deleteFinancialDocumentById(Long financialDocumentId);
 
     String changeAccountDocument(FinancialDocumentAccountDto financialDocumentAccountDto);
 

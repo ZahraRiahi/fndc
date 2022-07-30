@@ -468,7 +468,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     }
 
-    private List<FinancialDocumentErrorDto>  validationSetStatus(FinancialDocument financialDocument) {
+    private List<FinancialDocumentErrorDto> validationSetStatus(FinancialDocument financialDocument) {
         List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = checkValidationSetStatus(financialDocument);
         Long cost = financialDocumentItemRepository.getCostDocument(financialDocument.getId());
         if (cost == null) {
@@ -744,7 +744,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public boolean deleteFinancialDocumentById(Long financialDocumentId) {
+    public Boolean deleteFinancialDocumentById(Long financialDocumentId) {
         FinancialDocument document = financialDocumentRepository.findById(financialDocumentId).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         String activityCode = "FNDC_DOCUMENT_DELETE";
         FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
@@ -767,8 +767,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocumentId);
             deleteDocumentItem(financialDocumentItemList);
             List<FinancialDocumentNumber> financialDocumentNumberList = financialDocumentNumberRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocumentId);
-            financialDocumentNumberList.forEach(financialDocumentNumber -> financialDocumentNumberRepository.deleteById((financialDocumentNumber.getId())));
-            financialDocumentNumberRepository.flush();
+            financialDocumentNumberList.forEach(financialDocumentNumber -> financialDocumentNumberRepository.deleteById(financialDocumentNumber.getId()));
             financialDocumentRepository.deleteById(financialDocumentId);
         }
         return true;
