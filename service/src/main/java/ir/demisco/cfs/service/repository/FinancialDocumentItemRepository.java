@@ -14,14 +14,14 @@ import java.util.List;
 public interface FinancialDocumentItemRepository extends JpaRepository<FinancialDocumentItem, Long> {
 
     @Query(value = "  SELECT FNDI.ID, " +
-            "       FIDC.DOCUMENT_DATE, " +
+            "       FIDC.DOCUMENT_DATE as documentDate, " +
             "       FNDI.DESCRIPTION as financialDocumentItemDescription , " +
-            "       FNDI.SEQUENCE_NUMBER, " +
+            "       FNDI.SEQUENCE_NUMBER as sequenceNumber, " +
             "       FIDC.DOCUMENT_NUMBER, " +
             "       FIAC.DESCRIPTION as financialAccountDescription , " +
             "       FNDI.FINANCIAL_ACCOUNT_ID, " +
-            "       FNDI.DEBIT_AMOUNT, " +
-            "       FNDI.CREDIT_AMOUNT, " +
+            "       FNDI.DEBIT_AMOUNT as debitAmount, " +
+            "       FNDI.CREDIT_AMOUNT as creditAmount, " +
             "       FNDI.DESCRIPTION || ' ' || FIAC.FULL_DESCRIPTION AS FULL_DESCRIPTION, " +
             " FIAC.Code as FINANCIAL_ACCOUNT_CODE," +
             "       FIDC.ID AS FINANCIAL_DOCUMENT_ID, " +
@@ -227,9 +227,9 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
             " and FNSC.SEC_RESULT = 1 "
             , nativeQuery = true)
-    List<Object[]> getFinancialDocumentItemList(String activityCode, Long creatorUserId, Long departmentId, Long userId, Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
+    Page<Object[]> getFinancialDocumentItemList(String activityCode, Long creatorUserId, Long departmentId, Long userId, Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
                                                 Long toAccountCode, Object centricAccount, Long centricAccountId, Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId, Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
-                                                Double tolerance, Object financialDocumentType, Long financialDocumentTypeId);
+                                                Double tolerance, Object financialDocumentType, Long financialDocumentTypeId, Pageable pageable);
 
 
     List<FinancialDocumentItem> findByFinancialDocumentIdAndDeletedDateIsNull(Long financialDocumentId);
