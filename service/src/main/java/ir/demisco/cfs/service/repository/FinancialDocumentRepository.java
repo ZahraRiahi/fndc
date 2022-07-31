@@ -1,6 +1,8 @@
 package ir.demisco.cfs.service.repository;
 
 import ir.demisco.cfs.model.entity.FinancialDocument;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -10,14 +12,14 @@ import java.util.List;
 public interface FinancialDocumentRepository extends JpaRepository<FinancialDocument, Long> {
 
     @Query(value = " SELECT FIDC.ID," +
-            "       FIDC.DOCUMENT_DATE," +
-            "       FIDC.DESCRIPTION," +
+            "       FIDC.DOCUMENT_DATE as documentDate," +
+            "       FIDC.DESCRIPTION as description," +
             "       FIDC.DOCUMENT_NUMBER," +
             "       FIDC.FINANCIAL_DOCUMENT_TYPE_ID," +
             "       FNDT.DESCRIPTION AS FINANCIAL_DOCUMENT_TYPE_DESCRIPTION," +
             "       FIDC.DESCRIPTION AS FULL_DESCRIPTION," +
-            "       SUM(FNDI.DEBIT_AMOUNT) AS SUM_DEBIT_AMOUNT," +
-            "       SUM(FNDI.CREDIT_AMOUNT) AS SUM_CREDIT_AMOUNT," +
+            "       SUM(FNDI.DEBIT_AMOUNT) AS debitAmount," +
+            "       SUM(FNDI.CREDIT_AMOUNT) AS creditAmount," +
             "       USR.ID AS USERID," +
             "       USR.NICK_NAME AS USERNAME," +
             "       FIDC.FINANCIAL_DOCUMENT_STATUS_ID," +
@@ -107,8 +109,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,fidc.financial_document_type_id,fndt.description," +
             " FINANCIAL_DOCUMENT_STATUS_ID, " +
             "          DS.NAME , " +
-            "          DS.CODE  " +
-            " order by  fidc.document_date desc "
+            "          DS.CODE  "
             , countQuery = " select count(fidc.id) " +
             "  from fndc.financial_document fidc " +
             "  inner join fndc.financial_document_type fndt " +
@@ -194,15 +195,14 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description, " +
             "   FINANCIAL_DOCUMENT_STATUS_ID, " +
             "                      DS.NAME , " +
-            "                     DS.CODE " +
-            " order by  fidc.document_date desc  "
+            "                     DS.CODE "
             , nativeQuery = true)
-    List<Object[]> getFinancialDocumentList(String activityCode, Long creatorUserId, Long departmentId, Long userId, Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
+    Page<Object[]> getFinancialDocumentList(String activityCode, Long creatorUserId, Long departmentId, Long userId, Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
             , Object toNumber, Long toNumberId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
                                             Long toAccountCode, Object centricAccount, Long centricAccountId,
                                             Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId,
                                             Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
-                                            Double tolerance, List<Long> documentStatusId, Object financialDocumentType, Long financialDocumentTypeId);
+                                            Double tolerance, List<Long> documentStatusId, Object financialDocumentType, Long financialDocumentTypeId, Pageable pageable);
 
     @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:financialDocumentId")
     FinancialDocument getActivePeriodInDocument(Long financialDocumentId);
