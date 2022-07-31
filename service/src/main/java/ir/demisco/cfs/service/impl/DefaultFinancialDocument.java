@@ -1,6 +1,5 @@
 package ir.demisco.cfs.service.impl;
 
-
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.request.ControlFinancialAccountNatureTypeInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
@@ -54,6 +53,7 @@ import ir.demisco.core.utils.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -128,7 +128,19 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
         Map<String, Object> paramMap = paramSearch.getParamMap();
-        List<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId()
+        List<Sort.Order> sorts = new ArrayList<>();
+        dataSourceRequest.getSort()
+                .forEach((DataSourceRequest.SortDescriptor sortDescriptor) ->
+                        {
+                            if (sortDescriptor.getDir().equals("asc")) {
+                                sorts.add(Sort.Order.asc(sortDescriptor.getField()));
+                            } else {
+                                sorts.add(Sort.Order.desc(sortDescriptor.getField()));
+                            }
+                        }
+                );
+        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake(), Sort.by(sorts));
+        Page<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId()
                 , paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId()
                 , paramSearch.getLedgerTypeId(), paramSearch.getStartDate(),
                 paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
@@ -136,7 +148,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId()
                 , paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("documentUser"), paramSearch.getDocumentUserId()
                 , paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
-                paramSearch.getToPrice(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId(), paramMap.get("financialDocumentType"), paramSearch.getFinancialDocumentTypeId());
+                paramSearch.getToPrice(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId(), paramMap.get("financialDocumentType"), paramSearch.getFinancialDocumentTypeId(), pageable);
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -154,9 +166,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         .financialDocumentStatusName(item[12].toString())
                         .financialDocumentStatusCode(item[13].toString())
                         .build()).collect(Collectors.toList());
+
         DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(documentDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
-        dataSourceResult.setTotal(list.size());
+        dataSourceResult.setData(documentDtoList);
+        dataSourceResult.setTotal(list.getTotalElements());
         return dataSourceResult;
     }
 
