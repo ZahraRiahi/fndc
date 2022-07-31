@@ -11,6 +11,10 @@ import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
@@ -19,6 +23,7 @@ import java.text.ParseException;
 import java.text.ParsePosition;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -43,15 +48,27 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
         Map<String, Object> paramMap = paramSearch.getParamMap();
-        List<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getLedgerTypeId(), paramSearch.getStartDate(),
+        List<Sort.Order> sorts = new ArrayList<>();
+        dataSourceRequest.getSort()
+                .forEach((DataSourceRequest.SortDescriptor sortDescriptor) ->
+                        {
+                            if (sortDescriptor.getDir().equals("asc")) {
+                                sorts.add(Sort.Order.asc(sortDescriptor.getField()));
+                            } else {
+                                sorts.add(Sort.Order.desc(sortDescriptor.getField()));
+                            }
+                        }
+                );
+        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake(), Sort.by(sorts));
+        Page<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getLedgerTypeId(), paramSearch.getStartDate(),
                 paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
                 paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
                 paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId(), paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("documentUser"), paramSearch.getDocumentUserId(), paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
-                paramSearch.getToPrice(), paramSearch.getTolerance(), paramMap.get("financialDocumentType"), paramSearch.getFinancialDocumentTypeId());
+                paramSearch.getToPrice(), paramSearch.getTolerance(), paramMap.get("financialDocumentType"), paramSearch.getFinancialDocumentTypeId(), pageable);
         List<FinancialDocumentItemDto> documentItemDtoList = list.stream().map(item ->
                 FinancialDocumentItemDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
-                        .date((Date) item[1])
+                        .documentDate((Date) item[1])
                         .description(item[2] != null ? item[2].toString() : null)
                         .documentNumber(Long.parseLong(item[4].toString()))
                         .sequenceNumber(Long.parseLong(item[3].toString()))
@@ -65,8 +82,8 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                         .centricAccountDescription(item[12] == null ? null : item[12].toString())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(documentItemDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
-        dataSourceResult.setTotal(list.size());
+        dataSourceResult.setData(documentItemDtoList);
+        dataSourceResult.setTotal(list.getTotalElements());
         return dataSourceResult;
     }
 
@@ -154,6 +171,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
 
         return responseFinancialDocumentDto;
     }
+
     private void checkFinancialDocumentTypeId(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
@@ -166,6 +184,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
             responseFinancialDocumentDto.setFinancialDocumentTypeId(0L);
         }
     }
+
     private void checkActivityCodeSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
             responseFinancialDocumentDto.setActivityCode(item.getValue().toString());
