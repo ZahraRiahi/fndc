@@ -39,6 +39,12 @@ public class FinancialDocumentItemController {
     @GetMapping("/GetById/{financialDocumentItemId}")
     public ResponseEntity<FinancialDocumentItemOutPutResponse> responseEntityFinancialDocumentItem(@PathVariable Long financialDocumentItemId) {
         return ResponseEntity.ok(financialDocumentItemService.getFinancialDocumentItemById(financialDocumentItemId));
-
     }
+
+//    @GetMapping("/Delete/{id}")
+//    public ResponseEntity<Boolean> delete(@PathVariable("id") Long financialDocumentItemId) {
+//        boolean result;
+//        result = financialDocumentItemService.deleteFinancialDocumentItemById(financialDocumentItemId);
+//        return ResponseEntity.ok(result);
+//    }
 }

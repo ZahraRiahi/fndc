@@ -9,4 +9,6 @@ public interface FinancialDocumentItemService {
     DataSourceResult getFinancialDocumentItemList(DataSourceRequest dataSourceRequest);
 
     FinancialDocumentItemOutPutResponse getFinancialDocumentItemById(Long financialDocumentItemId);
+
+//    Boolean deleteFinancialDocumentItemById(Long financialDocumentItemId);
 }
