@@ -1,15 +1,10 @@
 package ir.demisco.cfs.service.impl;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
-import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
-import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemOutPutResponse;
-import ir.demisco.cfs.model.dto.response.FinancialPeriodStatusResponse;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentDto;
-import ir.demisco.cfs.model.entity.FinancialDocument;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
-import ir.demisco.cfs.model.entity.FinancialDocumentNumber;
 import ir.demisco.cfs.service.api.FinancialDocumentItemService;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
@@ -391,34 +386,4 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                 .build();
     }
 
-//    @Override
-//    @Transactional(rollbackFor = Throwable.class)
-//    public Boolean deleteFinancialDocumentItemById(Long financialDocumentItemId) {
-//        FinancialDocument document = financialDocumentRepository.findById(financialDocumentId).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
-//        String activityCode = "FNDC_DOCUMENT_DELETE";
-//        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
-//        financialDocumentSecurityInputRequest.setActivityCode(activityCode);
-//        financialDocumentSecurityInputRequest.setFinancialDocumentId(financialDocumentId);
-//        financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
-//        financialDocumentSecurityInputRequest.setSecurityModelRequest(null);
-//        financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
-//        Long financialDocument = financialDocumentRepository.getActivePeriodAndMontInDocument(document.getId());
-//        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
-//        financialPeriodLedgerStatusRequest.setFinancialDocumentId(financialDocumentId);
-//        FinancialPeriodStatusResponse financialPeriodStatusResponse = getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
-//        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
-//            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
-//        }
-//        if (financialDocument == null) {
-//            throw new RuleException("fin.financialDocument.openStatusPeriod");
-//
-//        } else {
-//            List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocumentId);
-//            deleteDocumentItem(financialDocumentItemList);
-//            List<FinancialDocumentNumber> financialDocumentNumberList = financialDocumentNumberRepository.findByFinancialDocumentIdAndDeletedDateIsNull(financialDocumentId);
-//            financialDocumentNumberList.forEach(financialDocumentNumber -> financialDocumentNumberRepository.deleteById(financialDocumentNumber.getId()));
-//            financialDocumentRepository.deleteById(financialDocumentId);
-//        }
-//        return true;
-//    }
 }

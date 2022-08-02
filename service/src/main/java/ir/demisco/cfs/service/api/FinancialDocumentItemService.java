@@ -10,5 +10,4 @@ public interface FinancialDocumentItemService {
 
     FinancialDocumentItemOutPutResponse getFinancialDocumentItemById(Long financialDocumentItemId);
 
-//    Boolean deleteFinancialDocumentItemById(Long financialDocumentItemId);
 }
