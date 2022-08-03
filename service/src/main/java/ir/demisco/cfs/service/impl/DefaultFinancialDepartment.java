@@ -35,9 +35,6 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
         if (param.getUserId() == null) {
             throw new RuleException("fin.security.check.user.id");
         }
-        if (param.getDepartmentId() == null) {
-            throw new RuleException("fin.security.check.department.id");
-        }
         if (param.getActivityCode() == null) {
             throw new RuleException("fin.security.check.activity.code");
         }
