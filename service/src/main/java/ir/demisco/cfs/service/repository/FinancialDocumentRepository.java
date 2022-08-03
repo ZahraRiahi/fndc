@@ -51,48 +51,49 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       fidc.financial_ledger_type_id," +
             "                                :departmentId," +
             "                                 :userId)) FNSC " +
-            " where FIDC.ORGANIZATION_ID = :organizationId and " +
-            " FIDC.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  " +
-            " and fidc.document_date >= :startDate " +
-            "   And fidc.document_date <= :endDate " +
-            " AND FNDI.CREDIT_AMOUNT = CASE " +
+            "  WHERE FIDC.ORGANIZATION_ID = :organizationId" +
+            "   and FIDC.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId" +
+            "   and FIDC.DOCUMENT_DATE >= trunc(:startDate)" +
+            "   AND FIDC.DOCUMENT_DATE <= trunc(:endDate)" +
+            "   AND FNDI.CREDIT_AMOUNT = CASE" +
             "         WHEN :priceTypeId = 1 THEN" +
-            "          0 " +
+            "          0" +
             "         ELSE" +
-            "          FNDI.CREDIT_AMOUNT " +
+            "          FNDI.CREDIT_AMOUNT" +
             "       END" +
-            "   AND FNDI.DEBIT_AMOUNT = CASE " +
-            "         WHEN :priceTypeId = 2 THEN " +
-            "          0 " +
+            "   AND FNDI.DEBIT_AMOUNT = CASE" +
+            "         WHEN :priceTypeId = 2 THEN" +
+            "          0" +
             "         ELSE" +
-            "          FNDI.DEBIT_AMOUNT " +
-            "       END " +
-            "   And fndn.financial_numbering_type_id = :financialNumberingTypeId " +
-            "   And (:fromNumber is null or fidc.document_number >= :fromNumberId) " +
-            "   And (:toNumber is null  or fidc.document_number <= :toNumberId) " +
-            "   And fidc.financial_document_status_id in (:documentStatusId ) " +
-            "   and (:description is null or fidc.description  like %:description%) " +
-            "   and ((:fromAccount is null or fc.code >= :fromAccountCode  ) " +
-            "   and (:toAccount is null or fc.code <= :toAccountCode )) " +
-            "   and (:centricAccount is null or " +
-            "       (fndi.centric_account_id_1 = :centricAccountId or " +
-            "        fndi.centric_account_id_2 = :centricAccountId  or " +
-            "        fndi.centric_account_id_3 = :centricAccountId  or " +
-            "        fndi.centric_account_id_4 = :centricAccountId  or " +
-            "        fndi.centric_account_id_5 = :centricAccountId  or " +
-            "        fndi.centric_account_id_6 = :centricAccountId ))  " +
-            "   and (:centricAccountType is null or " +
-            "       :centricAccountTypeId in " +
-            "       (select cnt.centric_account_type_id " +
-            "           from fnac.centric_account cnt " +
-            "          where fndi.centric_account_id_1 = cnt.id " +
-            "             or fndi.centric_account_id_2 = cnt.id " +
-            "             or fndi.centric_account_id_3 = cnt.id " +
-            "             or fndi.centric_account_id_4 = cnt.id " +
-            "             or fndi.centric_account_id_5 = cnt.id " +
-            "             or fndi.centric_account_id_6 = cnt.id)) " +
-            "   and (:documentUser is null or (fidc.creator_id = :documentUserId or " +
-            "       fidc.last_modifier_id = :documentUserId)) " +
+            "          FNDI.DEBIT_AMOUNT" +
+            "       END" +
+            "   AND FNDN.FINANCIAL_NUMBERING_TYPE_ID = :financialNumberingTypeId" +
+            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumberId IS NULL)" +
+            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumberId IS NULL)" +
+            "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId)" +
+            "   AND (FIDC.DESCRIPTION LIKE '%' || :description || '%' OR" +
+            "       :description IS NULL)" +
+            "   AND ((FC.CODE >= :fromAccountCode OR :fromAccountCode IS NULL) AND" +
+            "       (FC.CODE <= :toAccountCode OR :toAccountCode IS NULL))" +
+            "   AND (:centricAccountId IS NULL OR" +
+            "       (FNDI.CENTRIC_ACCOUNT_ID_1 = :centricAccountId OR" +
+            "       FNDI.CENTRIC_ACCOUNT_ID_2 = :centricAccountId OR" +
+            "       FNDI.CENTRIC_ACCOUNT_ID_3 = :centricAccountId OR" +
+            "       FNDI.CENTRIC_ACCOUNT_ID_4 = :centricAccountId OR" +
+            "       FNDI.CENTRIC_ACCOUNT_ID_5 = :centricAccountId OR" +
+            "       FNDI.CENTRIC_ACCOUNT_ID_6 = :centricAccountId))" +
+            "   AND (:centricAccountTypeId IS NULL OR" +
+            "       :centricAccountTypeId IN" +
+            "       (SELECT CNT.CENTRIC_ACCOUNT_TYPE_ID" +
+            "           FROM FNAC.CENTRIC_ACCOUNT CNT" +
+            "          WHERE FNDI.CENTRIC_ACCOUNT_ID_1 = CNT.ID" +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_2 = CNT.ID" +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_3 = CNT.ID" +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_4 = CNT.ID" +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_5 = CNT.ID" +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_6 = CNT.ID))" +
+            "   AND (:documentUserId IS NULL OR FIDC.CREATOR_ID = :documentUserId OR" +
+            "       FIDC.LAST_MODIFIER_ID = :documentUserId)" +
             "   and ((:priceType is null or " +
             "       (:priceTypeId = 1  " +
             "   and (:fromPrice is null or " +
@@ -104,8 +105,9 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
             "   and   (:toPrice is null  or " +
             "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))))" +
-            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
-            " and FNSC.SEC_RESULT = 1 " +
+            "   AND (FIDC.FINANCIAL_DOCUMENT_TYPE_ID =" +
+            "       NVL(:financialDocumentTypeId, FIDC.FINANCIAL_DOCUMENT_TYPE_ID))" +
+            "   and FNSC.SEC_RESULT = 1" +
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,fidc.financial_document_type_id,fndt.description," +
             " FINANCIAL_DOCUMENT_STATUS_ID, " +
             "          DS.NAME , " +
@@ -137,48 +139,49 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                                 fidc.financial_ledger_type_id," +
             "                                :departmentId," +
             "                                 :userId)) FNSC " +
-            " where FIDC.ORGANIZATION_ID = :organizationId and " +
-            " FIDC.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  " +
-            " and fidc.document_date >= :startDate " +
-            "   And fidc.document_date <= :endDate " +
-            " AND FNDI.CREDIT_AMOUNT = CASE " +
+            "  WHERE FIDC.ORGANIZATION_ID = :organizationId" +
+            "   and FIDC.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId" +
+            "   and FIDC.DOCUMENT_DATE >= trunc(:startDate)" +
+            "   AND FIDC.DOCUMENT_DATE <= trunc(:endDate)" +
+            "   AND FNDI.CREDIT_AMOUNT = CASE" +
             "         WHEN :priceTypeId = 1 THEN" +
-            "          0 " +
+            "          0" +
             "         ELSE" +
-            "          FNDI.CREDIT_AMOUNT " +
+            "          FNDI.CREDIT_AMOUNT" +
             "       END" +
-            "   AND FNDI.DEBIT_AMOUNT = CASE " +
-            "         WHEN :priceTypeId = 2 THEN " +
-            "          0 " +
+            "   AND FNDI.DEBIT_AMOUNT = CASE" +
+            "         WHEN :priceTypeId = 2 THEN" +
+            "          0" +
             "         ELSE" +
-            "          FNDI.DEBIT_AMOUNT " +
-            "       END " +
-            "   And fndn.financial_numbering_type_id = :financialNumberingTypeId " +
-            "   And (:fromNumber is null or fidc.document_number >= :fromNumberId) " +
-            "   And (:toNumber is null  or fidc.document_number <= :toNumberId) " +
-            "   And fidc.financial_document_status_id in (:documentStatusId ) " +
-            "   and (:description is null or fidc.description  like %:description%) " +
-            "   and ((:fromAccount is null or fc.code >= :fromAccountCode  ) " +
-            "   and (:toAccount is null or fc.code <= :toAccountCode )) " +
-            "   and (:centricAccount is null or " +
-            "       (fndi.centric_account_id_1 = :centricAccountId or " +
-            "        fndi.centric_account_id_2 = :centricAccountId  or " +
-            "        fndi.centric_account_id_3 = :centricAccountId  or " +
-            "        fndi.centric_account_id_4 = :centricAccountId  or " +
-            "        fndi.centric_account_id_5 = :centricAccountId  or " +
-            "        fndi.centric_account_id_6 = :centricAccountId ))  " +
-            "   and (:centricAccountType is null or " +
-            "       :centricAccountTypeId in " +
-            "       (select cnt.centric_account_type_id " +
-            "           from fnac.centric_account cnt " +
-            "          where fndi.centric_account_id_1 = cnt.id " +
-            "             or fndi.centric_account_id_2 = cnt.id " +
-            "             or fndi.centric_account_id_3 = cnt.id " +
-            "             or fndi.centric_account_id_4 = cnt.id " +
-            "             or fndi.centric_account_id_5 = cnt.id " +
-            "             or fndi.centric_account_id_6 = cnt.id)) " +
-            "   and (:documentUser is null or (fidc.creator_id = :documentUserId or " +
-            "       fidc.last_modifier_id = :documentUserId)) " +
+            "          FNDI.DEBIT_AMOUNT" +
+            "       END" +
+            "   AND FNDN.FINANCIAL_NUMBERING_TYPE_ID = :financialNumberingTypeId" +
+            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumberId IS NULL)" +
+            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumberId IS NULL)" +
+            "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId)" +
+            "   AND (FIDC.DESCRIPTION LIKE '%' || :description || '%' OR" +
+            "       :description IS NULL)" +
+            "   AND ((FC.CODE >= :fromAccountCode OR :fromAccountCode IS NULL) AND" +
+            "       (FC.CODE <= :toAccountCode OR :toAccountCode IS NULL))" +
+            "   AND (:centricAccountId IS NULL OR" +
+            "       (FNDI.CENTRIC_ACCOUNT_ID_1 = :centricAccountId OR" +
+            "       FNDI.CENTRIC_ACCOUNT_ID_2 = :centricAccountId OR" +
+            "       FNDI.CENTRIC_ACCOUNT_ID_3 = :centricAccountId OR" +
+            "       FNDI.CENTRIC_ACCOUNT_ID_4 = :centricAccountId OR" +
+            "       FNDI.CENTRIC_ACCOUNT_ID_5 = :centricAccountId OR" +
+            "       FNDI.CENTRIC_ACCOUNT_ID_6 = :centricAccountId))" +
+            "   AND (:centricAccountTypeId IS NULL OR" +
+            "       :centricAccountTypeId IN" +
+            "       (SELECT CNT.CENTRIC_ACCOUNT_TYPE_ID" +
+            "           FROM FNAC.CENTRIC_ACCOUNT CNT" +
+            "          WHERE FNDI.CENTRIC_ACCOUNT_ID_1 = CNT.ID" +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_2 = CNT.ID" +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_3 = CNT.ID" +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_4 = CNT.ID" +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_5 = CNT.ID" +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_6 = CNT.ID))" +
+            "   AND (:documentUserId IS NULL OR FIDC.CREATOR_ID = :documentUserId OR" +
+            "       FIDC.LAST_MODIFIER_ID = :documentUserId)" +
             "   and ((:priceType is null or " +
             "       (:priceTypeId = 1  " +
             "   and (:fromPrice is null or " +
@@ -189,21 +192,22 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "   and  (:fromPrice is null or " +
             "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
             "   and   (:toPrice is null  or " +
-            "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0))))) " +
-            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) " +
-            "  and FNSC.SEC_RESULT = 1" +
+            "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))))" +
+            "   AND (FIDC.FINANCIAL_DOCUMENT_TYPE_ID =" +
+            "       NVL(:financialDocumentTypeId, FIDC.FINANCIAL_DOCUMENT_TYPE_ID))" +
+            "   and FNSC.SEC_RESULT = 1" +
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description, " +
             "   FINANCIAL_DOCUMENT_STATUS_ID, " +
             "                      DS.NAME , " +
             "                     DS.CODE "
             , nativeQuery = true)
-    Page<Object[]> getFinancialDocumentList(String activityCode, Long creatorUserId, Long departmentId, Long userId, Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
-            , Object toNumber, Long toNumberId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
-                                            Long toAccountCode, Object centricAccount, Long centricAccountId,
-                                            Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId,
-                                            Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
-                                            Double tolerance, List<Long> documentStatusId, Object financialDocumentType, Long financialDocumentTypeId, Pageable pageable);
-
+    Page<Object[]> getFinancialDocumentList(String activityCode, Long creatorUserId, Long departmentId, Long userId, Long organizationId,
+                                            Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Long fromNumberId,
+                                            Long toNumberId, String description, Long fromAccountCode,
+                                            Long toAccountCode, Long centricAccountId,
+                                            Long centricAccountTypeId, Long documentUserId,Object priceType,Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
+                                            Double tolerance,
+                                            List<Long> documentStatusId, Long financialDocumentTypeId, Pageable pageable);
     @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:financialDocumentId")
     FinancialDocument getActivePeriodInDocument(Long financialDocumentId);
 

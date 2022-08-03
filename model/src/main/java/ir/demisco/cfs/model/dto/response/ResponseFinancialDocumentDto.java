@@ -9,8 +9,8 @@ public class ResponseFinancialDocumentDto {
     private LocalDateTime startDate;
     private LocalDateTime endDate;
     private Long financialNumberingTypeId;
-    private Long fromNumber;
-    private Long toNumber;
+    private Long fromNumberId;
+    private Long toNumberId;
     private List<Long> financialDocumentStatusDtoListId;
     private String description;
     private Long fromAccountId;
@@ -28,6 +28,11 @@ public class ResponseFinancialDocumentDto {
     private String activityCode;
     private Long departmentId;
     private Long ledgerTypeId;
+    private Object fromNumber;
+    private Object toNumber;
+    private Long fromPriceAmount;
+    private Long toPriceAmount;
+    private Object priceType;
     Map<String, Object> paramMap;
 
     public LocalDateTime getStartDate() {
@@ -54,20 +59,20 @@ public class ResponseFinancialDocumentDto {
         this.financialNumberingTypeId = financialNumberingTypeId;
     }
 
-    public Long getFromNumber() {
-        return fromNumber;
+    public Long getFromNumberId() {
+        return fromNumberId;
     }
 
-    public void setFromNumber(Long fromNumber) {
-        this.fromNumber = fromNumber;
+    public void setFromNumberId(Long fromNumberId) {
+        this.fromNumberId = fromNumberId;
     }
 
-    public Long getToNumber() {
-        return toNumber;
+    public Long getToNumberId() {
+        return toNumberId;
     }
 
-    public void setToNumber(Long toNumber) {
-        this.toNumber = toNumber;
+    public void setToNumberId(Long toNumberId) {
+        this.toNumberId = toNumberId;
     }
 
     public String getDescription() {
@@ -206,6 +211,46 @@ public class ResponseFinancialDocumentDto {
         this.paramMap = paramMap;
     }
 
+    public Object getFromNumber() {
+        return fromNumber;
+    }
+
+    public void setFromNumber(Object fromNumber) {
+        this.fromNumber = fromNumber;
+    }
+
+    public Object getToNumber() {
+        return toNumber;
+    }
+
+    public void setToNumber(Object toNumber) {
+        this.toNumber = toNumber;
+    }
+
+    public Long getFromPriceAmount() {
+        return fromPriceAmount;
+    }
+
+    public void setFromPriceAmount(Long fromPriceAmount) {
+        this.fromPriceAmount = fromPriceAmount;
+    }
+
+    public Long getToPriceAmount() {
+        return toPriceAmount;
+    }
+
+    public void setToPriceAmount(Long toPriceAmount) {
+        this.toPriceAmount = toPriceAmount;
+    }
+
+    public Object getPriceType() {
+        return priceType;
+    }
+
+    public void setPriceType(Object priceType) {
+        this.priceType = priceType;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -245,13 +290,13 @@ public class ResponseFinancialDocumentDto {
             return this;
         }
 
-        public Builder fromNumber(Long fromNumber) {
-            responseFinancialDocumentDto.setFromNumber(fromNumber);
+        public Builder fromNumberId(Long fromNumberId) {
+            responseFinancialDocumentDto.setFromNumberId(fromNumberId);
             return this;
         }
 
-        public Builder toNumber(Long toNumber) {
-            responseFinancialDocumentDto.setToNumber(toNumber);
+        public Builder toNumberId(Long toNumberId) {
+            responseFinancialDocumentDto.setToNumberId(toNumberId);
             return this;
         }
 
@@ -314,27 +359,53 @@ public class ResponseFinancialDocumentDto {
             responseFinancialDocumentDto.setTolerance(tolerance);
             return this;
         }
+
         public Builder financialDocumentTypeId(Long financialDocumentTypeId) {
             responseFinancialDocumentDto.setFinancialDocumentTypeId(financialDocumentTypeId);
             return this;
         }
-        public Builder activityCode(String  activityCode) {
+
+        public Builder activityCode(String activityCode) {
             responseFinancialDocumentDto.setActivityCode(activityCode);
             return this;
         }
-        public Builder departmentId(Long  departmentId) {
+
+        public Builder departmentId(Long departmentId) {
             responseFinancialDocumentDto.setDepartmentId(departmentId);
             return this;
         }
-        public Builder ledgerTypeId(Long  ledgerTypeId) {
+
+        public Builder ledgerTypeId(Long ledgerTypeId) {
             responseFinancialDocumentDto.setLedgerTypeId(ledgerTypeId);
             return this;
         }
+
         public Builder paramMap(Map<String, Object> paramMap) {
             responseFinancialDocumentDto.setParamMap(paramMap);
             return this;
         }
 
+        public Builder fromNumber(Object fromNumber) {
+            responseFinancialDocumentDto.setFromNumber(fromNumber);
+            return this;
+        }
+        public Builder toNumber(Object toNumber) {
+            responseFinancialDocumentDto.setToNumber(toNumber);
+            return this;
+        }
+        public Builder fromPriceAmount(Long fromPriceAmount) {
+            responseFinancialDocumentDto.setFromPriceAmount(fromPriceAmount);
+            return this;
+        }
+
+        public Builder toPriceAmount(Long toPriceAmount) {
+            responseFinancialDocumentDto.setToPriceAmount(toPriceAmount);
+            return this;
+        }
+        public Builder priceType(Object priceType) {
+            responseFinancialDocumentDto.setPriceType(priceType);
+            return this;
+        }
         public ResponseFinancialDocumentDto build() {
             return responseFinancialDocumentDto;
         }

@@ -227,7 +227,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
             " and FNSC.SEC_RESULT = 1 "
             , nativeQuery = true)
-    Page<Object[]> getFinancialDocumentItemList(String activityCode, Long creatorUserId, Long departmentId, Long userId, Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
+    Page<Object[]> getFinancialDocumentItemList(String activityCode, Long creatorUserId, Long departmentId, Long userId, Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate
+            , Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId, Object toNumber, Long toNumberId, List<Long> documentStatusId, String description, Object fromAccount, Long fromAccountCode, Object toAccount,
                                                 Long toAccountCode, Object centricAccount, Long centricAccountId, Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId, Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
                                                 Double tolerance, Object financialDocumentType, Long financialDocumentTypeId, Pageable pageable);
 

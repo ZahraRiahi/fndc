@@ -39,6 +39,6 @@ public class FinancialDocumentItemController {
     @GetMapping("/GetById/{financialDocumentItemId}")
     public ResponseEntity<FinancialDocumentItemOutPutResponse> responseEntityFinancialDocumentItem(@PathVariable Long financialDocumentItemId) {
         return ResponseEntity.ok(financialDocumentItemService.getFinancialDocumentItemById(financialDocumentItemId));
-
     }
+
 }

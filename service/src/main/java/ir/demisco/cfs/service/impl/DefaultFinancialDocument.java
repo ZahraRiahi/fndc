@@ -127,7 +127,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     public DataSourceResult getFinancialDocumentList(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
-        Map<String, Object> paramMap = paramSearch.getParamMap();
         List<Sort.Order> sorts = new ArrayList<>();
         dataSourceRequest.getSort()
                 .forEach((DataSourceRequest.SortDescriptor sortDescriptor) ->
@@ -140,15 +139,18 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         }
                 );
         Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake(), Sort.by(sorts));
+
         Page<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId()
                 , paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId()
                 , paramSearch.getLedgerTypeId(), paramSearch.getStartDate(),
-                paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumber(),
-                paramMap.get("toNumber"), paramSearch.getToNumber(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
-                paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId()
-                , paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("documentUser"), paramSearch.getDocumentUserId()
-                , paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
-                paramSearch.getToPrice(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId(), paramMap.get("financialDocumentType"), paramSearch.getFinancialDocumentTypeId(), pageable);
+                paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramSearch.getFromNumberId(),
+                paramSearch.getToNumberId(), paramSearch.getDescription(), paramSearch.getFromAccountCode(),
+                paramSearch.getToAccountCode(), paramSearch.getCentricAccountId()
+                , paramSearch.getCentricAccountTypeId(), paramSearch.getDocumentUserId(), paramSearch.getPriceType(), paramSearch.getFromPrice(),
+                paramSearch.getFromPriceAmount(), paramSearch.getToPrice(),
+                paramSearch.getToPriceAmount(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId(),
+                paramSearch.getFinancialDocumentTypeId(), pageable);
+
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -274,11 +276,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (item.getValue() != null) {
             map.put("toPrice", "toPrice");
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToPrice(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setToPriceAmount(Long.parseLong(item.getValue().toString()));
         } else {
             map.put("toPrice", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToPrice(0L);
+            responseFinancialDocumentDto.setToPriceAmount(0L);
         }
     }
 
@@ -288,6 +290,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             map.put("priceType", "priceType");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setPriceType(responseFinancialDocumentDto.getPriceType());
         } else {
             map.put("priceType", null);
             responseFinancialDocumentDto.setParamMap(map);
@@ -300,11 +303,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (item.getValue() != null) {
             map.put("fromNumber", "fromNumber");
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromNumber(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setFromNumberId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setFromNumber(responseFinancialDocumentDto.getFromNumberId());
         } else {
             map.put("fromNumber", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromNumber(0L);
+            responseFinancialDocumentDto.setFromNumberId(0L);
         }
     }
 
@@ -313,11 +317,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (item.getValue() != null) {
             map.put("toNumber", "toNumber");
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToNumber(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setToNumberId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setToNumber(responseFinancialDocumentDto.getToNumberId());
         } else {
             map.put("toNumber", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToNumber(0L);
+            responseFinancialDocumentDto.setToNumberId(0L);
         }
     }
 
@@ -325,7 +330,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (item.getValue() != null) {
             responseFinancialDocumentDto.setDescription(item.getValue().toString());
         } else {
-            responseFinancialDocumentDto.setDescription("");
+            responseFinancialDocumentDto.setDescription(null);
         }
     }
 
@@ -399,11 +404,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (item.getValue() != null) {
             map.put("fromPrice", "fromPrice");
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromPrice(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setFromPriceAmount(Long.parseLong(item.getValue().toString()));
         } else {
             map.put("fromPrice", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromPrice(0L);
+            responseFinancialDocumentDto.setFromPriceAmount(0L);
         }
     }
 
