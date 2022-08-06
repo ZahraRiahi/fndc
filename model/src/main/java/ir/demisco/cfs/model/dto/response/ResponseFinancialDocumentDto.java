@@ -33,6 +33,8 @@ public class ResponseFinancialDocumentDto {
     private Long fromPriceAmount;
     private Long toPriceAmount;
     private Object priceType;
+    private Object centricAccount;
+    private Object centricAccountType;
     Map<String, Object> paramMap;
 
     public LocalDateTime getStartDate() {
@@ -251,6 +253,22 @@ public class ResponseFinancialDocumentDto {
         this.priceType = priceType;
     }
 
+    public Object getCentricAccount() {
+        return centricAccount;
+    }
+
+    public void setCentricAccount(Object centricAccount) {
+        this.centricAccount = centricAccount;
+    }
+
+    public Object getCentricAccountType() {
+        return centricAccountType;
+    }
+
+    public void setCentricAccountType(Object centricAccountType) {
+        this.centricAccountType = centricAccountType;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -404,6 +422,14 @@ public class ResponseFinancialDocumentDto {
         }
         public Builder priceType(Object priceType) {
             responseFinancialDocumentDto.setPriceType(priceType);
+            return this;
+        }
+        public Builder centricAccount(Object centricAccount) {
+            responseFinancialDocumentDto.setCentricAccount(centricAccount);
+            return this;
+        }
+        public Builder centricAccountType(Object centricAccountType) {
+            responseFinancialDocumentDto.setCentricAccountType(centricAccountType);
             return this;
         }
         public ResponseFinancialDocumentDto build() {

@@ -5,19 +5,22 @@ import ir.demisco.cfs.model.dto.response.FinancialDocumentItemDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemOutPutResponse;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentDto;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
+import ir.demisco.cfs.model.entity.FinancialDocumentItemCurrency;
+import ir.demisco.cfs.model.entity.FinancialDocumentReference;
 import ir.demisco.cfs.service.api.FinancialDocumentItemService;
+import ir.demisco.cfs.service.repository.FinancialDocumentItemCurrencyRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentReferenceRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
-import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.text.ParseException;
 import java.text.ParsePosition;
@@ -32,14 +35,26 @@ import java.util.stream.Collectors;
 
 import ir.demisco.core.utils.DateUtil;
 
+import javax.persistence.EntityManager;
+import javax.transaction.Transactional;
+
 @Service
 public class DefaultFinancialDocumentItem implements FinancialDocumentItemService {
 
     private final FinancialDocumentItemRepository financialDocumentItemRepository;
+    private final FinancialDocumentRepository financialDocumentRepository;
+    private final EntityManager entityManager;
+    private final FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository;
+    private final FinancialDocumentReferenceRepository financialDocumentReferenceRepository;
+    private final FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository;
 
-
-    public DefaultFinancialDocumentItem(FinancialDocumentItemRepository financialDocumentItemRepository) {
+    public DefaultFinancialDocumentItem(FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentRepository financialDocumentRepository, EntityManager entityManager, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository) {
         this.financialDocumentItemRepository = financialDocumentItemRepository;
+        this.financialDocumentRepository = financialDocumentRepository;
+        this.entityManager = entityManager;
+        this.documentItemCurrencyRepository = documentItemCurrencyRepository;
+        this.financialDocumentReferenceRepository = financialDocumentReferenceRepository;
+        this.financialDocumentItemCurrencyRepository = financialDocumentItemCurrencyRepository;
     }
 
     @Override
@@ -47,7 +62,6 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
     public DataSourceResult getFinancialDocumentItemList(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
-        Map<String, Object> paramMap = paramSearch.getParamMap();
         List<Sort.Order> sorts = new ArrayList<>();
         dataSourceRequest.getSort()
                 .forEach((DataSourceRequest.SortDescriptor sortDescriptor) ->
@@ -59,12 +73,9 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                             }
                         }
                 );
-        Pageable pageable = PageRequest.of(dataSourceRequest.getSkip(), dataSourceRequest.getTake(), Sort.by(sorts));
-        Page<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId(), paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getLedgerTypeId(), paramSearch.getStartDate(),
-                paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramMap.get("fromNumber"), paramSearch.getFromNumberId(),
-                paramMap.get("toNumber"), paramSearch.getToNumberId(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(), paramMap.get("fromAccount"), paramSearch.getFromAccountCode(),
-                paramMap.get("toAccount"), paramSearch.getToAccountCode(), paramMap.get("centricAccount"), paramSearch.getCentricAccountId(), paramMap.get("centricAccountType"), paramSearch.getCentricAccountTypeId(), paramMap.get("documentUser"), paramSearch.getDocumentUserId(), paramMap.get("priceType"), paramMap.get("fromPrice"), paramSearch.getFromPrice(), paramMap.get("toPrice"),
-                paramSearch.getToPrice(), paramSearch.getTolerance(), paramMap.get("financialDocumentType"), paramSearch.getFinancialDocumentTypeId(), pageable);
+        Pageable pageable = PageRequest.of((dataSourceRequest.getSkip() / dataSourceRequest.getTake()), dataSourceRequest.getTake(), Sort.by(sorts));
+        Page<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(pageable);
+
         List<FinancialDocumentItemDto> documentItemDtoList = list.stream().map(item ->
                 FinancialDocumentItemDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -82,7 +93,8 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                         .centricAccountDescription(item[12] == null ? null : item[12].toString())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(documentItemDtoList);
+        dataSourceResult.setData(list.getContent());
+        //dataSourceResult.setData(documentItemDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
         dataSourceResult.setTotal(list.getTotalElements());
         return dataSourceResult;
     }
@@ -199,6 +211,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
             map.put("priceType", "priceType");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setPriceType(responseFinancialDocumentDto.getPriceType());
         } else {
             map.put("priceType", null);
             responseFinancialDocumentDto.setParamMap(map);
@@ -211,11 +224,12 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         if (item.getValue() != null) {
             map.put("fromNumber", "fromNumber");
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromNumber(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setFromNumberId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setFromNumber(responseFinancialDocumentDto.getFromNumberId());
         } else {
             map.put("fromNumber", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromNumber(0L);
+            responseFinancialDocumentDto.setFromNumberId(0L);
         }
     }
 
@@ -236,7 +250,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         if (item.getValue() != null) {
             responseFinancialDocumentDto.setDescription(item.getValue().toString());
         } else {
-            responseFinancialDocumentDto.setDescription("");
+            responseFinancialDocumentDto.setDescription(null);
         }
     }
 
@@ -245,11 +259,11 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         if (item.getValue() != null) {
             map.put("toNumber", "toNumber");
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToNumber(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setToNumberId(Long.parseLong(item.getValue().toString()));
         } else {
             map.put("toNumber", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToNumber(0L);
+            responseFinancialDocumentDto.setToNumberId(0L);
         }
     }
 
@@ -310,11 +324,11 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         if (item.getValue() != null) {
             map.put("fromPrice", "fromPrice");
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromPrice(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setFromPriceAmount(Long.parseLong(item.getValue().toString()));
         } else {
             map.put("fromPrice", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromPrice(0L);
+            responseFinancialDocumentDto.setFromPriceAmount(0L);
         }
     }
 
@@ -323,11 +337,11 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         if (item.getValue() != null) {
             map.put("toPrice", "toPrice");
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToPrice(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setToPriceAmount(Long.parseLong(item.getValue().toString()));
         } else {
             map.put("toPrice", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToPrice(0L);
+            responseFinancialDocumentDto.setToPriceAmount(0L);
         }
     }
 
@@ -386,4 +400,43 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                 .build();
     }
 
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean deleteFinancialDocumentItemById(Long financialDocumentItemId) {
+        Long count = financialDocumentRepository.findFinancialDocumentByDocumentItemId(financialDocumentItemId);
+        if (count != null) {
+            throw new RuleException("سند در وضعیت قطعی می باشد");
+        }
+        Long countDelete = financialDocumentRepository.findFinancialDocumentByDocumentItemIdDelete(financialDocumentItemId);
+        if (countDelete != null) {
+            throw new RuleException("این سند دارای شماره دائمی است و امکان حذف ردیف وجود ندارد");
+        }
+        entityManager.createNativeQuery(" update fndc.financial_document T" +
+                "   set   T.FINANCIAL_DOCUMENT_STATUS_ID = 1 " +
+                "   WHERE ID = (SELECT DI.FINANCIAL_DOCUMENT_ID" +
+                "               FROM FNDC.FINANCIAL_DOCUMENT_ITEM DI" +
+                "              WHERE DI.ID = :financialDocumentItemId) " +
+                "   AND T.FINANCIAL_DOCUMENT_STATUS_ID = 2 ").setParameter("financialDocumentItemId", financialDocumentItemId).executeUpdate();
+
+        List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getFinancialDocumentItemByDocumentId(financialDocumentItemId);
+        deleteDocumentItem(financialDocumentItemList);
+        financialDocumentItemRepository.deleteById(financialDocumentItemId);
+        return true;
+    }
+
+    public void deleteDocumentItem(List<FinancialDocumentItem> financialDocumentItemList) {
+        financialDocumentItemList.forEach((FinancialDocumentItem documentItem) -> {
+                documentItemCurrencyRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItem.getId())
+                        .forEach((FinancialDocumentItemCurrency financialDocumentItem) -> {
+                            documentItemCurrencyRepository.deleteById(financialDocumentItem.getId());
+                        });
+
+                financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItem.getId())
+                        .forEach((FinancialDocumentReference documentReference) -> {
+                            financialDocumentReferenceRepository.deleteById(documentReference.getId());
+                        });
+
+        });
+
+    }
 }
