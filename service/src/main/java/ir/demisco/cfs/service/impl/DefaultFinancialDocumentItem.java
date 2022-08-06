@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemOutPutResponse;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentDto;
+import ir.demisco.cfs.model.entity.FinancialDocument;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import ir.demisco.cfs.model.entity.FinancialDocumentItemCurrency;
 import ir.demisco.cfs.model.entity.FinancialDocumentReference;
@@ -46,7 +47,6 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
     private final EntityManager entityManager;
     private final FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository;
     private final FinancialDocumentReferenceRepository financialDocumentReferenceRepository;
-    private final FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository;
 
     public DefaultFinancialDocumentItem(FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentRepository financialDocumentRepository, EntityManager entityManager, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository) {
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -54,14 +54,12 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         this.entityManager = entityManager;
         this.documentItemCurrencyRepository = documentItemCurrencyRepository;
         this.financialDocumentReferenceRepository = financialDocumentReferenceRepository;
-        this.financialDocumentItemCurrencyRepository = financialDocumentItemCurrencyRepository;
     }
 
     @Override
     @Transactional
     public DataSourceResult getFinancialDocumentItemList(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
-        ResponseFinancialDocumentDto paramSearch = setParameter(filters);
         List<Sort.Order> sorts = new ArrayList<>();
         dataSourceRequest.getSort()
                 .forEach((DataSourceRequest.SortDescriptor sortDescriptor) ->
@@ -94,7 +92,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(list.getContent());
-        //dataSourceResult.setData(documentItemDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
+        dataSourceResult.setData(documentItemDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
         dataSourceResult.setTotal(list.getTotalElements());
         return dataSourceResult;
     }
@@ -417,7 +415,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                 "               FROM FNDC.FINANCIAL_DOCUMENT_ITEM DI" +
                 "              WHERE DI.ID = :financialDocumentItemId) " +
                 "   AND T.FINANCIAL_DOCUMENT_STATUS_ID = 2 ").setParameter("financialDocumentItemId", financialDocumentItemId).executeUpdate();
-
+        FinancialDocumentItem documentItem = financialDocumentItemRepository.findById(financialDocumentItemId).orElseThrow(() -> new RuleException("fin.financialDocument.notExistFinancialDocumentItem"));
         List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getFinancialDocumentItemByDocumentId(financialDocumentItemId);
         deleteDocumentItem(financialDocumentItemList);
         financialDocumentItemRepository.deleteById(financialDocumentItemId);
