@@ -1,10 +1,7 @@
 package ir.demisco.cfs.service.impl;
 
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemOutPutResponse;
-import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentDto;
-import ir.demisco.cfs.model.entity.FinancialDocument;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import ir.demisco.cfs.model.entity.FinancialDocumentItemCurrency;
 import ir.demisco.cfs.model.entity.FinancialDocumentReference;
@@ -23,19 +20,10 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
-
-import ir.demisco.core.utils.DateUtil;
-
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 
@@ -59,7 +47,6 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
     @Override
     @Transactional
     public DataSourceResult getFinancialDocumentItemList(DataSourceRequest dataSourceRequest) {
-        List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         List<Sort.Order> sorts = new ArrayList<>();
         dataSourceRequest.getSort()
                 .forEach((DataSourceRequest.SortDescriptor sortDescriptor) ->
@@ -95,284 +82,6 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         dataSourceResult.setData(documentItemDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
         dataSourceResult.setTotal(list.getTotalElements());
         return dataSourceResult;
-    }
-
-    private ResponseFinancialDocumentDto setParameter(List<DataSourceRequest.FilterDescriptor> filters) {
-        ResponseFinancialDocumentDto responseFinancialDocumentDto = new ResponseFinancialDocumentDto();
-        for (DataSourceRequest.FilterDescriptor item : filters) {
-            switch (item.getField()) {
-                case "activityCode":
-                    checkActivityCodeSet(responseFinancialDocumentDto, item);
-                    break;
-                case "departmentId":
-                    responseFinancialDocumentDto.setDepartmentId(Long.parseLong(item.getValue().toString()));
-                    break;
-                case "ledgerTypeId":
-                    responseFinancialDocumentDto.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
-                    break;
-                case "startDate":
-                    responseFinancialDocumentDto.setStartDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
-                    break;
-
-                case "endDate":
-                    responseFinancialDocumentDto.setEndDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
-                    break;
-                case "priceType.id":
-                    checkPriceTypeSet(responseFinancialDocumentDto, item);
-                    break;
-
-                case "financialNumberingType.id":
-                    responseFinancialDocumentDto.setFinancialNumberingTypeId(Long.parseLong(item.getValue().toString()));
-                    break;
-
-                case "fromNumber.id":
-                    checkFromNumberSet(responseFinancialDocumentDto, item);
-                    break;
-
-                case "toNumber.id":
-                    checkToNumberSet(responseFinancialDocumentDto, item);
-                    break;
-
-                case "financialDocumentStatusDtoList":
-                    responseFinancialDocumentDto.setFinancialDocumentStatusDtoListId((List<Long>) item.getValue());
-                    break;
-
-                case "description":
-                    checkDescriptionSet(responseFinancialDocumentDto, item);
-                    break;
-
-                case "fromAccount.code":
-                    checkFromAccountCodeSet(responseFinancialDocumentDto, item);
-                    break;
-
-                case "toAccount.code":
-                    checkToAccountCodeSet(responseFinancialDocumentDto, item);
-                    break;
-
-                case "centricAccount.id":
-                    checkCentricAccountIdSet(responseFinancialDocumentDto, item);
-                    break;
-                case "centricAccountType.id":
-                    checkCentricAccountTypeIdSet(responseFinancialDocumentDto, item);
-                    break;
-
-                case "documentUser.id":
-                    checkDocumentUserIdSet(responseFinancialDocumentDto, item);
-                    break;
-                case "fromPriceAmount":
-                    checkFromPriceSet(responseFinancialDocumentDto, item);
-                    break;
-
-                case "toPriceAmount":
-                    checkToPriceSet(responseFinancialDocumentDto, item);
-                    break;
-
-                case "tolerance":
-                    checkToleranceSet(responseFinancialDocumentDto, item);
-                    break;
-                case "financialDocumentType.id":
-                    checkFinancialDocumentTypeId(responseFinancialDocumentDto, item);
-                    break;
-                default:
-
-                    break;
-            }
-        }
-
-        return responseFinancialDocumentDto;
-    }
-
-    private void checkFinancialDocumentTypeId(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("financialDocumentType", "financialDocumentType");
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFinancialDocumentTypeId(Long.parseLong(item.getValue().toString()));
-        } else {
-            map.put("financialDocumentType", null);
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFinancialDocumentTypeId(0L);
-        }
-    }
-
-    private void checkActivityCodeSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        if (item.getValue() != null) {
-            responseFinancialDocumentDto.setActivityCode(item.getValue().toString());
-        } else {
-            throw new RuleException("fin.document.activityCode.is.null");
-        }
-    }
-
-    private void checkPriceTypeSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("priceType", "priceType");
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
-            responseFinancialDocumentDto.setPriceType(responseFinancialDocumentDto.getPriceType());
-        } else {
-            map.put("priceType", null);
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setPriceTypeId(0L);
-        }
-    }
-
-    private void checkFromNumberSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("fromNumber", "fromNumber");
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromNumberId(Long.parseLong(item.getValue().toString()));
-            responseFinancialDocumentDto.setFromNumber(responseFinancialDocumentDto.getFromNumberId());
-        } else {
-            map.put("fromNumber", null);
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromNumberId(0L);
-        }
-    }
-
-    private void checkFromAccountCodeSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("fromAccount", "fromAccount");
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromAccountCode(Long.parseLong(item.getValue().toString()));
-        } else {
-            map.put("fromAccount", null);
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromAccountCode(0L);
-        }
-    }
-
-    private void checkDescriptionSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        if (item.getValue() != null) {
-            responseFinancialDocumentDto.setDescription(item.getValue().toString());
-        } else {
-            responseFinancialDocumentDto.setDescription(null);
-        }
-    }
-
-    private void checkToNumberSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("toNumber", "toNumber");
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToNumberId(Long.parseLong(item.getValue().toString()));
-        } else {
-            map.put("toNumber", null);
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToNumberId(0L);
-        }
-    }
-
-    private void checkToAccountCodeSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("toAccount", "toAccount");
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToAccountCode(Long.parseLong(item.getValue().toString()));
-        } else {
-            map.put("toAccount", null);
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToAccountCode(0L);
-        }
-    }
-
-    private void checkCentricAccountIdSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("centricAccount", "centricAccount");
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setCentricAccountId(Long.parseLong(item.getValue().toString()));
-        } else {
-            map.put("centricAccount", null);
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setCentricAccountId(0L);
-        }
-    }
-
-    private void checkCentricAccountTypeIdSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("centricAccountType", "centricAccountType");
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setCentricAccountTypeId(Long.parseLong(item.getValue().toString()));
-        } else {
-            map.put("centricAccountType", null);
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setCentricAccountTypeId(0L);
-        }
-    }
-
-    private void checkDocumentUserIdSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("documentUser", "documentUser");
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setDocumentUserId(Long.parseLong(item.getValue().toString()));
-        } else {
-            map.put("documentUser", null);
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setDocumentUserId(0L);
-        }
-    }
-
-    private void checkFromPriceSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("fromPrice", "fromPrice");
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromPriceAmount(Long.parseLong(item.getValue().toString()));
-        } else {
-            map.put("fromPrice", null);
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromPriceAmount(0L);
-        }
-    }
-
-    private void checkToPriceSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            map.put("toPrice", "toPrice");
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToPriceAmount(Long.parseLong(item.getValue().toString()));
-        } else {
-            map.put("toPrice", null);
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToPriceAmount(0L);
-        }
-    }
-
-    private void checkToleranceSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        if (item.getValue() != null) {
-            responseFinancialDocumentDto.setTolerance(Double.parseDouble(item.getValue().toString()));
-        } else {
-            responseFinancialDocumentDto.setTolerance(0D);
-        }
-    }
-
-    private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
-        if (input instanceof String) {
-            return checkTry(input, truncateDate);
-        } else if (input instanceof LocalDateTime) {
-            return truncateDate ? DateUtil.truncate((LocalDateTime) input) : (LocalDateTime) input;
-        } else {
-            throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
-        }
-    }
-
-    private LocalDateTime checkTry(Object input, boolean truncateDate) {
-        try {
-            Date date = ISO8601Utils.parse((String) input, new ParsePosition(0));
-            LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-            return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
-        } catch (ParseException var4) {
-            if (((String) input).equalsIgnoreCase("current_date")) {
-                return truncateDate ? DateUtil.truncate(LocalDateTime.now()) : LocalDateTime.now();
-            } else {
-                return ((String) input).equalsIgnoreCase("current_timestamp") ? LocalDateTime.now() : LocalDateTime.parse((String) input);
-            }
-        }
     }
 
     @Override
@@ -424,15 +133,15 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
 
     public void deleteDocumentItem(List<FinancialDocumentItem> financialDocumentItemList) {
         financialDocumentItemList.forEach((FinancialDocumentItem documentItem) -> {
-                documentItemCurrencyRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItem.getId())
-                        .forEach((FinancialDocumentItemCurrency financialDocumentItem) -> {
-                            documentItemCurrencyRepository.deleteById(financialDocumentItem.getId());
-                        });
+            documentItemCurrencyRepository.findByFinancialDocumentItemIdAndDeletedDateIsNull(documentItem.getId())
+                    .forEach((FinancialDocumentItemCurrency financialDocumentItem) -> {
+                        documentItemCurrencyRepository.deleteById(financialDocumentItem.getId());
+                    });
 
-                financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItem.getId())
-                        .forEach((FinancialDocumentReference documentReference) -> {
-                            financialDocumentReferenceRepository.deleteById(documentReference.getId());
-                        });
+            financialDocumentReferenceRepository.findByFinancialDocumentItemId(documentItem.getId())
+                    .forEach((FinancialDocumentReference documentReference) -> {
+                        financialDocumentReferenceRepository.deleteById(documentReference.getId());
+                    });
 
         });
 
