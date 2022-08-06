@@ -36,7 +36,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
     private final FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository;
     private final FinancialDocumentReferenceRepository financialDocumentReferenceRepository;
 
-    public DefaultFinancialDocumentItem(FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentRepository financialDocumentRepository, EntityManager entityManager, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository) {
+    public DefaultFinancialDocumentItem(FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentRepository financialDocumentRepository, EntityManager entityManager, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository) {
         this.financialDocumentItemRepository = financialDocumentItemRepository;
         this.financialDocumentRepository = financialDocumentRepository;
         this.entityManager = entityManager;
