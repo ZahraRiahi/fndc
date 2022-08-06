@@ -15,10 +15,10 @@ import javax.persistence.Table;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "FINANCIAL_DOCUMENT_ITEM" , schema = "fndc")
+@Table(name = "FINANCIAL_DOCUMENT_ITEM", schema = "fndc")
 public class FinancialDocumentItem extends AuditModel<Long> {
 
-    private FinancialDocument  financialDocument;
+    private FinancialDocument financialDocument;
     private Long sequenceNumber;
     private Double debitAmount;
     private Double creditAmount;
@@ -35,7 +35,7 @@ public class FinancialDocumentItem extends AuditModel<Long> {
 
     @Override
     @Id
-    @SequenceGenerator(schema = "fndc", name = "financial_document_item_generator", sequenceName = "sq_financial_document_item" , allocationSize = 50)
+    @SequenceGenerator(schema = "fndc", name = "financial_document_item_generator", sequenceName = "sq_financial_document_item", allocationSize = 50)
     @GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "financial_document_item_generator")
     public Long getId() {
         return super.getId();
@@ -142,6 +142,7 @@ public class FinancialDocumentItem extends AuditModel<Long> {
     public void setCentricAccountId5(CentricAccount centricAccountId5) {
         this.centricAccountId5 = centricAccountId5;
     }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "CENTRIC_ACCOUNT_ID_6")
     public CentricAccount getCentricAccountId6() {

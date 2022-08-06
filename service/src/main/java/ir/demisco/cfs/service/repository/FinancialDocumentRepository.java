@@ -1,8 +1,6 @@
 package ir.demisco.cfs.service.repository;
 
 import ir.demisco.cfs.model.entity.FinancialDocument;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -75,14 +73,14 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       :description IS NULL)" +
             "   AND ((FC.CODE >= :fromAccountCode OR :fromAccountCode IS NULL) AND" +
             "       (FC.CODE <= :toAccountCode OR :toAccountCode IS NULL))" +
-            "   AND (:centricAccountId IS NULL OR" +
+            "   AND (:centricAccount IS NULL OR" +
             "       (FNDI.CENTRIC_ACCOUNT_ID_1 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_2 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_3 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_4 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_5 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_6 = :centricAccountId))" +
-            "   AND (:centricAccountTypeId IS NULL OR" +
+            "   AND (:centricAccountType IS NULL OR" +
             "       :centricAccountTypeId IN" +
             "       (SELECT CNT.CENTRIC_ACCOUNT_TYPE_ID" +
             "           FROM FNAC.CENTRIC_ACCOUNT CNT" +
@@ -163,14 +161,14 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       :description IS NULL)" +
             "   AND ((FC.CODE >= :fromAccountCode OR :fromAccountCode IS NULL) AND" +
             "       (FC.CODE <= :toAccountCode OR :toAccountCode IS NULL))" +
-            "   AND (:centricAccountId IS NULL OR" +
+            "   AND (:centricAccount IS NULL OR" +
             "       (FNDI.CENTRIC_ACCOUNT_ID_1 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_2 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_3 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_4 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_5 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_6 = :centricAccountId))" +
-            "   AND (:centricAccountTypeId IS NULL OR" +
+            "   AND (:centricAccountType IS NULL OR" +
             "       :centricAccountTypeId IN" +
             "       (SELECT CNT.CENTRIC_ACCOUNT_TYPE_ID" +
             "           FROM FNAC.CENTRIC_ACCOUNT CNT" +
@@ -201,13 +199,15 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                      DS.NAME , " +
             "                     DS.CODE "
             , nativeQuery = true)
-    Page<Object[]> getFinancialDocumentList(String activityCode, Long creatorUserId, Long departmentId, Long userId, Long organizationId,
-                                            Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate, Long priceTypeId, Long financialNumberingTypeId, Long fromNumberId,
-                                            Long toNumberId, String description, Long fromAccountCode,
-                                            Long toAccountCode, Long centricAccountId,
-                                            Long centricAccountTypeId, Long documentUserId,Object priceType,Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
-                                            Double tolerance,
-                                            List<Long> documentStatusId, Long financialDocumentTypeId, Pageable pageable);
+    List<Object[]> getFinancialDocumentList(String activityCode, Long creatorUserId, Long departmentId, Long userId,
+                                            Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate,
+                                            Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
+            , Object toNumber, Long toNumberId, String description, Long fromAccountCode,
+                                            Long toAccountCode, Object centricAccount, Long centricAccountId,
+                                            Object centricAccountType, Long centricAccountTypeId, Long documentUserId,
+                                            Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
+                                            Double tolerance, List<Long> documentStatusId, Long financialDocumentTypeId);
+
     @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:financialDocumentId")
     FinancialDocument getActivePeriodInDocument(Long financialDocumentId);
 
@@ -482,4 +482,28 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
     @Query(value = " select t.financial_document_status_id from fndc.financial_document t where t.id=:documentId "
             , nativeQuery = true)
     Long findByFinancialDocumentStatusByDocumentId(Long documentId);
+
+    @Query(value = " select 1" +
+            "    from fndc.financial_document fnd" +
+            "    inner join fndc.financial_document_item fndi" +
+            "    on fnd.id = fndi.financial_document_id" +
+            "    where fndi.id = :financialDocumentItemId " +
+            "    and fnd.financial_document_status_id = 3 "
+            , nativeQuery = true)
+    Long findFinancialDocumentByDocumentItemId(Long financialDocumentItemId);
+
+    @Query(value = " select 1" +
+            "   from fndc.financial_document fnd" +
+            "  inner join fndc.financial_document_number fndn" +
+            "     on fnd.id = fndn.financial_document_id" +
+            "    and fndn.financial_numbering_type_id = 3" +
+            "    and fnd.id = (SELECT DI.FINANCIAL_DOCUMENT_ID" +
+            "                    FROM FNDC.FINANCIAL_DOCUMENT_ITEM DI" +
+            "                   WHERE DI.ID = :financialDocumentItemId) "
+            , nativeQuery = true)
+    Long findFinancialDocumentByDocumentItemIdDelete(Long financialDocumentItemId);
+
+    @Query("select fdi from FinancialDocumentItem fdi where fdi.id=:financialDocumentItemId " +
+            " and fdi.deletedDate is null")
+    List<FinancialDocument> getFinancialDocumentItemByDocumentId(Long financialDocumentItemId);
 }
