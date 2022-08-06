@@ -124,7 +124,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                 "               FROM FNDC.FINANCIAL_DOCUMENT_ITEM DI" +
                 "              WHERE DI.ID = :financialDocumentItemId) " +
                 "   AND T.FINANCIAL_DOCUMENT_STATUS_ID = 2 ").setParameter("financialDocumentItemId", financialDocumentItemId).executeUpdate();
-        FinancialDocumentItem documentItem = financialDocumentItemRepository.findById(financialDocumentItemId).orElseThrow(() -> new RuleException("fin.financialDocument.notExistFinancialDocumentItem"));
+        financialDocumentItemRepository.findById(financialDocumentItemId).orElseThrow(() -> new RuleException("fin.financialDocument.notExistFinancialDocumentItem"));
         List<FinancialDocumentItem> financialDocumentItemList = financialDocumentItemRepository.getFinancialDocumentItemByDocumentId(financialDocumentItemId);
         deleteDocumentItem(financialDocumentItemList);
         financialDocumentItemRepository.deleteById(financialDocumentItemId);
