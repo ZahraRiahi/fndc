@@ -136,6 +136,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 paramSearch.getFromPriceAmount(), paramSearch.getToPrice(),
                 paramSearch.getToPriceAmount(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId(),
                 paramSearch.getFinancialDocumentTypeId());
+
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -321,26 +322,22 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private void checkFromAccountCodeSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
-            map.put("fromAccount", "fromAccount");
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromAccountCode(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setFromAccountCode(item.getValue().toString());
         } else {
-            map.put("fromAccount", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromAccountCode(0L);
+            responseFinancialDocumentDto.setFromAccountCode(null);
         }
     }
 
     private void checkToAccountCodeSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
-            map.put("toAccount", "toAccount");
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToAccountCode(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setToAccountCode(item.getValue().toString());
         } else {
-            map.put("toAccount", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToAccountCode(0L);
+            responseFinancialDocumentDto.setToAccountCode(null);
         }
     }
 

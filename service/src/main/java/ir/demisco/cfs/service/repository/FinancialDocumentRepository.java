@@ -202,8 +202,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
     List<Object[]> getFinancialDocumentList(String activityCode, Long creatorUserId, Long departmentId, Long userId,
                                             Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate,
                                             Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
-            , Object toNumber, Long toNumberId, String description, Long fromAccountCode,
-                                            Long toAccountCode, Object centricAccount, Long centricAccountId,
+            , Object toNumber, Long toNumberId, String description, String fromAccountCode,
+                                            String toAccountCode, Object centricAccount, Long centricAccountId,
                                             Object centricAccountType, Long centricAccountTypeId, Long documentUserId,
                                             Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
                                             Double tolerance, List<Long> documentStatusId, Long financialDocumentTypeId);
