@@ -15,15 +15,16 @@ public class ResponseFinancialDocumentDto {
     private String description;
     private Long fromAccountId;
     private Long toAccountId;
-    private Long fromAccountCode;
-    private Long toAccountCode;
+    private String fromAccountCode;
+    private String toAccountCode;
     private Long centricAccountId;
     private Long centricAccountTypeId;
     private Long documentUserId;
     private Long priceTypeId;
-    private Long fromPrice;
-    private Long toPrice;
+    private Object fromPrice;
+    private Object toPrice;
     private Double tolerance;
+    private Object financialDocumentType;
     private Long financialDocumentTypeId;
     private String activityCode;
     private Long departmentId;
@@ -35,6 +36,7 @@ public class ResponseFinancialDocumentDto {
     private Object priceType;
     private Object centricAccount;
     private Object centricAccountType;
+    private Object documentUser;
     Map<String, Object> paramMap;
 
     public LocalDateTime getStartDate() {
@@ -101,19 +103,19 @@ public class ResponseFinancialDocumentDto {
         this.toAccountId = toAccountId;
     }
 
-    public Long getFromAccountCode() {
+    public String getFromAccountCode() {
         return fromAccountCode;
     }
 
-    public void setFromAccountCode(Long fromAccountCode) {
+    public void setFromAccountCode(String fromAccountCode) {
         this.fromAccountCode = fromAccountCode;
     }
 
-    public Long getToAccountCode() {
+    public String getToAccountCode() {
         return toAccountCode;
     }
 
-    public void setToAccountCode(Long toAccountCode) {
+    public void setToAccountCode(String toAccountCode) {
         this.toAccountCode = toAccountCode;
     }
 
@@ -149,19 +151,19 @@ public class ResponseFinancialDocumentDto {
         this.priceTypeId = priceTypeId;
     }
 
-    public Long getFromPrice() {
+    public Object getFromPrice() {
         return fromPrice;
     }
 
-    public void setFromPrice(Long fromPrice) {
+    public void setFromPrice(Object fromPrice) {
         this.fromPrice = fromPrice;
     }
 
-    public Long getToPrice() {
+    public Object getToPrice() {
         return toPrice;
     }
 
-    public void setToPrice(Long toPrice) {
+    public void setToPrice(Object toPrice) {
         this.toPrice = toPrice;
     }
 
@@ -179,6 +181,14 @@ public class ResponseFinancialDocumentDto {
 
     public void setFinancialDocumentTypeId(Long financialDocumentTypeId) {
         this.financialDocumentTypeId = financialDocumentTypeId;
+    }
+
+    public Object getFinancialDocumentType() {
+        return financialDocumentType;
+    }
+
+    public void setFinancialDocumentType(Object financialDocumentType) {
+        this.financialDocumentType = financialDocumentType;
     }
 
     public String getActivityCode() {
@@ -277,6 +287,14 @@ public class ResponseFinancialDocumentDto {
         return financialDocumentStatusDtoListId;
     }
 
+    public Object getDocumentUser() {
+        return documentUser;
+    }
+
+    public void setDocumentUser(Object documentUser) {
+        this.documentUser = documentUser;
+    }
+
     public void setFinancialDocumentStatusDtoListId(List<Long> financialDocumentStatusDtoListId) {
         this.financialDocumentStatusDtoListId = financialDocumentStatusDtoListId;
     }
@@ -333,12 +351,12 @@ public class ResponseFinancialDocumentDto {
             return this;
         }
 
-        public Builder fromAccountCode(Long fromAccountCode) {
+        public Builder fromAccountCode(String fromAccountCode) {
             responseFinancialDocumentDto.setFromAccountCode(fromAccountCode);
             return this;
         }
 
-        public Builder toAccountCode(Long toAccountCode) {
+        public Builder toAccountCode(String toAccountCode) {
             responseFinancialDocumentDto.setToAccountCode(toAccountCode);
             return this;
         }
@@ -363,12 +381,12 @@ public class ResponseFinancialDocumentDto {
             return this;
         }
 
-        public Builder fromPrice(Long fromPrice) {
+        public Builder fromPrice(Object fromPrice) {
             responseFinancialDocumentDto.setFromPrice(fromPrice);
             return this;
         }
 
-        public Builder toPrice(Long toPrice) {
+        public Builder toPrice(Object toPrice) {
             responseFinancialDocumentDto.setToPrice(toPrice);
             return this;
         }
@@ -430,6 +448,14 @@ public class ResponseFinancialDocumentDto {
         }
         public Builder centricAccountType(Object centricAccountType) {
             responseFinancialDocumentDto.setCentricAccountType(centricAccountType);
+            return this;
+        }
+        public Builder documentUser(Object documentUser) {
+            responseFinancialDocumentDto.setDocumentUser(documentUser);
+            return this;
+        }
+        public Builder financialDocumentType(Object financialDocumentType) {
+            responseFinancialDocumentDto.setFinancialDocumentType(financialDocumentType);
             return this;
         }
         public ResponseFinancialDocumentDto build() {
