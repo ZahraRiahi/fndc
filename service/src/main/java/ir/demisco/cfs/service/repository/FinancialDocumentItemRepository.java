@@ -86,8 +86,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "          FNDI.DEBIT_AMOUNT " +
             "       END  " +
             " AND FNDN.FINANCIAL_NUMBERING_TYPE_ID = :financialNumberingTypeId " +
-            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumberId IS NULL)" +
-            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumberId IS NULL)" +
+            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL)" +
+            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL)" +
             "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId) " +
             "   and (:description is null or fidc.description  like %:description%) " +
             "   and ((:fromAccountCode is null or FIAC.CODE >= :fromAccountCode  ) " +
@@ -184,8 +184,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "          FNDI.DEBIT_AMOUNT " +
             "       END  " +
             " AND FNDN.FINANCIAL_NUMBERING_TYPE_ID = :financialNumberingTypeId " +
-            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumberId IS NULL)" +
-            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumberId IS NULL)" +
+            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL)" +
+            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL)" +
             "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId) " +
             "   and (:description is null or fidc.description  like %:description%) " +
             "   and ((:fromAccountCode is null or FIAC.CODE >= :fromAccountCode  ) " +
@@ -225,17 +225,17 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       (:toPrice IS NULL OR" +
             "       (FNDI.CREDIT_AMOUNT <=" +
             "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0)))))" +
-            
+
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
             " and FNSC.SEC_RESULT = 1 "
             , nativeQuery = true)
     Page<Object[]> getFinancialDocumentItemList(String activityCode, Long creatorUserId, Long departmentId, Long userId,
                                                 Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate
-            , Long priceTypeId, Long financialNumberingTypeId, Long fromNumberId, Long toNumberId,
-             List<Long> documentStatusId, String description, String fromAccountCode, String toAccountCode
+            , Long priceTypeId, Long financialNumberingTypeId, Long fromNumberId, Object fromNumber, Long toNumberId,Object toNumber,
+                                                List<Long> documentStatusId, String description, String fromAccountCode, String toAccountCode
             , Object centricAccount, Long centricAccountId, Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId,
-        Object priceType,Object fromPrice,Long fromPriceAmount,Double tolerance ,Object toPrice,Long toPriceAmount
-        ,Object financialDocumentType,Long financialDocumentTypeId , Pageable pageable);
+                                                Object priceType, Object fromPrice, Long fromPriceAmount, Double tolerance, Object toPrice, Long toPriceAmount
+            , Object financialDocumentType, Long financialDocumentTypeId, Pageable pageable);
 
 
     List<FinancialDocumentItem> findByFinancialDocumentIdAndDeletedDateIsNull(Long financialDocumentId);

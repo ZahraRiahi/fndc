@@ -1,6 +1,8 @@
 package ir.demisco.cfs.service.repository;
 
 import ir.demisco.cfs.model.entity.FinancialDocument;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -9,7 +11,7 @@ import java.util.List;
 
 public interface FinancialDocumentRepository extends JpaRepository<FinancialDocument, Long> {
 
-    @Query(value = " SELECT FIDC.ID," +
+    @Query(value = " SELECT FIDC.ID as documentId ," +
             "       FIDC.DOCUMENT_DATE as documentDate," +
             "       FIDC.DESCRIPTION as description," +
             "       FIDC.DOCUMENT_NUMBER," +
@@ -66,8 +68,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "          FNDI.DEBIT_AMOUNT" +
             "       END" +
             "   AND FNDN.FINANCIAL_NUMBERING_TYPE_ID = :financialNumberingTypeId" +
-            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumberId IS NULL)" +
-            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumberId IS NULL)" +
+            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL)" +
+            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL)" +
             "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId)" +
             "   AND (FIDC.DESCRIPTION LIKE '%' || :description || '%' OR" +
             "       :description IS NULL)" +
@@ -90,7 +92,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "             OR FNDI.CENTRIC_ACCOUNT_ID_4 = CNT.ID" +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_5 = CNT.ID" +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_6 = CNT.ID))" +
-            "   AND (:documentUserId IS NULL OR FIDC.CREATOR_ID = :documentUserId OR" +
+            "   AND (:documentUser IS NULL OR FIDC.CREATOR_ID = :documentUserId OR" +
             "       FIDC.LAST_MODIFIER_ID = :documentUserId)" +
             "   and ((:priceType is null or " +
             "       (:priceTypeId = 1  " +
@@ -103,8 +105,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
             "   and   (:toPrice is null  or " +
             "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))))" +
-            "   AND (FIDC.FINANCIAL_DOCUMENT_TYPE_ID =" +
-            "       NVL(:financialDocumentTypeId, FIDC.FINANCIAL_DOCUMENT_TYPE_ID))" +
+            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
             "   and FNSC.SEC_RESULT = 1" +
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,fidc.financial_document_type_id,fndt.description," +
             " FINANCIAL_DOCUMENT_STATUS_ID, " +
@@ -154,8 +155,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "          FNDI.DEBIT_AMOUNT" +
             "       END" +
             "   AND FNDN.FINANCIAL_NUMBERING_TYPE_ID = :financialNumberingTypeId" +
-            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumberId IS NULL)" +
-            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumberId IS NULL)" +
+            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL)" +
+            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL)" +
             "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId)" +
             "   AND (FIDC.DESCRIPTION LIKE '%' || :description || '%' OR" +
             "       :description IS NULL)" +
@@ -178,7 +179,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "             OR FNDI.CENTRIC_ACCOUNT_ID_4 = CNT.ID" +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_5 = CNT.ID" +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_6 = CNT.ID))" +
-            "   AND (:documentUserId IS NULL OR FIDC.CREATOR_ID = :documentUserId OR" +
+            "   AND (:documentUser IS NULL OR FIDC.CREATOR_ID = :documentUserId OR" +
             "       FIDC.LAST_MODIFIER_ID = :documentUserId)" +
             "   and ((:priceType is null or " +
             "       (:priceTypeId = 1  " +
@@ -191,22 +192,21 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
             "   and   (:toPrice is null  or " +
             "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))))" +
-            "   AND (FIDC.FINANCIAL_DOCUMENT_TYPE_ID =" +
-            "       NVL(:financialDocumentTypeId, FIDC.FINANCIAL_DOCUMENT_TYPE_ID))" +
+            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
             "   and FNSC.SEC_RESULT = 1" +
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description, " +
             "   FINANCIAL_DOCUMENT_STATUS_ID, " +
             "                      DS.NAME , " +
             "                     DS.CODE "
             , nativeQuery = true)
-    List<Object[]> getFinancialDocumentList(String activityCode, Long creatorUserId, Long departmentId, Long userId,
+    Page<Object[]> getFinancialDocumentList(String activityCode, Long creatorUserId, Long departmentId, Long userId,
                                             Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate,
-                                            Long priceTypeId, Long financialNumberingTypeId, Object fromNumber, Long fromNumberId
-            , Object toNumber, Long toNumberId, String description, String fromAccountCode,
+                                            Long priceTypeId, Long financialNumberingTypeId, Long fromNumberId, Object fromNumber,
+                                            Long toNumberId, Object toNumber, List<Long> documentStatusId, String description, String fromAccountCode,
                                             String toAccountCode, Object centricAccount, Long centricAccountId,
-                                            Object centricAccountType, Long centricAccountTypeId, Long documentUserId,
+                                            Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId,
                                             Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
-                                            Double tolerance, List<Long> documentStatusId, Long financialDocumentTypeId);
+                                            Double tolerance, Object financialDocumentType, Long financialDocumentTypeId, Pageable pageable);
 
     @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:financialDocumentId")
     FinancialDocument getActivePeriodInDocument(Long financialDocumentId);

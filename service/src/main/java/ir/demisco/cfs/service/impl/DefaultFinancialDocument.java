@@ -53,6 +53,7 @@ import ir.demisco.core.utils.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -126,16 +127,31 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     public DataSourceResult getFinancialDocumentList(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         ResponseFinancialDocumentDto paramSearch = setParameter(filters);
-        List<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId()
+        List<Sort.Order> sorts = new ArrayList<>();
+        dataSourceRequest.getSort()
+                .forEach((DataSourceRequest.SortDescriptor sortDescriptor) ->
+                        {
+                            if (sortDescriptor.getDir().equals("asc")) {
+                                sorts.add(Sort.Order.asc(sortDescriptor.getField()));
+                            } else {
+                                sorts.add(Sort.Order.desc(sortDescriptor.getField()));
+                            }
+                        }
+                );
+        sorts.add(Sort.Order.asc("documentId"));
+        Pageable pageable = PageRequest.of((dataSourceRequest.getSkip() / dataSourceRequest.getTake()), dataSourceRequest.getTake(), Sort.by(sorts));
+
+        Page<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId()
                 , paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getLedgerTypeId()
                 , paramSearch.getStartDate(),
-                paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramSearch.getFromNumber(), paramSearch.getFromNumberId(),
-                paramSearch.getToNumber(), paramSearch.getToNumberId(), paramSearch.getDescription(), paramSearch.getFromAccountCode(),
+                paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramSearch.getFromNumberId(), paramSearch.getFromNumber(),
+                paramSearch.getToNumberId(), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(),
+                paramSearch.getFromAccountCode(),
                 paramSearch.getToAccountCode(), paramSearch.getCentricAccount(), paramSearch.getCentricAccountId(),
-                paramSearch.getCentricAccountType(), paramSearch.getCentricAccountTypeId(), paramSearch.getDocumentUserId(), paramSearch.getPriceType(), paramSearch.getFromPrice(),
+                paramSearch.getCentricAccountType(), paramSearch.getCentricAccountTypeId(), paramSearch.getDocumentUser(), paramSearch.getDocumentUserId(), paramSearch.getPriceType(), paramSearch.getFromPrice(),
                 paramSearch.getFromPriceAmount(), paramSearch.getToPrice(),
-                paramSearch.getToPriceAmount(), paramSearch.getTolerance(), paramSearch.getFinancialDocumentStatusDtoListId(),
-                paramSearch.getFinancialDocumentTypeId());
+                paramSearch.getToPriceAmount(), paramSearch.getTolerance(),
+                paramSearch.getFinancialDocumentType(), paramSearch.getFinancialDocumentTypeId(), pageable);
 
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
@@ -156,7 +172,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(documentDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
-        dataSourceResult.setTotal(list.size());
+        dataSourceResult.setData(documentDtoList);
+        dataSourceResult.setTotal(list.getTotalElements());
         return dataSourceResult;
     }
 
@@ -279,6 +296,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         } else {
             map.put("priceType", null);
             responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setPriceType(null);
             responseFinancialDocumentDto.setPriceTypeId(0L);
         }
     }
@@ -293,6 +311,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         } else {
             map.put("fromNumber", null);
             responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFromNumber(null);
             responseFinancialDocumentDto.setFromNumberId(0L);
         }
     }
@@ -307,6 +326,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         } else {
             map.put("toNumber", null);
             responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setToNumber(null);
             responseFinancialDocumentDto.setToNumberId(0L);
         }
     }
@@ -351,6 +371,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         } else {
             map.put("centricAccount", null);
             responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setCentricAccount(null);
             responseFinancialDocumentDto.setCentricAccountId(0L);
         }
     }
@@ -366,6 +387,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         } else {
             map.put("centricAccountType", null);
             responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setCentricAccountType(null);
             responseFinancialDocumentDto.setCentricAccountTypeId(0L);
         }
     }
@@ -379,6 +401,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         } else {
             map.put("documentUser", null);
             responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setDocumentUser(null);
             responseFinancialDocumentDto.setDocumentUserId(0L);
         }
     }
@@ -392,6 +415,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         } else {
             map.put("fromPrice", null);
             responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFromPrice(null);
             responseFinancialDocumentDto.setFromPriceAmount(0L);
         }
     }

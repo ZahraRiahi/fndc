@@ -76,8 +76,8 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                 SecurityHelper.getCurrentUser().getUserId(), paramSearch.getDepartmentId(),
                 SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId(),
                 paramSearch.getLedgerTypeId(), paramSearch.getStartDate(), paramSearch.getEndDate(),
-                paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramSearch.getFromNumberId(),
-                paramSearch.getToNumberId(), paramSearch.getFinancialDocumentStatusDtoListId(),
+                paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramSearch.getFromNumberId(), paramSearch.getFromNumber(),
+                paramSearch.getToNumberId(), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(),
                 paramSearch.getDescription(), paramSearch.getFromAccountCode(),
                 paramSearch.getToAccountCode(), paramSearch.getCentricAccount(), paramSearch.getCentricAccountId(),
                 paramSearch.getCentricAccountType(), paramSearch.getCentricAccountTypeId(), paramSearch.getDocumentUser(), paramSearch.getDocumentUserId(),
@@ -105,7 +105,6 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         dataSourceResult.setData(documentItemDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
         dataSourceResult.setData(documentItemDtoList);
         dataSourceResult.setTotal(list.getTotalElements());
-
         return dataSourceResult;
     }
 
@@ -235,11 +234,11 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         if (item.getValue() != null) {
             map.put("fromNumber", "fromNumber");
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromNumber(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setFromNumberId(Long.parseLong(item.getValue().toString()));
         } else {
-            map.put("fromNumber", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromNumber(0L);
+            responseFinancialDocumentDto.setFromNumber(null);
+            responseFinancialDocumentDto.setFromNumberId(0L);
         }
     }
 
@@ -267,11 +266,12 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         if (item.getValue() != null) {
             map.put("toNumber", "toNumber");
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToNumber(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setToNumberId(Long.parseLong(item.getValue().toString()));
         } else {
             map.put("toNumber", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setToNumber(0L);
+            responseFinancialDocumentDto.setToNumber(null);
+            responseFinancialDocumentDto.setToNumberId(0L);
         }
     }
 
