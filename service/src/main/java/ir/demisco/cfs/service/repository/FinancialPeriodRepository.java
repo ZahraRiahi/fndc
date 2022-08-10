@@ -1124,6 +1124,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
 
     @Query(value = " WITH MAIN_QRY AS " +
             " (SELECT DOCUMENT_NUMBER, " +
+            " DOCUMENT_DATE, " +
+            " DOCUMENT_DESCRIPTION_ITEM, " +
             "         FINANCIAL_DOCUMENT_ID, " +
             "         ID ACCOUNT_ID, " +
             "         CODE ACCOUNT_CODE, " +
@@ -1143,48 +1145,59 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         DEBIT_AMOUNT, " +
             "         CREDIT_AMOUNT, " +
             "         ABS(CASE " +
-            "               WHEN SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) OVER(ORDER BY ID, " +
+            "               WHEN SUM(DEBIT_AMOUNT - CREDIT_AMOUNT) OVER(ORDER BY RECORD_TYP, " +
+            " DOCUMENT_DATE, " +
+            " DOCUMENT_NUMBER, " +
+            " id," +
             "                         CENTRIC_ACCOUNT_ID_1, " +
             "                         CENTRIC_ACCOUNT_ID_2, " +
             "                         CENTRIC_ACCOUNT_ID_3, " +
             "                         CENTRIC_ACCOUNT_ID_4, " +
             "                         CENTRIC_ACCOUNT_ID_5, " +
-            "                         CENTRIC_ACCOUNT_ID_6, " +
-            "                         TYP) < 0 THEN " +
-            "                SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) " +
-            "                OVER(ORDER BY ID, " +
+            "                         CENTRIC_ACCOUNT_ID_6) > 0 " +
+            "                          THEN " +
+            "                SUM(DEBIT_AMOUNT - CREDIT_AMOUNT) " +
+            "                OVER(ORDER BY RECORD_TYP, " +
+            " DOCUMENT_DATE," +
+            " DOCUMENT_NUMBER," +
+            " id, " +
             "                     CENTRIC_ACCOUNT_ID_1, " +
             "                     CENTRIC_ACCOUNT_ID_2, " +
             "                     CENTRIC_ACCOUNT_ID_3, " +
             "                     CENTRIC_ACCOUNT_ID_4, " +
             "                     CENTRIC_ACCOUNT_ID_5, " +
-            "                     CENTRIC_ACCOUNT_ID_6, " +
-            "                     TYP) " +
+            "                     CENTRIC_ACCOUNT_ID_6) " +
             "               ELSE " +
             "                0 " +
             "             END) AS REMAIN_DEBIT, " +
             "         CASE " +
-            "           WHEN SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) OVER(ORDER BY ID, " +
+            "           WHEN SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) OVER(ORDER BY RECORD_TYP," +
+            " DOCUMENT_DATE,  " +
+            " DOCUMENT_NUMBER, " +
+            " id," +
             "                     CENTRIC_ACCOUNT_ID_1, " +
             "                     CENTRIC_ACCOUNT_ID_2, " +
             "                     CENTRIC_ACCOUNT_ID_3, " +
             "                     CENTRIC_ACCOUNT_ID_4, " +
             "                     CENTRIC_ACCOUNT_ID_5, " +
-            "                     CENTRIC_ACCOUNT_ID_6, " +
-            "                     TYP) > 0 THEN " +
+            "                     CENTRIC_ACCOUNT_ID_6) > 0 " +
+            "                      THEN " +
             "            SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) " +
-            "            OVER(ORDER BY ID, " +
+            "            OVER(ORDER BY RECORD_TYP," +
+            " DOCUMENT_DATE," +
+            " DOCUMENT_NUMBER," +
+            " id, " +
             "                 CENTRIC_ACCOUNT_ID_1, " +
             "                 CENTRIC_ACCOUNT_ID_2, " +
             "                 CENTRIC_ACCOUNT_ID_3, " +
             "                 CENTRIC_ACCOUNT_ID_4, " +
             "                 CENTRIC_ACCOUNT_ID_5, " +
-            "                 CENTRIC_ACCOUNT_ID_6, " +
-            "                 TYP) " +
+            "                 CENTRIC_ACCOUNT_ID_6) " +
             "           ELSE " +
             "            0 " +
             "         END REMAIN_CREDIT, " +
-            "         SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) OVER(ORDER BY ID, CENTRIC_ACCOUNT_ID_1, CENTRIC_ACCOUNT_ID_2, CENTRIC_ACCOUNT_ID_3, CENTRIC_ACCOUNT_ID_4, CENTRIC_ACCOUNT_ID_5, CENTRIC_ACCOUNT_ID_6, TYP) REMAIN_AMOUNT, " +
+            "         SUM(DEBIT_AMOUNT - CREDIT_AMOUNT) OVER(ORDER BY RECORD_TYP,DOCUMENT_DATE, DOCUMENT_NUMBER, id," +
+            " CENTRIC_ACCOUNT_ID_1, CENTRIC_ACCOUNT_ID_2, CENTRIC_ACCOUNT_ID_3, CENTRIC_ACCOUNT_ID_4, CENTRIC_ACCOUNT_ID_5, CENTRIC_ACCOUNT_ID_6) REMAIN_AMOUNT, " +
             "         0 SUM_DEBIT, " +
             "         0 SUM_CREDIT, " +
             "         0 SUMMERIZE_DEBIT, " +
@@ -1192,6 +1205,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         0 SUMMERIZE_AMOUNT, " +
             "         RECORD_TYP " +
             "    FROM (SELECT  NULL DOCUMENT_NUMBER, " +
+            " NULL as DOCUMENT_DATE, " +
+            "                 NULL AS DOCUMENT_DESCRIPTION_ITEM, " +
             "                 NULL FINANCIAL_DOCUMENT_ID, " +
             "                 NULL AS CENTRIC_ACCOUNT_ID_1, " +
             "                 NULL AS CENTRIC_ACCOUNT_ID_2, " +
@@ -1223,49 +1238,48 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                   ELSE " +
             "                    0 " +
             "                 END DEBIT_AMOUNT, " +
-            "                 NULL TYP, " +
             "                 0 AS ID, " +
             "                 NULL AS CODE, " +
             "                 NULL AS DESCRIPTION, " +
             "                 1 AS RECORD_TYP " +
-            "            FROM FNDC.FINANCIAL_DOCUMENT FD " +
-            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FDI " +
-            "              ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID " +
-            "             AND FDI.DELETED_DATE IS NULL " +
-            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA " +
-            "              ON FA.ID = FDI.FINANCIAL_ACCOUNT_ID " +
-            "             AND FA.DELETED_DATE IS NULL " +
-            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER FDN " +
-            "              ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID " +
-            "             AND FDN.DELETED_DATE IS NULL " +
-            "            LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT_REFRENCE FDR " +
-            "              ON FDI.ID = FDR.FINANCIAL_DOCUMENT_ITEM_ID " +
-            "             AND FDR.DELETED_DATE IS NULL " +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC1 " +
-            "              ON CNAC1.ID = FDI.CENTRIC_ACCOUNT_ID_1 " +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC2 " +
-            "              ON CNAC2.ID = FDI.CENTRIC_ACCOUNT_ID_2 " +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC3 " +
-            "              ON CNAC3.ID = FDI.CENTRIC_ACCOUNT_ID_3 " +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC4 " +
-            "              ON CNAC4.ID = FDI.CENTRIC_ACCOUNT_ID_4 " +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC5 " +
-            "              ON CNAC5.ID = FDI.CENTRIC_ACCOUNT_ID_5 " +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6 " +
-            "              ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6 " +
-            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS " +
-            "              ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT1" +
+            "            FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FDI" +
+            "              ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID" +
+            "             AND FDI.DELETED_DATE IS NULL" +
+            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA" +
+            "              ON FA.ID = FDI.FINANCIAL_ACCOUNT_ID" +
+            "             AND FA.DELETED_DATE IS NULL" +
+            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER FDN" +
+            "              ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID" +
+            "             AND FDN.DELETED_DATE IS NULL" +
+            "            LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT_REFRENCE FDR" +
+            "              ON FDI.ID = FDR.FINANCIAL_DOCUMENT_ITEM_ID" +
+            "             AND FDR.DELETED_DATE IS NULL" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC1" +
+            "              ON CNAC1.ID = FDI.CENTRIC_ACCOUNT_ID_1" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC2" +
+            "              ON CNAC2.ID = FDI.CENTRIC_ACCOUNT_ID_2" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC3" +
+            "              ON CNAC3.ID = FDI.CENTRIC_ACCOUNT_ID_3" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC4" +
+            "              ON CNAC4.ID = FDI.CENTRIC_ACCOUNT_ID_4" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC5" +
+            "              ON CNAC5.ID = FDI.CENTRIC_ACCOUNT_ID_5" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
+            "              ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6" +
+            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS" +
+            "              ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT1" +
             "              ON CNAC1.CENTRIC_ACCOUNT_TYPE_ID = CNAT1.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT2" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT2" +
             "              ON CNAC2.CENTRIC_ACCOUNT_TYPE_ID = CNAT2.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT3" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT3" +
             "              ON CNAC3.CENTRIC_ACCOUNT_TYPE_ID = CNAT3.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT4" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT4" +
             "              ON CNAC4.CENTRIC_ACCOUNT_TYPE_ID = CNAT4.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT5" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT5" +
             "              ON CNAC5.CENTRIC_ACCOUNT_TYPE_ID = CNAT5.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT6" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT6" +
             "              ON CNAC6.CENTRIC_ACCOUNT_TYPE_ID = CNAT6.ID" +
             "           WHERE FD.ORGANIZATION_ID = :organizationId " +
             "             AND FD.DELETED_DATE IS NULL " +
@@ -1335,6 +1349,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "             AND FDS.CODE > 10 " +
             "          UNION " +
             "          SELECT FD.DOCUMENT_NUMBER," +
+            "FD.DOCUMENT_DATE  as DOCUMENT_DATE," +
+            "                 FDI.DESCRIPTION AS DOCUMENT_DESCRIPTION_ITEM," +
+            "DOCUMENT_DESCRIPTION_ITEM," +
             "                 FD.ID  FINANCIAL_DOCUMENT_ID," +
             "                 FDI.CENTRIC_ACCOUNT_ID_1, " +
             "                 FDI.CENTRIC_ACCOUNT_ID_2, " +
@@ -1356,62 +1373,56 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 CNAC6.NAME NAME_CNAC6, " +
             "                 SUM(FDI.CREDIT_AMOUNT) CREDIT_AMOUNT, " +
             "                 SUM(FDI.DEBIT_AMOUNT) DEBIT_AMOUNT, " +
-            "                 CASE " +
-            "                   WHEN FDI.CREDIT_AMOUNT > 0 THEN " +
-            "                    1 " +
-            "                   WHEN FDI.DEBIT_AMOUNT > 0 THEN " +
-            "                    0 " +
-            "                 END AS TYP, " +
             "                 FA.ID, " +
             "                 FA.CODE AS CODE, " +
             "                 FA.DESCRIPTION, " +
             "                 2 AS RECORD_TYP " +
-            "            FROM fndc.FINANCIAL_DOCUMENT FD " +
-            "           INNER JOIN fndc.FINANCIAL_DOCUMENT_ITEM FDI " +
-            "              ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID " +
-            "             AND FDI.DELETED_DATE IS NULL " +
-            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA " +
-            "              ON FA.ID = FDI.FINANCIAL_ACCOUNT_ID " +
-            "             AND FA.DELETED_DATE IS NULL " +
-            "           INNER JOIN FNAC.ACCOUNT_STRUCTURE_LEVEL ASL " +
-            "              ON ASL.FINANCIAL_ACCOUNT_ID = FA.ID " +
-            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA2 " +
-            "              ON FA2.ID = ASL.RELATED_ACCOUNT_ID " +
-            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT_STRUCTURE FAS " +
-            "              ON FA2.FINANCIAL_ACCOUNT_STRUCTURE_ID = FAS.ID " +
-            "           INNER JOIN fndc.FINANCIAL_DOCUMENT_NUMBER FDN " +
-            "              ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID " +
-            "             AND FDN.DELETED_DATE IS NULL " +
-            "            LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT_REFRENCE FDR " +
-            "              ON FDI.ID = FDR.FINANCIAL_DOCUMENT_ITEM_ID " +
-            "             AND FDR.DELETED_DATE IS NULL " +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC1 " +
-            "              ON CNAC1.ID = FDI.CENTRIC_ACCOUNT_ID_1 " +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC2 " +
-            "              ON CNAC2.ID = FDI.CENTRIC_ACCOUNT_ID_2 " +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC3 " +
-            "              ON CNAC3.ID = FDI.CENTRIC_ACCOUNT_ID_3 " +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC4 " +
-            "              ON CNAC4.ID = FDI.CENTRIC_ACCOUNT_ID_4 " +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC5 " +
-            "              ON CNAC5.ID = FDI.CENTRIC_ACCOUNT_ID_5 " +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6 " +
+            "                       FROM FINANCIAL_DOCUMENT FD" +
+            "           INNER JOIN FINANCIAL_DOCUMENT_ITEM FDI" +
+            "              ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID" +
+            "             AND FDI.DELETED_DATE IS NULL" +
+            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA" +
+            "              ON FA.ID = FDI.FINANCIAL_ACCOUNT_ID" +
+            "             AND FA.DELETED_DATE IS NULL" +
+            "           INNER JOIN FNAC.ACCOUNT_STRUCTURE_LEVEL ASL" +
+            "              ON ASL.FINANCIAL_ACCOUNT_ID = FA.ID" +
+            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA2" +
+            "              ON FA2.ID = ASL.RELATED_ACCOUNT_ID" +
+            "           INNER JOIN FNAC.FINANCIAL_ACCOUNT_STRUCTURE FAS" +
+            "              ON FA2.FINANCIAL_ACCOUNT_STRUCTURE_ID = FAS.ID" +
+            "           INNER JOIN FINANCIAL_DOCUMENT_NUMBER FDN" +
+            "              ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID" +
+            "             AND FDN.DELETED_DATE IS NULL" +
+            "            LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT_REFRENCE FDR" +
+            "              ON FDI.ID = FDR.FINANCIAL_DOCUMENT_ITEM_ID" +
+            "             AND FDR.DELETED_DATE IS NULL" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC1" +
+            "              ON CNAC1.ID = FDI.CENTRIC_ACCOUNT_ID_1" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC2" +
+            "              ON CNAC2.ID = FDI.CENTRIC_ACCOUNT_ID_2" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC3" +
+            "              ON CNAC3.ID = FDI.CENTRIC_ACCOUNT_ID_3" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC4" +
+            "              ON CNAC4.ID = FDI.CENTRIC_ACCOUNT_ID_4" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC5" +
+            "              ON CNAC5.ID = FDI.CENTRIC_ACCOUNT_ID_5" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
             "              ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT1" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT1" +
             "              ON CNAC1.CENTRIC_ACCOUNT_TYPE_ID = CNAT1.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT2" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT2" +
             "              ON CNAC2.CENTRIC_ACCOUNT_TYPE_ID = CNAT2.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT3" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT3" +
             "              ON CNAC3.CENTRIC_ACCOUNT_TYPE_ID = CNAT3.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE   CNAT4" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT4" +
             "              ON CNAC4.CENTRIC_ACCOUNT_TYPE_ID = CNAT4.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT5" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT5" +
             "              ON CNAC5.CENTRIC_ACCOUNT_TYPE_ID = CNAT5.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT6" +
-            "              ON CNAC6.CENTRIC_ACCOUNT_TYPE_ID = CNAT6.ID " +
-            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS " +
-            "              ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID " +
-            "             AND FDS.DELETED_DATE IS NULL " +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT6" +
+            "              ON CNAC6.CENTRIC_ACCOUNT_TYPE_ID = CNAT6.ID" +
+            "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS" +
+            "              ON FDS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID" +
+            "             AND FDS.DELETED_DATE IS NULL" +
             "           WHERE FD.ORGANIZATION_ID = :organizationId " +
             "             AND FD.DELETED_DATE IS NULL " +
             "             AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
@@ -1474,6 +1485,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "    AND FA2.ID = nvl(:financialAccountId, fdi.financial_account_id) " +
             "             AND FDS.CODE > 10 " +
             "           GROUP BY FD.DOCUMENT_NUMBER," +
+            "FD.DOCUMENT_DATE, " +
+            "                    FDI.DESCRIPTION, " +
             "                    FD.ID," +
             "                    FA.ID," +
             "                    FA.CODE," +
@@ -1502,12 +1515,14 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                    CNAC4.NAME," +
             "                    CNAC5.NAME," +
             "                    CNAC6.NAME) " +
-            "   ORDER BY ID) " +
+            "   ORDER BY DOCUMENT_DATE) " +
             " SELECT * " +
             "  FROM (SELECT * " +
             "          FROM MAIN_QRY " +
             "        UNION " +
             "        SELECT NULL DOCUMENT_NUMBER," +
+            "NULL as DOCUMENT_DATE, " +
+            "               NULL AS DOCUMENT_DESCRIPTION_ITEM, " +
             "               NULL FINANCIAL_DOCUMENT_ID," +
             "               NULL ACCOUNT_ID, " +
             "               NULL ACCOUNT_CODE, " +
@@ -1524,30 +1539,31 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               NULL CENTRIC_ACCOUNT_DES_4, " +
             "               NULL CENTRIC_ACCOUNT_DES_5, " +
             "               NULL CENTRIC_ACCOUNT_DES_6, " +
-            "               NULL DEBIT_AMOUNT, " +
-            "               NULL CREDIT_AMOUNT, " +
-            "               NULL REMAIN_DEBIT, " +
-            "               NULL REMAIN_CREDIT, " +
-            "               NULL REMAIN_AMOUNT, " +
-            "               SUM(MAIN_QRY.DEBIT_AMOUNT) SUM_DEBIT, " +
-            "               SUM(MAIN_QRY.CREDIT_AMOUNT) SUM_CREDIT, " +
-            "               CASE " +
-            "                 WHEN SUM(MAIN_QRY.DEBIT_AMOUNT) - " +
-            "                      SUM(MAIN_QRY.CREDIT_AMOUNT) > 0 THEN " +
-            "                  SUM(MAIN_QRY.DEBIT_AMOUNT) - SUM(MAIN_QRY.CREDIT_AMOUNT) " +
-            "                 ELSE " +
-            "                  0 " +
-            "               END AS SUMMERIZE_DEBIT, " +
-            "               CASE " +
-            "                 WHEN SUM(MAIN_QRY.CREDIT_AMOUNT) - " +
-            "                      SUM(MAIN_QRY.DEBIT_AMOUNT) > 0 THEN " +
-            "                  SUM(MAIN_QRY.CREDIT_AMOUNT) - SUM(MAIN_QRY.DEBIT_AMOUNT) " +
-            "                 ELSE " +
-            "                  0 " +
-            "               END AS SUMMERIZE_CREDIT, " +
-            "               SUM(MAIN_QRY.CREDIT_AMOUNT) - SUM(MAIN_QRY.DEBIT_AMOUNT) AS SUMMERIZE_AMOUNT, " +
-            "               3 AS RECORD_TYP " +
-            "          FROM MAIN_QRY) " +
+            "              NULL DEBIT_AMOUNT," +
+            "               NULL CREDIT_AMOUNT," +
+            "              SUM(REMAIN_DEBIT) REMAIN_DEBIT," +
+            "              SUM( REMAIN_CREDIT) REMAIN_CREDIT," +
+            "               NULL REMAIN_AMOUNT," +
+            "               SUM(MAIN_QRY.DEBIT_AMOUNT) SUM_DEBIT," +
+            "               SUM(MAIN_QRY.CREDIT_AMOUNT) SUM_CREDIT," +
+            "               CASE" +
+            "                 WHEN SUM(MAIN_QRY.DEBIT_AMOUNT) -" +
+            "                      SUM(MAIN_QRY.CREDIT_AMOUNT) > 0 THEN" +
+            "                  SUM(MAIN_QRY.DEBIT_AMOUNT) - SUM(MAIN_QRY.CREDIT_AMOUNT)" +
+            "                 ELSE" +
+            "                  0" +
+            "               END AS SUMMERIZE_DEBIT," +
+            "               CASE" +
+            "                 WHEN SUM(MAIN_QRY.CREDIT_AMOUNT) -" +
+            "                      SUM(MAIN_QRY.DEBIT_AMOUNT) > 0 THEN" +
+            "                  SUM(MAIN_QRY.CREDIT_AMOUNT) - SUM(MAIN_QRY.DEBIT_AMOUNT)" +
+            "                 ELSE" +
+            "                  0" +
+            "               END AS SUMMERIZE_CREDIT," +
+            "               SUM(MAIN_QRY.DEBIT_AMOUNT) - SUM(MAIN_QRY.CREDIT_AMOUNT) AS SUMMERIZE_AMOUNT," +
+            "               3 AS RECORD_TYP" +
+            "          FROM MAIN_QRY)" +
+            " ORDER BY RECORD_TYP, DOCUMENT_DATE, DOCUMENT_NUMBER " +
             " ORDER BY RECORD_TYP "
             , nativeQuery = true)
     List<Object[]> findByFinancialAccountCentricTurnOver2(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate, Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId, String fromNumber,
