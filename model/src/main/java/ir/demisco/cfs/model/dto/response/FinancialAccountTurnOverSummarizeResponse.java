@@ -6,6 +6,8 @@ public class FinancialAccountTurnOverSummarizeResponse {
     private String summarizeDebit;
     private String summarizeCredit;
     private String summarizeAmount;
+    private String remainDebit;
+    private String remainCredit;
     private Long recordType;
 
     public Long getSumDebit() {
@@ -50,6 +52,22 @@ public class FinancialAccountTurnOverSummarizeResponse {
 
     public Long getRecordType() {
         return recordType;
+    }
+
+    public String getRemainDebit() {
+        return remainDebit;
+    }
+
+    public void setRemainDebit(String remainDebit) {
+        this.remainDebit = remainDebit;
+    }
+
+    public String getRemainCredit() {
+        return remainCredit;
+    }
+
+    public void setRemainCredit(String remainCredit) {
+        this.remainCredit = remainCredit;
     }
 
     public void setRecordType(Long recordType) {
@@ -98,7 +116,14 @@ public class FinancialAccountTurnOverSummarizeResponse {
             financialAccountTurnOverSummarizeResponse.setRecordType(recordType);
             return this;
         }
-
+        public Builder remainDebit(String remainDebit) {
+            financialAccountTurnOverSummarizeResponse.setRemainDebit(remainDebit);
+            return this;
+        }
+        public Builder remainCredit(String remainCredit) {
+            financialAccountTurnOverSummarizeResponse.setRemainCredit(remainCredit);
+            return this;
+        }
         public FinancialAccountTurnOverSummarizeResponse build() {
             return financialAccountTurnOverSummarizeResponse;
         }
