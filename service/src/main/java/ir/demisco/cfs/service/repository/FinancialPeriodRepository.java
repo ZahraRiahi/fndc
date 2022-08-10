@@ -686,7 +686,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
     LocalDateTime findByFinancialPeriodByOrganization2(Long organizationId);
 
     @Query(value = " WITH MAIN_QRY AS " +
-            " (SELECT DOCUMENT_NUMBER, " +
+            " (SELECT DOCUMENT_NUMBER," +
+            "         DOCUMENT_DATE," +
+            "         DOCUMENT_DESCRIPTION_ITEM, " +
             "         FINANCIAL_DOCUMENT_ID, " +
             "         ID ACCOUNT_ID, " +
             "         CODE ACCOUNT_CODE, " +
@@ -705,49 +707,59 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         NAME_CNAC6 CENTRIC_ACCOUNT_DES_6, " +
             "         DEBIT_AMOUNT, " +
             "         CREDIT_AMOUNT, " +
-            "         ABS(CASE " +
-            "               WHEN SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) OVER(ORDER BY ID, " +
-            "                         CENTRIC_ACCOUNT_ID_1, " +
-            "                         CENTRIC_ACCOUNT_ID_2, " +
-            "                         CENTRIC_ACCOUNT_ID_3, " +
-            "                         CENTRIC_ACCOUNT_ID_4, " +
-            "                         CENTRIC_ACCOUNT_ID_5, " +
-            "                         CENTRIC_ACCOUNT_ID_6, " +
-            "                         TYP) < 0 THEN " +
-            "                SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) " +
-            "                OVER(ORDER BY ID, " +
-            "                     CENTRIC_ACCOUNT_ID_1, " +
-            "                     CENTRIC_ACCOUNT_ID_2, " +
-            "                     CENTRIC_ACCOUNT_ID_3, " +
-            "                     CENTRIC_ACCOUNT_ID_4, " +
-            "                     CENTRIC_ACCOUNT_ID_5, " +
-            "                     CENTRIC_ACCOUNT_ID_6, " +
-            "                     TYP) " +
-            "               ELSE " +
-            "                0 " +
-            "             END) AS REMAIN_DEBIT, " +
-            "         CASE " +
-            "           WHEN SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) OVER(ORDER BY ID, " +
-            "                     CENTRIC_ACCOUNT_ID_1, " +
-            "                     CENTRIC_ACCOUNT_ID_2, " +
-            "                     CENTRIC_ACCOUNT_ID_3, " +
-            "                     CENTRIC_ACCOUNT_ID_4, " +
-            "                     CENTRIC_ACCOUNT_ID_5, " +
-            "                     CENTRIC_ACCOUNT_ID_6, " +
-            "                     TYP) > 0 THEN " +
-            "            SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) " +
-            "            OVER(ORDER BY ID, " +
-            "                 CENTRIC_ACCOUNT_ID_1, " +
-            "                 CENTRIC_ACCOUNT_ID_2, " +
-            "                 CENTRIC_ACCOUNT_ID_3, " +
-            "                 CENTRIC_ACCOUNT_ID_4, " +
-            "                 CENTRIC_ACCOUNT_ID_5, " +
-            "                 CENTRIC_ACCOUNT_ID_6, " +
-            "                 TYP) " +
-            "           ELSE " +
-            "            0 " +
+            "          ABS(CASE" +
+            "               WHEN SUM(DEBIT_AMOUNT - CREDIT_AMOUNT)" +
+            "                OVER(ORDER BY RECORD_TYP," +
+            "                         DOCUMENT_DATE," +
+            "                         DOCUMENT_NUMBER," +
+            "                         id," +
+            "                         CENTRIC_ACCOUNT_ID_1," +
+            "                         CENTRIC_ACCOUNT_ID_2," +
+            "                         CENTRIC_ACCOUNT_ID_3," +
+            "                         CENTRIC_ACCOUNT_ID_4," +
+            "                         CENTRIC_ACCOUNT_ID_5," +
+            "                         CENTRIC_ACCOUNT_ID_6) > 0 THEN" +
+            "                SUM(DEBIT_AMOUNT - CREDIT_AMOUNT)" +
+            "                OVER(ORDER BY RECORD_TYP," +
+            "                     DOCUMENT_DATE," +
+            "                     DOCUMENT_NUMBER," +
+            "                     id," +
+            "                     CENTRIC_ACCOUNT_ID_1," +
+            "                     CENTRIC_ACCOUNT_ID_2," +
+            "                     CENTRIC_ACCOUNT_ID_3," +
+            "                     CENTRIC_ACCOUNT_ID_4," +
+            "                     CENTRIC_ACCOUNT_ID_5," +
+            "                     CENTRIC_ACCOUNT_ID_6)" +
+            "               ELSE" +
+            "                0" +
+            "             END) AS REMAIN_DEBIT," +
+            "         CASE" +
+            "           WHEN SUM(CREDIT_AMOUNT - DEBIT_AMOUNT)" +
+            "            OVER(ORDER BY RECORD_TYP," +
+            "                     DOCUMENT_DATE," +
+            "                     DOCUMENT_NUMBER," +
+            "                     id," +
+            "                     CENTRIC_ACCOUNT_ID_1," +
+            "                     CENTRIC_ACCOUNT_ID_2," +
+            "                     CENTRIC_ACCOUNT_ID_3," +
+            "                     CENTRIC_ACCOUNT_ID_4," +
+            "                     CENTRIC_ACCOUNT_ID_5," +
+            "                     CENTRIC_ACCOUNT_ID_6) > 0 THEN" +
+            "            SUM(CREDIT_AMOUNT - DEBIT_AMOUNT)" +
+            "            OVER(ORDER BY RECORD_TYP," +
+            "                 DOCUMENT_DATE," +
+            "                 DOCUMENT_NUMBER," +
+            "                 id," +
+            "                 CENTRIC_ACCOUNT_ID_1," +
+            "                 CENTRIC_ACCOUNT_ID_2," +
+            "                 CENTRIC_ACCOUNT_ID_3," +
+            "                 CENTRIC_ACCOUNT_ID_4," +
+            "                 CENTRIC_ACCOUNT_ID_5," +
+            "                 CENTRIC_ACCOUNT_ID_6)" +
+            "           ELSE" +
+            "            0" +
             "         END REMAIN_CREDIT, " +
-            "         SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) OVER(ORDER BY ID, CENTRIC_ACCOUNT_ID_1, CENTRIC_ACCOUNT_ID_2, CENTRIC_ACCOUNT_ID_3, CENTRIC_ACCOUNT_ID_4, CENTRIC_ACCOUNT_ID_5, CENTRIC_ACCOUNT_ID_6, TYP) REMAIN_AMOUNT, " +
+            "         SUM(DEBIT_AMOUNT - CREDIT_AMOUNT) OVER(ORDER BY RECORD_TYP, DOCUMENT_DATE, DOCUMENT_NUMBER, id, CENTRIC_ACCOUNT_ID_1, CENTRIC_ACCOUNT_ID_2, CENTRIC_ACCOUNT_ID_3, CENTRIC_ACCOUNT_ID_4, CENTRIC_ACCOUNT_ID_5, CENTRIC_ACCOUNT_ID_6) REMAIN_AMOUNT, " +
             "         0 SUM_DEBIT, " +
             "         0 SUM_CREDIT, " +
             "         0 SUMMERIZE_DEBIT, " +
@@ -755,6 +767,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         0 SUMMERIZE_AMOUNT, " +
             "         RECORD_TYP " +
             "    FROM (SELECT  NULL DOCUMENT_NUMBER, " +
+            " NULL as DOCUMENT_DATE, " +
+            "                 NULL AS DOCUMENT_DESCRIPTION_ITEM, " +
             "                 NULL FINANCIAL_DOCUMENT_ID, " +
             "                 NULL AS CENTRIC_ACCOUNT_ID_1, " +
             "                 NULL AS CENTRIC_ACCOUNT_ID_2, " +
@@ -786,7 +800,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                   ELSE " +
             "                    0 " +
             "                 END DEBIT_AMOUNT, " +
-            "                 NULL TYP, " +
             "                 0 AS ID, " +
             "                 NULL AS CODE, " +
             "                 NULL AS DESCRIPTION, " +
@@ -899,6 +912,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "             AND FDS.CODE > 10 " +
             "          UNION " +
             "          SELECT FD.DOCUMENT_NUMBER," +
+            "FD.DOCUMENT_DATE   as DOCUMENT_DATE," +
+            "                 FDI.DESCRIPTION   AS DOCUMENT_DESCRIPTION_ITEM," +
             "                 FD.ID  FINANCIAL_DOCUMENT_ID," +
             "                 FDI.CENTRIC_ACCOUNT_ID_1, " +
             "                 FDI.CENTRIC_ACCOUNT_ID_2, " +
@@ -920,12 +935,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 CNAC6.NAME NAME_CNAC6, " +
             "                 SUM(FDI.CREDIT_AMOUNT) CREDIT_AMOUNT, " +
             "                 SUM(FDI.DEBIT_AMOUNT) DEBIT_AMOUNT, " +
-            "                 CASE " +
-            "                   WHEN FDI.CREDIT_AMOUNT > 0 THEN " +
-            "                    1 " +
-            "                   WHEN FDI.DEBIT_AMOUNT > 0 THEN " +
-            "                    0 " +
-            "                 END AS TYP, " +
             "                 FA.ID, " +
             "                 FA.CODE AS CODE, " +
             "                 FA.DESCRIPTION, " +
@@ -1039,6 +1048,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                                and (  FA2.ID =   fdi.financial_account_id ) " +
             "             AND FDS.CODE > 10 " +
             "           GROUP BY FD.DOCUMENT_NUMBER," +
+            "                    FD.DOCUMENT_DATE, " +
+            "                    FDI.DESCRIPTION, " +
             "                    FD.ID," +
             "                    FA.ID," +
             "                    FA.CODE," +
@@ -1067,53 +1078,56 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                    CNAC4.NAME," +
             "                    CNAC5.NAME," +
             "                    CNAC6.NAME) " +
-            "   ORDER BY ID) " +
+            "   ORDER BY DOCUMENT_DATE) " +
             " SELECT * " +
             "  FROM (SELECT * " +
             "          FROM MAIN_QRY " +
             "        UNION " +
             "        SELECT NULL DOCUMENT_NUMBER," +
+            "               NULL as DOCUMENT_DATE," +
+            "               NULL AS DOCUMENT_DESCRIPTION_ITEM," +
             "               NULL FINANCIAL_DOCUMENT_ID," +
-            "               NULL ACCOUNT_ID, " +
-            "               NULL ACCOUNT_CODE, " +
-            "               NULL ACCOUNT_DESCRIPTION, " +
-            "               NULL CENTRIC_ACCOUNT_ID_1, " +
-            "               NULL CENTRIC_ACCOUNT_ID_2, " +
-            "               NULL CENTRIC_ACCOUNT_ID_3, " +
-            "               NULL CENTRIC_ACCOUNT_ID_4, " +
-            "               NULL CENTRIC_ACCOUNT_ID_5, " +
-            "               NULL CENTRIC_ACCOUNT_ID_6, " +
-            "               NULL CENTRIC_ACCOUNT_DES_1, " +
-            "               NULL CENTRIC_ACCOUNT_DES_2, " +
-            "               NULL CENTRIC_ACCOUNT_DES_3, " +
-            "               NULL CENTRIC_ACCOUNT_DES_4, " +
-            "               NULL CENTRIC_ACCOUNT_DES_5, " +
-            "               NULL CENTRIC_ACCOUNT_DES_6, " +
-            "               NULL DEBIT_AMOUNT, " +
-            "               NULL CREDIT_AMOUNT, " +
-            "               NULL REMAIN_DEBIT, " +
-            "               NULL REMAIN_CREDIT, " +
-            "               NULL REMAIN_AMOUNT, " +
-            "               SUM(MAIN_QRY.DEBIT_AMOUNT) SUM_DEBIT, " +
-            "               SUM(MAIN_QRY.CREDIT_AMOUNT) SUM_CREDIT, " +
-            "               CASE " +
-            "                 WHEN SUM(MAIN_QRY.DEBIT_AMOUNT) - " +
-            "                      SUM(MAIN_QRY.CREDIT_AMOUNT) > 0 THEN " +
-            "                  SUM(MAIN_QRY.DEBIT_AMOUNT) - SUM(MAIN_QRY.CREDIT_AMOUNT) " +
-            "                 ELSE " +
-            "                  0 " +
-            "               END AS SUMMERIZE_DEBIT, " +
-            "               CASE " +
-            "                 WHEN SUM(MAIN_QRY.CREDIT_AMOUNT) - " +
-            "                      SUM(MAIN_QRY.DEBIT_AMOUNT) > 0 THEN " +
-            "                  SUM(MAIN_QRY.CREDIT_AMOUNT) - SUM(MAIN_QRY.DEBIT_AMOUNT) " +
-            "                 ELSE " +
-            "                  0 " +
-            "               END AS SUMMERIZE_CREDIT, " +
-            "               SUM(MAIN_QRY.CREDIT_AMOUNT) - SUM(MAIN_QRY.DEBIT_AMOUNT) AS SUMMERIZE_AMOUNT, " +
-            "               3 AS RECORD_TYP " +
-            "          FROM MAIN_QRY) " +
-            " ORDER BY RECORD_TYP "
+            "               NULL ACCOUNT_ID," +
+            "               NULL ACCOUNT_CODE," +
+            "               NULL ACCOUNT_DESCRIPTION," +
+            "               NULL CENTRIC_ACCOUNT_ID_1," +
+            "               NULL CENTRIC_ACCOUNT_ID_2," +
+            "               NULL CENTRIC_ACCOUNT_ID_3," +
+            "               NULL CENTRIC_ACCOUNT_ID_4," +
+            "               NULL CENTRIC_ACCOUNT_ID_5," +
+            "               NULL CENTRIC_ACCOUNT_ID_6," +
+            "               NULL CENTRIC_ACCOUNT_DES_1," +
+            "               NULL CENTRIC_ACCOUNT_DES_2," +
+            "               NULL CENTRIC_ACCOUNT_DES_3," +
+            "               NULL CENTRIC_ACCOUNT_DES_4," +
+            "               NULL CENTRIC_ACCOUNT_DES_5," +
+            "               NULL CENTRIC_ACCOUNT_DES_6," +
+            "               NULL DEBIT_AMOUNT," +
+            "               NULL CREDIT_AMOUNT," +
+            "              SUM(REMAIN_DEBIT) REMAIN_DEBIT," +
+            "              SUM( REMAIN_CREDIT) REMAIN_CREDIT," +
+            "               NULL REMAIN_AMOUNT," +
+            "               " +
+            "               SUM(MAIN_QRY.DEBIT_AMOUNT) SUM_DEBIT," +
+            "               SUM(MAIN_QRY.CREDIT_AMOUNT) SUM_CREDIT," +
+            "               CASE" +
+            "                 WHEN SUM(MAIN_QRY.DEBIT_AMOUNT) -" +
+            "                      SUM(MAIN_QRY.CREDIT_AMOUNT) > 0 THEN" +
+            "                  SUM(MAIN_QRY.DEBIT_AMOUNT) - SUM(MAIN_QRY.CREDIT_AMOUNT)" +
+            "                 ELSE" +
+            "                  0" +
+            "               END AS SUMMERIZE_DEBIT," +
+            "               CASE" +
+            "                 WHEN SUM(MAIN_QRY.CREDIT_AMOUNT) -" +
+            "                      SUM(MAIN_QRY.DEBIT_AMOUNT) > 0 THEN" +
+            "                  SUM(MAIN_QRY.CREDIT_AMOUNT) - SUM(MAIN_QRY.DEBIT_AMOUNT)" +
+            "                 ELSE" +
+            "                  0" +
+            "               END AS SUMMERIZE_CREDIT," +
+            "               SUM(MAIN_QRY.DEBIT_AMOUNT) - SUM(MAIN_QRY.CREDIT_AMOUNT) AS SUMMERIZE_AMOUNT," +
+            "               3 AS RECORD_TYP" +
+            "          FROM MAIN_QRY)" +
+            " ORDER BY RECORD_TYP, DOCUMENT_DATE, DOCUMENT_NUMBER"
             , nativeQuery = true)
     List<Object[]> findByFinancialAccountCentricTurnOver(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate, Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId, String fromNumber,
                                                          Object cnacIdObj1, Object cnacIdObj2, Long cnacId1, Long cnacId2, Object cnatIdObj1, Object cnatIdObj2,
@@ -1351,7 +1365,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "          SELECT FD.DOCUMENT_NUMBER," +
             "FD.DOCUMENT_DATE  as DOCUMENT_DATE," +
             "                 FDI.DESCRIPTION AS DOCUMENT_DESCRIPTION_ITEM," +
-            "DOCUMENT_DESCRIPTION_ITEM," +
             "                 FD.ID  FINANCIAL_DOCUMENT_ID," +
             "                 FDI.CENTRIC_ACCOUNT_ID_1, " +
             "                 FDI.CENTRIC_ACCOUNT_ID_2, " +
@@ -2100,16 +2113,16 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "  FROM QRY" +
             " UNION " +
             " SELECT NULL FINANCIAL_ACCOUNT_DESC," +
-            " NULL FINANCIAL_ACCOUNT_ID," +
+            "       NULL FINANCIAL_ACCOUNT_ID," +
             "       SUM(SUM_DEBIT) SUM_DEBIT," +
             "       SUM(SUM_CREDIT) SUM_CREDIT," +
-            "       0 BEF_DEBIT," +
-            "       0 BEF_CREDIT," +
-            "       0 REM_DEBIT," +
-            "       0 REM_CREDIT," +
+            "       SUM(BEF_DEBIT)BEF_DEBIT," +
+            "       SUM(BEF_CREDIT) BEF_CREDIT," +
+            "       SUM(REM_DEBIT)REM_DEBIT," +
+            "        SUM(REM_CREDIT)REM_CREDIT," +
             "       NULL CENTRIC_ACCOUNT_DES," +
-            "       SUM(SUM_CREDIT) - SUM(SUM_DEBIT) SUMMERIZE_AMOUNT," +
-            "       3 AS RECORD_TYPE" +
+            "      SUM(SUM_DEBIT) - SUM(SUM_CREDIT) SUMMERIZE_AMOUNT," +
+            "       3 AS RECORD_TYPE " +
             "  FROM QRY "
             , nativeQuery = true)
     List<Object[]> findByFinancialPeriodByCentricBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId

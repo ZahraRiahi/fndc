@@ -1,5 +1,8 @@
 package ir.demisco.cfs.model.dto.response;
 
+import java.time.LocalDateTime;
+import java.util.Date;
+
 public class FinancialAccountCentricTurnOverRecordsResponse {
     private String accountDescription;
     private String centricAccountDes1;
@@ -23,6 +26,8 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
     private Long centricAccountId6;
     private Long documentNumber;
     private Long financialDocumentId;
+    private Date documentDate;
+    private String documentDescriptionItem;
     private FinancialAccountTurnOverSummarizeResponse financialAccountTurnOverSummarizeModel;
 
     public String getAccountDescription() {
@@ -201,6 +206,22 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
         this.financialDocumentId = financialDocumentId;
     }
 
+    public Date getDocumentDate() {
+        return documentDate;
+    }
+
+    public void setDocumentDate(Date documentDate) {
+        this.documentDate = documentDate;
+    }
+
+    public String getDocumentDescriptionItem() {
+        return documentDescriptionItem;
+    }
+
+    public void setDocumentDescriptionItem(String documentDescriptionItem) {
+        this.documentDescriptionItem = documentDescriptionItem;
+    }
+
     public FinancialAccountTurnOverSummarizeResponse getFinancialAccountTurnOverSummarizeModel() {
         return financialAccountTurnOverSummarizeModel;
     }
@@ -323,12 +344,22 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
             financialAccountCentricTurnOverRecordsResponse.setDocumentNumber(documentNumber);
             return this;
         }
+
         public Builder centricAccountId6(Long centricAccountId6) {
             financialAccountCentricTurnOverRecordsResponse.setCentricAccountId6(centricAccountId6);
             return this;
         }
+
         public Builder financialDocumentId(Long financialDocumentId) {
             financialAccountCentricTurnOverRecordsResponse.setFinancialDocumentId(financialDocumentId);
+            return this;
+        }
+        public Builder documentDate(Date documentDate) {
+            financialAccountCentricTurnOverRecordsResponse.setDocumentDate(documentDate);
+            return this;
+        }
+        public Builder documentDescriptionItem(String documentDescriptionItem) {
+            financialAccountCentricTurnOverRecordsResponse.setDocumentDescriptionItem(documentDescriptionItem);
             return this;
         }
         public FinancialAccountCentricTurnOverRecordsResponse build() {
