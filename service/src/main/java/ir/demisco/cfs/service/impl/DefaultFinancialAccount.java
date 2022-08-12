@@ -1206,7 +1206,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 accountTurnOverSummarizeResponse.setSummarizeDebit(null);
                 accountTurnOverSummarizeResponse.setSummarizeCredit(null);
                 accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForString(item, 9));
-//                accountTurnOverSummarizeResponse.se
                 accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 10));
                 outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
                 response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
