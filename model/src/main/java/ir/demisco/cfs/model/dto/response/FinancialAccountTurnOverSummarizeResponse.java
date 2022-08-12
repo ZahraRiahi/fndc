@@ -8,7 +8,10 @@ public class FinancialAccountTurnOverSummarizeResponse {
     private String summarizeAmount;
     private String remainDebit;
     private String remainCredit;
+    private String befDebit;
+    private String befCredit;
     private Long recordType;
+    private String centricAccountDescription;
 
     public Long getSumDebit() {
         return sumDebit;
@@ -69,7 +72,27 @@ public class FinancialAccountTurnOverSummarizeResponse {
     public void setRemainCredit(String remainCredit) {
         this.remainCredit = remainCredit;
     }
+    public String getBefDebit() {
+        return befDebit;
+    }
 
+    public void setBefDebit(String befDebit) {
+        this.befDebit = befDebit;
+    }
+    public String getBefCredit() {
+        return befCredit;
+    }
+
+    public void setBefCredit(String befCredit) {
+        this.befCredit = befCredit;
+    }
+    public String getCentricAccountDescription() {
+        return centricAccountDescription;
+    }
+
+    public void setCentricAccountDescription(String centricAccountDescription) {
+        this.centricAccountDescription = centricAccountDescription;
+    }
     public void setRecordType(Long recordType) {
         this.recordType = recordType;
     }
@@ -122,6 +145,18 @@ public class FinancialAccountTurnOverSummarizeResponse {
         }
         public Builder remainCredit(String remainCredit) {
             financialAccountTurnOverSummarizeResponse.setRemainCredit(remainCredit);
+            return this;
+        }
+        public Builder befDebit(String befDebit) {
+            financialAccountTurnOverSummarizeResponse.setBefDebit(befDebit);
+            return this;
+        }
+        public Builder befCredit(String befCredit) {
+            financialAccountTurnOverSummarizeResponse.setBefCredit(befCredit);
+            return this;
+        }
+        public Builder centricAccountDescription(String centricAccountDescription) {
+            financialAccountTurnOverSummarizeResponse.setCentricAccountDescription(centricAccountDescription);
             return this;
         }
         public FinancialAccountTurnOverSummarizeResponse build() {

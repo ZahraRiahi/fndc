@@ -1203,8 +1203,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 FinancialAccountTurnOverOutputResponse outputResponse = new FinancialAccountTurnOverOutputResponse();
                 accountTurnOverSummarizeResponse.setSumDebit(getItemForLong(item, 2));
                 accountTurnOverSummarizeResponse.setSumCredit(getItemForLong(item, 3));
-                accountTurnOverSummarizeResponse.setSummarizeDebit(null);
-                accountTurnOverSummarizeResponse.setSummarizeCredit(null);
+                accountTurnOverSummarizeResponse.setBefDebit(getItemForString(item, 4));
+                accountTurnOverSummarizeResponse.setBefCredit(getItemForString(item, 5));
+                accountTurnOverSummarizeResponse.setRemainDebit(getItemForString(item, 6));
+                accountTurnOverSummarizeResponse.setRemainCredit(getItemForString(item, 7));
+                accountTurnOverSummarizeResponse.setCentricAccountDescription(getItemForString(item, 8));
                 accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForString(item, 9));
                 accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 10));
                 outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
