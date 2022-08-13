@@ -6,7 +6,12 @@ public class FinancialAccountTurnOverSummarizeResponse {
     private String summarizeDebit;
     private String summarizeCredit;
     private String summarizeAmount;
+    private String remainDebit;
+    private String remainCredit;
+    private String befDebit;
+    private String befCredit;
     private Long recordType;
+    private String centricAccountDescription;
 
     public Long getSumDebit() {
         return sumDebit;
@@ -52,6 +57,42 @@ public class FinancialAccountTurnOverSummarizeResponse {
         return recordType;
     }
 
+    public String getRemainDebit() {
+        return remainDebit;
+    }
+
+    public void setRemainDebit(String remainDebit) {
+        this.remainDebit = remainDebit;
+    }
+
+    public String getRemainCredit() {
+        return remainCredit;
+    }
+
+    public void setRemainCredit(String remainCredit) {
+        this.remainCredit = remainCredit;
+    }
+    public String getBefDebit() {
+        return befDebit;
+    }
+
+    public void setBefDebit(String befDebit) {
+        this.befDebit = befDebit;
+    }
+    public String getBefCredit() {
+        return befCredit;
+    }
+
+    public void setBefCredit(String befCredit) {
+        this.befCredit = befCredit;
+    }
+    public String getCentricAccountDescription() {
+        return centricAccountDescription;
+    }
+
+    public void setCentricAccountDescription(String centricAccountDescription) {
+        this.centricAccountDescription = centricAccountDescription;
+    }
     public void setRecordType(Long recordType) {
         this.recordType = recordType;
     }
@@ -98,7 +139,26 @@ public class FinancialAccountTurnOverSummarizeResponse {
             financialAccountTurnOverSummarizeResponse.setRecordType(recordType);
             return this;
         }
-
+        public Builder remainDebit(String remainDebit) {
+            financialAccountTurnOverSummarizeResponse.setRemainDebit(remainDebit);
+            return this;
+        }
+        public Builder remainCredit(String remainCredit) {
+            financialAccountTurnOverSummarizeResponse.setRemainCredit(remainCredit);
+            return this;
+        }
+        public Builder befDebit(String befDebit) {
+            financialAccountTurnOverSummarizeResponse.setBefDebit(befDebit);
+            return this;
+        }
+        public Builder befCredit(String befCredit) {
+            financialAccountTurnOverSummarizeResponse.setBefCredit(befCredit);
+            return this;
+        }
+        public Builder centricAccountDescription(String centricAccountDescription) {
+            financialAccountTurnOverSummarizeResponse.setCentricAccountDescription(centricAccountDescription);
+            return this;
+        }
         public FinancialAccountTurnOverSummarizeResponse build() {
             return financialAccountTurnOverSummarizeResponse;
         }
