@@ -315,6 +315,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         } else {
             map.put("centricAccount1", null);
             financialDocumentReportRequest.setParamMap(map);
+            financialDocumentReportRequest.setCentricAccount1(null);
             financialDocumentReportRequest.setCentricAccountId1(0L);
         }
 
@@ -331,6 +332,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         } else {
             map.put("centricAccount2", null);
             financialDocumentReportRequest.setParamMap(map);
+            financialDocumentReportRequest.setCentricAccount2(null);
             financialDocumentReportRequest.setCentricAccountId2(0L);
         }
 
@@ -347,20 +349,16 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         } else {
             map.put("referenceNumberObject", null);
             financialDocumentReportRequest.setParamMap(map);
+            financialDocumentReportRequest.setReferenceNumberObject(null);
             financialDocumentReportRequest.setReferenceNumber(null);
         }
     }
 
     private void checkFromNumberSet(FinancialDocumentReportRequest
                                             financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
-            map.put("referenceNumberObject", "referenceNumberObject");
-            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setFromNumber(item.getValue().toString());
         } else {
-            map.put("referenceNumberObject", null);
-            financialDocumentReportRequest.setParamMap(map);
             financialDocumentReportRequest.setFromNumber(null);
         }
     }
