@@ -91,7 +91,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           ELSE " +
             "            0 " +
             "         END REMAIN_CREDIT, " +
-            "         SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) OVER(ORDER BY ID, DOCUMENT_NUMBER, DOCUMENT_DATE, FINANCIAL_DOCUMENT_ID, FINANCIAL_DOCUMENT_ITEM_ID, FINANCIAL_ACCOUNT_CODE, FINANCIAL_ACCOUNT_DESCRIPTION, TYP) REMAIN_AMOUNT, " +
+            "         SUM(DEBIT_AMOUNT-CREDIT_AMOUNT) " +
+            " OVER(ORDER BY ID, DOCUMENT_NUMBER, DOCUMENT_DATE, FINANCIAL_DOCUMENT_ID, FINANCIAL_DOCUMENT_ITEM_ID, FINANCIAL_ACCOUNT_CODE, FINANCIAL_ACCOUNT_DESCRIPTION, TYP) REMAIN_AMOUNT, " +
             "         0 SUM_DEBIT, " +
             "         0 SUM_CREDIT, " +
             "         0 SUMMERIZE_DEBIT, " +
@@ -346,7 +347,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 ELSE " +
             "                  0 " +
             "               END AS SUMMERIZE_CREDIT, " +
-            "               SUM(MAIN_QRY.CREDIT_AMOUNT) - SUM(MAIN_QRY.DEBIT_AMOUNT) AS SUMMERIZE_AMOUNT, " +
+            "               SUM(MAIN_QRY.DEBIT_AMOUNT) - SUM(MAIN_QRY.CREDIT_AMOUNT) AS SUMMERIZE_AMOUNT, " +
             "               3 AS RECORD_TYP " +
             "          FROM MAIN_QRY) " +
             " ORDER BY FINANCIAL_ACCOUNT_ID, " +
@@ -407,7 +408,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           ELSE " +
             "            0 " +
             "         END REMAIN_CREDIT, " +
-            "         SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) OVER(ORDER BY ID, DOCUMENT_NUMBER, DOCUMENT_DATE, FINANCIAL_DOCUMENT_ID, FINANCIAL_DOCUMENT_ITEM_ID, FINANCIAL_ACCOUNT_CODE, FINANCIAL_ACCOUNT_DESCRIPTION, TYP) REMAIN_AMOUNT, " +
+            "         SUM(DEBIT_AMOUNT - CREDIT_AMOUNT) OVER(ORDER BY ID, DOCUMENT_NUMBER, DOCUMENT_DATE, FINANCIAL_DOCUMENT_ID, FINANCIAL_DOCUMENT_ITEM_ID, FINANCIAL_ACCOUNT_CODE, FINANCIAL_ACCOUNT_DESCRIPTION, TYP) REMAIN_AMOUNT, " +
             "         0 SUM_DEBIT, " +
             "         0 SUM_CREDIT, " +
             "         0 SUMMERIZE_DEBIT, " +
