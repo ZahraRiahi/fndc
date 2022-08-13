@@ -356,7 +356,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private void checkFromNumberSet(FinancialDocumentReportRequest
                                             financialDocumentReportRequest, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             financialDocumentReportRequest.setFromNumber(item.getValue().toString());
         } else {
