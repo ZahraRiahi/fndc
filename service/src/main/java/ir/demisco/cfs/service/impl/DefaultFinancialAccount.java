@@ -907,13 +907,16 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 accountTurnOverSummarizeResponse.setSumCredit(getItemForLong(item, 2));
                 accountTurnOverSummarizeResponse.setSummarizeDebit(getItemForString(item, 5));
                 accountTurnOverSummarizeResponse.setSummarizeCredit(getItemForString(item, 6));
+                accountTurnOverSummarizeResponse.setBefDebit(getItemForString(item, 7));
+                accountTurnOverSummarizeResponse.setBefCredit(getItemForString(item, 8));
+                accountTurnOverSummarizeResponse.setRemainDebit(getItemForString(item, 9));
+                accountTurnOverSummarizeResponse.setRemainCredit(getItemForString(item, 10));
                 accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForString(item, 12));
                 accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 13));
                 outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
                 response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
             }
         });
-
         financialAccountListBalanceResponses.add(response);
         if (financialAccountListBalanceResponses.get(0).getFinancialAccountBalanceRecordsModel() == null) {
             throw new RuleException("fin.financialAccount.financialAccountCentricBalanceRecordsModel");

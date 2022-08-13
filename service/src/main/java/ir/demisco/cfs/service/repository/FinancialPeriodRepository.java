@@ -1716,12 +1716,18 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         null FINANCIAL_ACCOUNT_LEVEL," +
             "         SUM(SUM_DEBIT) SUMMERIZE_DEBIT," +
             "         SUM(SUM_CREDIT) SUMMERIZE_CREDIT," +
-            "         0 BEF_DEBIT," +
-            "         0 BEF_CREDIT," +
-            "         0 REM_DEBIT," +
-            "         0 REM_CREDIT," +
+            " SUM(BEF_DEBIT) BEF_DEBIT, " +
+            " SUM(BEF_CREDIT) BEF_CREDIT, " +
+            " SUM(DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT)," +
+            "                1," +
+            "                SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT," +
+            "                0) )REM_DEBIT," +
+            "         SUM( DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT)," +
+            "                -1," +
+            "                ABS(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT)," +
+            "                0))REM_CREDIT," +
             "         null color," +
-            "         SUM(SUM_CREDIT) - SUM(SUM_DEBIT) SUMMERIZE_AMOUNT," +
+            "         SUM(SUM_DEBIT) - SUM(SUM_CREDIT) SUMMERIZE_AMOUNT," +
             "         3 AS RECORD_TYP" +
             "    FROM (SELECT FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
             "                 FA2.ID FINANCIAL_ACCOUNT_ID," +
