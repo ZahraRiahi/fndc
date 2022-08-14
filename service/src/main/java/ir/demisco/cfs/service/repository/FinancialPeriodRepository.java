@@ -1325,7 +1325,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 FDI.CENTRIC_ACCOUNT_ID_5 = :cnacId2) OR" +
             "                 (:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_5 AND" +
             "                 FDI.CENTRIC_ACCOUNT_ID_6 = :cnacId2)))" +
-            "                 OR" +
+            "                 OR " +
             "                 ((:cnacIdObj1 IS NOT NULL AND" +
             "                 :cnacIdObj2 IS NULL) AND" +
             "                 (:cnacId1 = FDI.CENTRIC_ACCOUNT_ID_1 OR" +
@@ -1364,7 +1364,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "             AND FDS.CODE > 10 " +
             "          UNION " +
             "          SELECT FD.DOCUMENT_NUMBER," +
-            "FD.DOCUMENT_DATE  as DOCUMENT_DATE," +
+            " FD.DOCUMENT_DATE  as DOCUMENT_DATE," +
             "                 FDI.DESCRIPTION AS DOCUMENT_DESCRIPTION_ITEM," +
             "                 FD.ID  FINANCIAL_DOCUMENT_ID," +
             "                 FDI.CENTRIC_ACCOUNT_ID_1, " +
@@ -1391,8 +1391,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 FA.CODE AS CODE, " +
             "                 FA.DESCRIPTION, " +
             "                 2 AS RECORD_TYP " +
-            "                       FROM FINANCIAL_DOCUMENT FD" +
-            "           INNER JOIN FINANCIAL_DOCUMENT_ITEM FDI" +
+            "                       FROM fndc.FINANCIAL_DOCUMENT FD" +
+            "           INNER JOIN fndc.FINANCIAL_DOCUMENT_ITEM FDI" +
             "              ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID" +
             "             AND FDI.DELETED_DATE IS NULL" +
             "           INNER JOIN FNAC.FINANCIAL_ACCOUNT FA" +
@@ -1404,7 +1404,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "              ON FA2.ID = ASL.RELATED_ACCOUNT_ID" +
             "           INNER JOIN FNAC.FINANCIAL_ACCOUNT_STRUCTURE FAS" +
             "              ON FA2.FINANCIAL_ACCOUNT_STRUCTURE_ID = FAS.ID" +
-            "           INNER JOIN FINANCIAL_DOCUMENT_NUMBER FDN" +
+            "           INNER JOIN fndc.FINANCIAL_DOCUMENT_NUMBER FDN" +
             "              ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID" +
             "             AND FDN.DELETED_DATE IS NULL" +
             "            LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT_REFRENCE FDR" +
@@ -1499,7 +1499,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "    AND FA2.ID = nvl(:financialAccountId, fdi.financial_account_id) " +
             "             AND FDS.CODE > 10 " +
             "           GROUP BY FD.DOCUMENT_NUMBER," +
-            "FD.DOCUMENT_DATE, " +
+            " FD.DOCUMENT_DATE, " +
             "                    FDI.DESCRIPTION, " +
             "                    FD.ID," +
             "                    FA.ID," +
@@ -1535,7 +1535,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "          FROM MAIN_QRY " +
             "        UNION " +
             "        SELECT NULL DOCUMENT_NUMBER," +
-            "NULL as DOCUMENT_DATE, " +
+            " NULL as DOCUMENT_DATE, " +
             "               NULL AS DOCUMENT_DESCRIPTION_ITEM, " +
             "               NULL FINANCIAL_DOCUMENT_ID," +
             "               NULL ACCOUNT_ID, " +
@@ -1577,8 +1577,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               SUM(MAIN_QRY.DEBIT_AMOUNT) - SUM(MAIN_QRY.CREDIT_AMOUNT) AS SUMMERIZE_AMOUNT," +
             "               3 AS RECORD_TYP" +
             "          FROM MAIN_QRY)" +
-            " ORDER BY RECORD_TYP, DOCUMENT_DATE, DOCUMENT_NUMBER " +
-            " ORDER BY RECORD_TYP "
+            " ORDER BY RECORD_TYP, DOCUMENT_DATE, DOCUMENT_NUMBER "
             , nativeQuery = true)
     List<Object[]> findByFinancialAccountCentricTurnOver2(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate, Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId, String fromNumber,
                                                           Object cnacIdObj1, Object cnacIdObj2, Long cnacId1, Long cnacId2, Object cnatIdObj1, Object cnatIdObj2,
