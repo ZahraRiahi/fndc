@@ -496,7 +496,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private List<Object[]> getCentricTurnOverReportList(FinancialDocumentCentricTurnOverRequest
                                                                 financialDocumentCentricTurnOverRequest) {
-        if (financialDocumentCentricTurnOverRequest.getFinancialAccountId() != 0 && financialDocumentCentricTurnOverRequest.getCnacId1() == 0 && financialDocumentCentricTurnOverRequest.getCnacId2() == 0
+        if (financialDocumentCentricTurnOverRequest.getFinancialAccountId() != 0 && financialDocumentCentricTurnOverRequest.getCnacId1() == 0
+                && financialDocumentCentricTurnOverRequest.getCnacId2() == 0
                 && financialDocumentCentricTurnOverRequest.getCnatId1() == 0
                 && financialDocumentCentricTurnOverRequest.getCnatId2() == 0) {
             return financialPeriodRepository

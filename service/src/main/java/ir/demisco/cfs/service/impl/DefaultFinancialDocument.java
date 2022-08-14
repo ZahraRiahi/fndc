@@ -140,41 +140,76 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 );
         sorts.add(Sort.Order.asc("documentId"));
         Pageable pageable = PageRequest.of((dataSourceRequest.getSkip() / dataSourceRequest.getTake()), dataSourceRequest.getTake(), Sort.by(sorts));
+        if (paramSearch.getFromPriceAmount() != 0 || paramSearch.getToPriceAmount() != 0) {
+            Page<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId()
+                    , paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getLedgerTypeId()
+                    , paramSearch.getStartDate(),
+                    paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramSearch.getFromNumberId(), paramSearch.getFromNumber(),
+                    paramSearch.getToNumberId(), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(),
+                    paramSearch.getFromAccountCode(),
+                    paramSearch.getToAccountCode(), paramSearch.getCentricAccount(), paramSearch.getCentricAccountId(),
+                    paramSearch.getCentricAccountType(), paramSearch.getCentricAccountTypeId(), paramSearch.getDocumentUser(), paramSearch.getDocumentUserId(),
+                    paramSearch.getFromPriceAmount(),
+                    paramSearch.getToPriceAmount(), paramSearch.getTolerance(),
+                    paramSearch.getFinancialDocumentType(), paramSearch.getFinancialDocumentTypeId(), pageable);
+            List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
+                    FinancialDocumentDto.builder()
+                            .id(((BigDecimal) item[0]).longValue())
+                            .documentDate((Date) item[1])
+                            .description(item[2].toString())
+                            .documentNumber(item[3].toString())
+                            .financialDocumentTypeId(Long.parseLong(item[4].toString()))
+                            .financialDocumentTypeDescription(item[5].toString())
+                            .fullDescription(item[6].toString())
+                            .debitAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[7].toString()))))
+                            .creditAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[8].toString()))))
+                            .userId(Long.parseLong(item[9].toString()))
+                            .userName(item[10].toString())
+                            .financialDocumentStatusId(Long.parseLong(item[11].toString()))
+                            .financialDocumentStatusName(item[12].toString())
+                            .financialDocumentStatusCode(item[13].toString())
+                            .build()).collect(Collectors.toList());
+            DataSourceResult dataSourceResult = new DataSourceResult();
+            dataSourceResult.setData(documentDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
+            dataSourceResult.setData(documentDtoList);
+            dataSourceResult.setTotal(list.getTotalElements());
+            return dataSourceResult;
 
-        Page<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId()
-                , paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getLedgerTypeId()
-                , paramSearch.getStartDate(),
-                paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramSearch.getFromNumberId(), paramSearch.getFromNumber(),
-                paramSearch.getToNumberId(), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(),
-                paramSearch.getFromAccountCode(),
-                paramSearch.getToAccountCode(), paramSearch.getCentricAccount(), paramSearch.getCentricAccountId(),
-                paramSearch.getCentricAccountType(), paramSearch.getCentricAccountTypeId(), paramSearch.getDocumentUser(), paramSearch.getDocumentUserId(), paramSearch.getPriceType(), paramSearch.getFromPrice(),
-                paramSearch.getFromPriceAmount(), paramSearch.getToPrice(),
-                paramSearch.getToPriceAmount(), paramSearch.getTolerance(),
-                paramSearch.getFinancialDocumentType(), paramSearch.getFinancialDocumentTypeId(), pageable);
-
-        List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
-                FinancialDocumentDto.builder()
-                        .id(((BigDecimal) item[0]).longValue())
-                        .documentDate((Date) item[1])
-                        .description(item[2].toString())
-                        .documentNumber(item[3].toString())
-                        .financialDocumentTypeId(Long.parseLong(item[4].toString()))
-                        .financialDocumentTypeDescription(item[5].toString())
-                        .fullDescription(item[6].toString())
-                        .debitAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[7].toString()))))
-                        .creditAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[8].toString()))))
-                        .userId(Long.parseLong(item[9].toString()))
-                        .userName(item[10].toString())
-                        .financialDocumentStatusId(Long.parseLong(item[11].toString()))
-                        .financialDocumentStatusName(item[12].toString())
-                        .financialDocumentStatusCode(item[13].toString())
-                        .build()).collect(Collectors.toList());
-        DataSourceResult dataSourceResult = new DataSourceResult();
-        dataSourceResult.setData(documentDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
-        dataSourceResult.setData(documentDtoList);
-        dataSourceResult.setTotal(list.getTotalElements());
-        return dataSourceResult;
+        } else {
+            ResponseFinancialDocumentDto paramSearch2 = setParameter2(filters);
+            Page<Object[]> list = financialDocumentRepository.getFinancialDocumentList2(paramSearch2.getActivityCode(), SecurityHelper.getCurrentUser().getUserId()
+                    , paramSearch2.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch2.getLedgerTypeId()
+                    , paramSearch2.getStartDate(),
+                    paramSearch2.getEndDate(), paramSearch2.getPriceTypeId(), paramSearch2.getFinancialNumberingTypeId(), paramSearch2.getFromNumberId(), paramSearch2.getFromNumber(),
+                    paramSearch2.getToNumberId(), paramSearch2.getToNumber(), paramSearch2.getFinancialDocumentStatusDtoListId(), paramSearch2.getDescription(),
+                    paramSearch2.getFromAccountCode(), paramSearch2.getToAccountCode(), paramSearch2.getCentricAccount(), paramSearch2.getCentricAccountId(),
+                    paramSearch2.getCentricAccountType(), paramSearch2.getCentricAccountTypeId(), paramSearch2.getDocumentUser(), paramSearch2.getDocumentUserId(),
+                    paramSearch2.getPriceType(), paramSearch2.getFromPrice(), paramSearch2.getFromPriceAmount(), paramSearch2.getToPrice(),
+                    paramSearch2.getToPriceAmount(), paramSearch2.getTolerance(),
+                    paramSearch2.getFinancialDocumentType(), paramSearch2.getFinancialDocumentTypeId(), pageable);
+            List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
+                    FinancialDocumentDto.builder()
+                            .id(((BigDecimal) item[0]).longValue())
+                            .documentDate((Date) item[1])
+                            .description(item[2].toString())
+                            .documentNumber(item[3].toString())
+                            .financialDocumentTypeId(Long.parseLong(item[4].toString()))
+                            .financialDocumentTypeDescription(item[5].toString())
+                            .fullDescription(item[6].toString())
+                            .debitAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[7].toString()))))
+                            .creditAmount(Long.parseLong(String.format("%.0f", Double.parseDouble(item[8].toString()))))
+                            .userId(Long.parseLong(item[9].toString()))
+                            .userName(item[10].toString())
+                            .financialDocumentStatusId(Long.parseLong(item[11].toString()))
+                            .financialDocumentStatusName(item[12].toString())
+                            .financialDocumentStatusCode(item[13].toString())
+                            .build()).collect(Collectors.toList());
+            DataSourceResult dataSourceResult = new DataSourceResult();
+            dataSourceResult.setData(documentDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
+            dataSourceResult.setData(documentDtoList);
+            dataSourceResult.setTotal(list.getTotalElements());
+            return dataSourceResult;
+        }
     }
 
     private ResponseFinancialDocumentDto setParameter(List<DataSourceRequest.FilterDescriptor> filters) {
@@ -252,20 +287,24 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         return responseFinancialDocumentDto;
     }
 
-    private void checkFinancialDocumentTypeId(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+    private void checkFinancialDocumentTypeId(ResponseFinancialDocumentDto
+                                                      responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("financialDocumentType", "financialDocumentType");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setFinancialDocumentTypeId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setFinancialDocumentType(responseFinancialDocumentDto.getFinancialDocumentType());
         } else {
             map.put("financialDocumentType", null);
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setFinancialDocumentTypeId(0L);
+            responseFinancialDocumentDto.setFinancialDocumentType(null);
         }
     }
 
-    private void checkTolerance(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+    private void checkTolerance(ResponseFinancialDocumentDto
+                                        responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
             responseFinancialDocumentDto.setTolerance(Double.parseDouble(item.getValue().toString()));
         } else {
@@ -273,35 +312,32 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
     }
 
-    private void checkToPrice(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+    private void checkToPrice(ResponseFinancialDocumentDto
+                                      responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
-            map.put("toPrice", "toPrice");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setToPriceAmount(Long.parseLong(item.getValue().toString()));
         } else {
-            map.put("toPrice", null);
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setToPriceAmount(0L);
         }
     }
 
-    private void checkPriceTypeIdSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+    private void checkPriceTypeIdSet(ResponseFinancialDocumentDto
+                                             responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
-            map.put("priceType", "priceType");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
-            responseFinancialDocumentDto.setPriceType(responseFinancialDocumentDto.getPriceType());
         } else {
-            map.put("priceType", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setPriceType(null);
             responseFinancialDocumentDto.setPriceTypeId(0L);
         }
     }
 
-    private void checkFromNumberSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+    private void checkFromNumberSet(ResponseFinancialDocumentDto
+                                            responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("fromNumber", "fromNumber");
@@ -316,7 +352,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
     }
 
-    private void checkToNumberSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+    private void checkToNumberSet(ResponseFinancialDocumentDto
+                                          responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("toNumber", "toNumber");
@@ -331,7 +368,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
     }
 
-    private void checkDescriptionSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+    private void checkDescriptionSet(ResponseFinancialDocumentDto
+                                             responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
             responseFinancialDocumentDto.setDescription(item.getValue().toString());
         } else {
@@ -339,7 +377,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
     }
 
-    private void checkFromAccountCodeSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+    private void checkFromAccountCodeSet(ResponseFinancialDocumentDto
+                                                 responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             responseFinancialDocumentDto.setParamMap(map);
@@ -350,7 +389,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
     }
 
-    private void checkToAccountCodeSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+    private void checkToAccountCodeSet(ResponseFinancialDocumentDto
+                                               responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             responseFinancialDocumentDto.setParamMap(map);
@@ -361,7 +401,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
     }
 
-    private void checkCentricAccountIdSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+    private void checkCentricAccountIdSet(ResponseFinancialDocumentDto
+                                                  responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("centricAccount", "centricAccount");
@@ -376,7 +417,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
     }
 
-    private void checkCentricAccountTypeIdSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+    private void checkCentricAccountTypeIdSet(ResponseFinancialDocumentDto
+                                                      responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("centricAccountType", "centricAccountType");
@@ -392,12 +434,14 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
     }
 
-    private void checkDocumentUserIdSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+    private void checkDocumentUserIdSet(ResponseFinancialDocumentDto
+                                                responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
             map.put("documentUser", "documentUser");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setDocumentUserId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setDocumentUser(responseFinancialDocumentDto.getDocumentUser());
         } else {
             map.put("documentUser", null);
             responseFinancialDocumentDto.setParamMap(map);
@@ -406,16 +450,14 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
     }
 
-    private void checkFromPriceSet(ResponseFinancialDocumentDto responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+    private void checkFromPriceSet(ResponseFinancialDocumentDto
+                                           responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
-            map.put("fromPrice", "fromPrice");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setFromPriceAmount(Long.parseLong(item.getValue().toString()));
         } else {
-            map.put("fromPrice", null);
             responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFromPrice(null);
             responseFinancialDocumentDto.setFromPriceAmount(0L);
         }
     }
@@ -446,7 +488,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public ResponseEntity<ResponseFinancialDocumentSetStatusDto> changeStatus(ResponseFinancialDocumentStatusDto responseFinancialDocumentStatusDto) {
+    public ResponseEntity<ResponseFinancialDocumentSetStatusDto> changeStatus(ResponseFinancialDocumentStatusDto
+                                                                                      responseFinancialDocumentStatusDto) {
         String activityCode = "FNDC_DOCUMENT_CONF";
         FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
         financialDocumentSecurityInputRequest.setActivityCode(activityCode);
@@ -548,7 +591,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         return financialDocumentErrorDtoList;
     }
 
-    List<FinancialDocumentErrorDto> check1(FinancialDocumentItem documentItem, FinancialDocument financialDocument, List<FinancialDocumentErrorDto> financialDocumentErrorDtoList) {
+    List<FinancialDocumentErrorDto> check1(FinancialDocumentItem documentItem, FinancialDocument
+            financialDocument, List<FinancialDocumentErrorDto> financialDocumentErrorDtoList) {
         Double creditAmount = documentItem.getCreditAmount() % 1;
         Double debitAmount = documentItem.getDebitAmount() % 1;
         if ((documentItem.getCreditAmount() == 0) && (documentItem.getDebitAmount() == 0)) {
@@ -924,7 +968,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     }
 
-    private AtomicInteger check2(FinancialDocumentItem documentItem, Long centricAccountId, FinancialCentricAccountDto financialCentricAccountDto, AtomicInteger atomicInteger) {
+    private AtomicInteger check2(FinancialDocumentItem documentItem, Long
+            centricAccountId, FinancialCentricAccountDto financialCentricAccountDto, AtomicInteger atomicInteger) {
 
         if ((documentItem.getCentricAccountId1() != null) && (centricAccountId.equals(documentItem.getCentricAccountId1().getId()))) {
             atomicInteger.getAndIncrement();
@@ -1168,7 +1213,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
     @Override
     @Transactional(rollbackFor = Throwable.class)
-    public FinancialPeriodStatusResponse getFinancialPeriodStatus(FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest) {
+    public FinancialPeriodStatusResponse getFinancialPeriodStatus(FinancialPeriodLedgerStatusRequest
+                                                                          financialPeriodLedgerStatusRequest) {
         if (financialPeriodLedgerStatusRequest.getFinancialDocumentId() == null && financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId() == null
                 && financialPeriodLedgerStatusRequest.getFinancialPeriodId() == null
                 && financialPeriodLedgerStatusRequest.getDate() == null) {
@@ -1199,5 +1245,128 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         financialPeriodStatusResponses.setPeriodStatus(periodStatus);
         financialPeriodStatusResponses.setMonthStatus(monthStatus);
         return financialPeriodStatusResponses;
+    }
+
+    private ResponseFinancialDocumentDto setParameter2(List<DataSourceRequest.FilterDescriptor> filters) {
+        ResponseFinancialDocumentDto responseFinancialDocumentDto = new ResponseFinancialDocumentDto();
+        for (DataSourceRequest.FilterDescriptor item : filters) {
+            switch (item.getField()) {
+                case "activityCode":
+                    responseFinancialDocumentDto.setActivityCode(item.getValue().toString());
+                    break;
+                case "departmentId":
+                    responseFinancialDocumentDto.setDepartmentId(Long.parseLong(item.getValue().toString()));
+                    break;
+                case "ledgerTypeId":
+                    responseFinancialDocumentDto.setLedgerTypeId(Long.parseLong(item.getValue().toString()));
+                    break;
+                case "startDate":
+                    responseFinancialDocumentDto.setStartDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+                    break;
+                case "endDate":
+                    responseFinancialDocumentDto.setEndDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+                    break;
+                case "financialNumberingType.id":
+                    responseFinancialDocumentDto.setFinancialNumberingTypeId(Long.parseLong(item.getValue().toString()));
+                    break;
+                case "priceType.id":
+                    checkPriceTypeIdSet2(responseFinancialDocumentDto, item);
+                    break;
+                case "fromNumber.id":
+                    checkFromNumberSet(responseFinancialDocumentDto, item);
+                    break;
+
+                case "toNumber.id":
+                    checkToNumberSet(responseFinancialDocumentDto, item);
+                    break;
+
+                case "financialDocumentStatusDtoList":
+                    responseFinancialDocumentDto.setFinancialDocumentStatusDtoListId((List<Long>) item.getValue());
+                    break;
+                case "description":
+                    checkDescriptionSet(responseFinancialDocumentDto, item);
+                    break;
+                case "fromAccount.code":
+                    checkFromAccountCodeSet(responseFinancialDocumentDto, item);
+                    break;
+                case "toAccount.code":
+                    checkToAccountCodeSet(responseFinancialDocumentDto, item);
+                    break;
+                case "centricAccount.id":
+                    checkCentricAccountIdSet(responseFinancialDocumentDto, item);
+                    break;
+                case "centricAccountType.id":
+                    checkCentricAccountTypeIdSet(responseFinancialDocumentDto, item);
+                    break;
+                case "documentUser.id":
+                    checkDocumentUserIdSet(responseFinancialDocumentDto, item);
+                    break;
+                case "fromPriceAmount":
+                    checkFromPriceSet2(responseFinancialDocumentDto, item);
+                    break;
+                case "toPriceAmount":
+                    checkToPrice2(responseFinancialDocumentDto, item);
+                    break;
+
+                case "tolerance":
+                    checkTolerance(responseFinancialDocumentDto, item);
+                    break;
+
+                case "financialDocumentType.id":
+                    checkFinancialDocumentTypeId(responseFinancialDocumentDto, item);
+                    break;
+                default:
+                    break;
+            }
+        }
+        return responseFinancialDocumentDto;
+    }
+
+    private void checkFromPriceSet2(ResponseFinancialDocumentDto
+                                            responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("fromPrice", "fromPrice");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFromPriceAmount(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setFromPrice(responseFinancialDocumentDto.getFromPrice());
+        } else {
+            map.put("fromPrice", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFromPrice(null);
+            responseFinancialDocumentDto.setFromPriceAmount(0L);
+        }
+    }
+
+    private void checkToPrice2(ResponseFinancialDocumentDto
+                                       responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("toPrice", "toPrice");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setToPriceAmount(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setToPrice(responseFinancialDocumentDto.getToPrice());
+        } else {
+            map.put("toPrice", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setToPriceAmount(0L);
+            responseFinancialDocumentDto.setToPrice(null);
+        }
+    }
+
+    private void checkPriceTypeIdSet2(ResponseFinancialDocumentDto
+                                              responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("priceType", "priceType");
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setPriceType(responseFinancialDocumentDto.getPriceType());
+        } else {
+            map.put("priceType", null);
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setPriceType(null);
+            responseFinancialDocumentDto.setPriceTypeId(0L);
+        }
     }
 }
