@@ -2,7 +2,6 @@ package ir.demisco.cfs.service.repository;
 
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import org.springframework.data.domain.Page;
-
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
@@ -231,7 +230,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             , nativeQuery = true)
     Page<Object[]> getFinancialDocumentItemList(String activityCode, Long creatorUserId, Long departmentId, Long userId,
                                                 Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate
-            , Long priceTypeId, Long financialNumberingTypeId, Long fromNumberId, Object fromNumber, Long toNumberId,Object toNumber,
+            , Long priceTypeId, Long financialNumberingTypeId, Long fromNumberId, Object fromNumber, Long toNumberId, Object toNumber,
                                                 List<Long> documentStatusId, String description, String fromAccountCode, String toAccountCode
             , Object centricAccount, Long centricAccountId, Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId,
                                                 Object priceType, Object fromPrice, Long fromPriceAmount, Double tolerance, Object toPrice, Long toPriceAmount

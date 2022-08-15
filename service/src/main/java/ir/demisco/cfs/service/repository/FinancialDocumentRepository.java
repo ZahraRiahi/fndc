@@ -92,19 +92,23 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "             OR FNDI.CENTRIC_ACCOUNT_ID_4 = CNT.ID" +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_5 = CNT.ID" +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_6 = CNT.ID))" +
-            "   AND (:documentUser IS NULL OR FIDC.CREATOR_ID = :documentUserId OR" +
-            "       FIDC.LAST_MODIFIER_ID = :documentUserId)" +
-            "   and ((:priceType is null or " +
-            "       (:priceTypeId = 1  " +
-            "   and (:fromPrice is null or " +
-            "       (fndi.debit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0)) " +
-            "   and (:toPrice is null or " +
-            "       (fndi.debit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))) or " +
-            "       (:priceType is null or (:priceTypeId = 2  " +
-            "   and  (:fromPrice is null or " +
-            "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
-            "   and   (:toPrice is null  or " +
-            "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))))" +
+            "   AND (:documentUser IS NULL OR (FIDC.CREATOR_ID = :documentUserId OR" +
+            "       FIDC.LAST_MODIFIER_ID = :documentUserId))" +
+            "  AND (:priceType IS NULL OR" +
+            "       (:priceTypeId = 1 AND" +
+            "       (:fromPrice IS NULL OR" +
+            "       (FNDI.DEBIT_AMOUNT >=" +
+            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0)) AND" +
+            "       (:toPrice IS NULL OR" +
+            "       (FNDI.DEBIT_AMOUNT <=" +
+            "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0)))) OR" +
+            "       (:priceTypeId = 2 AND" +
+            "       (:fromPrice IS NULL OR" +
+            "       (FNDI.CREDIT_AMOUNT >=" +
+            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0)) AND" +
+            "       (:toPrice IS NULL OR" +
+            "       (FNDI.CREDIT_AMOUNT <=" +
+            "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0))))) " +
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
             "   and FNSC.SEC_RESULT = 1" +
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,fidc.financial_document_type_id,fndt.description," +
@@ -179,19 +183,23 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "             OR FNDI.CENTRIC_ACCOUNT_ID_4 = CNT.ID" +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_5 = CNT.ID" +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_6 = CNT.ID))" +
-            "   AND (:documentUser IS NULL OR FIDC.CREATOR_ID = :documentUserId OR" +
-            "       FIDC.LAST_MODIFIER_ID = :documentUserId)" +
-            "   and ((:priceType is null or " +
-            "       (:priceTypeId = 1  " +
-            "   and (:fromPrice is null or " +
-            "       (fndi.debit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0)) " +
-            "   and (:toPrice is null or " +
-            "       (fndi.debit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))) or " +
-            "       (:priceType is null or (:priceTypeId = 2  " +
-            "   and  (:fromPrice is null or " +
-            "       (fndi.credit_amount >= :fromPriceAmount - (:fromPriceAmount * nvl(:tolerance, 0)) / 100.0))  " +
-            "   and   (:toPrice is null  or " +
-            "       (fndi.credit_amount <= :toPriceAmount + (:toPriceAmount * nvl(:tolerance, 0)) / 100.0)))))" +
+            "   AND (:documentUser IS NULL OR (FIDC.CREATOR_ID = :documentUserId OR" +
+            "       FIDC.LAST_MODIFIER_ID = :documentUserId))" +
+            "  AND (:priceType IS NULL OR" +
+            "       (:priceTypeId = 1 AND" +
+            "       (:fromPrice IS NULL OR" +
+            "       (FNDI.DEBIT_AMOUNT >=" +
+            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0)) AND" +
+            "       (:toPrice IS NULL OR" +
+            "       (FNDI.DEBIT_AMOUNT <=" +
+            "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0)))) OR" +
+            "       (:priceTypeId = 2 AND" +
+            "       (:fromPrice IS NULL OR" +
+            "       (FNDI.CREDIT_AMOUNT >=" +
+            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0)) AND" +
+            "       (:toPrice IS NULL OR" +
+            "       (FNDI.CREDIT_AMOUNT <=" +
+            "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0))))) " +
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
             "   and FNSC.SEC_RESULT = 1" +
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description, " +
@@ -204,8 +212,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
                                             Long priceTypeId, Long financialNumberingTypeId, Long fromNumberId, Object fromNumber,
                                             Long toNumberId, Object toNumber, List<Long> documentStatusId, String description, String fromAccountCode,
                                             String toAccountCode, Object centricAccount, Long centricAccountId,
-                                            Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId,
-                                            Object priceType, Object fromPrice, Long fromPriceAmount, Object toPrice, Long toPriceAmount,
+                                            Object centricAccountType, Long centricAccountTypeId, Object  documentUser,Long documentUserId, Object priceType,Object fromPrice,
+                                            Long fromPriceAmount, Object toPrice, Long toPriceAmount,
                                             Double tolerance, Object financialDocumentType, Long financialDocumentTypeId, Pageable pageable);
 
     @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:financialDocumentId")
@@ -503,7 +511,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     Long findFinancialDocumentByDocumentItemIdDelete(Long financialDocumentItemId);
 
-    @Query("select fdi from FinancialDocumentItem fdi where fdi.id=:financialDocumentItemId " +
-            " and fdi.deletedDate is null")
-    List<FinancialDocument> getFinancialDocumentItemByDocumentId(Long financialDocumentItemId);
+
+
+
 }
