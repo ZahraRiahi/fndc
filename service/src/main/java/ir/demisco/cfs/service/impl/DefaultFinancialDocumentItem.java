@@ -199,6 +199,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
             map.put("financialDocumentType", "financialDocumentType");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setFinancialDocumentTypeId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setFinancialDocumentType("financialDocumentType");
         } else {
             map.put("financialDocumentType", null);
             responseFinancialDocumentDto.setParamMap(map);
@@ -221,6 +222,8 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
             map.put("priceType", "priceType");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setPriceTypeId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setPriceType("priceType");
+
         } else {
             map.put("priceType", null);
             responseFinancialDocumentDto.setParamMap(map);
@@ -235,6 +238,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
             map.put("fromNumber", "fromNumber");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setFromNumberId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setFromNumber("fromNumber");
         } else {
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setFromNumber(null);
@@ -267,6 +271,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
             map.put("toNumber", "toNumber");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setToNumberId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setToNumber("toNumber");
         } else {
             map.put("toNumber", null);
             responseFinancialDocumentDto.setParamMap(map);
@@ -292,6 +297,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
             map.put("centricAccount", "centricAccount");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setCentricAccountId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setCentricAccount("centricAccount");
         } else {
             map.put("centricAccount", null);
             responseFinancialDocumentDto.setParamMap(map);
@@ -306,6 +312,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
             map.put("centricAccountType", "centricAccountType");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setCentricAccountTypeId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setCentricAccountType("centricAccountType");
         } else {
             map.put("centricAccountType", null);
             responseFinancialDocumentDto.setParamMap(map);
@@ -320,6 +327,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
             map.put("documentUser", "documentUser");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setDocumentUserId(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setDocumentUser("documentUser");
         } else {
             map.put("documentUser", null);
             responseFinancialDocumentDto.setParamMap(map);
@@ -334,6 +342,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
             map.put("fromPrice", "fromPrice");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setFromPriceAmount(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setFromPrice("fromPrice");
         } else {
             map.put("fromPrice", null);
             responseFinancialDocumentDto.setParamMap(map);
@@ -348,6 +357,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
             map.put("toPrice", "toPrice");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setToPriceAmount(Long.parseLong(item.getValue().toString()));
+            responseFinancialDocumentDto.setToPrice("toPrice");
         } else {
             map.put("toPrice", null);
             responseFinancialDocumentDto.setParamMap(map);
