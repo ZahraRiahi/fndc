@@ -352,13 +352,14 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               SUM(MAIN_QRY.DEBIT_AMOUNT) - SUM(MAIN_QRY.CREDIT_AMOUNT) AS SUMMERIZE_AMOUNT, " +
             "               3 AS RECORD_TYP " +
             "          FROM MAIN_QRY) " +
-            " ORDER BY FINANCIAL_ACCOUNT_ID, " +
-            "          RECORD_TYP, " +
-            " FINANCIAL_DOCUMENT_ITEM_ID," +
-            "          DOCUMENT_DATE, " +
-            "          DOCUMENT_NUMBER, " +
-            "          CREDIT_AMOUNT, " +
-            "          DEBIT_AMOUNT  "
+            " ORDER BY FINANCIAL_ACCOUNT_ID," +
+            "          RECORD_TYP," +
+            "          DOCUMENT_DATE," +
+            "          DOCUMENT_NUMBER," +
+            "          FINANCIAL_DOCUMENT_ID," +
+            "          FINANCIAL_DOCUMENT_ITEM_ID," +
+            "          CREDIT_AMOUNT," +
+            "          DEBIT_AMOUNT "
             , countQuery = " WITH MAIN_QRY AS " +
             " (SELECT DOCUMENT_DATE, " +
             "         DOCUMENT_SEQUENCE, " +
