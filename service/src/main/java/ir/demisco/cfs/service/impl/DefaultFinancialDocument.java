@@ -145,8 +145,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 , paramSearch.getStartDate(),
                 paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramSearch.getFromNumberId(), paramSearch.getFromNumber(),
                 paramSearch.getToNumberId(), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(),
-                paramSearch.getFromAccountCode(),
-                paramSearch.getToAccountCode(), paramSearch.getCentricAccount(), paramSearch.getCentricAccountId(),
+                paramSearch.getFromAccountCode(), paramSearch.getFromAccount(),
+                paramSearch.getToAccountCode(), paramSearch.getToAccount(), paramSearch.getCentricAccount(), paramSearch.getCentricAccountId(),
                 paramSearch.getCentricAccountType(), paramSearch.getCentricAccountTypeId(), paramSearch.getDocumentUser(), paramSearch.getDocumentUserId(),
                 paramSearch.getPriceType(), paramSearch.getFromPrice(),
                 paramSearch.getFromPriceAmount(), paramSearch.getToPrice(),
@@ -354,11 +354,14 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                                                  responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
+            map.put("fromAccount", "fromAccount");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setFromAccountCode(item.getValue().toString());
+            responseFinancialDocumentDto.setFromAccount("fromAccount");
         } else {
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setFromAccountCode(null);
+            responseFinancialDocumentDto.setFromAccount(null);
         }
     }
 
@@ -366,11 +369,15 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                                                responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
+            map.put("toAccount", "toAccount");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setToAccountCode(item.getValue().toString());
+            responseFinancialDocumentDto.setToAccount("toAccount");
+
         } else {
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setToAccountCode(null);
+            responseFinancialDocumentDto.setToAccount(null);
         }
     }
 

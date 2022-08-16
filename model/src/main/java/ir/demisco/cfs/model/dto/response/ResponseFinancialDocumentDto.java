@@ -37,6 +37,8 @@ public class ResponseFinancialDocumentDto {
     private Object centricAccount;
     private Object centricAccountType;
     private Object documentUser;
+    private Object fromAccount;
+    private Object toAccount;
     Map<String, Object> paramMap;
 
     public LocalDateTime getStartDate() {
@@ -279,10 +281,6 @@ public class ResponseFinancialDocumentDto {
         this.centricAccountType = centricAccountType;
     }
 
-    public static Builder builder() {
-        return new Builder();
-    }
-
     public List<Long> getFinancialDocumentStatusDtoListId() {
         return financialDocumentStatusDtoListId;
     }
@@ -299,6 +297,25 @@ public class ResponseFinancialDocumentDto {
         this.financialDocumentStatusDtoListId = financialDocumentStatusDtoListId;
     }
 
+    public Object getFromAccount() {
+        return fromAccount;
+    }
+
+    public void setFromAccount(Object fromAccount) {
+        this.fromAccount = fromAccount;
+    }
+
+    public Object getToAccount() {
+        return toAccount;
+    }
+
+    public void setToAccount(Object toAccount) {
+        this.toAccount = toAccount;
+    }
+
+    public static Builder builder() {
+        return new Builder();
+    }
 
     public static final class Builder {
         private ResponseFinancialDocumentDto responseFinancialDocumentDto;
@@ -425,10 +442,12 @@ public class ResponseFinancialDocumentDto {
             responseFinancialDocumentDto.setFromNumber(fromNumber);
             return this;
         }
+
         public Builder toNumber(Object toNumber) {
             responseFinancialDocumentDto.setToNumber(toNumber);
             return this;
         }
+
         public Builder fromPriceAmount(Long fromPriceAmount) {
             responseFinancialDocumentDto.setFromPriceAmount(fromPriceAmount);
             return this;
@@ -438,26 +457,42 @@ public class ResponseFinancialDocumentDto {
             responseFinancialDocumentDto.setToPriceAmount(toPriceAmount);
             return this;
         }
+
         public Builder priceType(Object priceType) {
             responseFinancialDocumentDto.setPriceType(priceType);
             return this;
         }
+
         public Builder centricAccount(Object centricAccount) {
             responseFinancialDocumentDto.setCentricAccount(centricAccount);
             return this;
         }
+
         public Builder centricAccountType(Object centricAccountType) {
             responseFinancialDocumentDto.setCentricAccountType(centricAccountType);
             return this;
         }
+
         public Builder documentUser(Object documentUser) {
             responseFinancialDocumentDto.setDocumentUser(documentUser);
             return this;
         }
+
         public Builder financialDocumentType(Object financialDocumentType) {
             responseFinancialDocumentDto.setFinancialDocumentType(financialDocumentType);
             return this;
         }
+
+        public Builder fromAccount(Object fromAccount) {
+            responseFinancialDocumentDto.setFromAccount(fromAccount);
+            return this;
+        }
+
+        public Builder toAccount(Object toAccount) {
+            responseFinancialDocumentDto.setToAccount(toAccount);
+            return this;
+        }
+
         public ResponseFinancialDocumentDto build() {
             return responseFinancialDocumentDto;
         }
