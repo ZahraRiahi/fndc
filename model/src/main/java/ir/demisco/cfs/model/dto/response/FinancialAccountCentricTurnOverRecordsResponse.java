@@ -27,6 +27,7 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
     private Long financialDocumentId;
     private Date documentDate;
     private String documentDescriptionItem;
+    private Long financialDocumentItemId;
     private FinancialAccountTurnOverSummarizeResponse financialAccountTurnOverSummarizeModel;
 
     public String getAccountDescription() {
@@ -229,6 +230,14 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
         this.financialAccountTurnOverSummarizeModel = financialAccountTurnOverSummarizeModel;
     }
 
+    public Long getFinancialDocumentItemId() {
+        return financialDocumentItemId;
+    }
+
+    public void setFinancialDocumentItemId(Long financialDocumentItemId) {
+        this.financialDocumentItemId = financialDocumentItemId;
+    }
+
     public static FinancialAccountCentricTurnOverRecordsResponse.Builder builder() {
         return new FinancialAccountCentricTurnOverRecordsResponse.Builder();
     }
@@ -359,6 +368,10 @@ public class FinancialAccountCentricTurnOverRecordsResponse {
         }
         public Builder documentDescriptionItem(String documentDescriptionItem) {
             financialAccountCentricTurnOverRecordsResponse.setDocumentDescriptionItem(documentDescriptionItem);
+            return this;
+        }
+        public Builder financialDocumentItemId(Long financialDocumentItemId) {
+            financialAccountCentricTurnOverRecordsResponse.setFinancialDocumentItemId(financialDocumentItemId);
             return this;
         }
         public FinancialAccountCentricTurnOverRecordsResponse build() {
