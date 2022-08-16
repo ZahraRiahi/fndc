@@ -73,8 +73,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId)" +
             "   AND (FIDC.DESCRIPTION LIKE '%' || :description || '%' OR" +
             "       :description IS NULL)" +
-            "   AND ((FC.CODE >= :fromAccountCode OR :fromAccountCode IS NULL) AND" +
-            "       (FC.CODE <= :toAccountCode OR :toAccountCode IS NULL))" +
+            "   AND ((FC.CODE >= :fromAccountCode OR :fromAccount IS NULL) AND" +
+            "       (FC.CODE <= :toAccountCode OR :toAccount IS NULL))" +
             "   AND (:centricAccount IS NULL OR" +
             "       (FNDI.CENTRIC_ACCOUNT_ID_1 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_2 = :centricAccountId OR" +
@@ -164,8 +164,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId)" +
             "   AND (FIDC.DESCRIPTION LIKE '%' || :description || '%' OR" +
             "       :description IS NULL)" +
-            "   AND ((FC.CODE >= :fromAccountCode OR :fromAccountCode IS NULL) AND" +
-            "       (FC.CODE <= :toAccountCode OR :toAccountCode IS NULL))" +
+            "   AND ((FC.CODE >= :fromAccountCode OR :fromAccount IS NULL) AND" +
+            "       (FC.CODE <= :toAccountCode OR :toAccount IS NULL))" +
             "   AND (:centricAccount IS NULL OR" +
             "       (FNDI.CENTRIC_ACCOUNT_ID_1 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_2 = :centricAccountId OR" +
@@ -210,8 +210,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
     Page<Object[]> getFinancialDocumentList(String activityCode, Long creatorUserId, Long departmentId, Long userId,
                                             Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate,
                                             Long priceTypeId, Long financialNumberingTypeId, Long fromNumberId, Object fromNumber,
-                                            Long toNumberId, Object toNumber, List<Long> documentStatusId, String description, String fromAccountCode,
-                                            String toAccountCode, Object centricAccount, Long centricAccountId,
+                                            Long toNumberId, Object toNumber, List<Long> documentStatusId, String description, String fromAccountCode,Object fromAccount,
+                                            String toAccountCode, Object toAccount,Object centricAccount, Long centricAccountId,
                                             Object centricAccountType, Long centricAccountTypeId, Object  documentUser,Long documentUserId, Object priceType,Object fromPrice,
                                             Long fromPriceAmount, Object toPrice, Long toPriceAmount,
                                             Double tolerance, Object financialDocumentType, Long financialDocumentTypeId, Pageable pageable);

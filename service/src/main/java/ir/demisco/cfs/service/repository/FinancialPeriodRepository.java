@@ -43,7 +43,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " (SELECT DOCUMENT_DATE, " +
             "         DOCUMENT_SEQUENCE, " +
             "         DOCUMENT_NUMBER, " +
-            "         FINANCIAL_DOCUMENT_ID, " +
+            "         FINANCIAL_DOCUMENT_ID," +
+            " FINANCIAL_DOCUMENT_ITEM_ID, " +
             "         DESCRIPTION, " +
             "         ID FINANCIAL_ACCOUNT_ID, " +
             "         FINANCIAL_ACCOUNT_CODE, " +
@@ -321,6 +322,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "        SELECT NULL AS DOCUMENT_DATE, " +
             "               NULL AS DOCUMENT_NUMBER," +
             "               NULL AS FINANCIAL_DOCUMENT_ID, " +
+            "               NULL AS FINANCIAL_DOCUMENT_ITEM_ID," +
             "               NULL AS DOCUMENT_SEQUENCE, " +
             "               NULL AS DESCRIPTION, " +
             "               NULL AS FINANCIAL_ACCOUNT_ID, " +
@@ -352,6 +354,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "          FROM MAIN_QRY) " +
             " ORDER BY FINANCIAL_ACCOUNT_ID, " +
             "          RECORD_TYP, " +
+            " FINANCIAL_DOCUMENT_ITEM_ID," +
             "          DOCUMENT_DATE, " +
             "          DOCUMENT_NUMBER, " +
             "          CREDIT_AMOUNT, " +
@@ -360,7 +363,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " (SELECT DOCUMENT_DATE, " +
             "         DOCUMENT_SEQUENCE, " +
             "         DOCUMENT_NUMBER, " +
-            "         FINANCIAL_DOCUMENT_ID, " +
+            "         FINANCIAL_DOCUMENT_ID," +
+            "         FINANCIAL_DOCUMENT_ITEM_ID, " +
             "         DESCRIPTION, " +
             "         ID FINANCIAL_ACCOUNT_ID, " +
             "         FINANCIAL_ACCOUNT_CODE, " +
@@ -637,6 +641,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "        SELECT NULL AS DOCUMENT_DATE, " +
             "               NULL AS DOCUMENT_NUMBER, " +
             "  NULL AS FINANCIAL_DOCUMENT_ID " +
+            "  NULL AS FINANCIAL_DOCUMENT_ITEM_ID," +
             "               NULL AS DOCUMENT_SEQUENCE, " +
             "               NULL AS DESCRIPTION, " +
             "               NULL AS FINANCIAL_ACCOUNT_ID, " +
@@ -690,6 +695,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " (SELECT DOCUMENT_NUMBER," +
             "         DOCUMENT_DATE," +
             "         DOCUMENT_DESCRIPTION_ITEM, " +
+            " FINANCIAL_DOCUMENT_ITEM_ID," +
             "         FINANCIAL_DOCUMENT_ID, " +
             "         ID ACCOUNT_ID, " +
             "         CODE ACCOUNT_CODE, " +
@@ -713,6 +719,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                OVER(ORDER BY RECORD_TYP," +
             "                         DOCUMENT_DATE," +
             "                         DOCUMENT_NUMBER," +
+            " FINANCIAL_DOCUMENT_ITEM_ID, " +
             "                         id," +
             "                         CENTRIC_ACCOUNT_ID_1," +
             "                         CENTRIC_ACCOUNT_ID_2," +
@@ -724,6 +731,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                OVER(ORDER BY RECORD_TYP," +
             "                     DOCUMENT_DATE," +
             "                     DOCUMENT_NUMBER," +
+            " FINANCIAL_DOCUMENT_ITEM_ID, " +
             "                     id," +
             "                     CENTRIC_ACCOUNT_ID_1," +
             "                     CENTRIC_ACCOUNT_ID_2," +
@@ -739,6 +747,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "            OVER(ORDER BY RECORD_TYP," +
             "                     DOCUMENT_DATE," +
             "                     DOCUMENT_NUMBER," +
+            " FINANCIAL_DOCUMENT_ITEM_ID, " +
             "                     id," +
             "                     CENTRIC_ACCOUNT_ID_1," +
             "                     CENTRIC_ACCOUNT_ID_2," +
@@ -750,6 +759,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "            OVER(ORDER BY RECORD_TYP," +
             "                 DOCUMENT_DATE," +
             "                 DOCUMENT_NUMBER," +
+            "FINANCIAL_DOCUMENT_ITEM_ID, " +
             "                 id," +
             "                 CENTRIC_ACCOUNT_ID_1," +
             "                 CENTRIC_ACCOUNT_ID_2," +
@@ -760,7 +770,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           ELSE" +
             "            0" +
             "         END REMAIN_CREDIT, " +
-            "         SUM(DEBIT_AMOUNT - CREDIT_AMOUNT) OVER(ORDER BY RECORD_TYP, DOCUMENT_DATE, DOCUMENT_NUMBER, id, CENTRIC_ACCOUNT_ID_1, CENTRIC_ACCOUNT_ID_2, CENTRIC_ACCOUNT_ID_3, CENTRIC_ACCOUNT_ID_4, CENTRIC_ACCOUNT_ID_5, CENTRIC_ACCOUNT_ID_6) REMAIN_AMOUNT, " +
+            "         SUM(DEBIT_AMOUNT - CREDIT_AMOUNT) OVER(ORDER BY RECORD_TYP, DOCUMENT_DATE, " +
+            " DOCUMENT_NUMBER, FINANCIAL_DOCUMENT_ITEM_ID,id, CENTRIC_ACCOUNT_ID_1, CENTRIC_ACCOUNT_ID_2, CENTRIC_ACCOUNT_ID_3, CENTRIC_ACCOUNT_ID_4, CENTRIC_ACCOUNT_ID_5, CENTRIC_ACCOUNT_ID_6) REMAIN_AMOUNT, " +
             "         0 SUM_DEBIT, " +
             "         0 SUM_CREDIT, " +
             "         0 SUMMERIZE_DEBIT, " +
@@ -769,7 +780,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         RECORD_TYP " +
             "    FROM (SELECT  NULL DOCUMENT_NUMBER, " +
             " NULL as DOCUMENT_DATE, " +
-            "                 NULL AS DOCUMENT_DESCRIPTION_ITEM, " +
+            "                 NULL AS DOCUMENT_DESCRIPTION_ITEM," +
+            " NULL AS DOCUMENT_ITEM_ID," +
             "                 NULL FINANCIAL_DOCUMENT_ID, " +
             "                 NULL AS CENTRIC_ACCOUNT_ID_1, " +
             "                 NULL AS CENTRIC_ACCOUNT_ID_2, " +
@@ -915,6 +927,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "          SELECT FD.DOCUMENT_NUMBER," +
             "FD.DOCUMENT_DATE   as DOCUMENT_DATE," +
             "                 FDI.DESCRIPTION   AS DOCUMENT_DESCRIPTION_ITEM," +
+            " FDI.ID                   AS _FINANCIAL_DOCUMENT_ITEM_ID," +
             "                 FD.ID  FINANCIAL_DOCUMENT_ID," +
             "                 FDI.CENTRIC_ACCOUNT_ID_1, " +
             "                 FDI.CENTRIC_ACCOUNT_ID_2, " +
@@ -1051,6 +1064,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           GROUP BY FD.DOCUMENT_NUMBER," +
             "                    FD.DOCUMENT_DATE, " +
             "                    FDI.DESCRIPTION, " +
+            "FDI.ID," +
             "                    FD.ID," +
             "                    FA.ID," +
             "                    FA.CODE," +
@@ -1087,6 +1101,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "        SELECT NULL DOCUMENT_NUMBER," +
             "               NULL as DOCUMENT_DATE," +
             "               NULL AS DOCUMENT_DESCRIPTION_ITEM," +
+            " NULL AS FINANCIAL_DOCUMENT_ITEM_ID," +
             "               NULL FINANCIAL_DOCUMENT_ID," +
             "               NULL ACCOUNT_ID," +
             "               NULL ACCOUNT_CODE," +
@@ -1128,7 +1143,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               SUM(MAIN_QRY.DEBIT_AMOUNT) - SUM(MAIN_QRY.CREDIT_AMOUNT) AS SUMMERIZE_AMOUNT," +
             "               3 AS RECORD_TYP" +
             "          FROM MAIN_QRY)" +
-            " ORDER BY RECORD_TYP, DOCUMENT_DATE, DOCUMENT_NUMBER"
+            " ORDER BY RECORD_TYP, DOCUMENT_DATE, DOCUMENT_NUMBER,FINANCIAL_DOCUMENT_ITEM_ID "
             , nativeQuery = true)
     List<Object[]> findByFinancialAccountCentricTurnOver(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate, Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId, String fromNumber,
                                                          Object cnacIdObj1, Object cnacIdObj2, Long cnacId1, Long cnacId2, Object cnatIdObj1, Object cnatIdObj2,
@@ -1141,6 +1156,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " (SELECT DOCUMENT_NUMBER, " +
             " DOCUMENT_DATE, " +
             " DOCUMENT_DESCRIPTION_ITEM, " +
+            " financial_document_item_id, " +
             "         FINANCIAL_DOCUMENT_ID, " +
             "         ID ACCOUNT_ID, " +
             "         CODE ACCOUNT_CODE, " +
@@ -1163,6 +1179,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               WHEN SUM(DEBIT_AMOUNT - CREDIT_AMOUNT) OVER(ORDER BY RECORD_TYP, " +
             " DOCUMENT_DATE, " +
             " DOCUMENT_NUMBER, " +
+            "financial_document_item_id," +
             " id," +
             "                         CENTRIC_ACCOUNT_ID_1, " +
             "                         CENTRIC_ACCOUNT_ID_2, " +
@@ -1174,7 +1191,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                SUM(DEBIT_AMOUNT - CREDIT_AMOUNT) " +
             "                OVER(ORDER BY RECORD_TYP, " +
             " DOCUMENT_DATE," +
-            " DOCUMENT_NUMBER," +
+            " DOCUMENT_NUMBER, " +
+            " financial_document_item_id," +
             " id, " +
             "                     CENTRIC_ACCOUNT_ID_1, " +
             "                     CENTRIC_ACCOUNT_ID_2, " +
@@ -1189,6 +1207,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           WHEN SUM(CREDIT_AMOUNT - DEBIT_AMOUNT) OVER(ORDER BY RECORD_TYP," +
             " DOCUMENT_DATE,  " +
             " DOCUMENT_NUMBER, " +
+            "financial_document_item_id," +
             " id," +
             "                     CENTRIC_ACCOUNT_ID_1, " +
             "                     CENTRIC_ACCOUNT_ID_2, " +
@@ -1201,6 +1220,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "            OVER(ORDER BY RECORD_TYP," +
             " DOCUMENT_DATE," +
             " DOCUMENT_NUMBER," +
+            "financial_document_item_id," +
             " id, " +
             "                 CENTRIC_ACCOUNT_ID_1, " +
             "                 CENTRIC_ACCOUNT_ID_2, " +
@@ -1211,7 +1231,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           ELSE " +
             "            0 " +
             "         END REMAIN_CREDIT, " +
-            "         SUM(DEBIT_AMOUNT - CREDIT_AMOUNT) OVER(ORDER BY RECORD_TYP,DOCUMENT_DATE, DOCUMENT_NUMBER, id," +
+            "         SUM(DEBIT_AMOUNT - CREDIT_AMOUNT) OVER(ORDER BY RECORD_TYP,DOCUMENT_DATE, DOCUMENT_NUMBER, financial_document_item_id,id," +
             " CENTRIC_ACCOUNT_ID_1, CENTRIC_ACCOUNT_ID_2, CENTRIC_ACCOUNT_ID_3, CENTRIC_ACCOUNT_ID_4, CENTRIC_ACCOUNT_ID_5, CENTRIC_ACCOUNT_ID_6) REMAIN_AMOUNT, " +
             "         0 SUM_DEBIT, " +
             "         0 SUM_CREDIT, " +
@@ -1222,6 +1242,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "    FROM (SELECT  NULL DOCUMENT_NUMBER, " +
             " NULL as DOCUMENT_DATE, " +
             "                 NULL AS DOCUMENT_DESCRIPTION_ITEM, " +
+            "                 NULL AS FINANCIAL_DOCUMENT_ITEM_ID," +
             "                 NULL FINANCIAL_DOCUMENT_ID, " +
             "                 NULL AS CENTRIC_ACCOUNT_ID_1, " +
             "                 NULL AS CENTRIC_ACCOUNT_ID_2, " +
@@ -1366,6 +1387,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "          SELECT FD.DOCUMENT_NUMBER," +
             " FD.DOCUMENT_DATE  as DOCUMENT_DATE," +
             "                 FDI.DESCRIPTION AS DOCUMENT_DESCRIPTION_ITEM," +
+            "FDI.ID                   AS FINANCIAL_DOCUMENT_ITEM_ID," +
             "                 FD.ID  FINANCIAL_DOCUMENT_ID," +
             "                 FDI.CENTRIC_ACCOUNT_ID_1, " +
             "                 FDI.CENTRIC_ACCOUNT_ID_2, " +
@@ -1500,7 +1522,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "             AND FDS.CODE > 10 " +
             "           GROUP BY FD.DOCUMENT_NUMBER," +
             " FD.DOCUMENT_DATE, " +
-            "                    FDI.DESCRIPTION, " +
+            "                    FDI.DESCRIPTION," +
+            " FDI.ID,  " +
             "                    FD.ID," +
             "                    FA.ID," +
             "                    FA.CODE," +
@@ -1537,6 +1560,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "        SELECT NULL DOCUMENT_NUMBER," +
             " NULL as DOCUMENT_DATE, " +
             "               NULL AS DOCUMENT_DESCRIPTION_ITEM, " +
+            " NULL AS FINANCIAL_DOCUMENT_ITEM_ID," +
             "               NULL FINANCIAL_DOCUMENT_ID," +
             "               NULL ACCOUNT_ID, " +
             "               NULL ACCOUNT_CODE, " +
@@ -1577,7 +1601,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               SUM(MAIN_QRY.DEBIT_AMOUNT) - SUM(MAIN_QRY.CREDIT_AMOUNT) AS SUMMERIZE_AMOUNT," +
             "               3 AS RECORD_TYP" +
             "          FROM MAIN_QRY)" +
-            " ORDER BY RECORD_TYP, DOCUMENT_DATE, DOCUMENT_NUMBER "
+            " ORDER BY RECORD_TYP, DOCUMENT_DATE, DOCUMENT_NUMBER,FINANCIAL_DOCUMENT_ITEM_ID "
             , nativeQuery = true)
     List<Object[]> findByFinancialAccountCentricTurnOver2(Long organizationId, Long ledgerTypeId, LocalDateTime periodStartDate, Long dateFilterFlg, LocalDateTime fromDate, Long documentNumberingTypeId, String fromNumber,
                                                           Object cnacIdObj1, Object cnacIdObj2, Long cnacId1, Long cnacId2, Object cnatIdObj1, Object cnatIdObj2,
