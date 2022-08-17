@@ -46,7 +46,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                                 :activityCode," +
             "                                 fidc.financial_period_id," +
             "                                 FNDT.ID," +
-            "                                 :creatorUserId," +
+            "                                 FIDC.CREATOR_ID," +
             "                                 fidc.financial_department_id,                                                  " +
             "       fidc.financial_ledger_type_id," +
             "                                :departmentId," +
@@ -137,7 +137,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                                 :activityCode," +
             "                                 fidc.financial_period_id," +
             "                                 FNDT.ID," +
-            "                                 :creatorUserId," +
+            "                                FIDC.CREATOR_ID," +
             "                                 fidc.financial_department_id,           " +
             "                                 fidc.financial_ledger_type_id," +
             "                                :departmentId," +
@@ -207,7 +207,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                      DS.NAME , " +
             "                     DS.CODE "
             , nativeQuery = true)
-    Page<Object[]> getFinancialDocumentList(String activityCode, Long creatorUserId, Long departmentId, Long userId,
+    Page<Object[]> getFinancialDocumentList(String activityCode, Long departmentId, Long userId,
                                             Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate,
                                             Long priceTypeId, Long financialNumberingTypeId, Long fromNumberId, Object fromNumber,
                                             Long toNumberId, Object toNumber, List<Long> documentStatusId, String description, String fromAccountCode,Object fromAccount,
