@@ -210,9 +210,9 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
     Page<Object[]> getFinancialDocumentList(String activityCode, Long departmentId, Long userId,
                                             Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate,
                                             Long priceTypeId, Long financialNumberingTypeId, Long fromNumberId, Object fromNumber,
-                                            Long toNumberId, Object toNumber, List<Long> documentStatusId, String description, String fromAccountCode,Object fromAccount,
-                                            String toAccountCode, Object toAccount,Object centricAccount, Long centricAccountId,
-                                            Object centricAccountType, Long centricAccountTypeId, Object  documentUser,Long documentUserId, Object priceType,Object fromPrice,
+                                            Long toNumberId, Object toNumber, List<Long> documentStatusId, String description, String fromAccountCode, Object fromAccount,
+                                            String toAccountCode, Object toAccount, Object centricAccount, Long centricAccountId,
+                                            Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId, Object priceType, Object fromPrice,
                                             Long fromPriceAmount, Object toPrice, Long toPriceAmount,
                                             Double tolerance, Object financialDocumentType, Long financialDocumentTypeId, Pageable pageable);
 
@@ -511,7 +511,6 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     Long findFinancialDocumentByDocumentItemIdDelete(Long financialDocumentItemId);
 
-
-
-
+    @Query("select fnd.id from FinancialDocument fnd join FinancialDocumentItem fndi on fnd.id=fndi.financialDocument.id where fndi.id=:financialDocumentItemId ")
+    Long getDocumentByIdFinancialDocumentItemId(Long financialDocumentItemId);
 }
