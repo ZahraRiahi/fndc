@@ -63,7 +63,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "                                                        :activityCode," +
             "                                                        FIDC.FINANCIAL_PERIOD_ID," +
             "                                                        FIDC.FINANCIAL_DOCUMENT_TYPE_ID," +
-            "                                                       :creatorUserId," +
+            "                                                       FIDC.CREATOR_ID," +
             "                                                        FIDC.FINANCIAL_DEPARTMENT_ID," +
             "                                                        FIDC.FINANCIAL_LEDGER_TYPE_ID," +
             "                                                        :departmentId," +
@@ -161,7 +161,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "    :activityCode," +
             "    FIDC.FINANCIAL_PERIOD_ID," +
             "    FIDC.FINANCIAL_DOCUMENT_TYPE_ID," +
-            "   :creatorUserId," +
+            "   FIDC.CREATOR_ID," +
             "    FIDC.FINANCIAL_DEPARTMENT_ID," +
             "    FIDC.FINANCIAL_LEDGER_TYPE_ID," +
             "    :departmentId," +
@@ -224,11 +224,10 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       (:toPrice IS NULL OR" +
             "       (FNDI.CREDIT_AMOUNT <=" +
             "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0)))))" +
-
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
             " and FNSC.SEC_RESULT = 1 "
             , nativeQuery = true)
-    Page<Object[]> getFinancialDocumentItemList(String activityCode, Long creatorUserId, Long departmentId, Long userId,
+    Page<Object[]> getFinancialDocumentItemList(String activityCode, Long departmentId, Long userId,
                                                 Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate
             , Long priceTypeId, Long financialNumberingTypeId, Long fromNumberId, Object fromNumber, Long toNumberId, Object toNumber,
                                                 List<Long> documentStatusId, String description, String fromAccountCode, String toAccountCode

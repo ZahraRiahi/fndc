@@ -72,9 +72,9 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                 );
         sorts.add(Sort.Order.asc("documentId"));
         Pageable pageable = PageRequest.of((dataSourceRequest.getSkip() / dataSourceRequest.getTake()), dataSourceRequest.getTake(), Sort.by(sorts));
-        Page<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getActivityCode(),
-                SecurityHelper.getCurrentUser().getUserId(), paramSearch.getDepartmentId(),
-                SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId(),
+        Page<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getActivityCode(),paramSearch.getDepartmentId(),
+                SecurityHelper.getCurrentUser().getUserId(),
+                SecurityHelper.getCurrentUser().getOrganizationId(),
                 paramSearch.getLedgerTypeId(), paramSearch.getStartDate(), paramSearch.getEndDate(),
                 paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramSearch.getFromNumberId(), paramSearch.getFromNumber(),
                 paramSearch.getToNumberId(), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(),
@@ -84,7 +84,6 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                 paramSearch.getPriceType(), paramSearch.getFromPrice(), paramSearch.getFromPriceAmount()
                 , paramSearch.getTolerance(), paramSearch.getToPrice(), paramSearch.getToPriceAmount(),
                 paramSearch.getFinancialDocumentType(), paramSearch.getFinancialDocumentTypeId(), pageable);
-
         List<FinancialDocumentItemDto> documentItemDtoList = list.stream().map(item ->
                 FinancialDocumentItemDto.builder()
                         .id(((BigDecimal) item[0]).longValue())

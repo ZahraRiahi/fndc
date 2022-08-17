@@ -140,10 +140,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 );
         sorts.add(Sort.Order.asc("documentId"));
         Pageable pageable = PageRequest.of((dataSourceRequest.getSkip() / dataSourceRequest.getTake()), dataSourceRequest.getTake(), Sort.by(sorts));
-        Page<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getActivityCode(), SecurityHelper.getCurrentUser().getUserId()
-                , paramSearch.getDepartmentId(), SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getLedgerTypeId()
-                , paramSearch.getStartDate(),
-                paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramSearch.getFromNumberId(), paramSearch.getFromNumber(),
+        Page<Object[]> list = financialDocumentRepository.getFinancialDocumentList(paramSearch.getActivityCode(), paramSearch.getDepartmentId(),
+                SecurityHelper.getCurrentUser().getUserId(), SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getLedgerTypeId()
+                , paramSearch.getStartDate(), paramSearch.getEndDate(), paramSearch.getPriceTypeId(), paramSearch.getFinancialNumberingTypeId(), paramSearch.getFromNumberId(), paramSearch.getFromNumber(),
                 paramSearch.getToNumberId(), paramSearch.getToNumber(), paramSearch.getFinancialDocumentStatusDtoListId(), paramSearch.getDescription(),
                 paramSearch.getFromAccountCode(), paramSearch.getFromAccount(),
                 paramSearch.getToAccountCode(), paramSearch.getToAccount(), paramSearch.getCentricAccount(), paramSearch.getCentricAccountId(),
