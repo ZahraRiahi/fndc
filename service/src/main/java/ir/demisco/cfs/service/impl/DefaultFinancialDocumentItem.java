@@ -1,6 +1,7 @@
 package ir.demisco.cfs.service.impl;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
+import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentItemOutPutResponse;
 import ir.demisco.cfs.model.dto.response.ResponseFinancialDocumentDto;
@@ -8,6 +9,7 @@ import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import ir.demisco.cfs.model.entity.FinancialDocumentItemCurrency;
 import ir.demisco.cfs.model.entity.FinancialDocumentReference;
 import ir.demisco.cfs.service.api.FinancialDocumentItemService;
+import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemCurrencyRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentReferenceRepository;
@@ -45,13 +47,15 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
     private final EntityManager entityManager;
     private final FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository;
     private final FinancialDocumentReferenceRepository financialDocumentReferenceRepository;
+    private final FinancialDocumentSecurityService financialDocumentSecurityService;
 
-    public DefaultFinancialDocumentItem(FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentRepository financialDocumentRepository, EntityManager entityManager, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository) {
+    public DefaultFinancialDocumentItem(FinancialDocumentItemRepository financialDocumentItemRepository, FinancialDocumentRepository financialDocumentRepository, EntityManager entityManager, FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialDocumentReferenceRepository financialDocumentReferenceRepository, FinancialDocumentSecurityService financialDocumentSecurityService) {
         this.financialDocumentItemRepository = financialDocumentItemRepository;
         this.financialDocumentRepository = financialDocumentRepository;
         this.entityManager = entityManager;
         this.documentItemCurrencyRepository = documentItemCurrencyRepository;
         this.financialDocumentReferenceRepository = financialDocumentReferenceRepository;
+        this.financialDocumentSecurityService = financialDocumentSecurityService;
     }
 
     @Override
@@ -72,7 +76,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                 );
         sorts.add(Sort.Order.asc("documentId"));
         Pageable pageable = PageRequest.of((dataSourceRequest.getSkip() / dataSourceRequest.getTake()), dataSourceRequest.getTake(), Sort.by(sorts));
-        Page<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getActivityCode(),paramSearch.getDepartmentId(),
+        Page<Object[]> list = financialDocumentItemRepository.getFinancialDocumentItemList(paramSearch.getActivityCode(), paramSearch.getDepartmentId(),
                 SecurityHelper.getCurrentUser().getUserId(),
                 SecurityHelper.getCurrentUser().getOrganizationId(),
                 paramSearch.getLedgerTypeId(), paramSearch.getStartDate(), paramSearch.getEndDate(),
@@ -423,6 +427,14 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public Boolean deleteFinancialDocumentItemById(Long financialDocumentItemId) {
+        Long documentId = financialDocumentRepository.getDocumentByIdFinancialDocumentItemId(financialDocumentItemId);
+        String activityCode = "FNDC_DOCUMENT_UPDATE";
+        FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
+        financialDocumentSecurityInputRequest.setActivityCode(activityCode);
+        financialDocumentSecurityInputRequest.setFinancialDocumentId(documentId);
+        financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
+        financialDocumentSecurityInputRequest.setSecurityModelRequest(null);
+        financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
         Long count = financialDocumentRepository.findFinancialDocumentByDocumentItemId(financialDocumentItemId);
         if (count != null) {
             throw new RuleException("سند در وضعیت قطعی می باشد");
