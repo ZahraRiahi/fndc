@@ -278,22 +278,37 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "         1 SERIAL_RESETER " +
             "    FROM (SELECT NF.ID NF_ID, " +
             "                 NF.FIRST_SERIAL - 1 FIRST_SERIAL, " +
-            "                 REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(NF.RESETER,'$DAT'," +
-            "                              TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE,'mm/dd/yyyy'),'mm/dd/yyyy'),'yyyymmdd', " +
-            "                                                                 'NLS_CALENDAR=persian')),'$LEG', " +
-            "                                                 (SELECT LT.CODE " +
-            "                                                    FROM fndc.FINANCIAL_LEDGER_TYPE LT " +
-            "                                                   WHERE LT.ID = " +
-            "                                                         FD.FINANCIAL_LEDGER_TYPE_ID)),'$DEP', " +
-            "                                         (SELECT DP.CODE " +
-            "                                            FROM FNDC.FINANCIAL_DEPARTMENT DP " +
-            "                                           WHERE DP.ID = FD.FINANCIAL_DEPARTMENT_ID)), '$ORG', " +
-            "                                 (SELECT OG.CODE " +
-            "                                    FROM FNDC.FINANCIAL_ORGANIZATION OG " +
-            "                                   WHERE OG.ORGANIZATION_ID =:organizationId)), '$PRI'," +
-            "                         (SELECT PR.CODE " +
-            "                            FROM FNPR.FINANCIAL_PERIOD PR " +
-            "                           WHERE PR.ID = FD.FINANCIAL_PERIOD_ID)) TRANSLATED_RESETER, " +
+            "                REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(NF.RESETER," +
+            "                                                               '$DAT6'," +
+            "                                                               TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE," +
+            "                                                                                       'mm/dd/yyyy')," +
+            "                                                                               'mm/dd/yyyy')," +
+            "                                                                       'yymmdd'," +
+            "                                                                       'NLS_CALENDAR=persian'))," +
+            "                                                         '$DAT'," +
+            "                                                         TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE," +
+            "                                                                                 'mm/dd/yyyy')," +
+            "                                                                         'mm/dd/yyyy')," +
+            "                                                                 'yyyymmdd'," +
+            "                                                                 'NLS_CALENDAR=persian'))," +
+            "                                                 '$LEG'," +
+            "                                                 (SELECT LT.CODE" +
+            "                                                    FROM fndc.FINANCIAL_LEDGER_TYPE LT" +
+            "                                                   WHERE LT.ID =" +
+            "                                                         FD.FINANCIAL_LEDGER_TYPE_ID))," +
+            "                                         '$DEP'," +
+            "                                         (SELECT DP.CODE" +
+            "                                            FROM ORG.DEPARTMENT DP" +
+            "                                           WHERE DP.ID =" +
+            "                                                 FD.DEPARTMENT_ID))," +
+            "                                 '$ORG'," +
+            "                                 (SELECT OG.CODE" +
+            "                                    FROM FNDC.FINANCIAL_ORGANIZATION OG" +
+            "                                   WHERE OG.ORGANIZATION_ID = :organizationId))," +
+            "                         '$PRI'," +
+            "                         (SELECT PR.CODE" +
+            "                            FROM FNPR.FINANCIAL_PERIOD PR" +
+            "                           WHERE PR.ID = FD.FINANCIAL_PERIOD_ID)) TRANSLATED_RESETER," +
             "                 NF.SERIAL_LENGTH NF_SERIAL_LENGTH " +
             "            FROM fndc.FINANCIAL_DOCUMENT FD " +
             "           INNER JOIN fndc.LEDGER_NUMBERING_TYPE LNT " +
@@ -335,17 +350,37 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                 LAST_SERIAL, " +
             "                 NFT.CODE FORMAT_CODE," +
             " NFS.SERIAL_RESETER,  " +
-            "                 REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(NFT.CODE,'$DAT', " +
-            "                         TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE, 'mm/dd/yyyy')," +
-            "                                'mm/dd/yyyy'),'yyyymmdd','NLS_CALENDAR=persian')),'$LEG', " +
-            "                        (SELECT LT.CODE FROM fndc.FINANCIAL_LEDGER_TYPE LT " +
-            "                                WHERE LT.ID =FD.FINANCIAL_LEDGER_TYPE_ID)),'$DEP', " +
-            "                        (SELECT DP.CODE  FROM FNDC.FINANCIAL_DEPARTMENT DP " +
-            "                                WHERE DP.ID =FD.FINANCIAL_DEPARTMENT_ID)),'$ORG', " +
-            "                        (SELECT OG.CODE  FROM FNDC.FINANCIAL_ORGANIZATION OG " +
-            "                                WHERE OG.ORGANIZATION_ID = :organizationId )),'$PRI', " +
-            "                        (SELECT PR.CODE  FROM FNPR.FINANCIAL_PERIOD PR " +
-            "                           WHERE PR.ID = FD.FINANCIAL_PERIOD_ID)) GENERATED_COD " +
+            "                 REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(NFT.CODE," +
+            "                                                               '$DAT6'," +
+            "                                                               TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE," +
+            "                                                                                       'mm/dd/yyyy')," +
+            "                                                                               'mm/dd/yyyy')," +
+            "                                                                       'yymmdd'," +
+            "                                                                       'NLS_CALENDAR=persian'))," +
+            "                                                        '$DAT'," +
+            "                                                        TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE," +
+            "                                                                                'mm/dd/yyyy')," +
+            "                                                                        'mm/dd/yyyy')," +
+            "                                                                'yyyymmdd'," +
+            "                                                                'NLS_CALENDAR=persian'))," +
+            "                                                '$LEG'," +
+            "                                                (SELECT LT.CODE" +
+            "                                                   FROM fndc.FINANCIAL_LEDGER_TYPE LT" +
+            "                                                  WHERE LT.ID =" +
+            "                                                        FD.FINANCIAL_LEDGER_TYPE_ID))," +
+            "                                        '$DEP'," +
+            "                                        (SELECT DP.CODE" +
+            "                                            FROM ORG.DEPARTMENT DP" +
+            "                                           WHERE DP.ID =" +
+            "                                                 FD.DEPARTMENT_ID))," +
+            "                                '$ORG'," +
+            "                                (SELECT OG.CODE" +
+            "                                   FROM FNDC.FINANCIAL_ORGANIZATION OG" +
+            "                                  WHERE OG.ORGANIZATION_ID = :organizationId))," +
+            "                        '$PRI'," +
+            "                        (SELECT PR.CODE" +
+            "                           FROM FNPR.FINANCIAL_PERIOD PR" +
+            "                          WHERE PR.ID = FD.FINANCIAL_PERIOD_ID)) GENERATED_COD " +
             "            FROM fndc.FINANCIAL_DOCUMENT FD " +
             "           INNER JOIN fndc.LEDGER_NUMBERING_TYPE LNT " +
             "              ON LNT.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
