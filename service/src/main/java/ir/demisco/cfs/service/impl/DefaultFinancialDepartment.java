@@ -43,15 +43,15 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
         }
         // comment jira FIN-1126 organ pakage -1
         Long organizationIdPKG = SecurityHelper.getCurrentUser().getOrganizationId();
-        List<Object[]> financialDocumentItemList = departmentRepository.getFinancialDocumentItemList(
-                SecurityHelper.getCurrentUser().getOrganizationId()
-                , organizationIdPKG
-                , param.getActivityCode()
-                , new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialPeriodId())
+        List<Object[]> financialDocumentItemList = departmentRepository.getFinancialDocumentItemList(organizationIdPKG,
+                param.getActivityCode(),
+                new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialPeriodId())
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getDocumentTypeId())
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getCreatorUserId())
+                , param.getUserId()
+                ,SecurityHelper.getCurrentUser().getOrganizationId()
                 , param.getDepartmentId()
-                , param.getUserId());
+                );
         List<FinancialDepartmentResponse> financialDepartmentResponses = financialDocumentItemList.stream().map(item ->
                 FinancialDepartmentResponse.builder()
                         .departmentId(Long.parseLong(item[0].toString()))

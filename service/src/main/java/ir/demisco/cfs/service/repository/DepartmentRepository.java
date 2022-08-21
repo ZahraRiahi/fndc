@@ -12,9 +12,6 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
     @Query(value = "SELECT FNDP.ID AS DEPARTMENTID," +
             "       FNDP.CODE," +
             "       FNDP.NAME," +
-            "       FNLG.FINANCIAL_LEDGER_TYPE_ID," +
-            "       FNLT.DESCRIPTION AS LEDGER_TYPE_DESCRIPTION," +
-            "       FNLG.ID AS FINANCIAL_DEPARTMENT_LEDGER_ID," +
             "       CASE" +
             "         WHEN FNSC.SEC_RESULT = 1 THEN" +
             "          0" +
@@ -22,10 +19,6 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
             "          1" +
             "       END DISABLED" +
             "  FROM FNDC.FINANCIAL_DEPARTMENT FNDP" +
-            "  LEFT OUTER JOIN fndc.FINANCIAL_DEPARTMENT_LEDGER FNLG" +
-            "    ON FNDP.DEPARTMENT_ID = FNLG.DEPARTMENT_ID" +
-            "  LEFT OUTER JOIN FNDC.FINANCIAL_LEDGER_TYPE FNLT" +
-            "    ON FNLT.ID = FNLG.FINANCIAL_LEDGER_TYPE_ID," +
             " TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationIdPKG," +
             "                                                   :activityCode," +
             "                                                   :financialPeriodId," +
@@ -35,18 +28,25 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
             "                                                   FNLG.FINANCIAL_LEDGER_TYPE_ID," +
             "                                                   :departmentId," +
             "                                                   :userId)) FNSC" +
-            " where FNDP.DEPARTMENT_ID =:departmentId " +
-            "   OR EXISTS (SELECT 1" +
-            "           FROM fndc.FINANCIAL_DEP_ORG_REL INER_ORG_REL" +
-            "          WHERE INER_ORG_REL.ORGANIZATION_ID = :organizationId " +
-            "           AND (INER_ORG_REL.FINANCIAL_DEPARTMENT_ID = FNDP.ID OR  :departmentId is null) " +
-            "            AND INER_ORG_REL.ACTIVE_FLAG = 1) "
+            " WHERE EXISTS" +
+            " (SELECT 1" +
+            "          FROM FINANCIAL_DEP_ORG_REL INER_ORG_REL" +
+            "         WHERE INER_ORG_REL.ORGANIZATION_ID = :organizationId" +
+            "           AND INER_ORG_REL.FINANCIAL_DEPARTMENT_ID = FNDP.ID" +
+            "           AND INER_ORG_REL.ACTIVE_FLAG = 1" +
+            "           AND (:departmentId IS NULL OR" +
+            "               (:departmentId = INER_ORG_REL.DEPARTMENT_ID OR NOT EXISTS" +
+            "                (SELECT 1" +
+            "                    FROM FINANCIAL_DEP_ORG_REL INER_ORG_REL2" +
+            "                   WHERE INER_ORG_REL2.FINANCIAL_DEPARTMENT_ID = FNDP.ID" +
+            "                     AND INER_ORG_REL2.ORGANIZATION_ID =" +
+            "                         INER_ORG_REL.ORGANIZATION_ID" +
+            "                     AND INER_ORG_REL2.DEPARTMENT_ID IS NOT NULL))))"
             , nativeQuery = true)
-    List<Object[]> getFinancialDocumentItemList(Long organizationId, Long organizationIdPKG,
+    List<Object[]> getFinancialDocumentItemList(Long organizationIdPKG,
                                                 String activityCode,
                                                 TypedParameterValue financialPeriodId,
                                                 TypedParameterValue financialDocumentTypeId,
                                                 TypedParameterValue creatorUserId,
-                                                Long departmentId,
-                                                Long userId);
+                                                Long userId,Long organizationId,Long departmentId);
 }
