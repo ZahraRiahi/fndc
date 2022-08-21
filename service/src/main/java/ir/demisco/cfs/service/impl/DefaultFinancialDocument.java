@@ -719,7 +719,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
         List<Long> numberingFormatSerialList =
                 numberingFormatSerialRepository.findNumberingFormatSerialByParam(financialDocumentNumberDto.getNumberingType(),SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId());
-        numberingFormatSerialList.forEach(aLong  -> {
+        numberingFormatSerialList.forEach((Long aLong)  -> {
             NumberingFormatSerial numberingFormatSerial = numberingFormatSerialRepository.getById(aLong);
             numberingFormatSerial.setLastSerial(numberingFormatSerial.getLastSerial() + 1);
             numberingFormatSerialRepository.save(numberingFormatSerial);
