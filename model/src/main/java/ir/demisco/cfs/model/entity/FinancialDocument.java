@@ -1,6 +1,7 @@
 package ir.demisco.cfs.model.entity;
 
 import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
+import ir.demisco.cloud.basic.model.entity.org.Department;
 import ir.demisco.cloud.basic.model.entity.org.Organization;
 
 import javax.persistence.Entity;
@@ -16,13 +17,13 @@ import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-@Table(name = "FINANCIAL_DOCUMENT" , schema = "fndc")
-public class FinancialDocument  extends AuditModel<Long> {
+@Table(name = "FINANCIAL_DOCUMENT", schema = "fndc")
+public class FinancialDocument extends AuditModel<Long> {
 
     private Long id;
     private Date documentDate;
-    private String    description;
-    private FinancialDocumentStatus  financialDocumentStatus;
+    private String description;
+    private FinancialDocumentStatus financialDocumentStatus;
     private String permanentDocumentNumber;
     private Boolean automaticFlag;
     private Organization organization;
@@ -31,6 +32,7 @@ public class FinancialDocument  extends AuditModel<Long> {
     private FinancialLedgerType financialLedgerType;
     private FinancialDepartment financialDepartment;
     private String documentNumber;
+    private Department department;
     private LocalDateTime deletedDate;
 
 
@@ -41,6 +43,7 @@ public class FinancialDocument  extends AuditModel<Long> {
     public Long getId() {
         return id;
     }
+
     @Override
     public void setId(Long id) {
         this.id = id;
@@ -107,6 +110,7 @@ public class FinancialDocument  extends AuditModel<Long> {
     public void setFinancialDocumentType(FinancialDocumentType financialDocumentType) {
         this.financialDocumentType = financialDocumentType;
     }
+
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FINANCIAL_PERIOD_ID")
     public FinancialPeriod getFinancialPeriod() {
@@ -143,6 +147,16 @@ public class FinancialDocument  extends AuditModel<Long> {
 
     public void setDocumentNumber(String documentNumber) {
         this.documentNumber = documentNumber;
+    }
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "DEPARTMENT_ID")
+    public Department getDepartment() {
+        return department;
+    }
+
+    public void setDepartment(Department department) {
+        this.department = department;
     }
 
     public LocalDateTime getDeletedDate() {

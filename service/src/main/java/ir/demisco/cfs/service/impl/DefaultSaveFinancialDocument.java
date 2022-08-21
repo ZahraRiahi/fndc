@@ -24,6 +24,7 @@ import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.FinancialPeriodService;
 import ir.demisco.cfs.service.api.SaveFinancialDocumentService;
 import ir.demisco.cfs.service.repository.CentricAccountRepository;
+import ir.demisco.cfs.service.repository.DepartmentRepository;
 import ir.demisco.cfs.service.repository.FinancialAccountRepository;
 import ir.demisco.cfs.service.repository.FinancialDepartmentRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemCurrencyRepository;
@@ -74,6 +75,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private final FinancialPeriodService financialPeriodService;
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
     private final EntityManager entityManager;
+    private final DepartmentRepository departmentRepository;
 
     public DefaultSaveFinancialDocument(FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository,
                                         FinancialDocumentRepository financialDocumentRepository, FinancialDocumentItemRepository financialDocumentItemRepository,
@@ -82,7 +84,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                                         FinancialPeriodRepository financialPeriodRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository,
                                         FinancialDepartmentRepository financialDepartmentRepository, MoneyPrisingReferenceRepository prisingReferenceRepository,
                                         FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialDocumentStatusRepository documentStatusRepository,
-                                        FinancialDocumentService financialDocumentService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, EntityManager entityManager) {
+                                        FinancialDocumentService financialDocumentService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, EntityManager entityManager, DepartmentRepository departmentRepository) {
         this.financialAccountRepository = financialAccountRepository;
         this.centricAccountRepository = centricAccountRepository;
         this.financialDocumentRepository = financialDocumentRepository;
@@ -101,6 +103,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         this.financialPeriodService = financialPeriodService;
         this.financialDocumentSecurityService = financialDocumentSecurityService;
         this.entityManager = entityManager;
+        this.departmentRepository = departmentRepository;
     }
 
     @Override
@@ -463,6 +466,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocument.setFinancialLedgerType(financialLedgerTypeRepository.getOne(requestFinancialDocumentSaveDto.getFinancialLedgerTypeId()));
         financialDocument.setFinancialDepartment(financialDepartmentRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDepartmentId()));
         financialDocument.setDocumentNumber(financialDocument.getDocumentNumber());
+        financialDocument.setDepartment(departmentRepository.getOne(requestFinancialDocumentSaveDto.getDepartmentId()));
         return financialDocumentRepository.save(financialDocument);
     }
 

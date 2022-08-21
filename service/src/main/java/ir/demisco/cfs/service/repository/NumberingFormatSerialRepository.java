@@ -65,7 +65,7 @@ public interface NumberingFormatSerialRepository extends JpaRepository<Numbering
             "               (SELECT PR.CODE" +
             "                  FROM FNPR.FINANCIAL_PERIOD PR" +
             "                 WHERE PR.ID = FD.FINANCIAL_PERIOD_ID)) ", nativeQuery = true)
-    List<NumberingFormatSerial> findNumberingFormatSerialByParam(Long numberingType,Long organizationId, Long financialDocumentId);
+    List<Long> findNumberingFormatSerialByParam(Long numberingType,Long organizationId, Long financialDocumentId);
 
     @Query("select nf from NumberingFormatSerial nf " +
             " where nf.financialNumberingFormat.id=:numberingFormatId  and nf.serialReseter=:serialReseter and nf.serialLength=:serialLength and nf.deletedDate is null")

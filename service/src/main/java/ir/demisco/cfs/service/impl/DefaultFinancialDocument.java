@@ -717,9 +717,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             });
         }
 
-        List<NumberingFormatSerial> numberingFormatSerialList =
+        List<Long> numberingFormatSerialList =
                 numberingFormatSerialRepository.findNumberingFormatSerialByParam(financialDocumentNumberDto.getNumberingType(),SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId());
-        numberingFormatSerialList.forEach((NumberingFormatSerial numberingFormatSerial) -> {
+        numberingFormatSerialList.forEach(aLong  -> {
+            NumberingFormatSerial numberingFormatSerial = numberingFormatSerialRepository.getById(aLong);
             numberingFormatSerial.setLastSerial(numberingFormatSerial.getLastSerial() + 1);
             numberingFormatSerialRepository.save(numberingFormatSerial);
         });
