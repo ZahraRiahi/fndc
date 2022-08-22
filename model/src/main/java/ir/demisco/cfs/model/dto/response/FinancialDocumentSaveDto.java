@@ -300,6 +300,7 @@ public class FinancialDocumentSaveDto {
             financialDocumentSaveDto.setFinancialDepartmentId(financialDepartmentId);
             return this;
         }
+
         public FinancialDocumentSaveDto build() {
             return financialDocumentSaveDto;
         }

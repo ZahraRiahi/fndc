@@ -63,7 +63,7 @@ public class DefaultFinancialDocumentHeader implements FinancialDocumentHeaderSe
                 .creatorId(financialDocument.getCreator().getId())
                 .userId(SecurityHelper.getCurrentUser().getUserId())
                 .lastModifierId(financialDocument.getLastModifier().getId())
-                .departmentId(financialDocument.getFinancialDepartment().getDepartment() == null ? 0 : financialDocument.getFinancialDepartment().getDepartment().getId())
+                .departmentId(financialDocument.getDepartment() == null ? 0 : financialDocument.getDepartment().getId())
                 .financialSystemId(financialDocument.getFinancialDepartment().getFinancialSystem() == null ? 0 : financialDocument.getFinancialDepartment().getFinancialSystem().getId())
                 .build();
     }

@@ -407,21 +407,33 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocumentItem.setFinancialAccount(financialAccountRepository.getOne(responseFinancialDocumentItemDto.getFinancialAccountId()));
         if (responseFinancialDocumentItemDto.getCentricAccountId1() != null) {
             financialDocumentItem.setCentricAccountId1(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId1()));
+        }else{
+            financialDocumentItem.setCentricAccountId1(null);
         }
         if (responseFinancialDocumentItemDto.getCentricAccountId2() != null) {
             financialDocumentItem.setCentricAccountId2(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId2()));
+        }else{
+            financialDocumentItem.setCentricAccountId2(null);
         }
         if (responseFinancialDocumentItemDto.getCentricAccountId3() != null) {
             financialDocumentItem.setCentricAccountId3(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId3()));
+        }else{
+            financialDocumentItem.setCentricAccountId3(null);
         }
         if (responseFinancialDocumentItemDto.getCentricAccountId4() != null) {
             financialDocumentItem.setCentricAccountId4(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId4()));
+        }else{
+            financialDocumentItem.setCentricAccountId4(null);
         }
         if (responseFinancialDocumentItemDto.getCentricAccountId5() != null) {
             financialDocumentItem.setCentricAccountId5(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId5()));
+        }else{
+            financialDocumentItem.setCentricAccountId5(null);
         }
         if (responseFinancialDocumentItemDto.getCentricAccountId6() != null) {
             financialDocumentItem.setCentricAccountId6(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId6()));
+        }else{
+            financialDocumentItem.setCentricAccountId6(null);
         }
     }
 

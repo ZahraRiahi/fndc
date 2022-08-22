@@ -38,6 +38,7 @@ public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecuri
             financialSecurityFilterRequest.setCreatorUserId(financialDocumentHeaderOutputResponse.getCreatorId());
             financialSecurityFilterRequest.setFinancialLedgerId(financialDocumentHeaderOutputResponse.getFinancialLedgerTypeId());
             financialSecurityFilterRequest.setUserId(financialDocumentHeaderOutputResponse.getUserId());
+            financialSecurityFilterRequest.setDepartmentId(financialDocumentHeaderOutputResponse.getDepartmentId());
             financialSecurityFilterRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         } else {
             checkFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
