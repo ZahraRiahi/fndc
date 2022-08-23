@@ -94,19 +94,12 @@ public class DefaultFinancialNumberingFormat implements FinancialNumberingFormat
     public Boolean upDate(FinancialNumberingFormatDto financialNumberingFormatDto) {
         throw new RuleException("fin.financialNumberingFormat.update");
     }
-
-    @Override
-    @Transactional(rollbackOn = Throwable.class)
-    public boolean deleteNumberingFormatById(Long numberingFormatId) {
-        FinancialNumberingFormat deleteNumberingFormat = financialNumberingFormatRepository.findById(numberingFormatId)
-                .orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
-        Long formatByIDForDelete = financialNumberingFormatRepository.getFormatByIDForDelete(numberingFormatId);
-        if (formatByIDForDelete > 0) {
-            throw new RuleException("fin.financialNumberingFormat.check.for.delete");
-        } else {
+        @Override
+        @Transactional(rollbackOn = Throwable.class)
+        public boolean deleteNumberingFormatById(Long numberingFormatId) {
+            FinancialNumberingFormat deleteNumberingFormat = financialNumberingFormatRepository.findById(numberingFormatId).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
             financialNumberingFormatRepository.deleteById(deleteNumberingFormat.getId());
             return true;
         }
-
     }
-}
+
