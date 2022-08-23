@@ -11,6 +11,7 @@ variables:
   REGISTRY_ADDRESS: $CI_REGISTRY
   app_name: "fndc-service"
   nodePort: "30454"
+  nodePort_dev: "30724"
   clusterPort: "8080"
   containerPort: "8080"
   name_space: "cfs"
@@ -88,7 +89,7 @@ deploy-test:
     - sed -i "s#\$replica#${replica}#" deploy.yml
     - sed -i "s#\$clusterPort#${clusterPort}#" deploy.yml
     - sed -i "s#\$containerPort#${containerPort}#" deploy.yml
-    - sed -i "s#\$nodePort#${nodePort}#" deploy.yml
+    - sed -i "s#\$nodePort#${nodePort_dev}#" deploy.yml
     - kubectl apply -f deploy.yml --insecure-skip-tls-verify=true --validate=false
   artifacts:
     paths:
