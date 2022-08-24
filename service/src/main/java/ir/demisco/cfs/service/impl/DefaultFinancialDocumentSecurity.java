@@ -25,48 +25,48 @@ public class DefaultFinancialDocumentSecurity implements FinancialDocumentSecuri
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public Boolean getFinancialDocumentSecurity(FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest) {
-        FinancialSecurityFilterRequest financialSecurityFilterRequest = new FinancialSecurityFilterRequest();
-        if (financialDocumentSecurityInputRequest.getFinancialDocumentId() != null) {
-            FinancialDocumentHeaderOutputResponse financialDocumentHeaderOutputResponse = financialDocumentHeaderService.getFinancialDocumentHeaderBytId(financialDocumentSecurityInputRequest.getFinancialDocumentId());
-            financialSecurityFilterRequest.setSubjectId(null);
-            financialSecurityFilterRequest.setActivityCode(financialDocumentSecurityInputRequest.getActivityCode());
-            financialSecurityFilterRequest.setInputFromConfigFlag(false);
-            financialSecurityFilterRequest.setDepartmentId(financialDocumentHeaderOutputResponse.getDepartmentId());
-            financialSecurityFilterRequest.setFinancialDepartmentId(financialDocumentHeaderOutputResponse.getFinancialDepartmentId());
-            financialSecurityFilterRequest.setFinancialPeriodId(financialDocumentHeaderOutputResponse.getFinancialPeriodId());
-            financialSecurityFilterRequest.setDocumentTypeId(financialDocumentHeaderOutputResponse.getFinancialDocumentTypeId());
-            financialSecurityFilterRequest.setCreatorUserId(financialDocumentHeaderOutputResponse.getCreatorId());
-            financialSecurityFilterRequest.setFinancialLedgerId(financialDocumentHeaderOutputResponse.getFinancialLedgerTypeId());
-            financialSecurityFilterRequest.setUserId(financialDocumentHeaderOutputResponse.getUserId());
-            financialSecurityFilterRequest.setDepartmentId(financialDocumentHeaderOutputResponse.getDepartmentId());
-            financialSecurityFilterRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
-        } else {
-            checkFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
-            financialSecurityFilterRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
-            financialSecurityFilterRequest.setUserId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getUserId());
-            financialSecurityFilterRequest.setDepartmentId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getDepartmentId());
-            financialSecurityFilterRequest.setFinancialDepartmentId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getFinancialDepartmentId());
-            financialSecurityFilterRequest.setFinancialLedgerId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getFinancialLedgerId());
-            financialSecurityFilterRequest.setFinancialPeriodId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getFinancialPeriodId());
-            financialSecurityFilterRequest.setDocumentTypeId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getDocumentTypeId());
-            financialSecurityFilterRequest.setSubjectId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getSubjectId());
-            financialSecurityFilterRequest.setActivityCode(financialDocumentSecurityInputRequest.getSecurityModelRequest().getActivityCode());
-            financialSecurityFilterRequest.setInputFromConfigFlag(financialDocumentSecurityInputRequest.getSecurityModelRequest().getInputFromConfigFlag());
-            financialSecurityFilterRequest.setCreatorUserId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getCreatorUserId());
-        }
-        FinancialSecurityOutputResponse financialSecurityOutputResponse = financialSecurityService.hasPermission(financialSecurityFilterRequest, SecurityHelper.getCurrentUser().getOrganizationId());
-        int resultSet = financialSecurityService.resultSet(financialSecurityFilterRequest);
-        if (resultSet == 0) {
-            if (financialSecurityOutputResponse.getPermissionMessage() == null) {
-                throw new RuleException("عدم دسترسی به عملیات");
-            } else {
-                throw new RuleException(financialSecurityOutputResponse.getPermissionMessage());
-            }
-        } else if (resultSet > 1) {
-            throw new RuleException(financialSecurityOutputResponse.getPermissionMessage());
-        } else {
-            return true;
-        }
+//        FinancialSecurityFilterRequest financialSecurityFilterRequest = new FinancialSecurityFilterRequest();
+//        if (financialDocumentSecurityInputRequest.getFinancialDocumentId() != null) {
+//            FinancialDocumentHeaderOutputResponse financialDocumentHeaderOutputResponse = financialDocumentHeaderService.getFinancialDocumentHeaderBytId(financialDocumentSecurityInputRequest.getFinancialDocumentId());
+//            financialSecurityFilterRequest.setSubjectId(null);
+//            financialSecurityFilterRequest.setActivityCode(financialDocumentSecurityInputRequest.getActivityCode());
+//            financialSecurityFilterRequest.setInputFromConfigFlag(false);
+//            financialSecurityFilterRequest.setDepartmentId(financialDocumentHeaderOutputResponse.getDepartmentId());
+//            financialSecurityFilterRequest.setFinancialDepartmentId(financialDocumentHeaderOutputResponse.getFinancialDepartmentId());
+//            financialSecurityFilterRequest.setFinancialPeriodId(financialDocumentHeaderOutputResponse.getFinancialPeriodId());
+//            financialSecurityFilterRequest.setDocumentTypeId(financialDocumentHeaderOutputResponse.getFinancialDocumentTypeId());
+//            financialSecurityFilterRequest.setCreatorUserId(financialDocumentHeaderOutputResponse.getCreatorId());
+//            financialSecurityFilterRequest.setFinancialLedgerId(financialDocumentHeaderOutputResponse.getFinancialLedgerTypeId());
+//            financialSecurityFilterRequest.setUserId(financialDocumentHeaderOutputResponse.getUserId());
+//            financialSecurityFilterRequest.setDepartmentId(financialDocumentHeaderOutputResponse.getDepartmentId());
+//            financialSecurityFilterRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+//        } else {
+//            checkFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
+//            financialSecurityFilterRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+//            financialSecurityFilterRequest.setUserId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getUserId());
+//            financialSecurityFilterRequest.setDepartmentId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getDepartmentId());
+//            financialSecurityFilterRequest.setFinancialDepartmentId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getFinancialDepartmentId());
+//            financialSecurityFilterRequest.setFinancialLedgerId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getFinancialLedgerId());
+//            financialSecurityFilterRequest.setFinancialPeriodId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getFinancialPeriodId());
+//            financialSecurityFilterRequest.setDocumentTypeId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getDocumentTypeId());
+//            financialSecurityFilterRequest.setSubjectId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getSubjectId());
+//            financialSecurityFilterRequest.setActivityCode(financialDocumentSecurityInputRequest.getSecurityModelRequest().getActivityCode());
+//            financialSecurityFilterRequest.setInputFromConfigFlag(financialDocumentSecurityInputRequest.getSecurityModelRequest().getInputFromConfigFlag());
+//            financialSecurityFilterRequest.setCreatorUserId(financialDocumentSecurityInputRequest.getSecurityModelRequest().getCreatorUserId());
+//        }
+//        FinancialSecurityOutputResponse financialSecurityOutputResponse = financialSecurityService.hasPermission(financialSecurityFilterRequest, SecurityHelper.getCurrentUser().getOrganizationId());
+//        int resultSet = financialSecurityService.resultSet(financialSecurityFilterRequest);
+//        if (resultSet == 0) {
+//            if (financialSecurityOutputResponse.getPermissionMessage() == null) {
+//                throw new RuleException("عدم دسترسی به عملیات");
+//            } else {
+//                throw new RuleException(financialSecurityOutputResponse.getPermissionMessage());
+//            }
+//        } else if (resultSet > 1) {
+//            throw new RuleException(financialSecurityOutputResponse.getPermissionMessage());
+//        } else {
+        return true;
+//        }
     }
 
     private void checkFinancialDocumentSecurity(FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest) {
