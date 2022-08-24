@@ -12,6 +12,7 @@ public class FinancialSecurityFilterRequest {
     private Boolean inputFromConfigFlag;
     private Long creatorUserId;
     private Long organizationId;
+    private Long financialLedgerTypeId;
 
     public Long getUserId() {
         return userId;
@@ -99,5 +100,13 @@ public class FinancialSecurityFilterRequest {
 
     public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
+    }
+
+    public Long getFinancialLedgerTypeId() {
+        return financialLedgerTypeId;
+    }
+
+    public void setFinancialLedgerTypeId(Long financialLedgerTypeId) {
+        this.financialLedgerTypeId = financialLedgerTypeId;
     }
 }

@@ -18,26 +18,26 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
             "         ELSE" +
             "          1" +
             "       END DISABLED" +
-            "  FROM FNDC.FINANCIAL_DEPARTMENT FNDP" +
-            " TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationIdPKG," +
+            "  FROM FNDC.FINANCIAL_DEPARTMENT FNDP " +
+            " ,TABLE(FNSC.PKG_FINANCIAL_SECURITY.GET_PERMISSION(:organizationIdPKG," +
             "                                                   :activityCode," +
             "                                                   :financialPeriodId," +
             "                                                   :financialDocumentTypeId," +
             "                                                   :creatorUserId," +
-            "                                                   FNDP.ID," +
-            "                                                   FNLG.FINANCIAL_LEDGER_TYPE_ID," +
+            "                                                   :financialDepartmentId," +
+            "                                                   :financialLedgerTypeId," +
             "                                                   :departmentId," +
             "                                                   :userId)) FNSC" +
             " WHERE EXISTS" +
             " (SELECT 1" +
-            "          FROM FINANCIAL_DEP_ORG_REL INER_ORG_REL" +
+            "          FROM fndc.FINANCIAL_DEP_ORG_REL INER_ORG_REL" +
             "         WHERE INER_ORG_REL.ORGANIZATION_ID = :organizationId" +
             "           AND INER_ORG_REL.FINANCIAL_DEPARTMENT_ID = FNDP.ID" +
             "           AND INER_ORG_REL.ACTIVE_FLAG = 1" +
             "           AND (:departmentId IS NULL OR" +
             "               (:departmentId = INER_ORG_REL.DEPARTMENT_ID OR NOT EXISTS" +
             "                (SELECT 1" +
-            "                    FROM FINANCIAL_DEP_ORG_REL INER_ORG_REL2" +
+            "                    FROM fndc.FINANCIAL_DEP_ORG_REL INER_ORG_REL2" +
             "                   WHERE INER_ORG_REL2.FINANCIAL_DEPARTMENT_ID = FNDP.ID" +
             "                     AND INER_ORG_REL2.ORGANIZATION_ID =" +
             "                         INER_ORG_REL.ORGANIZATION_ID" +
@@ -47,6 +47,6 @@ public interface DepartmentRepository extends JpaRepository<Department, Long> {
                                                 String activityCode,
                                                 TypedParameterValue financialPeriodId,
                                                 TypedParameterValue financialDocumentTypeId,
-                                                TypedParameterValue creatorUserId,
-                                                Long userId,Long organizationId,Long departmentId);
+                                                TypedParameterValue creatorUserId,TypedParameterValue financialDepartmentId,TypedParameterValue financialLedgerTypeId,TypedParameterValue departmentId,
+                                                Long userId, Long organizationId);
 }
