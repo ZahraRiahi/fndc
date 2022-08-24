@@ -48,19 +48,19 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
                 new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialPeriodId())
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getDocumentTypeId())
                 , new TypedParameterValue(StandardBasicTypes.LONG, param.getCreatorUserId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialDepartmentId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, param.getFinancialLedgerTypeId())
+                , new TypedParameterValue(StandardBasicTypes.LONG, param.getDepartmentId())
                 , param.getUserId()
-                ,SecurityHelper.getCurrentUser().getOrganizationId()
-                , param.getDepartmentId()
-                );
+                , SecurityHelper.getCurrentUser().getOrganizationId()
+
+        );
         List<FinancialDepartmentResponse> financialDepartmentResponses = financialDocumentItemList.stream().map(item ->
                 FinancialDepartmentResponse.builder()
                         .departmentId(Long.parseLong(item[0].toString()))
                         .code(item[1].toString())
                         .name((item[2].toString()))
-                        .financialLedgerTypeId(Long.parseLong(item[3] == null ? "0" : item[3].toString()))
-                        .ledgerTypeDescription(item[4] == null ? "" : item[4].toString())
-                        .financialDepartmentLedgerId(Long.parseLong(item[5] == null ? "0" : item[5].toString()))
-                        .disabled(Integer.parseInt(item[6].toString()) == 1)
+                        .disabled(Integer.parseInt(item[3].toString()) == 1)
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialDepartmentResponses.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
@@ -78,8 +78,8 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
                 case "financialDepartmentId":
                     checkFinancialDepartmentId(financialSecurityFilterRequest, item);
                     break;
-                case "financialLedgerId":
-                    checkFinancialLedgerId(financialSecurityFilterRequest, item);
+                case "financialLedgerTypeId":
+                    checkFinancialLedgerTypeId(financialSecurityFilterRequest, item);
                     break;
                 case "financialPeriodId":
                     checkFinancialPeriodId(financialSecurityFilterRequest, item);
@@ -143,11 +143,11 @@ public class DefaultFinancialDepartment implements FinancialDepartmentService {
         }
     }
 
-    private void checkFinancialLedgerId(FinancialSecurityFilterRequest financialSecurityFilterRequest, DataSourceRequest.FilterDescriptor item) {
+    private void checkFinancialLedgerTypeId(FinancialSecurityFilterRequest financialSecurityFilterRequest, DataSourceRequest.FilterDescriptor item) {
         if (item.getValue() != null) {
-            financialSecurityFilterRequest.setFinancialLedgerId(Long.parseLong(item.getValue().toString()));
+            financialSecurityFilterRequest.setFinancialLedgerTypeId(Long.parseLong(item.getValue().toString()));
         } else {
-            financialSecurityFilterRequest.setFinancialLedgerId(null);
+            financialSecurityFilterRequest.setFinancialLedgerTypeId(null);
         }
     }
 

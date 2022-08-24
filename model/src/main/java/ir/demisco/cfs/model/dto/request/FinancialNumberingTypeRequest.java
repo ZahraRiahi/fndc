@@ -5,6 +5,7 @@ import java.time.LocalDateTime;
 public class FinancialNumberingTypeRequest {
     private LocalDateTime fromDate;
     private LocalDateTime toDate;
+    private Long departmentId;
 
     public LocalDateTime getFromDate() {
         return fromDate;
@@ -22,5 +23,11 @@ public class FinancialNumberingTypeRequest {
         this.toDate = toDate;
     }
 
+    public Long getDepartmentId() {
+        return departmentId;
+    }
 
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
 }

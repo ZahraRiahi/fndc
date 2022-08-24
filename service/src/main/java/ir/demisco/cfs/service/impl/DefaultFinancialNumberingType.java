@@ -40,8 +40,7 @@ public class DefaultFinancialNumberingType implements FinancialNumberingTypeServ
                     .serialLength(0L)
                     .build()).collect(Collectors.toList());
         } else {
-            List<Object[]> financialNumberingTypeList = financialNumberingTypeRepository.findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(SecurityHelper.getCurrentUser().getOrganizationId(), DateUtil.convertStringToDate(financialNumberingTypeRequest.getFromDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))), DateUtil.convertStringToDate(financialNumberingTypeRequest.getToDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))), SecurityHelper.getCurrentUser().getUserId());
-
+            List<Object[]> financialNumberingTypeList = financialNumberingTypeRepository.findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(financialNumberingTypeRequest.getDepartmentId(),SecurityHelper.getCurrentUser().getOrganizationId(), SecurityHelper.getCurrentUser().getUserId(), DateUtil.convertStringToDate(financialNumberingTypeRequest.getFromDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))), DateUtil.convertStringToDate(financialNumberingTypeRequest.getToDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))));
             return financialNumberingTypeList.stream().map(e -> FinancialNumberingTypeOutputResponse.builder().id(Long.parseLong(e[0].toString()))
                     .description(gatItemForString(e, 1))
                     .fromCode(e[3] == null ? "" : e[3].toString())
