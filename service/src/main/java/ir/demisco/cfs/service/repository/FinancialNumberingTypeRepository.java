@@ -39,7 +39,7 @@ public interface FinancialNumberingTypeRepository extends JpaRepository<Financia
             "     AND NF.ORGANIZATION_ID = :organizationId" +
             "   INNER JOIN FNDC.FINANCIAL_NUMBERING_FORMAT_TYPE NFT" +
             "      ON NFT.ID = NF.NUMBERING_FORMAT_TYPE_ID)" +
-            "SELECT QRY.ID," +
+            " SELECT QRY.ID," +
             "       QRY.DESCRIPTION," +
             "       QRY.SERIAL_LENGTH," +
             "       REPLACE(REPLACE(REPLACE(QRY.CODE," +
