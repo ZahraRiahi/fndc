@@ -8,11 +8,9 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridFilterService;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
-import ir.demisco.core.utils.DateUtil;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -40,7 +38,7 @@ public class DefaultFinancialNumberingType implements FinancialNumberingTypeServ
                     .serialLength(0L)
                     .build()).collect(Collectors.toList());
         } else {
-            List<Object[]> financialNumberingTypeList = financialNumberingTypeRepository.findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(financialNumberingTypeRequest.getDepartmentId(),SecurityHelper.getCurrentUser().getOrganizationId(), SecurityHelper.getCurrentUser().getUserId(), DateUtil.convertStringToDate(financialNumberingTypeRequest.getFromDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))), DateUtil.convertStringToDate(financialNumberingTypeRequest.getToDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))));
+            List<Object[]> financialNumberingTypeList = financialNumberingTypeRepository.findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(financialNumberingTypeRequest.getDepartmentId(), SecurityHelper.getCurrentUser().getOrganizationId(), SecurityHelper.getCurrentUser().getUserId(), financialNumberingTypeRequest.getFromDate(), financialNumberingTypeRequest.getToDate());
             return financialNumberingTypeList.stream().map(e -> FinancialNumberingTypeOutputResponse.builder().id(Long.parseLong(e[0].toString()))
                     .description(gatItemForString(e, 1))
                     .fromCode(e[3] == null ? "" : e[3].toString())

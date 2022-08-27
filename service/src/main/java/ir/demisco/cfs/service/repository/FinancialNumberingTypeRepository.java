@@ -4,7 +4,7 @@ import ir.demisco.cfs.model.entity.FinancialNumberingType;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public interface FinancialNumberingTypeRepository extends JpaRepository<FinancialNumberingType, Long> {
@@ -22,8 +22,7 @@ public interface FinancialNumberingTypeRepository extends JpaRepository<Financia
             "                                         '$DEP'," +
             "                                         (SELECT DP.CODE" +
             "                                            FROM ORG.DEPARTMENT DP" +
-            "                                           WHERE DP.ID =" +
-            "                                                 :departmentId))," +
+            "                                           WHERE DP.ID = :departmentId))," +
             "                                 '$ORG'," +
             "                                 (SELECT OG.CODE" +
             "                                    FROM FNDC.FINANCIAL_ORGANIZATION OG" +
@@ -39,7 +38,7 @@ public interface FinancialNumberingTypeRepository extends JpaRepository<Financia
             "     AND NF.ORGANIZATION_ID = :organizationId" +
             "   INNER JOIN FNDC.FINANCIAL_NUMBERING_FORMAT_TYPE NFT" +
             "      ON NFT.ID = NF.NUMBERING_FORMAT_TYPE_ID)" +
-            " SELECT QRY.ID," +
+            "SELECT QRY.ID," +
             "       QRY.DESCRIPTION," +
             "       QRY.SERIAL_LENGTH," +
             "       REPLACE(REPLACE(REPLACE(QRY.CODE," +
@@ -54,12 +53,13 @@ public interface FinancialNumberingTypeRepository extends JpaRepository<Financia
             "                                       'mm/dd/yyyy')," +
             "                               'yyyymmdd'," +
             "                               'NLS_CALENDAR=persian'))," +
+            "               " +
             "               '$PRI'," +
             "               (SELECT FP.CODE" +
             "                  FROM FNPR.FINANCIAL_PERIOD FP" +
             "                 INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT" +
             "                    ON FP.ID = FPT.FINANCIAL_PERIOD_ID" +
-            "                   AND FPT.ORGANIZATION_ID = :organizationId " +
+            "                   AND FPT.ORGANIZATION_ID = :organizationId" +
             "                   AND FPT.ACTIVE_FLAG = 1" +
             "                 INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY" +
             "                    ON FP.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID" +
@@ -92,7 +92,7 @@ public interface FinancialNumberingTypeRepository extends JpaRepository<Financia
             "                       FP.START_DATE AND FP.END_DATE)) TO_CODE" +
             "  FROM QRY "
             , nativeQuery = true)
-    List<Object[]> findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(Long departmentId, Long organizationId, Long userId, Date fromDate, Date toDate);
+    List<Object[]> findByFinancialNumberingTypeAndOrganizationIdAndFromAndToDate(Long departmentId, Long organizationId, Long userId, LocalDateTime fromDate, LocalDateTime toDate);
 
     @Query(value = "   SELECT *  " +
             "    FROM FNDC.FINANCIAL_NUMBERING_TYPE T "
