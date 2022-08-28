@@ -552,14 +552,14 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
 
     @Query(value = " select 1" +
             "   from fndc.financial_document fd" +
-            "  where (document_date != :date" +
+            "  where (trunc(fd.document_date) != trunc(:date)" +
             "     or organization_id != :organizationId" +
             "     or financial_document_type_id != :financialDocumentTypeId" +
             "     or financial_period_id != :financialPeriodId" +
             "     or financial_ledger_type_id != :financialLedgerTypeId" +
-            "     or financial_department_id != :documentId)" +
+            "     or financial_department_id != :financialDepartmentId)" +
             "  and fd.id = :id "
             , nativeQuery = true)
     Long findFinancialDocumentByDateAndDepartment(Date date, Long organizationId, Long financialDocumentTypeId,
-                                                  Long financialPeriodId, Long financialLedgerTypeId, Long documentId,Long id);
+                                                  Long financialPeriodId, Long financialLedgerTypeId, Long financialDepartmentId,Long id);
 }

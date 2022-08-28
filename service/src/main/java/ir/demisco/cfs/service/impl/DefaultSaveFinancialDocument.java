@@ -468,18 +468,18 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         }
         Long count = financialDocumentRepository.findFinancialDocumentByDateAndDepartment(requestFinancialDocumentSaveDto.getDocumentDate(),
                 SecurityHelper.getCurrentUser().getOrganizationId(), requestFinancialDocumentSaveDto.getFinancialDocumentTypeId(), requestFinancialDocumentSaveDto.getFinancialPeriodId()
-                , requestFinancialDocumentSaveDto.getFinancialLedgerTypeId(), requestFinancialDocumentSaveDto.getDepartmentId(),requestFinancialDocumentSaveDto.getFinancialDocumentId());
+                , requestFinancialDocumentSaveDto.getFinancialLedgerTypeId(), requestFinancialDocumentSaveDto.getFinancialDepartmentId(),requestFinancialDocumentSaveDto.getFinancialDocumentId());
         FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
         financialDocumentNumberDto.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentNumberDto.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
         financialDocumentNumberDto.setNumberingType(1L);
         if (count != null) {
-            String documentNewNumber = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
-            if (documentNewNumber == null) {
-                throw new RuleException("اشکال در تخصیص شماره به سند");
-            } else {
-                financialDocument.setDocumentNumber(documentNewNumber);
-            }
+          String  documentNewNumber = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+          if(documentNewNumber==null){
+              throw new RuleException("اشکال در تخصیص شماره به سند");
+          }else{
+              financialDocument.setDocumentNumber(documentNewNumber);
+          }
         }
         if (documentStatus == 2) {
             financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
