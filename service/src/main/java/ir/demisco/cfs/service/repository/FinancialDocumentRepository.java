@@ -7,6 +7,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
+import java.util.Date;
 import java.util.List;
 
 public interface FinancialDocumentRepository extends JpaRepository<FinancialDocument, Long> {
@@ -548,4 +549,17 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
 
     @Query("select fnd.id from FinancialDocument fnd join FinancialDocumentItem fndi on fnd.id=fndi.financialDocument.id where fndi.id=:financialDocumentItemId ")
     Long getDocumentByIdFinancialDocumentItemId(Long financialDocumentItemId);
+
+    @Query(value = " select 1" +
+            "   from fndc.financial_document fd" +
+            "  where (document_date != :date" +
+            "     or organization_id != :organizationId" +
+            "     or financial_document_type_id != :financialDocumentTypeId" +
+            "     or financial_period_id != :financialPeriodId" +
+            "     or financial_ledger_type_id != :financialLedgerTypeId" +
+            "     or financial_department_id != :documentId)" +
+            "  and fd.id = :id "
+            , nativeQuery = true)
+    Long findFinancialDocumentByDateAndDepartment(Date date, Long organizationId, Long financialDocumentTypeId,
+                                                  Long financialPeriodId, Long financialLedgerTypeId, Long documentId,Long id);
 }

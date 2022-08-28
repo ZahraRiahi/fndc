@@ -1,12 +1,13 @@
 package ir.demisco.cfs.model.dto.response;
 
+import java.util.List;
 
 public class FinancialDocumentNumberDto {
 
     private Long financialDocumentId;
     private Long numberingType;
     private Long organizationId;
-
+    private List<Long> financialDocumentIdList;
 
     public Long getFinancialDocumentId() {
         return financialDocumentId;
@@ -30,5 +31,13 @@ public class FinancialDocumentNumberDto {
 
     public void setOrganizationId(Long organizationId) {
         this.organizationId = organizationId;
+    }
+
+    public List<Long> getFinancialDocumentIdList() {
+        return financialDocumentIdList;
+    }
+
+    public void setFinancialDocumentIdList(List<Long> financialDocumentIdList) {
+        this.financialDocumentIdList = financialDocumentIdList;
     }
 }

@@ -146,8 +146,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
         }
-
-
         FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
         financialPeriodLedgerStatusRequest.setDate(LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/", "-") + "T00:00"));
         financialPeriodLedgerStatusRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
@@ -156,8 +154,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
         }
-
-
         String documentNumber;
         FinancialDocument financialDocument = saveFinancialDocument(requestFinancialDocumentSaveDto);
         financialDocumentNumberDto.setOrganizationId(financialDocument.getOrganization().getId());
@@ -407,32 +403,32 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocumentItem.setFinancialAccount(financialAccountRepository.getOne(responseFinancialDocumentItemDto.getFinancialAccountId()));
         if (responseFinancialDocumentItemDto.getCentricAccountId1() != null) {
             financialDocumentItem.setCentricAccountId1(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId1()));
-        }else{
+        } else {
             financialDocumentItem.setCentricAccountId1(null);
         }
         if (responseFinancialDocumentItemDto.getCentricAccountId2() != null) {
             financialDocumentItem.setCentricAccountId2(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId2()));
-        }else{
+        } else {
             financialDocumentItem.setCentricAccountId2(null);
         }
         if (responseFinancialDocumentItemDto.getCentricAccountId3() != null) {
             financialDocumentItem.setCentricAccountId3(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId3()));
-        }else{
+        } else {
             financialDocumentItem.setCentricAccountId3(null);
         }
         if (responseFinancialDocumentItemDto.getCentricAccountId4() != null) {
             financialDocumentItem.setCentricAccountId4(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId4()));
-        }else{
+        } else {
             financialDocumentItem.setCentricAccountId4(null);
         }
         if (responseFinancialDocumentItemDto.getCentricAccountId5() != null) {
             financialDocumentItem.setCentricAccountId5(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId5()));
-        }else{
+        } else {
             financialDocumentItem.setCentricAccountId5(null);
         }
         if (responseFinancialDocumentItemDto.getCentricAccountId6() != null) {
             financialDocumentItem.setCentricAccountId6(centricAccountRepository.getOne(responseFinancialDocumentItemDto.getCentricAccountId6()));
-        }else{
+        } else {
             financialDocumentItem.setCentricAccountId6(null);
         }
     }
@@ -466,6 +462,25 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 findById(requestFinancialDocumentSaveDto.getFinancialDocumentId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         financialDocument.setDocumentDate(requestFinancialDocumentSaveDto.getDocumentDate());
         financialDocument.setDescription(requestFinancialDocumentSaveDto.getDescription());
+
+        if (documentStatus != 1 && documentStatus != 2) {
+            throw new RuleException("در این وضعیت ، امکان تغییر سند وجود ندارد");
+        }
+        Long count = financialDocumentRepository.findFinancialDocumentByDateAndDepartment(requestFinancialDocumentSaveDto.getDocumentDate(),
+                SecurityHelper.getCurrentUser().getOrganizationId(), requestFinancialDocumentSaveDto.getFinancialDocumentTypeId(), requestFinancialDocumentSaveDto.getFinancialPeriodId()
+                , requestFinancialDocumentSaveDto.getFinancialLedgerTypeId(), requestFinancialDocumentSaveDto.getDepartmentId(),requestFinancialDocumentSaveDto.getFinancialDocumentId());
+        FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
+        financialDocumentNumberDto.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        financialDocumentNumberDto.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
+        financialDocumentNumberDto.setNumberingType(1L);
+        if (count != null) {
+            String documentNewNumber = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+            if (documentNewNumber == null) {
+                throw new RuleException("اشکال در تخصیص شماره به سند");
+            } else {
+                financialDocument.setDocumentNumber(documentNewNumber);
+            }
+        }
         if (documentStatus == 2) {
             financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
         } else {
@@ -641,7 +656,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
                 "    ON CNAC6.ID = FNDI.CENTRIC_ACCOUNT_ID_6" +
                 " WHERE FNDI.FINANCIAL_DOCUMENT_ID = :financialDocumentId " +
-                " and  ( :financialDocumentItem is null or FNDI.ID = :financialDocumentItemId)" + orderBy ;
+                " and  ( :financialDocumentItem is null or FNDI.ID = :financialDocumentItemId)" + orderBy;
 
         Query nativeQuery = entityManager.createNativeQuery(query);
         nativeQuery.setParameter("financialDocumentId", financialDocumentReportRequest.getFinancialDocumentId());
