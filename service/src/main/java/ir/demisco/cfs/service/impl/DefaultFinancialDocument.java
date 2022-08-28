@@ -724,7 +724,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             numberingFormatSerial.setLastSerial(numberingFormatSerial.getLastSerial() + 1);
             numberingFormatSerialRepository.save(numberingFormatSerial);
         });
-
         List<Object[]> listDocumentNumber =
                 financialDocumentRepository.findDocumentNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         listDocumentNumber.forEach((Object[] documentNumberObject) -> {
@@ -737,9 +736,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             financialDocumentNumber.setFinancialNumberingType(
                     financialNumberingTypeRepository.getOne(financialNumberingRecordDto.getNumberingTypeId()));
             financialDocumentNumber.setDocumentNumber(financialNumberingRecordDto.getFinancialDocumentNumber());
+            List<FinancialDocumentNumber> financialDocumentNumberList =
+                    financialDocumentNumberRepository.findByFinancialDocumentIdList(financialDocumentNumberDto.getFinancialDocumentId());
+            financialDocumentNumberList.forEach(financialDocumentNumberRepository::delete);
             financialDocumentNumberRepository.save(financialDocumentNumber);
             financialNumberingRecordDtoList.add(financialNumberingRecordDto);
-
         });
 
         financialNumberingRecordDtoList.forEach((FinancialNumberingRecordDto record1) -> {
