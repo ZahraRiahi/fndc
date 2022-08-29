@@ -34,7 +34,6 @@ public class FinancialDocument extends AuditModel<Long> {
     private Department department;
     private LocalDateTime deletedDate;
 
-
     @Override
     @Id
     @SequenceGenerator(schema = "fndc", name = "financial_document_generator", sequenceName = "sq_financial_document")

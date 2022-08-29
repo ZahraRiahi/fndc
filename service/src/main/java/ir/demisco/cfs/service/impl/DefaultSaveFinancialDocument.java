@@ -516,8 +516,8 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                 .organizationId(financialDocument.getOrganization().getId())
                 .financialLedgerTypeId(financialDocument.getFinancialLedgerType().getId())
                 .financialLedgerTypeDescription(financialDocument.getFinancialLedgerType().getDescription())
-                .departmentId(financialDocument.getFinancialDepartment().getId())
-                .departmentName(financialDocument.getFinancialDepartment().getDepartment().getName())
+                .departmentId(financialDocument.getDepartment().getId())
+                .departmentName(financialDocument.getFinancialDepartment().getName())
                 .financialPeriodId(financialDocument.getFinancialPeriod().getId())
                 .financialPeriodDescription(financialDocument.getFinancialPeriod().getDescription())
                 .build();
