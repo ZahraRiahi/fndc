@@ -8,6 +8,7 @@ import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.stereotype.Service;
+
 import javax.transaction.Transactional;
 
 @Service
@@ -40,6 +41,7 @@ public class DefaultFinancialDocumentHeader implements FinancialDocumentHeaderSe
                 .financialDocumentStatusCode(financialDocument.getFinancialDocumentStatus() == null ? "" : financialDocument.getFinancialDocumentStatus().getCode())
                 .financialDocumentStatusDescription(financialDocument.getFinancialDocumentStatus() == null ? "" : financialDocument.getFinancialDocumentStatus().getName())
                 .creatorId(financialDocument.getCreator().getId())
+                .departmentId(financialDocument.getDepartment() == null ? 0 : financialDocument.getDepartment().getId())
                 .build();
 
     }

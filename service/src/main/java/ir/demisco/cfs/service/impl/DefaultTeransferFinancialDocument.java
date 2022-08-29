@@ -21,6 +21,7 @@ import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.FinancialPeriodService;
 import ir.demisco.cfs.service.api.TransferFinancialDocumentService;
+import ir.demisco.cfs.service.repository.DepartmentRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemCurrencyRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentNumberRepository;
@@ -56,12 +57,13 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
     private final FinancialPeriodRepository financialPeriodRepository;
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
     private final FinancialDocumentHeaderService financialDocumentHeaderService;
+    private  final DepartmentRepository departmentRepository;
 
 
     public DefaultTeransferFinancialDocument(FinancialDocumentService financialDocumentService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentItemRepository financialDocumentItemRepository,
                                              FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                              FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository,
-                                             FinancialPeriodService financialPeriodService, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialPeriodRepository financialPeriodRepository1, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialDocumentHeaderService financialDocumentHeaderService) {
+                                             FinancialPeriodService financialPeriodService, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialPeriodRepository financialPeriodRepository1, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialDocumentHeaderService financialDocumentHeaderService, DepartmentRepository departmentRepository) {
         this.financialDocumentService = financialDocumentService;
         this.financialDocumentRepository = financialDocumentRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -74,6 +76,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         this.financialPeriodRepository = financialPeriodRepository1;
         this.financialDocumentSecurityService = financialDocumentSecurityService;
         this.financialDocumentHeaderService = financialDocumentHeaderService;
+        this.departmentRepository = departmentRepository;
     }
 
     private void saveFinancialReference(FinancialDocumentReference documentReference, FinancialDocumentItem financialDocumentItem) {
@@ -298,6 +301,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         financialDocumentSave.setFinancialDocumentStatus(financialDocumentStatusRepository.getOne(1L));
         financialDocumentSave.setOrganization(organizationRepository.getOne(SecurityHelper.getCurrentUser().getOrganizationId()));
         financialDocumentSave.setDocumentNumber("X9999999X");
+        financialDocumentSave.setDepartment(departmentRepository.getOne(financialDocumentHeaderOutputResponse.getDepartmentId()));
         financialDocumentSave = financialDocumentRepository.save(financialDocumentSave);
         financialDocumentRepository.flush();
 
