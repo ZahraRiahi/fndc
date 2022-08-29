@@ -26,6 +26,8 @@ public interface FinancialDocumentService {
 
     String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto);
 
+    String creatDocumentNumberUpdate(FinancialDocumentNumberDto financialDocumentNumberDto);
+
     String changeDescription(FinancialDocumentChangeDescriptionDto financialDocumentDto);
 
     Boolean deleteFinancialDocumentById(Long financialDocumentId);
