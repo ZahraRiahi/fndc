@@ -76,6 +76,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
     private final EntityManager entityManager;
     private final DepartmentRepository departmentRepository;
+    public Boolean flag = true;
 
     public DefaultSaveFinancialDocument(FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository,
                                         FinancialDocumentRepository financialDocumentRepository, FinancialDocumentItemRepository financialDocumentItemRepository,
@@ -131,15 +132,14 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         securityModelRequest.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
         financialDocumentSecurityInputRequest.setSecurityModelRequest(securityModelRequest);
         financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
-
         Long periodDate = financialPeriodRepository.findFinancialPeriodByFinancialPeriodIdAndDocumentDate
-                (requestFinancialDocumentSaveDto.getFinancialPeriodId(), LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/", "-") + "T00:00"));
+                (requestFinancialDocumentSaveDto.getFinancialPeriodId(), requestFinancialDocumentSaveDto.getDocumentDate());
         if (periodDate == null) {
             throw new RuleException(" تاریخ وارد شده در محدوده دوره مالی پیش فرض نمیباشد");
         }
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
         financialPeriodStatusRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
-        financialPeriodStatusRequest.setDate(LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/", "-") + "T00:00"));
+        financialPeriodStatusRequest.setDate(requestFinancialDocumentSaveDto.getDocumentDate());
         financialPeriodStatusRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
         financialPeriodStatusRequest.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
         FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
@@ -147,7 +147,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
             throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
         }
         FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
-        financialPeriodLedgerStatusRequest.setDate(LocalDateTime.parse(DateUtil.convertDateToString(requestFinancialDocumentSaveDto.getDocumentDate()).replace("/", "-") + "T00:00"));
+        financialPeriodLedgerStatusRequest.setDate(requestFinancialDocumentSaveDto.getDocumentDate());
         financialPeriodLedgerStatusRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
         financialPeriodLedgerStatusRequest.setFinancialLedgerTypeId(requestFinancialDocumentSaveDto.getFinancialLedgerTypeId());
         FinancialPeriodStatusResponse financialPeriodStatusResponse = financialDocumentService.getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
@@ -189,6 +189,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         });
 
         return responseDocumentSaveDto;
+
     }
 
     private FinancialDocumentItemCurrency saveDocumentItemCurrency(FinancialDocumentItem finalFinancialDocumentItem, FinancialDocumentItemCurrencyDto itemCurrency) {
@@ -460,32 +461,35 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         Long documentStatus = financialDocumentRepository.findByFinancialDocumentStatusByDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
         FinancialDocument financialDocument = financialDocumentRepository.
                 findById(requestFinancialDocumentSaveDto.getFinancialDocumentId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
-        financialDocument.setDocumentDate(requestFinancialDocumentSaveDto.getDocumentDate());
+
+        LocalDateTime truncate = DateUtil.truncate(requestFinancialDocumentSaveDto.getDocumentDate());
         financialDocument.setDescription(requestFinancialDocumentSaveDto.getDescription());
 
         if (documentStatus != 1 && documentStatus != 2) {
             throw new RuleException("در این وضعیت ، امکان تغییر سند وجود ندارد");
         }
-        Long count = financialDocumentRepository.findFinancialDocumentByDateAndDepartment(requestFinancialDocumentSaveDto.getDocumentDate(),
+
+        Long count = financialDocumentRepository.findFinancialDocumentByDateAndDepartment(truncate,
                 SecurityHelper.getCurrentUser().getOrganizationId(), requestFinancialDocumentSaveDto.getFinancialDocumentTypeId(), requestFinancialDocumentSaveDto.getFinancialPeriodId()
-                , requestFinancialDocumentSaveDto.getFinancialLedgerTypeId(), requestFinancialDocumentSaveDto.getFinancialDepartmentId(),requestFinancialDocumentSaveDto.getFinancialDocumentId());
+                , requestFinancialDocumentSaveDto.getFinancialLedgerTypeId(), requestFinancialDocumentSaveDto.getFinancialDepartmentId(), requestFinancialDocumentSaveDto.getFinancialDocumentId());
         FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
         financialDocumentNumberDto.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentNumberDto.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
         financialDocumentNumberDto.setNumberingType(1L);
         if (count != null) {
-          String  documentNewNumber = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
-          if(documentNewNumber==null){
-              throw new RuleException("اشکال در تخصیص شماره به سند");
-          }else{
-              financialDocument.setDocumentNumber(documentNewNumber);
-          }
+            String documentNewNumber = financialDocumentService.creatDocumentNumberUpdate(financialDocumentNumberDto);
+            if (documentNewNumber == null) {
+                throw new RuleException("اشکال در تخصیص شماره به سند");
+            } else {
+                financialDocument.setDocumentNumber(documentNewNumber);
+            }
         }
         if (documentStatus == 2) {
             financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
         } else {
             financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDocumentStatusId()));
         }
+        financialDocument.setDocumentDate(truncate);
         financialDocument.setAutomaticFlag(requestFinancialDocumentSaveDto.getAutomaticFlag());
         financialDocument.setOrganization(organizationRepository.getOne(organizationId));
         financialDocument.setFinancialDocumentType(financialDocumentTypeRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDocumentTypeId()));

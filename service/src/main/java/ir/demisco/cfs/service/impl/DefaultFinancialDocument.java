@@ -718,8 +718,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
 
         List<Long> numberingFormatSerialList =
-                numberingFormatSerialRepository.findNumberingFormatSerialByParam(financialDocumentNumberDto.getNumberingType(),SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId());
-        numberingFormatSerialList.forEach((Long aLong)  -> {
+                numberingFormatSerialRepository.findNumberingFormatSerialByParam(financialDocumentNumberDto.getNumberingType(), SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId());
+        numberingFormatSerialList.forEach((Long aLong) -> {
             NumberingFormatSerial numberingFormatSerial = numberingFormatSerialRepository.getById(aLong);
             numberingFormatSerial.setLastSerial(numberingFormatSerial.getLastSerial() + 1);
             numberingFormatSerialRepository.save(numberingFormatSerial);
@@ -736,9 +736,67 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             financialDocumentNumber.setFinancialNumberingType(
                     financialNumberingTypeRepository.getOne(financialNumberingRecordDto.getNumberingTypeId()));
             financialDocumentNumber.setDocumentNumber(financialNumberingRecordDto.getFinancialDocumentNumber());
-            List<FinancialDocumentNumber> financialDocumentNumberList =
+            financialDocumentNumberRepository.save(financialDocumentNumber);
+            financialNumberingRecordDtoList.add(financialNumberingRecordDto);
+        });
+
+        financialNumberingRecordDtoList.forEach((FinancialNumberingRecordDto record1) -> {
+            if (record1.getNumberingTypeId() == 2) {
+                documentNumber.set(record1.getFinancialDocumentNumber());
+            }
+        });
+        return documentNumber.get();
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public String creatDocumentNumberUpdate(FinancialDocumentNumberDto financialDocumentNumberDto) {
+        List<FinancialNumberingRecordDto> financialNumberingRecordDtoList = new ArrayList<>();
+        AtomicReference<String> documentNumber = new AtomicReference<>("");
+
+        List<Object[]> list = financialDocumentRepository.getSerialNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
+        if (!list.isEmpty()) {
+            list.forEach((Object[] objects) -> {
+                FinancialNumberingFormat financialNumberingFormat =
+                        financialNumberingFormatRepository.findById(Long.parseLong(objects[0].toString())).orElseThrow(() -> new RuleException("fin.financialDocument.notExistFinancialNumberingFormat"));
+                NumberingFormatSerial searchNumberingFormatSerial = numberingFormatSerialRepository.findByNumberingFormatAndDeletedDate(financialNumberingFormat.getId(), objects[2].toString(), Long.parseLong(objects[3].toString()));
+                if (searchNumberingFormatSerial == null) {
+                    NumberingFormatSerial numberingFormatSerial = new NumberingFormatSerial();
+                    numberingFormatSerial.setFinancialNumberingFormat(financialNumberingFormat);
+                    numberingFormatSerial.setLastSerial(Long.parseLong(objects[1].toString()));
+                    numberingFormatSerial.setSerialReseter(objects[2].toString());
+                    numberingFormatSerial.setSerialLength(Long.parseLong(objects[3].toString()));
+                    numberingFormatSerialRepository.save(numberingFormatSerial);
+                } else {
+                    throw new RuleException("fin.financialDocument.serialNumber");
+                }
+
+            });
+        }
+
+        List<Long> numberingFormatSerialList =
+                numberingFormatSerialRepository.findNumberingFormatSerialByParam(financialDocumentNumberDto.getNumberingType(), SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId());
+        numberingFormatSerialList.forEach((Long aLong) -> {
+            NumberingFormatSerial numberingFormatSerial = numberingFormatSerialRepository.getById(aLong);
+            numberingFormatSerial.setLastSerial(numberingFormatSerial.getLastSerial() + 1);
+            numberingFormatSerialRepository.save(numberingFormatSerial);
+        });
+        List<Object[]> listDocumentNumber =
+                financialDocumentRepository.findDocumentNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
+        List<FinancialDocumentNumber> financialDocumentNumberList =
                     financialDocumentNumberRepository.findByFinancialDocumentIdList(financialDocumentNumberDto.getFinancialDocumentId());
             financialDocumentNumberList.forEach(financialDocumentNumberRepository::delete);
+        listDocumentNumber.forEach((Object[] documentNumberObject) -> {
+            FinancialDocumentNumber financialDocumentNumber = new FinancialDocumentNumber();
+            FinancialNumberingRecordDto financialNumberingRecordDto = new FinancialNumberingRecordDto();
+            financialNumberingRecordDto.setFinancialDocumentId(financialDocumentNumberDto.getFinancialDocumentId());
+            financialNumberingRecordDto.setNumberingTypeId(Long.parseLong(documentNumberObject[0].toString()));
+            financialNumberingRecordDto.setFinancialDocumentNumber(documentNumberObject[1].toString());
+            financialDocumentNumber.setFinancialDocument(financialDocumentRepository.getOne(financialNumberingRecordDto.getFinancialDocumentId()));
+            financialDocumentNumber.setFinancialNumberingType(
+                    financialNumberingTypeRepository.getOne(financialNumberingRecordDto.getNumberingTypeId()));
+            financialDocumentNumber.setDocumentNumber(financialNumberingRecordDto.getFinancialDocumentNumber());
+            financialDocumentNumberRepository.flush();
             financialDocumentNumberRepository.save(financialDocumentNumber);
             financialNumberingRecordDtoList.add(financialNumberingRecordDto);
         });

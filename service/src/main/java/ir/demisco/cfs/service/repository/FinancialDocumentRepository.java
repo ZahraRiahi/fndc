@@ -7,7 +7,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 import java.util.List;
 
 public interface FinancialDocumentRepository extends JpaRepository<FinancialDocument, Long> {
@@ -477,17 +476,15 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       FD.Financial_Period_Id," +
             "       FD.Financial_Ledger_Type_Id," +
             "       FD.FINANCIAL_DEPARTMENT_ID," +
-            "       FNDP.DEPARTMENT_ID" +
+            "       FD.DEPARTMENT_ID" +
             "  FROM FNDC.FINANCIAL_DOCUMENT FD" +
             " INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FS" +
             "    ON FS.ID = FD.FINANCIAL_DOCUMENT_STATUS_ID" +
-            " INNER JOIN FNDC.FINANCIAL_DEPARTMENT FNDP" +
-            "    ON FNDP.ID = FD.FINANCIAL_DEPARTMENT_ID" +
             " WHERE FD.DOCUMENT_NUMBER = :targetDocumentNumber" +
             "   and FD.ORGANIZATION_ID = :organizationId" +
             "   and FD.Financial_Ledger_Type_Id = :financialLedgerTypeId" +
             "   and FD.Financial_Department_Id = :financialDepartmentId" +
-            "   and  (:department is null or FNDP.DEPARTMENT_ID=:departmentId) "
+            "   and  (:department is null or FD.DEPARTMENT_ID=:departmentId) "
             , nativeQuery = true)
     List<Object[]> findDocumentByDocumentNumberAndCode(String targetDocumentNumber, Long organizationId, Long financialLedgerTypeId, Long financialDepartmentId, Object department, Long departmentId);
 
@@ -498,10 +495,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       FD.FINANCIAL_PERIOD_ID," +
             "       FD.FINANCIAL_LEDGER_TYPE_ID," +
             "       FD.FINANCIAL_DEPARTMENT_ID," +
-            "       FNDP.DEPARTMENT_ID  " +
+            "       FD.DEPARTMENT_ID  " +
             "  FROM FNDC.FINANCIAL_DOCUMENT FD" +
-            " INNER JOIN FNDC.FINANCIAL_DEPARTMENT FNDP " +
-            "    ON FNDP.ID = FD.FINANCIAL_DEPARTMENT_ID " +
             " WHERE FD.ID = :documentId "
             , nativeQuery = true)
     List<Object[]> findDocumentByFlagAndOrganAndPeriodId(Long documentId);
@@ -552,7 +547,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
 
     @Query(value = " select 1" +
             "   from fndc.financial_document fd" +
-            "  where (trunc(fd.document_date) != trunc(:date)" +
+            "  where (fd.document_date != :date" +
             "     or organization_id != :organizationId" +
             "     or financial_document_type_id != :financialDocumentTypeId" +
             "     or financial_period_id != :financialPeriodId" +
@@ -560,6 +555,6 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "     or financial_department_id != :financialDepartmentId)" +
             "  and fd.id = :id "
             , nativeQuery = true)
-    Long findFinancialDocumentByDateAndDepartment(Date date, Long organizationId, Long financialDocumentTypeId,
-                                                  Long financialPeriodId, Long financialLedgerTypeId, Long financialDepartmentId,Long id);
+    Long findFinancialDocumentByDateAndDepartment(LocalDateTime date, Long organizationId, Long financialDocumentTypeId,
+                                                  Long financialPeriodId, Long financialLedgerTypeId, Long financialDepartmentId, Long id);
 }

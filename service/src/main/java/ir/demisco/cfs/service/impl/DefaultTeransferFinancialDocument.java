@@ -36,6 +36,7 @@ import org.hibernate.internal.util.SerializationHelper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -153,14 +154,14 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         List<Object[]> financialDocumentTarget = financialDocumentRepository.findFinancialDocumentById(targetDocumentId);
 
         FinancialDocument financialDocument = financialDocumentRepository.findById(targetDocumentId).orElse(new FinancialDocument());
-        financialDocument.setDocumentDate(financialDocumentSource.get(0)[0] == null ? null : DateUtil.convertStringToDate(financialDocumentSource.get(0)[0].toString().replace('-', '/')));
+        financialDocument.setDocumentDate(financialDocumentSource.get(0)[0] == null ? null : (LocalDateTime) financialDocumentSource.get(0)[0]);
         financialDocument.setDocumentNumber(financialDocumentSource.get(0)[1] == null ? null : financialDocumentSource.get(0)[1].toString());
         financialDocument.setFinancialPeriod(financialPeriodRepository.getOne(Long.parseLong(financialDocumentSource.get(0)[2].toString())));
         financialDocument.setDescription(financialDocumentSource.get(0)[3] == null ? null : financialDocumentSource.get(0)[3].toString());
         financialDocumentRepository.save(financialDocument);
 
         FinancialDocument financialDocumentUpdateTarget = financialDocumentRepository.findById(financialDocumentTransferRequest.getId()).orElse(new FinancialDocument());
-        financialDocumentUpdateTarget.setDocumentDate(financialDocumentTarget.get(0)[0] == null ? null : DateUtil.convertStringToDate(financialDocumentTarget.get(0)[0].toString().replace('-', '/')));
+        financialDocumentUpdateTarget.setDocumentDate(financialDocumentTarget.get(0)[0] == null ? null : (LocalDateTime) financialDocumentTarget.get(0)[0]);
         financialDocumentUpdateTarget.setDocumentNumber(financialDocumentTarget.get(0)[1] == null ? null : financialDocumentTarget.get(0)[1].toString());
         financialDocumentUpdateTarget.setFinancialPeriod(financialPeriodRepository.getOne(Long.parseLong(financialDocumentTarget.get(0)[2].toString())));
         financialDocumentUpdateTarget.setDescription(financialDocumentTarget.get(0)[3] == null ? null : financialDocumentTarget.get(0)[3].toString());
@@ -192,7 +193,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentTransferRequest.getId() == null ? 0L : financialDocumentTransferRequest.getId()).orElse(new FinancialDocument());
         FinancialDocument financialDocumentUpdate;
         financialDocumentUpdate = financialDocument;
-        financialDocumentUpdate.setDocumentDate(DateUtil.convertStringToDate(financialDocumentTransferRequest.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))));
+        financialDocumentUpdate.setDocumentDate(financialDocumentTransferRequest.getDate());
         financialDocumentUpdate.setFinancialPeriod(financialPeriodRepository.getOne(newFinancialPeriodId.get(0).getId()));
         financialDocumentUpdate = financialDocumentRepository.save(financialDocumentUpdate);
         String newNumber;
@@ -293,7 +294,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         FinancialDocument financialDocumentSave;
         financialDocumentSave = (FinancialDocument) SerializationHelper.clone(financialDocument);
         financialDocumentSave.setId(null);
-        financialDocumentSave.setDocumentDate(DateUtil.convertStringToDate(financialDocumentTransferRequest.getDate().format(DateTimeFormatter.ofPattern("yyyy/MM/dd"))));
+        financialDocumentSave.setDocumentDate(financialDocumentTransferRequest.getDate());
         financialDocumentSave.setFinancialDocumentStatus(financialDocumentStatusRepository.getOne(1L));
         financialDocumentSave.setOrganization(organizationRepository.getOne(SecurityHelper.getCurrentUser().getOrganizationId()));
         financialDocumentSave.setDocumentNumber("X9999999X");

@@ -68,7 +68,12 @@ public class FinancialDocumentController {
         result = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
         return ResponseEntity.ok(result);
     }
-
+    @PostMapping("/CreateNumberUpdate")
+    public ResponseEntity<String> creatNumberUpdate(@RequestBody FinancialDocumentNumberDto financialDocumentNumberDto) {
+        String result;
+        result = financialDocumentService.creatDocumentNumberUpdate(financialDocumentNumberDto);
+        return ResponseEntity.ok(result);
+    }
     @PostMapping("/ChangeDescription")
     public ResponseEntity<FinancialDocumentAccountMessageDto> changeDescription(@RequestBody FinancialDocumentChangeDescriptionDto financialDocumentDto) {
         String result;

@@ -1,12 +1,12 @@
 package ir.demisco.cfs.model.dto.response;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 import java.util.List;
 
 public class FinancialDocumentSaveDto {
 
     private Long financialDocumentId;
-    private Date documentDate;
+    private LocalDateTime documentDate;
     private String permanentDocumentNumber;
     private String documentNumber;
     private Long financialDocumentTypeId;
@@ -35,11 +35,11 @@ public class FinancialDocumentSaveDto {
         this.financialDocumentId = financialDocumentId;
     }
 
-    public Date getDocumentDate() {
+    public LocalDateTime getDocumentDate() {
         return documentDate;
     }
 
-    public void setDocumentDate(Date documentDate) {
+    public void setDocumentDate(LocalDateTime documentDate) {
         this.documentDate = documentDate;
     }
 
@@ -209,7 +209,7 @@ public class FinancialDocumentSaveDto {
             return this;
         }
 
-        public Builder documentDate(Date documentDate) {
+        public Builder documentDate(LocalDateTime documentDate) {
             financialDocumentSaveDto.setDocumentDate(documentDate);
             return this;
         }

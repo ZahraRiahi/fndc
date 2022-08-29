@@ -14,14 +14,13 @@ import javax.persistence.ManyToOne;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Table;
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "FINANCIAL_DOCUMENT", schema = "fndc")
 public class FinancialDocument extends AuditModel<Long> {
 
     private Long id;
-    private Date documentDate;
+    private LocalDateTime documentDate;
     private String description;
     private FinancialDocumentStatus financialDocumentStatus;
     private String permanentDocumentNumber;
@@ -49,11 +48,11 @@ public class FinancialDocument extends AuditModel<Long> {
         this.id = id;
     }
 
-    public Date getDocumentDate() {
+    public LocalDateTime getDocumentDate() {
         return documentDate;
     }
 
-    public void setDocumentDate(Date documentDate) {
+    public void setDocumentDate(LocalDateTime documentDate) {
         this.documentDate = documentDate;
     }
 
