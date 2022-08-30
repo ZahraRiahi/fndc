@@ -753,7 +753,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     public String creatDocumentNumberUpdate(FinancialDocumentNumberDto financialDocumentNumberDto) {
         List<FinancialNumberingRecordDto> financialNumberingRecordDtoList = new ArrayList<>();
         AtomicReference<String> documentNumber = new AtomicReference<>("");
-
         List<Object[]> list = financialDocumentRepository.getSerialNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         if (!list.isEmpty()) {
             list.forEach((Object[] objects) -> {
@@ -773,7 +772,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
             });
         }
-
         List<Long> numberingFormatSerialList =
                 numberingFormatSerialRepository.findNumberingFormatSerialByParam(financialDocumentNumberDto.getNumberingType(), SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId());
         numberingFormatSerialList.forEach((Long aLong) -> {
@@ -784,8 +782,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         List<Object[]> listDocumentNumber =
                 financialDocumentRepository.findDocumentNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         List<FinancialDocumentNumber> financialDocumentNumberList =
-                    financialDocumentNumberRepository.findByFinancialDocumentIdList(financialDocumentNumberDto.getFinancialDocumentId());
-            financialDocumentNumberList.forEach(financialDocumentNumberRepository::delete);
+                financialDocumentNumberRepository.findByFinancialDocumentIdList(financialDocumentNumberDto.getFinancialDocumentId());
+        financialDocumentNumberList.forEach(financialDocumentNumberRepository::delete);
         listDocumentNumber.forEach((Object[] documentNumberObject) -> {
             FinancialDocumentNumber financialDocumentNumber = new FinancialDocumentNumber();
             FinancialNumberingRecordDto financialNumberingRecordDto = new FinancialNumberingRecordDto();
@@ -796,7 +794,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             financialDocumentNumber.setFinancialNumberingType(
                     financialNumberingTypeRepository.getOne(financialNumberingRecordDto.getNumberingTypeId()));
             financialDocumentNumber.setDocumentNumber(financialNumberingRecordDto.getFinancialDocumentNumber());
-            financialDocumentNumberRepository.flush();
             financialDocumentNumberRepository.save(financialDocumentNumber);
             financialNumberingRecordDtoList.add(financialNumberingRecordDto);
         });

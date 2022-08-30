@@ -452,6 +452,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocument.setFinancialPeriod(financialPeriodRepository.getOne(financialDocumentSaveDto.getFinancialPeriodId()));
         financialDocument.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialDocumentSaveDto.getFinancialLedgerTypeId()));
         financialDocument.setFinancialDepartment(financialDepartmentRepository.getOne(financialDocumentSaveDto.getFinancialDepartmentId()));
+        financialDocument.setDepartment(departmentRepository.getOne(financialDocumentSaveDto.getDepartmentId()));
         financialDocument.setDocumentNumber("X9999999X");
         return financialDocumentRepository.save(financialDocument);
     }
@@ -476,19 +477,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocumentNumberDto.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         financialDocumentNumberDto.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
         financialDocumentNumberDto.setNumberingType(1L);
-        if (count != null) {
-            String documentNewNumber = financialDocumentService.creatDocumentNumberUpdate(financialDocumentNumberDto);
-            if (documentNewNumber == null) {
-                throw new RuleException("اشکال در تخصیص شماره به سند");
-            } else {
-                financialDocument.setDocumentNumber(documentNewNumber);
-            }
-        }
-        if (documentStatus == 2) {
-            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
-        } else {
-            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDocumentStatusId()));
-        }
         financialDocument.setDocumentDate(truncate);
         financialDocument.setAutomaticFlag(requestFinancialDocumentSaveDto.getAutomaticFlag());
         financialDocument.setOrganization(organizationRepository.getOne(organizationId));
@@ -498,6 +486,19 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocument.setFinancialDepartment(financialDepartmentRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDepartmentId()));
         financialDocument.setDocumentNumber(financialDocument.getDocumentNumber());
         financialDocument.setDepartment(departmentRepository.getOne(requestFinancialDocumentSaveDto.getDepartmentId()));
+        if (documentStatus == 2) {
+            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(1L));
+        } else {
+            financialDocument.setFinancialDocumentStatus(documentStatusRepository.getOne(requestFinancialDocumentSaveDto.getFinancialDocumentStatusId()));
+        }
+        if (count != null) {
+            String documentNewNumber = financialDocumentService.creatDocumentNumberUpdate(financialDocumentNumberDto);
+            if (documentNewNumber == null) {
+                throw new RuleException("اشکال در تخصیص شماره به سند");
+            } else {
+                financialDocument.setDocumentNumber(documentNewNumber);
+            }
+        }
         return financialDocumentRepository.save(financialDocument);
     }
 
