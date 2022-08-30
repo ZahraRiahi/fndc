@@ -1,6 +1,5 @@
 package ir.demisco.cfs.app.web.controller;
 
-import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentTransferRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
 import ir.demisco.cfs.model.dto.response.FinancialCentricAccountDto;
@@ -22,7 +21,6 @@ import ir.demisco.cfs.service.api.TransferFinancialDocumentService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
-import ir.demisco.core.utils.DateUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -30,12 +28,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.text.ParseException;
-import java.text.ParsePosition;
-import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 
 @RestController
@@ -68,12 +60,14 @@ public class FinancialDocumentController {
         result = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
         return ResponseEntity.ok(result);
     }
+
     @PostMapping("/CreateNumberUpdate")
     public ResponseEntity<String> creatNumberUpdate(@RequestBody FinancialDocumentNumberDto financialDocumentNumberDto) {
         String result;
         result = financialDocumentService.creatDocumentNumberUpdate(financialDocumentNumberDto);
         return ResponseEntity.ok(result);
     }
+
     @PostMapping("/ChangeDescription")
     public ResponseEntity<FinancialDocumentAccountMessageDto> changeDescription(@RequestBody FinancialDocumentChangeDescriptionDto financialDocumentDto) {
         String result;
@@ -141,34 +135,9 @@ public class FinancialDocumentController {
 
     @PostMapping("/TransferDocument")
     public ResponseEntity<FinancialDocumentTransferOutputResponse> transferDocument(@RequestBody FinancialDocumentTransferRequest financialDocumentTransferRequest) {
-        financialDocumentTransferRequest.setDate(parseStringToLocalDateTime(String.valueOf(financialDocumentTransferRequest.getDate()), false));
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         financialDocumentTransferRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(transferFinancialDocumentService.transferDocument(financialDocumentTransferRequest));
-    }
-
-    private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
-        if (input instanceof String) {
-            return checkTry(input, truncateDate);
-        } else if (input instanceof LocalDateTime) {
-            return truncateDate ? DateUtil.truncate((LocalDateTime) input) : (LocalDateTime) input;
-        } else {
-            throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
-        }
-    }
-
-    private LocalDateTime checkTry(Object input, boolean truncateDate) {
-        try {
-            Date date = ISO8601Utils.parse((String) input, new ParsePosition(0));
-            LocalDateTime localDateTime = date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-            return truncateDate ? DateUtil.truncate(localDateTime) : localDateTime;
-        } catch (ParseException var4) {
-            if (((String) input).equalsIgnoreCase("current_date")) {
-                return truncateDate ? DateUtil.truncate(LocalDateTime.now()) : LocalDateTime.now();
-            } else {
-                return ((String) input).equalsIgnoreCase("current_timestamp") ? LocalDateTime.now() : LocalDateTime.parse((String) input);
-            }
-        }
     }
 
     @PostMapping("/Get")
