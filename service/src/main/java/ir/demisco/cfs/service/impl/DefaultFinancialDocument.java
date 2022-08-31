@@ -1170,7 +1170,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         entityManager.createNativeQuery("update fndc.financial_document_item  fndi_outer " +
                 "   set fndi_outer.sequence_number = " +
                 "       (select rn " +
-                "          from (select ROW_NUMBER() over(order by fndi.credit_amount - fndi.debit_amount desc, fnc.code, cnt1.code, cnt2.code, cnt3.code, cnt4.code, cnt5.code, cnt6.code) as rn, " +
+                "          from (select ROW_NUMBER() over(order by fndi.debit_amount - fndi.credit_amount desc, fnc.code, cnt1.code, cnt2.code, cnt3.code, cnt4.code, cnt5.code, cnt6.code) as rn, " +
                 "                       fndi.id " +
                 "                  from fndc.financial_document_item fndi " +
                 "                 left join fnac.financial_account fnc " +
