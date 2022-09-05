@@ -28,6 +28,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+
 import java.util.List;
 
 @RestController
@@ -159,5 +160,10 @@ public class FinancialDocumentController {
     @PostMapping("/GetPeriodLedgerStatus")
     public ResponseEntity<FinancialPeriodStatusResponse> responseEntity(@RequestBody FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest) {
         return ResponseEntity.ok(financialDocumentService.getFinancialPeriodStatus(financialPeriodLedgerStatusRequest));
+    }
+
+    @PostMapping("/GetProblem")
+    public ResponseEntity<DataSourceResult> financialDocumentResponseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
+        return ResponseEntity.ok(financialDocumentService.getProblemReport(dataSourceRequest));
     }
 }

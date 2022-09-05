@@ -93,7 +93,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "            0 " +
             "         END REMAIN_CREDIT, " +
             "                  SUM(DEBIT_AMOUNT - CREDIT_AMOUNT) OVER(ORDER BY ID, DOCUMENT_DATE, DOCUMENT_NUMBER, FINANCIAL_DOCUMENT_ID, FINANCIAL_DOCUMENT_ITEM_ID, FINANCIAL_ACCOUNT_CODE, FINANCIAL_ACCOUNT_DESCRIPTION, TYP) REMAIN_AMOUNT, " +
-
             "         0 SUM_DEBIT, " +
             "         0 SUM_CREDIT, " +
             "         0 SUMMERIZE_DEBIT, " +
