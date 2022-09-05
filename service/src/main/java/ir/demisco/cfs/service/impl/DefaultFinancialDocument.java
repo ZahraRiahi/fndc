@@ -2,6 +2,7 @@ package ir.demisco.cfs.service.impl;
 
 import com.fasterxml.jackson.databind.util.ISO8601Utils;
 import ir.demisco.cfs.model.dto.request.ControlFinancialAccountNatureTypeInputRequest;
+import ir.demisco.cfs.model.dto.request.FinancialDocumentFilterRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodRequest;
@@ -11,6 +12,7 @@ import ir.demisco.cfs.model.dto.response.FinancialDocumentAccountDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentChangeDescriptionDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentErrorDto;
+import ir.demisco.cfs.model.dto.response.FinancialDocumentFilterResponse;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentNumberDto;
 import ir.demisco.cfs.model.dto.response.FinancialNumberingRecordDto;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodStatusResponse;
@@ -61,6 +63,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.EntityManager;
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.time.LocalDateTime;
@@ -167,6 +170,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         .financialDocumentStatusId(Long.parseLong(item[11].toString()))
                         .financialDocumentStatusName(item[12].toString())
                         .financialDocumentStatusCode(item[13].toString())
+                        .departmentId(Long.parseLong(item[14].toString()))
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(documentDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
@@ -1287,4 +1291,145 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         return financialPeriodStatusResponses;
     }
 
+    private FinancialDocumentFilterRequest setParameterProblem(List<DataSourceRequest.FilterDescriptor> filters) {
+        FinancialDocumentFilterRequest financialDocumentFilterRequest = new FinancialDocumentFilterRequest();
+        for (DataSourceRequest.FilterDescriptor item : filters) {
+            switch (item.getField()) {
+                case "financialDepartmentId":
+                    checkFinancialDepartmentIdSet(financialDocumentFilterRequest, item);
+                    break;
+                case "fromDate":
+                    checkFromDateForDate(financialDocumentFilterRequest, item);
+                    break;
+
+                case "toDate":
+                    checkToDateForDate(financialDocumentFilterRequest, item);
+                    break;
+
+                case "departmentId":
+                    checkDepartmentIdSet(financialDocumentFilterRequest, item);
+                    break;
+
+                case "financialLedgerTypeId":
+                    checkFinancialLedgerTypeIdSet(financialDocumentFilterRequest, item);
+
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        return financialDocumentFilterRequest;
+    }
+
+    private void checkFinancialDepartmentIdSet(FinancialDocumentFilterRequest
+                                                       financialDocumentFilterRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("financialDepartment", "financialDepartment");
+            financialDocumentFilterRequest.setParamMap(map);
+            financialDocumentFilterRequest.setFinancialDepartmentId(Long.parseLong(item.getValue().toString()));
+            financialDocumentFilterRequest.setFinancialDepartment("financialDepartment");
+        } else {
+            map.put("financialDepartment", null);
+            financialDocumentFilterRequest.setParamMap(map);
+            financialDocumentFilterRequest.setFinancialDepartmentId(0L);
+        }
+    }
+
+    private void checkFromDateForDate(FinancialDocumentFilterRequest
+                                              financialDocumentFilterRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("fromDate", "fromDate");
+            financialDocumentFilterRequest.setParamMap(map);
+            financialDocumentFilterRequest.setFromDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        } else {
+            map.put("fromDate", null);
+            financialDocumentFilterRequest.setParamMap(map);
+            financialDocumentFilterRequest.setFromDate(null);
+        }
+    }
+
+    private void checkToDateForDate(FinancialDocumentFilterRequest
+                                            financialDocumentFilterRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("toDate", "toDate");
+            financialDocumentFilterRequest.setParamMap(map);
+            financialDocumentFilterRequest.setToDate(parseStringToLocalDateTime(String.valueOf(item.getValue()), false));
+        } else {
+            map.put("toDate", null);
+            financialDocumentFilterRequest.setParamMap(map);
+            financialDocumentFilterRequest.setToDate(null);
+        }
+    }
+
+    private void checkDepartmentIdSet(FinancialDocumentFilterRequest
+                                              financialDocumentFilterRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("department", "department");
+            financialDocumentFilterRequest.setParamMap(map);
+            financialDocumentFilterRequest.setDepartmentId(Long.parseLong(item.getValue().toString()));
+            financialDocumentFilterRequest.setDepartment("department");
+        } else {
+            map.put("department", null);
+            financialDocumentFilterRequest.setParamMap(map);
+            financialDocumentFilterRequest.setDepartmentId(0L);
+        }
+
+    }
+
+    private void checkFinancialLedgerTypeIdSet(FinancialDocumentFilterRequest
+                                                       financialDocumentFilterRequest, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            map.put("financialLedgerType", "financialLedgerType");
+            financialDocumentFilterRequest.setParamMap(map);
+            financialDocumentFilterRequest.setFinancialLedgerTypeId(Long.parseLong(item.getValue().toString()));
+            financialDocumentFilterRequest.setFinancialLedgerType("financialLedgerType");
+        } else {
+            map.put("financialLedgerType", null);
+            financialDocumentFilterRequest.setParamMap(map);
+            financialDocumentFilterRequest.setFinancialLedgerTypeId(0L);
+        }
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public DataSourceResult getProblemReport(DataSourceRequest dataSourceRequest) {
+        List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
+        FinancialDocumentFilterRequest paramSearch = setParameterProblem(filters);
+        List<Sort.Order> sorts = new ArrayList<>();
+        dataSourceRequest.getSort()
+                .forEach((DataSourceRequest.SortDescriptor sortDescriptor) ->
+                        {
+                            if (sortDescriptor.getDir().equals("asc")) {
+                                sorts.add(Sort.Order.asc(sortDescriptor.getField()));
+                            } else {
+                                sorts.add(Sort.Order.desc(sortDescriptor.getField()));
+                            }
+                        }
+                );
+        Pageable pageable = PageRequest.of((dataSourceRequest.getSkip() / dataSourceRequest.getTake()), dataSourceRequest.getTake(), Sort.by(sorts));
+        Page<Object[]> list = financialDocumentRepository.findByFinancialDocument(SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getFromDate()
+                , paramSearch.getToDate(), paramSearch.getDepartment(), paramSearch.getDepartmentId(), paramSearch.getFinancialDepartment(), paramSearch.getFinancialDepartmentId(), paramSearch.getFinancialLedgerType()
+                , paramSearch.getFinancialLedgerTypeId(), pageable);
+        List<FinancialDocumentFilterResponse> documentDtoList = list.stream().map(item ->
+                FinancialDocumentFilterResponse.builder()
+                        .id(item[0] == null ? null : ((BigDecimal) item[0]).longValue())
+                        .documentNumber(item[1] == null ? null : item[1].toString())
+                        .documentDate(item[2] == null ? null : ((Timestamp) item[2]).toLocalDateTime())
+                        .errorType(item[3] == null ? null : ((BigDecimal) item[3]).longValue())
+                        .listSeq(item[4] == null ? null : item[4].toString())
+                        .errorMessage(item[5] == null ? null : item[5].toString())
+                        .build()).collect(Collectors.toList());
+        DataSourceResult dataSourceResult = new DataSourceResult();
+        dataSourceResult.setData(documentDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
+        dataSourceResult.setData(documentDtoList);
+        dataSourceResult.setTotal(list.getTotalElements());
+        return dataSourceResult;
+    }
 }
