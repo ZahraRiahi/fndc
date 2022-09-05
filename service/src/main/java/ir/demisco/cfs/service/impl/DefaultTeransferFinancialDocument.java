@@ -37,7 +37,7 @@ import org.hibernate.internal.util.SerializationHelper;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
@@ -157,14 +157,14 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         List<Object[]> financialDocumentTarget = financialDocumentRepository.findFinancialDocumentById(targetDocumentId);
 
         FinancialDocument financialDocument = financialDocumentRepository.findById(targetDocumentId).orElse(new FinancialDocument());
-        financialDocument.setDocumentDate(financialDocumentSource.get(0)[0] == null ? null : (LocalDateTime) financialDocumentSource.get(0)[0]);
+        financialDocument.setDocumentDate(financialDocumentSource.get(0)[0] == null ? null : ((Timestamp) financialDocumentSource.get(0)[0]).toLocalDateTime());
         financialDocument.setDocumentNumber(financialDocumentSource.get(0)[1] == null ? null : financialDocumentSource.get(0)[1].toString());
         financialDocument.setFinancialPeriod(financialPeriodRepository.getOne(Long.parseLong(financialDocumentSource.get(0)[2].toString())));
         financialDocument.setDescription(financialDocumentSource.get(0)[3] == null ? null : financialDocumentSource.get(0)[3].toString());
         financialDocumentRepository.save(financialDocument);
 
         FinancialDocument financialDocumentUpdateTarget = financialDocumentRepository.findById(financialDocumentTransferRequest.getId()).orElse(new FinancialDocument());
-        financialDocumentUpdateTarget.setDocumentDate(financialDocumentTarget.get(0)[0] == null ? null : (LocalDateTime) financialDocumentTarget.get(0)[0]);
+        financialDocumentUpdateTarget.setDocumentDate(financialDocumentTarget.get(0)[0] == null ? null : ((Timestamp) financialDocumentTarget.get(0)[0]).toLocalDateTime());
         financialDocumentUpdateTarget.setDocumentNumber(financialDocumentTarget.get(0)[1] == null ? null : financialDocumentTarget.get(0)[1].toString());
         financialDocumentUpdateTarget.setFinancialPeriod(financialPeriodRepository.getOne(Long.parseLong(financialDocumentTarget.get(0)[2].toString())));
         financialDocumentUpdateTarget.setDescription(financialDocumentTarget.get(0)[3] == null ? null : financialDocumentTarget.get(0)[3].toString());
