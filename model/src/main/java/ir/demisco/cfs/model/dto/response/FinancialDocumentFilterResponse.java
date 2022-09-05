@@ -67,7 +67,7 @@ public class FinancialDocumentFilterResponse {
             financialDocumentFilterResponse = new FinancialDocumentFilterResponse();
         }
 
-        public static Builder بinancialDocumentFilterResponse() {
+        public static Builder financialDocumentFilterResponse() {
             return new Builder();
         }
 
