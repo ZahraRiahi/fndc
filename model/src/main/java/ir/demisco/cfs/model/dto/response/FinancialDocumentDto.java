@@ -20,6 +20,7 @@ public class FinancialDocumentDto {
     private Long financialDocumentStatusId;
     private String financialDocumentStatusName;
     private String financialDocumentStatusCode;
+    private Long departmentId;
 
     public Long getId() {
         return id;
@@ -142,6 +143,14 @@ public class FinancialDocumentDto {
         this.financialDocumentStatusCode = financialDocumentStatusCode;
     }
 
+    public Long getDepartmentId() {
+        return departmentId;
+    }
+
+    public void setDepartmentId(Long departmentId) {
+        this.departmentId = departmentId;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -232,7 +241,10 @@ public class FinancialDocumentDto {
             financialDocumentDto.setFinancialDocumentStatusCode(financialDocumentStatusCode);
             return this;
         }
-
+        public Builder departmentId(Long departmentId) {
+            financialDocumentDto.setDepartmentId(departmentId);
+            return this;
+        }
         public FinancialDocumentDto build() {
             return financialDocumentDto;
         }
