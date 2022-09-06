@@ -103,6 +103,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
                         .financialAccountCode(item[10] == null ? null : item[10].toString())
                         .financialDocumentId(Long.parseLong(item[11].toString()))
                         .centricAccountDescription(item[12] == null ? null : item[12].toString())
+
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(documentItemDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));

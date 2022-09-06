@@ -30,7 +30,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "       NVL2(CN3.CODE, '-' || CN3.CODE, '') || NVL(CN3.NAME, '') || " +
             "       NVL2(CN4.CODE, '-' || CN4.CODE, '') || NVL(CN4.NAME, '') || " +
             "       NVL2(CN5.CODE, '-' || CN5.CODE, '') || NVL(CN5.NAME, '') || " +
-            "       NVL2(CN6.CODE, '-' || CN6.CODE, '') || NVL(CN6.NAME, '') as CENTRICACCOUNTDESCRIPTION   " +
+            "       NVL2(CN6.CODE, '-' || CN6.CODE, '') || NVL(CN6.NAME, '') as CENTRICACCOUNTDESCRIPTION ," +
+            " FIDC.DEPARTMENT_ID as departmentId  " +
             "  FROM fndc.FINANCIAL_DOCUMENT FIDC " +
             " INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FNDI " +
             "    ON FIDC.ID = FNDI.FINANCIAL_DOCUMENT_ID " +
@@ -69,7 +70,8 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "                                                        :departmentId," +
             "                                                        :userId)) FNSC " +
             " WHERE FIDC.ORGANIZATION_ID = :organizationId and " +
-            " FIDC.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  " +
+            " FIDC.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
+            " and FIDC.DEPARTMENT_ID= :departmentId  " +
             " and FIDC.DOCUMENT_DATE >= :startDate " +
             "   AND FIDC.DOCUMENT_DATE <= :endDate" +
             " AND FNDI.CREDIT_AMOUNT = CASE " +
@@ -168,6 +170,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "    :userId)) FNSC" +
             " WHERE FIDC.ORGANIZATION_ID = :organizationId and " +
             " FIDC.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  " +
+            " and FIDC.DEPARTMENT_ID= :departmentId  " +
             " and  FIDC.DOCUMENT_DATE >= :startDate " +
             "   AND FIDC.DOCUMENT_DATE <= :endDate" +
             " AND FNDI.CREDIT_AMOUNT = CASE " +
