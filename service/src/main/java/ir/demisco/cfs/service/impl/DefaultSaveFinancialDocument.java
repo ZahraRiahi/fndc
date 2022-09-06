@@ -52,6 +52,7 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 import java.util.stream.Collectors;
 
 @Service
@@ -441,6 +442,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         if (financialDocumentSaveDto.getFinancialDocumentStatusId() != 1) {
             throw new RuleException("fin.financialDocument.documentStatusCreat");
         }
+        Random rand = new Random(System.currentTimeMillis());
         FinancialDocument financialDocument = financialDocumentRepository.
                 findById(financialDocumentSaveDto.getFinancialDocumentId() == null ? 0L : financialDocumentSaveDto.getFinancialDocumentId()).orElse(new FinancialDocument());
         financialDocument.setDocumentDate(financialDocumentSaveDto.getDocumentDate());
@@ -453,7 +455,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialDocument.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialDocumentSaveDto.getFinancialLedgerTypeId()));
         financialDocument.setFinancialDepartment(financialDepartmentRepository.getOne(financialDocumentSaveDto.getFinancialDepartmentId()));
         financialDocument.setDepartment(departmentRepository.getOne(financialDocumentSaveDto.getDepartmentId()));
-        financialDocument.setDocumentNumber("X9999999X");
+        financialDocument.setDocumentNumber("X" + rand);
         return financialDocumentRepository.save(financialDocument);
     }
 

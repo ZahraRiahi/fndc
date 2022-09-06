@@ -1,9 +1,6 @@
 package ir.demisco.cfs.model.entity;
 
 import ir.demisco.cloud.basic.model.entity.domain.AuditModel;
-import ir.demisco.cloud.basic.model.entity.org.Department;
-import ir.demisco.cloud.basic.model.entity.org.Organization;
-
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
@@ -22,9 +19,7 @@ public class FinancialDepartment extends AuditModel<Long> {
     private String code;
     private String name;
     private LocalDateTime deletedDate;
-    private Organization organization;
     private FinancialSystem financialSystem;
-    private Department department;
 
     @Override
     @Id
@@ -59,16 +54,6 @@ public class FinancialDepartment extends AuditModel<Long> {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "ORGANIZATION_ID")
-    public Organization getOrganization() {
-        return organization;
-    }
-
-    public void setOrganization(Organization organization) {
-        this.organization = organization;
-    }
-
-    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "FINANCIAL_SYSTEM_ID")
     public FinancialSystem getFinancialSystem() {
         return financialSystem;
@@ -78,13 +63,4 @@ public class FinancialDepartment extends AuditModel<Long> {
         this.financialSystem = financialSystem;
     }
 
-    @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "DEPARTMENT_ID")
-    public Department getDepartment() {
-        return department;
-    }
-
-    public void setDepartment(Department department) {
-        this.department = department;
-    }
 }
