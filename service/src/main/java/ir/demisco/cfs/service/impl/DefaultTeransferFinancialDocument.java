@@ -40,6 +40,7 @@ import javax.transaction.Transactional;
 import java.sql.Timestamp;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Random;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
@@ -57,7 +58,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
     private final FinancialPeriodRepository financialPeriodRepository;
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
     private final FinancialDocumentHeaderService financialDocumentHeaderService;
-    private  final DepartmentRepository departmentRepository;
+    private final DepartmentRepository departmentRepository;
 
 
     public DefaultTeransferFinancialDocument(FinancialDocumentService financialDocumentService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentItemRepository financialDocumentItemRepository,
@@ -293,6 +294,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی سند مبداء میبایست در وضعیت باز باشند");
         }
+        Random rand = new Random(System.currentTimeMillis());
         FinancialDocument financialDocument = financialDocumentRepository.findById(financialDocumentTransferRequest.getId() == null ? 0L : financialDocumentTransferRequest.getId()).orElse(new FinancialDocument());
         FinancialDocument financialDocumentSave;
         financialDocumentSave = (FinancialDocument) SerializationHelper.clone(financialDocument);
@@ -300,7 +302,7 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         financialDocumentSave.setDocumentDate(financialDocumentTransferRequest.getDate());
         financialDocumentSave.setFinancialDocumentStatus(financialDocumentStatusRepository.getOne(1L));
         financialDocumentSave.setOrganization(organizationRepository.getOne(SecurityHelper.getCurrentUser().getOrganizationId()));
-        financialDocumentSave.setDocumentNumber("X9999999X");
+        financialDocumentSave.setDocumentNumber("X" + rand);
         financialDocumentSave.setDepartment(departmentRepository.getOne(financialDocumentHeaderOutputResponse.getDepartmentId()));
         financialDocumentSave = financialDocumentRepository.save(financialDocumentSave);
         financialDocumentRepository.flush();
