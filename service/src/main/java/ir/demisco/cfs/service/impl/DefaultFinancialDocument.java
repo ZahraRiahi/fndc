@@ -1432,4 +1432,5 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         dataSourceResult.setTotal(list.getTotalElements());
         return dataSourceResult;
     }
+
 }

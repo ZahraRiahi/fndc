@@ -49,4 +49,5 @@ public interface FinancialDocumentService {
     FinancialPeriodStatusResponse getFinancialPeriodStatus(FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest);
 
     DataSourceResult getProblemReport(DataSourceRequest dataSourceRequest);
+
 }
