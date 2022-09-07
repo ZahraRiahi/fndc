@@ -1414,9 +1414,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         }
                 );
         Pageable pageable = PageRequest.of((dataSourceRequest.getSkip() / dataSourceRequest.getTake()), dataSourceRequest.getTake(), Sort.by(sorts));
-        Page<Object[]> list = financialDocumentRepository.findByFinancialDocument(SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getFromDate()
-                , paramSearch.getToDate(), paramSearch.getDepartment(), paramSearch.getDepartmentId(), paramSearch.getFinancialDepartment(), paramSearch.getFinancialDepartmentId(), paramSearch.getFinancialLedgerType()
-                , paramSearch.getFinancialLedgerTypeId(), pageable);
+        Page<Object[]> list = financialDocumentRepository.findByFinancialDocument(SecurityHelper.getCurrentUser().getOrganizationId(), paramSearch.getFromDate(), paramSearch.getToDate(),
+                paramSearch.getFinancialDepartment(), paramSearch.getFinancialDepartmentId(), paramSearch.getDepartment(), paramSearch.getDepartmentId(),
+                paramSearch.getFinancialLedgerType(), paramSearch.getFinancialLedgerTypeId(), pageable);
         List<FinancialDocumentFilterResponse> documentDtoList = list.stream().map(item ->
                 FinancialDocumentFilterResponse.builder()
                         .id(item[0] == null ? null : ((BigDecimal) item[0]).longValue())

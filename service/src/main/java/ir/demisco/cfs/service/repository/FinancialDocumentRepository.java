@@ -55,8 +55,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "  WHERE FIDC.ORGANIZATION_ID = :organizationId" +
             "   and FIDC.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
             " and FIDC.DEPARTMENT_ID= :departmentId  " +
-            "   and FIDC.DOCUMENT_DATE >= trunc(:startDate)" +
-            "   AND FIDC.DOCUMENT_DATE <= trunc(:endDate)" +
+            "   and FIDC.DOCUMENT_DATE >= trunc(:startDate) " +
+            "   AND FIDC.DOCUMENT_DATE <= trunc(:endDate) " +
             "   AND FNDI.CREDIT_AMOUNT = CASE" +
             "         WHEN :priceTypeId = 1 THEN" +
             "          0" +
@@ -70,20 +70,20 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "          FNDI.DEBIT_AMOUNT" +
             "       END" +
             "   AND FNDN.FINANCIAL_NUMBERING_TYPE_ID = :financialNumberingTypeId" +
-            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL)" +
-            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL)" +
-            "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId)" +
+            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL) " +
+            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL) " +
+            "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId) " +
             "   AND (FIDC.DESCRIPTION LIKE '%' || :description || '%' OR" +
-            "       :description IS NULL)" +
-            "   AND ((FC.CODE >= :fromAccountCode OR :fromAccount IS NULL) AND" +
-            "       (FC.CODE <= :toAccountCode OR :toAccount IS NULL))" +
+            "       :description IS NULL) " +
+            "   AND ((FC.CODE >= :fromAccountCode OR :fromAccount IS NULL) AND " +
+            "       (FC.CODE <= :toAccountCode OR :toAccount IS NULL)) " +
             "   AND (:centricAccount IS NULL OR" +
             "       (FNDI.CENTRIC_ACCOUNT_ID_1 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_2 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_3 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_4 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_5 = :centricAccountId OR" +
-            "       FNDI.CENTRIC_ACCOUNT_ID_6 = :centricAccountId))" +
+            "       FNDI.CENTRIC_ACCOUNT_ID_6 = :centricAccountId)) " +
             "   AND (:centricAccountType IS NULL OR" +
             "       :centricAccountTypeId IN" +
             "       (SELECT CNT.CENTRIC_ACCOUNT_TYPE_ID" +
@@ -93,25 +93,25 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "             OR FNDI.CENTRIC_ACCOUNT_ID_3 = CNT.ID" +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_4 = CNT.ID" +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_5 = CNT.ID" +
-            "             OR FNDI.CENTRIC_ACCOUNT_ID_6 = CNT.ID))" +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_6 = CNT.ID)) " +
             "   AND (:documentUser IS NULL OR (FIDC.CREATOR_ID = :documentUserId OR" +
-            "       FIDC.LAST_MODIFIER_ID = :documentUserId))" +
+            "       FIDC.LAST_MODIFIER_ID = :documentUserId)) " +
             "  AND (:priceType IS NULL OR" +
-            "       (:priceTypeId = 1 AND" +
+            "       (:priceTypeId = 1 AND " +
             "       (:fromPrice IS NULL OR" +
-            "       (FNDI.DEBIT_AMOUNT >=" +
-            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0)) AND" +
+            "       (FNDI.DEBIT_AMOUNT >= " +
+            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0)) AND " +
             "       (:toPrice IS NULL OR" +
-            "       (FNDI.DEBIT_AMOUNT <=" +
+            "       (FNDI.DEBIT_AMOUNT <= " +
             "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0)))) OR" +
-            "       (:priceTypeId = 2 AND" +
+            "       (:priceTypeId = 2 AND " +
             "       (:fromPrice IS NULL OR" +
-            "       (FNDI.CREDIT_AMOUNT >=" +
-            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0)) AND" +
+            "       (FNDI.CREDIT_AMOUNT >= " +
+            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0)) AND " +
             "       (:toPrice IS NULL OR" +
-            "       (FNDI.CREDIT_AMOUNT <=" +
-            "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0))))) " +
-            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
+            "       (FNDI.CREDIT_AMOUNT <= " +
+            "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0 ))))) " +
+            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) " +
             "   and FNSC.SEC_RESULT = 1" +
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,fidc.financial_document_type_id,fndt.description," +
             " FINANCIAL_DOCUMENT_STATUS_ID, " +
@@ -148,8 +148,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "  WHERE FIDC.ORGANIZATION_ID = :organizationId" +
             "   and FIDC.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId" +
             " and FIDC.DEPARTMENT_ID= :departmentId  " +
-            "   and FIDC.DOCUMENT_DATE >= trunc(:startDate)" +
-            "   AND FIDC.DOCUMENT_DATE <= trunc(:endDate)" +
+            "   and FIDC.DOCUMENT_DATE >= trunc(:startDate) " +
+            "   AND FIDC.DOCUMENT_DATE <= trunc(:endDate) " +
             "   AND FNDI.CREDIT_AMOUNT = CASE" +
             "         WHEN :priceTypeId = 1 THEN" +
             "          0" +
@@ -163,20 +163,20 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "          FNDI.DEBIT_AMOUNT" +
             "       END" +
             "   AND FNDN.FINANCIAL_NUMBERING_TYPE_ID = :financialNumberingTypeId" +
-            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL)" +
-            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL)" +
-            "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId)" +
+            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL) " +
+            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL) " +
+            "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId) " +
             "   AND (FIDC.DESCRIPTION LIKE '%' || :description || '%' OR" +
-            "       :description IS NULL)" +
-            "   AND ((FC.CODE >= :fromAccountCode OR :fromAccount IS NULL) AND" +
-            "       (FC.CODE <= :toAccountCode OR :toAccount IS NULL))" +
+            "       :description IS NULL) " +
+            "   AND ((FC.CODE >= :fromAccountCode OR :fromAccount IS NULL) AND " +
+            "       (FC.CODE <= :toAccountCode OR :toAccount IS NULL)) " +
             "   AND (:centricAccount IS NULL OR" +
             "       (FNDI.CENTRIC_ACCOUNT_ID_1 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_2 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_3 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_4 = :centricAccountId OR" +
             "       FNDI.CENTRIC_ACCOUNT_ID_5 = :centricAccountId OR" +
-            "       FNDI.CENTRIC_ACCOUNT_ID_6 = :centricAccountId))" +
+            "       FNDI.CENTRIC_ACCOUNT_ID_6 = :centricAccountId)) " +
             "   AND (:centricAccountType IS NULL OR" +
             "       :centricAccountTypeId IN" +
             "       (SELECT CNT.CENTRIC_ACCOUNT_TYPE_ID" +
@@ -186,25 +186,25 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "             OR FNDI.CENTRIC_ACCOUNT_ID_3 = CNT.ID" +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_4 = CNT.ID" +
             "             OR FNDI.CENTRIC_ACCOUNT_ID_5 = CNT.ID" +
-            "             OR FNDI.CENTRIC_ACCOUNT_ID_6 = CNT.ID))" +
+            "             OR FNDI.CENTRIC_ACCOUNT_ID_6 = CNT.ID)) " +
             "   AND (:documentUser IS NULL OR (FIDC.CREATOR_ID = :documentUserId OR" +
-            "       FIDC.LAST_MODIFIER_ID = :documentUserId))" +
+            "       FIDC.LAST_MODIFIER_ID = :documentUserId)) " +
             "  AND (:priceType IS NULL OR" +
-            "       (:priceTypeId = 1 AND" +
+            "       (:priceTypeId = 1 AND " +
             "       (:fromPrice IS NULL OR" +
-            "       (FNDI.DEBIT_AMOUNT >=" +
-            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0)) AND" +
+            "       (FNDI.DEBIT_AMOUNT >= " +
+            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0 )) AND " +
             "       (:toPrice IS NULL OR" +
-            "       (FNDI.DEBIT_AMOUNT <=" +
-            "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0)))) OR" +
-            "       (:priceTypeId = 2 AND" +
+            "       (FNDI.DEBIT_AMOUNT <= " +
+            "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) /  100.0 )))) OR" +
+            "       (:priceTypeId = 2 AND " +
             "       (:fromPrice IS NULL OR" +
-            "       (FNDI.CREDIT_AMOUNT >=" +
-            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0)) AND" +
+            "       (FNDI.CREDIT_AMOUNT >= " +
+            "       :fromPriceAmount - (:fromPriceAmount * NVL(:tolerance, 0)) / 100.0 )) AND " +
             "       (:toPrice IS NULL OR" +
-            "       (FNDI.CREDIT_AMOUNT <=" +
-            "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0))))) " +
-            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId )" +
+            "       (FNDI.CREDIT_AMOUNT <= " +
+            "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0 ))))) " +
+            " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) " +
             "   and FNSC.SEC_RESULT = 1" +
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description, " +
             "   FINANCIAL_DOCUMENT_STATUS_ID, " +
@@ -213,7 +213,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " FIDC.DEPARTMENT_ID "
             , nativeQuery = true)
     Page<Object[]> getFinancialDocumentList(String activityCode, Long departmentId, Long userId,
-                                            Long organizationId, Long ledgerTypeId,LocalDateTime startDate, LocalDateTime endDate,
+                                            Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate,
                                             Long priceTypeId, Long financialNumberingTypeId, Long fromNumberId, Object fromNumber,
                                             Long toNumberId, Object toNumber, List<Long> documentStatusId, String description, String fromAccountCode, Object fromAccount,
                                             String toAccountCode, Object toAccount, Object centricAccount, Long centricAccountId,
@@ -221,10 +221,10 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
                                             Long fromPriceAmount, Object toPrice, Long toPriceAmount,
                                             Double tolerance, Object financialDocumentType, Long financialDocumentTypeId, Pageable pageable);
 
-    @Query("select fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:financialDocumentId")
+    @Query(" SELECT fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:financialDocumentId")
     FinancialDocument getActivePeriodInDocument(Long financialDocumentId);
 
-    @Query("select fd from FinancialDocument fd where fd.id=:financialDocumentId and fd.deletedDate is null")
+    @Query(" SELECT fd from FinancialDocument fd where fd.id=:financialDocumentId and fd.deletedDate is null")
     FinancialDocument getActiveDocumentById(Long financialDocumentId);
 
     @Query(value = " select 1" +
@@ -250,7 +250,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                 when 2 then" +
             "                  extract(month from TO_DATE(TO_char(fd.document_date," +
             "                                          'mm/dd/yyyy')," +
-            "                                  'mm/dd/yyyy'))" +
+            "                                  'mm/dd/yyyy')) " +
             "                 when 1 then" +
             "                  TO_NUMBER(substr(TO_CHAR(TO_DATE(TO_char(fd.document_date," +
             "                                                           'mm/dd/yyyy')," +
@@ -258,7 +258,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                                           'yyyy/mm/dd'," +
             "                                           'NLS_CALENDAR=persian')," +
             "                                   6," +
-            "                                   2))" +
+            "                                   2)) " +
             "               end = case" +
             "                 when fpt.current_year_flag = 1 then" +
             "                  fpt.from_month + fmt.month_number - 1" +
@@ -299,12 +299,12 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                                                 '$LEG'," +
             "                                                 (SELECT LT.CODE" +
             "                                                    FROM fndc.FINANCIAL_LEDGER_TYPE LT" +
-            "                                                   WHERE LT.ID =" +
+            "                                                   WHERE LT.ID = " +
             "                                                         FD.FINANCIAL_LEDGER_TYPE_ID))," +
             "                                         '$DEP'," +
             "                                         (SELECT DP.CODE" +
             "                                            FROM ORG.DEPARTMENT DP" +
-            "                                           WHERE DP.ID =" +
+            "                                           WHERE DP.ID = " +
             "                                                 FD.DEPARTMENT_ID))," +
             "                                 '$ORG'," +
             "                                 (SELECT OG.CODE" +
@@ -371,12 +371,12 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                                                '$LEG'," +
             "                                                (SELECT LT.CODE" +
             "                                                   FROM fndc.FINANCIAL_LEDGER_TYPE LT" +
-            "                                                  WHERE LT.ID =" +
+            "                                                  WHERE LT.ID = " +
             "                                                        FD.FINANCIAL_LEDGER_TYPE_ID))," +
             "                                        '$DEP'," +
             "                                        (SELECT DP.CODE" +
             "                                            FROM ORG.DEPARTMENT DP" +
-            "                                           WHERE DP.ID =" +
+            "                                           WHERE DP.ID = " +
             "                                                 FD.DEPARTMENT_ID))," +
             "                                '$ORG'," +
             "                                (SELECT OG.CODE" +
@@ -410,7 +410,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     List<Object[]> findDocumentNumber(Long organizationId, Long financialDocumentId, Long numberingType);
 
-    @Query(value = "SELECT min(FD.DOCUMENT_DATE) " +
+    @Query(value = " SELECT min(FD.DOCUMENT_DATE) " +
             "      FROM FNDC.FINANCIAL_DOCUMENT FD " +
             "     INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER DN " +
             "        ON FD.ID = DN.FINANCIAL_DOCUMENT_ID " +
@@ -422,7 +422,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     LocalDateTime findByFinancialDocumentByNumberingTypeAndFromNumber(Long documentNumberingTypeId, String fromNumber, Long organizationId);
 
-    @Query(value = "SELECT max(FD.DOCUMENT_DATE) " +
+    @Query(value = " SELECT max(FD.DOCUMENT_DATE) " +
             "      FROM FNDC.FINANCIAL_DOCUMENT FD " +
             "     INNER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER DN " +
             "        ON FD.ID = DN.FINANCIAL_DOCUMENT_ID " +
@@ -459,7 +459,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     String findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long documentNumberingTypeId, LocalDateTime toDate, Long organizationId);
 
-    @Query(value = "select FND.id  FROM FNDC.FINANCIAL_DOCUMENT FND " +
+    @Query(value = " SELECT FND.id  FROM FNDC.FINANCIAL_DOCUMENT FND " +
             " INNER JOIN FNDC.FINANCIAL_DEPARTMENT FNDP " +
             "    ON FND.FINANCIAL_DEPARTMENT_ID = FNDP.ID " +
             " INNER JOIN FNDC.FINANCIAL_DEPARTMENT_LEDGER FDL " +
@@ -469,7 +469,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     List<Long> usedInFinancialDocument(Long financialDepartmentLedgerId);
 
-    @Query("select fd.financialPeriod.id,fd.documentDate from FinancialDocument  fd " +
+    @Query(" SELECT fd.financialPeriod.id,fd.documentDate from FinancialDocument  fd " +
             " where fd.id=:financialDocumentId and fd.deletedDate is null")
     List<Object[]> financialDocumentById(Long financialDocumentId);
 
@@ -547,7 +547,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     Long findFinancialDocumentByDocumentItemIdDelete(Long financialDocumentItemId);
 
-    @Query("select fnd.id from FinancialDocument fnd join FinancialDocumentItem fndi on fnd.id=fndi.financialDocument.id where fndi.id=:financialDocumentItemId ")
+    @Query(" SELECT fnd.id from FinancialDocument fnd join FinancialDocumentItem fndi on fnd.id=fndi.financialDocument.id where fndi.id=:financialDocumentItemId ")
     Long getDocumentByIdFinancialDocumentItemId(Long financialDocumentItemId);
 
     @Query(value = " select 1" +
@@ -557,1230 +557,1131 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "     or financial_document_type_id != :financialDocumentTypeId" +
             "     or financial_period_id != :financialPeriodId" +
             "     or financial_ledger_type_id != :financialLedgerTypeId" +
-            "     or financial_department_id != :financialDepartmentId)" +
+            "     or financial_department_id != :financialDepartmentId) " +
             "  and fd.id = :id "
             , nativeQuery = true)
     Long findFinancialDocumentByDateAndDepartment(LocalDateTime date, Long organizationId, Long financialDocumentTypeId,
                                                   Long financialPeriodId, Long financialLedgerTypeId, Long financialDepartmentId, Long id);
 
-    @Query(value = " select alll.* FROM  " +
-            " ( SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        1 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        'وجود ردیفهای دارای بدهکار و بستانکار به صورت همزمان ' AS ERROR_MESSAGE  " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)  " +
-            "        AND FD.ORGANIZATION_ID = :organizationId   " +
-            "         and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "        AND FDI.DEBIT_AMOUNT > 0   " +
-            "        AND FDI.CREDIT_AMOUNT > 0 " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        2 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        ' وجود ردیفهای بدون مبلغ ' AS ERROR_MESSAGE  " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)   " +
-            "        AND FD.ORGANIZATION_ID = :organizationId " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "        and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "       and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "        AND FDI.DEBIT_AMOUNT = 0 " +
-            "        AND FDI.CREDIT_AMOUNT = 0 " +
-            "        AND (" +
-            "            FDI.DEBIT_AMOUNT IS NULL " +
-            "            OR FDI.CREDIT_AMOUNT IS NULL" +
-            "        ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        3 AS ERROR_TYPE," +
-            "        ' ردیف : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        ' وجود ردیف با مبلغ منفی ' AS ERROR_MESSAGE  " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)   " +
-            "        AND FD.ORGANIZATION_ID = :organizationId " +
-            "         and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "        and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "       and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "        AND (" +
-            "            FDI.DEBIT_AMOUNT < 0 " +
-            "            OR FDI.CREDIT_AMOUNT < 0" +
-            "        ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        CENTRIC_QRY.ID," +
-            "        DOCUMENT_NUMBER," +
-            "        DOCUMENT_DATE," +
-            "        ERROR_TYPE," +
-            "        TO_CHAR(DI.SEQUENCE_NUMBER)," +
-            "        ERROR_MESSAGE  " +
-            "    FROM" +
-            "       (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) CENTRIC_QRY " +
-            "    INNER JOIN" +
-            "        fndc.FINANCIAL_DOCUMENT_ITEM DI    " +
-            "            ON DI.ID = FDI_ID " +
-            "    WHERE" +
-            "        (" +
-            "            (" +
-            "                NOT EXISTS  (" +
-            "                    SELECT" +
-            "                        1      " +
-            "                    FROM" +
-            "                       (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) DV     " +
-            "                    WHERE" +
-            "                        DI.CENTRIC_ACCOUNT_ID_1 = DV.CENTRIC_ACCOUNT_ID" +
-            "                )" +
-            "            ) " +
-            "            OR (" +
-            "                NOT EXISTS  (" +
-            "                    SELECT" +
-            "                        1      " +
-            "                    FROM" +
-            "                        (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) DV     " +
-            "                    WHERE" +
-            "                        DI.CENTRIC_ACCOUNT_ID_2 = DV.CENTRIC_ACCOUNT_ID" +
-            "                )" +
-            "            ) " +
-            "            OR (" +
-            "                NOT EXISTS  (" +
-            "                    SELECT" +
-            "                        1      " +
-            "                    FROM" +
-            "                        (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) DV     " +
-            "                    WHERE" +
-            "                        DI.CENTRIC_ACCOUNT_ID_3 = DV.CENTRIC_ACCOUNT_ID" +
-            "                )" +
-            "            ) " +
-            "            OR (" +
-            "                NOT EXISTS  (" +
-            "                    SELECT" +
-            "                        1      " +
-            "                    FROM" +
-            "                        (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) DV     " +
-            "                    WHERE" +
-            "                        DI.CENTRIC_ACCOUNT_ID_4 = DV.CENTRIC_ACCOUNT_ID" +
-            "                )" +
-            "            ) " +
-            "            OR (" +
-            "                NOT EXISTS  (" +
-            "                    SELECT" +
-            "                        1      " +
-            "                    FROM" +
-            "                        (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) DV     " +
-            "                    WHERE" +
-            "                        DI.CENTRIC_ACCOUNT_ID_5 = DV.CENTRIC_ACCOUNT_ID" +
-            "                )" +
-            "            ) " +
-            "            OR (" +
-            "                NOT EXISTS  (" +
-            "                    SELECT" +
-            "                        1      " +
-            "                    FROM" +
-            "                        (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) DV     " +
-            "                    WHERE" +
-            "                        DI.CENTRIC_ACCOUNT_ID_6 = DV.CENTRIC_ACCOUNT_ID" +
-            "                )" +
-            "            )" +
-            "        ) " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        5 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        ' سطح آخر نبودن حساب انتخاب شده روی ردیف ' AS ERROR_MESSAGE  " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID " +
-            "    INNER JOIN" +
-            "        FNAC.FINANCIAL_ACCOUNT FA    " +
-            "            ON FA.ID = FDI.FINANCIAL_ACCOUNT_ID " +
-            "    INNER JOIN" +
-            "        FNAC.FINANCIAL_ACCOUNT_STRUCTURE FS    " +
-            "            ON FA.FINANCIAL_ACCOUNT_STRUCTURE_ID = FS.ID " +
-            "    WHERE" +
-            "        EXISTS (" +
-            "            SELECT" +
-            "                1    " +
-            "            FROM" +
-            "                FNAC.FINANCIAL_ACCOUNT FIAC_INNER   " +
-            "            WHERE" +
-            "                FIAC_INNER.FINANCIAL_ACCOUNT_PARENT_ID = FA.ID     " +
-            "                AND FIAC_INNER.DELETED_DATE IS NULL" +
-            "        ) " +
-            "        AND FA.DISABLE_DATE IS NULL " +
-            "        AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)  " +
-            "       AND FD.ORGANIZATION_ID = :organizationId " +
-            "         and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "        and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "      and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        6 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        ' اطلاعات ارزی برای ردیفهای ارزی کامل نیست ' AS ERROR_MESSAGE  " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID " +
-            "    INNER JOIN" +
-            "        FNAC.FINANCIAL_ACCOUNT FA    " +
-            "            ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID " +
-            "            AND FA.EXCHANGE_FLAG = 1 " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM_CURRENCY DC    " +
-            "            ON DC.FINANCIAL_DOCUMENT_ITEM_ID = FDI.ID " +
-            "    WHERE" +
-            "        (" +
-            "            (" +
-            "                DC.FOREIGN_DEBIT_AMOUNT IS NULL " +
-            "                AND DC.FOREIGN_CREDIT_AMOUNT IS NULL" +
-            "            ) " +
-            "            OR DC.EXCHANGE_RATE IS NULL " +
-            "            OR DC.MONEY_PRICING_REFRENCE_ID IS NULL " +
-            "            OR DC.MONEY_TYPE_ID IS NULL" +
-            "        ) " +
-            "        AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)  " +
-            "        AND FD.ORGANIZATION_ID = :organizationId " +
-            "       and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "        and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        7 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        ' عدم همخوانی نوع ارز ' AS ERROR_MESSAGE   " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID " +
-            "    INNER JOIN" +
-            "        FNAC.FINANCIAL_ACCOUNT FA    " +
-            "            ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID " +
-            "            AND FA.EXCHANGE_FLAG = 1 " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM_CURRENCY DC    " +
-            "            ON DC.FINANCIAL_DOCUMENT_ITEM_ID = FDI.ID " +
-            "    WHERE" +
-            "        NOT EXISTS (" +
-            "            SELECT" +
-            "                1    " +
-            "            FROM" +
-            "                FNAC.ACCOUNT_MONEY_TYPE MT   " +
-            "            WHERE" +
-            "                MT.FINANCIAL_ACCOUNT_ID = FA.ID     " +
-            "                AND DC.MONEY_TYPE_ID = MT.MONEY_TYPE_ID" +
-            "        ) " +
-            "        AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)  " +
-            "        AND FD.ORGANIZATION_ID = :organizationId " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "        and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "       and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        8 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' سند بالانس نیست '  AS ERROR_MESSAGE   " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)  " +
-            "        AND FD.ORGANIZATION_ID = :organizationId " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )   " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    HAVING" +
-            "        SUM (FDI.DEBIT_AMOUNT) - SUM (FDI.CREDIT_AMOUNT) != 0 " +
-            "    UNION" +
-            "    SELECT" +
-            "        ID," +
-            "        DOCUMENT_NUMBER," +
-            "        DOCUMENT_DATE," +
-            "        9 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(LIST_SEQ," +
-            "        ',') LIST_SEQ," +
-            "        ' مبالغ ردیف با بدهکار / بستانکار ارزی همخوانی ندارد ' AS ERROR_MESSAGE  " +
-            "    FROM" +
-            "        (SELECT" +
-            "            FD.ID," +
-            "            FD.DOCUMENT_NUMBER," +
-            "            FD.DOCUMENT_DATE," +
-            "            LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "            ',') LIST_SEQ          " +
-            "        FROM" +
-            "            FNDC.FINANCIAL_DOCUMENT FD         " +
-            "        INNER JOIN" +
-            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI            " +
-            "                ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID         " +
-            "        INNER JOIN" +
-            "            FNDC.FINANCIAL_DOCUMENT_ITEM_CURRENCY FDIC            " +
-            "                ON FDI.ID = FDIC.FINANCIAL_DOCUMENT_ITEM_ID         " +
-            "        WHERE" +
-            "            FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)            " +
+    @Query(value = "select  " +
+            "        alll.*       " +
+            "    FROM  " +
+            "        (        SELECT  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE,  " +
+            "            1 AS ERROR_TYPE,  " +
+            "            'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER,  " +
+            "            ',') LIST_SEQ,  " +
+            "            'وجود ردیفهای دارای بدهکار و بستانکار به صورت همزمان ' AS ERROR_MESSAGE            " +
+            "        FROM  " +
+            "            FNDC.FINANCIAL_DOCUMENT FD           " +
+            "        INNER JOIN  " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                              " +
+            "                ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID           " +
+            "        WHERE  " +
+            "            FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                    " +
+            "            AND FD.ORGANIZATION_ID = :organizationId                     " +
+            "            AND FDI.DEBIT_AMOUNT > 0                     " +
+            "            AND FDI.CREDIT_AMOUNT > 0           " +
+            "        GROUP BY  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE           " +
+            "        UNION  " +
+            "        SELECT  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE,  " +
+            "            2 AS ERROR_TYPE,  " +
+            "            'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER,  " +
+            "            ',') LIST_SEQ,  " +
+            "            ' وجود ردیفهای بدون مبلغ ' AS ERROR_MESSAGE            " +
+            "        FROM  " +
+            "            FNDC.FINANCIAL_DOCUMENT FD           " +
+            "        INNER JOIN  " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                              " +
+            "                ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID           " +
+            "        WHERE  " +
+            "            FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                     " +
+            "            AND FD.ORGANIZATION_ID = :organizationId                   " +
+            "            AND FDI.DEBIT_AMOUNT = 0                   " +
+            "            AND FDI.CREDIT_AMOUNT = 0                   " +
+            "            AND (  " +
+            "                FDI.DEBIT_AMOUNT IS NULL                           " +
+            "                OR FDI.CREDIT_AMOUNT IS NULL                  " +
+            "            )           " +
+            "        GROUP BY  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE           " +
+            "        UNION  " +
+            "        SELECT  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE,  " +
+            "            3 AS ERROR_TYPE,  " +
+            "            ' ردیف : ' || LISTAGG(FDI.SEQUENCE_NUMBER,  " +
+            "            ',') LIST_SEQ,  " +
+            "            ' وجود ردیف با مبلغ منفی ' AS ERROR_MESSAGE            " +
+            "        FROM  " +
+            "            FNDC.FINANCIAL_DOCUMENT FD           " +
+            "        INNER JOIN  " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                              " +
+            "                ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID           " +
+            "        WHERE  " +
+            "            FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                     " +
+            "            AND FD.ORGANIZATION_ID = :organizationId                   " +
+            "            AND (  " +
+            "                FDI.DEBIT_AMOUNT < 0                           " +
+            "                OR FDI.CREDIT_AMOUNT < 0                  " +
+            "            )           " +
+            "        GROUP BY  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE           " +
+            "        UNION  " +
+            "        SELECT  " +
+            "            CENTRIC_QRY.ID,  " +
+            "            DOCUMENT_NUMBER,  " +
+            "            DOCUMENT_DATE,  " +
+            "            ERROR_TYPE,  " +
+            "            TO_CHAR(DI.SEQUENCE_NUMBER),  " +
+            "            ERROR_MESSAGE            " +
+            "        FROM  " +
+            "            (SELECT  " +
+            "                FD.ID,  " +
+            "                DV.CENTRIC_ACCOUNT_ID,  " +
+            "                FDI.ID AS FDI_ID,  " +
+            "                FD.DOCUMENT_NUMBER,  " +
+            "                FD.DOCUMENT_DATE,  " +
+            "                4 AS ERROR_TYPE,  " +
+            "                NULL LIST_SEQ,  " +
+            "                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE                       " +
+            "            FROM  " +
+            "                FNDC.FINANCIAL_DOCUMENT FD                     " +
+            "            INNER JOIN  " +
+            "                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                                        " +
+            "                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID                     " +
+            "            INNER JOIN  " +
+            "                FNAC.ACCOUNT_DEFAULT_VALUE DV                                        " +
+            "                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID                     " +
+            "            WHERE  " +
+            "                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                                " +
+            "                AND FD.ORGANIZATION_ID = :organizationId                               " +
+            "                and (  " +
+            "                    :financialDepartment IS NULL                       " +
+            "                    OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId                   " +
+            "                )                                  " +
+            "                and (  " +
+            "                    :department IS NULL                       " +
+            "                    OR FD.DEPARTMENT_ID = :departmentId                   " +
+            "                )                              " +
+            "                and  (  " +
+            "                    :financialLedgerType IS NULL                       " +
+            "                    OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId                   " +
+            "                )   ) CENTRIC_QRY      " +
+            "        INNER JOIN  " +
+            "            fndc.FINANCIAL_DOCUMENT_ITEM DI                              " +
+            "                ON DI.ID = FDI_ID           " +
+            "        WHERE  " +
+            "            (  " +
+            "                (  " +
+            "                    NOT EXISTS  (  " +
+            "                        SELECT  " +
+            "                            1                                                " +
+            "                        FROM  " +
+            "                            (SELECT  " +
+            "                                FD.ID,  " +
+            "                                DV.CENTRIC_ACCOUNT_ID,  " +
+            "                                FDI.ID AS FDI_ID,  " +
+            "                                FD.DOCUMENT_NUMBER,  " +
+            "                                FD.DOCUMENT_DATE,  " +
+            "                                4 AS ERROR_TYPE,  " +
+            "                                NULL LIST_SEQ,  " +
+            "                                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE               " +
+            "                            FROM  " +
+            "                                FNDC.FINANCIAL_DOCUMENT FD             " +
+            "                            INNER JOIN  " +
+            "                                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                                " +
+            "                                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID             " +
+            "                            INNER JOIN  " +
+            "                                FNAC.ACCOUNT_DEFAULT_VALUE DV                                " +
+            "                                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID             " +
+            "                            WHERE  " +
+            "                                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                       " +
+            "                                AND FD.ORGANIZATION_ID = :organizationId            ) DV                                               " +
+            "                        WHERE  " +
+            "                            DI.CENTRIC_ACCOUNT_ID_1 = DV.CENTRIC_ACCOUNT_ID                                  " +
+            "                        )                          " +
+            "                )                           " +
+            "                OR (  " +
+            "                    NOT EXISTS  (  " +
+            "                        SELECT  " +
+            "                            1                                                " +
+            "                        FROM  " +
+            "                            (SELECT  " +
+            "                                FD.ID,  " +
+            "                                DV.CENTRIC_ACCOUNT_ID,  " +
+            "                                FDI.ID AS FDI_ID,  " +
+            "                                FD.DOCUMENT_NUMBER,  " +
+            "                                FD.DOCUMENT_DATE,  " +
+            "                                4 AS ERROR_TYPE,  " +
+            "                                NULL LIST_SEQ,  " +
+            "                                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE               " +
+            "                            FROM  " +
+            "                                FNDC.FINANCIAL_DOCUMENT FD             " +
+            "                            INNER JOIN  " +
+            "                                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                                " +
+            "                                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID             " +
+            "                            INNER JOIN  " +
+            "                                FNAC.ACCOUNT_DEFAULT_VALUE DV                                " +
+            "                                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID             " +
+            "                            WHERE  " +
+            "                                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                       " +
+            "                                AND FD.ORGANIZATION_ID = :organizationId            ) DV                                               " +
+            "                        WHERE  " +
+            "                            DI.CENTRIC_ACCOUNT_ID_2 = DV.CENTRIC_ACCOUNT_ID                                  " +
+            "                        )                          " +
+            "                )                           " +
+            "                OR (  " +
+            "                    NOT EXISTS  (  " +
+            "                        SELECT  " +
+            "                            1                                                " +
+            "                        FROM  " +
+            "                            (SELECT  " +
+            "                                FD.ID,  " +
+            "                                DV.CENTRIC_ACCOUNT_ID,  " +
+            "                                FDI.ID AS FDI_ID,  " +
+            "                                FD.DOCUMENT_NUMBER,  " +
+            "                                FD.DOCUMENT_DATE,  " +
+            "                                4 AS ERROR_TYPE,  " +
+            "                                NULL LIST_SEQ,  " +
+            "                                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE               " +
+            "                            FROM  " +
+            "                                FNDC.FINANCIAL_DOCUMENT FD             " +
+            "                            INNER JOIN  " +
+            "                                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                                " +
+            "                                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID             " +
+            "                            INNER JOIN  " +
+            "                                FNAC.ACCOUNT_DEFAULT_VALUE DV                                " +
+            "                                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID             " +
+            "                            WHERE  " +
+            "                                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                       " +
+            "                                AND FD.ORGANIZATION_ID = :organizationId            ) DV                                               " +
+            "                        WHERE  " +
+            "                            DI.CENTRIC_ACCOUNT_ID_3 = DV.CENTRIC_ACCOUNT_ID                                  " +
+            "                        )                          " +
+            "                )                           " +
+            "                OR (  " +
+            "                    NOT EXISTS  (  " +
+            "                        SELECT  " +
+            "                            1                                                " +
+            "                        FROM  " +
+            "                            (SELECT  " +
+            "                                FD.ID,  " +
+            "                                DV.CENTRIC_ACCOUNT_ID,  " +
+            "                                FDI.ID AS FDI_ID,  " +
+            "                                FD.DOCUMENT_NUMBER,  " +
+            "                                FD.DOCUMENT_DATE,  " +
+            "                                4 AS ERROR_TYPE,  " +
+            "                                NULL LIST_SEQ,  " +
+            "                                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE               " +
+            "                            FROM  " +
+            "                                FNDC.FINANCIAL_DOCUMENT FD             " +
+            "                            INNER JOIN  " +
+            "                                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                                " +
+            "                                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID             " +
+            "                            INNER JOIN  " +
+            "                                FNAC.ACCOUNT_DEFAULT_VALUE DV                                " +
+            "                                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID             " +
+            "                            WHERE  " +
+            "                                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                       " +
+            "                                AND FD.ORGANIZATION_ID = :organizationId            ) DV                                               " +
+            "                        WHERE  " +
+            "                            DI.CENTRIC_ACCOUNT_ID_4 = DV.CENTRIC_ACCOUNT_ID                                  " +
+            "                        )                          " +
+            "                )                           " +
+            "                OR (  " +
+            "                    NOT EXISTS  (  " +
+            "                        SELECT  " +
+            "                            1                                                " +
+            "                        FROM  " +
+            "                            (SELECT  " +
+            "                                FD.ID,  " +
+            "                                DV.CENTRIC_ACCOUNT_ID,  " +
+            "                                FDI.ID AS FDI_ID,  " +
+            "                                FD.DOCUMENT_NUMBER,  " +
+            "                                FD.DOCUMENT_DATE,  " +
+            "                                4 AS ERROR_TYPE,  " +
+            "                                NULL LIST_SEQ,  " +
+            "                                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE               " +
+            "                            FROM  " +
+            "                                FNDC.FINANCIAL_DOCUMENT FD             " +
+            "                            INNER JOIN  " +
+            "                                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                                " +
+            "                                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID             " +
+            "                            INNER JOIN  " +
+            "                                FNAC.ACCOUNT_DEFAULT_VALUE DV                                " +
+            "                                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID             " +
+            "                            WHERE  " +
+            "                                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                       " +
+            "                                AND FD.ORGANIZATION_ID = :organizationId            ) DV                                               " +
+            "                        WHERE  " +
+            "                            DI.CENTRIC_ACCOUNT_ID_5 = DV.CENTRIC_ACCOUNT_ID                                  " +
+            "                        )                          " +
+            "                )                           " +
+            "                OR (  " +
+            "                    NOT EXISTS  (  " +
+            "                        SELECT  " +
+            "                            1                                                " +
+            "                        FROM  " +
+            "                            (SELECT  " +
+            "                                FD.ID,  " +
+            "                                DV.CENTRIC_ACCOUNT_ID,  " +
+            "                                FDI.ID AS FDI_ID,  " +
+            "                                FD.DOCUMENT_NUMBER,  " +
+            "                                FD.DOCUMENT_DATE,  " +
+            "                                4 AS ERROR_TYPE,  " +
+            "                                NULL LIST_SEQ,  " +
+            "                                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE               " +
+            "                            FROM  " +
+            "                                FNDC.FINANCIAL_DOCUMENT FD             " +
+            "                            INNER JOIN  " +
+            "                                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                                " +
+            "                                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID             " +
+            "                            INNER JOIN  " +
+            "                                FNAC.ACCOUNT_DEFAULT_VALUE DV                                " +
+            "                                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID             " +
+            "                            WHERE  " +
+            "                                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                       " +
+            "                                AND FD.ORGANIZATION_ID = :organizationId            ) DV                                               " +
+            "                        WHERE  " +
+            "                            DI.CENTRIC_ACCOUNT_ID_6 = DV.CENTRIC_ACCOUNT_ID                                  " +
+            "                        )                          " +
+            "                )                  " +
+            "            )           " +
+            "        UNION  " +
+            "        SELECT  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE,  " +
+            "            5 AS ERROR_TYPE,  " +
+            "            'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER,  " +
+            "            ',') LIST_SEQ,  " +
+            "            ' سطح آخر نبودن حساب انتخاب شده روی ردیف ' AS ERROR_MESSAGE            " +
+            "        FROM  " +
+            "            FNDC.FINANCIAL_DOCUMENT FD           " +
+            "        INNER JOIN  " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                              " +
+            "                ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID           " +
+            "        INNER JOIN  " +
+            "            FNAC.FINANCIAL_ACCOUNT FA                              " +
+            "                ON FA.ID = FDI.FINANCIAL_ACCOUNT_ID           " +
+            "        INNER JOIN  " +
+            "            FNAC.FINANCIAL_ACCOUNT_STRUCTURE FS                              " +
+            "                ON FA.FINANCIAL_ACCOUNT_STRUCTURE_ID = FS.ID           " +
+            "        WHERE  " +
+            "            EXISTS (  " +
+            "                SELECT  " +
+            "                    1                              " +
+            "                FROM  " +
+            "                    FNAC.FINANCIAL_ACCOUNT FIAC_INNER                             " +
+            "                WHERE  " +
+            "                    FIAC_INNER.FINANCIAL_ACCOUNT_PARENT_ID = FA.ID                                       " +
+            "                    AND FIAC_INNER.DELETED_DATE IS NULL                  " +
+            "            )                   " +
+            "            AND FA.DISABLE_DATE IS NULL                   " +
+            "            AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                    " +
             "            AND FD.ORGANIZATION_ID = :organizationId           " +
-            "            and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )       " +
-            "        GROUP BY" +
-            "            FD.ID," +
-            "            FD.DOCUMENT_NUMBER," +
-            "            FD.DOCUMENT_DATE," +
-            "            FDI.DEBIT_AMOUNT," +
-            "            FDI.CREDIT_AMOUNT," +
-            "            FDI.SEQUENCE_NUMBER        " +
-            "        HAVING" +
-            "            (" +
-            "                (" +
-            "                    NVL(FDI.DEBIT_AMOUNT, 0) != 0 " +
-            "                    AND SUM(NVL(FDIC.FOREIGN_DEBIT_AMOUNT, 0)) = 0" +
-            "                ) " +
-            "                OR (" +
-            "                    NVL(FDI.DEBIT_AMOUNT, 0) = 0 " +
-            "                    AND SUM(NVL(FDIC.FOREIGN_DEBIT_AMOUNT, 0)) != 0" +
-            "                ) " +
-            "                OR (" +
-            "                    NVL(FDI.CREDIT_AMOUNT, 0) != 0 " +
-            "                    AND SUM(NVL(FDIC.FOREIGN_CREDIT_AMOUNT, 0)) = 0" +
-            "                ) " +
-            "                OR (" +
-            "                    NVL(FDI.CREDIT_AMOUNT, 0) = 0 " +
-            "                    AND SUM(NVL(FDIC.FOREIGN_CREDIT_AMOUNT, 0)) != 0" +
-            "                ) " +
-            "                OR (" +
-            "                    NVL(FDI.CREDIT_AMOUNT, 0) != 0 " +
-            "                    AND NVL(FDI.DEBIT_AMOUNT, 0) != 0" +
-            "                )" +
-            "            )) " +
-            "    GROUP BY" +
-            "        ID," +
-            "        DOCUMENT_NUMBER," +
-            "        DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        DOCUMENT_NUMBER," +
-            "        DOCUMENT_DATE," +
-            "        10 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        ' عدم همخوانی کد های تمرکز با مراجع' AS ERROR_MESSAGE    " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD  " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI     " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    LEFT OUTER JOIN" +
-            "        FNAC.CENTRIC_ACCOUNT CN     " +
-            "            ON FDI.CENTRIC_ACCOUNT_ID_1 = CN.ID   " +
-            "    LEFT OUTER JOIN" +
-            "        FNAC.CENTRIC_ACCOUNT CN2     " +
-            "            ON FDI.CENTRIC_ACCOUNT_ID_2 = CN2.ID   " +
-            "    LEFT OUTER JOIN" +
-            "        FNAC.CENTRIC_ACCOUNT CN3     " +
-            "            ON FDI.CENTRIC_ACCOUNT_ID_3 = CN3.ID   " +
-            "    LEFT OUTER JOIN" +
-            "        FNAC.CENTRIC_ACCOUNT CN4     " +
-            "            ON FDI.CENTRIC_ACCOUNT_ID_4 = CN4.ID   " +
-            "    LEFT OUTER JOIN" +
-            "        FNAC.CENTRIC_ACCOUNT CN5     " +
-            "            ON FDI.CENTRIC_ACCOUNT_ID_5 = CN5.ID   " +
-            "    LEFT OUTER JOIN" +
-            "        FNAC.CENTRIC_ACCOUNT CN6     " +
-            "            ON FDI.CENTRIC_ACCOUNT_ID_6 = CN6.ID  " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)   " +
-            "        AND FD.ORGANIZATION_ID = :organizationId           " +
-            "       and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "     and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "         and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "        and   (" +
-            "            (" +
-            "                FDI.CENTRIC_ACCOUNT_ID_1 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_2 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_1 != NVL(CN2.PARENT_CENTRIC_ACCOUNT_ID, 0)" +
-            "            ) " +
-            "            OR        (" +
-            "                FDI.CENTRIC_ACCOUNT_ID_2 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_3 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_2 != NVL(CN3.PARENT_CENTRIC_ACCOUNT_ID, 0)" +
-            "            ) " +
-            "            OR        (" +
-            "                FDI.CENTRIC_ACCOUNT_ID_3 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_4 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_3 != NVL(CN4.PARENT_CENTRIC_ACCOUNT_ID, 0)" +
-            "            ) " +
-            "            OR        (" +
-            "                FDI.CENTRIC_ACCOUNT_ID_4 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_5 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_4 != NVL(CN5.PARENT_CENTRIC_ACCOUNT_ID, 0)" +
-            "            ) " +
-            "            OR        (" +
-            "                FDI.CENTRIC_ACCOUNT_ID_5 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_6 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_5 != NVL(CN6.PARENT_CENTRIC_ACCOUNT_ID, 0)" +
-            "            )" +
-            "        ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        DOCUMENT_NUMBER," +
-            "        DOCUMENT_DATE) alll "
-            , countQuery = " select  count(*) " +
-            " from " +
-            " (SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        1 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        'وجود ردیفهای دارای بدهکار و بستانکار به صورت همزمان ' AS ERROR_MESSAGE  " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)  " +
-            "        AND FD.ORGANIZATION_ID = :organizationId   " +
-            "         and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "        AND FDI.DEBIT_AMOUNT > 0   " +
-            "        AND FDI.CREDIT_AMOUNT > 0 " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        2 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        ' وجود ردیفهای بدون مبلغ ' AS ERROR_MESSAGE  " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)   " +
-            "        AND FD.ORGANIZATION_ID = :organizationId " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "        and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "       and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "        AND FDI.DEBIT_AMOUNT = 0 " +
-            "        AND FDI.CREDIT_AMOUNT = 0 " +
-            "        AND (" +
-            "            FDI.DEBIT_AMOUNT IS NULL " +
-            "            OR FDI.CREDIT_AMOUNT IS NULL" +
-            "        ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        3 AS ERROR_TYPE," +
-            "        ' ردیف : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        ' وجود ردیف با مبلغ منفی ' AS ERROR_MESSAGE  " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)   " +
-            "        AND FD.ORGANIZATION_ID = :organizationId " +
-            "         and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "        and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "       and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "        AND (" +
-            "            FDI.DEBIT_AMOUNT < 0 " +
-            "            OR FDI.CREDIT_AMOUNT < 0" +
-            "        ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        CENTRIC_QRY.ID," +
-            "        DOCUMENT_NUMBER," +
-            "        DOCUMENT_DATE," +
-            "        ERROR_TYPE," +
-            "        TO_CHAR(DI.SEQUENCE_NUMBER)," +
-            "        ERROR_MESSAGE  " +
-            "    FROM" +
-            "       (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) CENTRIC_QRY " +
-            "    INNER JOIN" +
-            "        fndc.FINANCIAL_DOCUMENT_ITEM DI    " +
-            "            ON DI.ID = FDI_ID " +
-            "    WHERE" +
-            "        (" +
-            "            (" +
-            "                NOT EXISTS  (" +
-            "                    SELECT" +
-            "                        1      " +
-            "                    FROM" +
-            "                       (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) DV     " +
-            "                    WHERE" +
-            "                        DI.CENTRIC_ACCOUNT_ID_1 = DV.CENTRIC_ACCOUNT_ID" +
-            "                )" +
-            "            ) " +
-            "            OR (" +
-            "                NOT EXISTS  (" +
-            "                    SELECT" +
-            "                        1      " +
-            "                    FROM" +
-            "                        (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) DV     " +
-            "                    WHERE" +
-            "                        DI.CENTRIC_ACCOUNT_ID_2 = DV.CENTRIC_ACCOUNT_ID" +
-            "                )" +
-            "            ) " +
-            "            OR (" +
-            "                NOT EXISTS  (" +
-            "                    SELECT" +
-            "                        1      " +
-            "                    FROM" +
-            "                        (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) DV     " +
-            "                    WHERE" +
-            "                        DI.CENTRIC_ACCOUNT_ID_3 = DV.CENTRIC_ACCOUNT_ID" +
-            "                )" +
-            "            ) " +
-            "            OR (" +
-            "                NOT EXISTS  (" +
-            "                    SELECT" +
-            "                        1      " +
-            "                    FROM" +
-            "                        (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) DV     " +
-            "                    WHERE" +
-            "                        DI.CENTRIC_ACCOUNT_ID_4 = DV.CENTRIC_ACCOUNT_ID" +
-            "                )" +
-            "            ) " +
-            "            OR (" +
-            "                NOT EXISTS  (" +
-            "                    SELECT" +
-            "                        1      " +
-            "                    FROM" +
-            "                        (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) DV     " +
-            "                    WHERE" +
-            "                        DI.CENTRIC_ACCOUNT_ID_5 = DV.CENTRIC_ACCOUNT_ID" +
-            "                )" +
-            "            ) " +
-            "            OR (" +
-            "                NOT EXISTS  (" +
-            "                    SELECT" +
-            "                        1      " +
-            "                    FROM" +
-            "                        (SELECT" +
-            "        FD.ID," +
-            "        DV.CENTRIC_ACCOUNT_ID," +
-            "        FDI.ID AS FDI_ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        4 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE     " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD   " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI      " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    INNER JOIN" +
-            "        FNAC.ACCOUNT_DEFAULT_VALUE DV      " +
-            "            ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID   " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)     " +
-            "        AND FD.ORGANIZATION_ID = :organizationId     " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )   ) DV     " +
-            "                    WHERE" +
-            "                        DI.CENTRIC_ACCOUNT_ID_6 = DV.CENTRIC_ACCOUNT_ID" +
-            "                )" +
-            "            )" +
-            "        ) " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        5 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        ' سطح آخر نبودن حساب انتخاب شده روی ردیف ' AS ERROR_MESSAGE  " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID " +
-            "    INNER JOIN" +
-            "        FNAC.FINANCIAL_ACCOUNT FA    " +
-            "            ON FA.ID = FDI.FINANCIAL_ACCOUNT_ID " +
-            "    INNER JOIN" +
-            "        FNAC.FINANCIAL_ACCOUNT_STRUCTURE FS    " +
-            "            ON FA.FINANCIAL_ACCOUNT_STRUCTURE_ID = FS.ID " +
-            "    WHERE" +
-            "        EXISTS (" +
-            "            SELECT" +
-            "                1    " +
-            "            FROM" +
-            "                FNAC.FINANCIAL_ACCOUNT FIAC_INNER   " +
-            "            WHERE" +
-            "                FIAC_INNER.FINANCIAL_ACCOUNT_PARENT_ID = FA.ID     " +
-            "                AND FIAC_INNER.DELETED_DATE IS NULL" +
-            "        ) " +
-            "        AND FA.DISABLE_DATE IS NULL " +
-            "        AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)  " +
-            "       AND FD.ORGANIZATION_ID = :organizationId " +
-            "         and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "        and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "      and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        6 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        ' اطلاعات ارزی برای ردیفهای ارزی کامل نیست ' AS ERROR_MESSAGE  " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID " +
-            "    INNER JOIN" +
-            "        FNAC.FINANCIAL_ACCOUNT FA    " +
-            "            ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID " +
-            "            AND FA.EXCHANGE_FLAG = 1 " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM_CURRENCY DC    " +
-            "            ON DC.FINANCIAL_DOCUMENT_ITEM_ID = FDI.ID " +
-            "    WHERE" +
-            "        (" +
-            "            (" +
-            "                DC.FOREIGN_DEBIT_AMOUNT IS NULL " +
-            "                AND DC.FOREIGN_CREDIT_AMOUNT IS NULL" +
-            "            ) " +
-            "            OR DC.EXCHANGE_RATE IS NULL " +
-            "            OR DC.MONEY_PRICING_REFRENCE_ID IS NULL " +
-            "            OR DC.MONEY_TYPE_ID IS NULL" +
-            "        ) " +
-            "        AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)  " +
-            "        AND FD.ORGANIZATION_ID = :organizationId " +
-            "       and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "        and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        7 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        ' عدم همخوانی نوع ارز ' AS ERROR_MESSAGE   " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID " +
-            "    INNER JOIN" +
-            "        FNAC.FINANCIAL_ACCOUNT FA    " +
-            "            ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID " +
-            "            AND FA.EXCHANGE_FLAG = 1 " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM_CURRENCY DC    " +
-            "            ON DC.FINANCIAL_DOCUMENT_ITEM_ID = FDI.ID " +
-            "    WHERE" +
-            "        NOT EXISTS (" +
-            "            SELECT" +
-            "                1    " +
-            "            FROM" +
-            "                FNAC.ACCOUNT_MONEY_TYPE MT   " +
-            "            WHERE" +
-            "                MT.FINANCIAL_ACCOUNT_ID = FA.ID     " +
-            "                AND DC.MONEY_TYPE_ID = MT.MONEY_TYPE_ID" +
-            "        ) " +
-            "        AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)  " +
-            "        AND FD.ORGANIZATION_ID = :organizationId " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "        and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "       and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE," +
-            "        8 AS ERROR_TYPE," +
-            "        NULL LIST_SEQ," +
-            "        ' سند بالانس نیست '  AS ERROR_MESSAGE   " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI    " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)  " +
-            "        AND FD.ORGANIZATION_ID = :organizationId " +
-            "        and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )   " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        FD.DOCUMENT_NUMBER," +
-            "        FD.DOCUMENT_DATE " +
-            "    HAVING" +
-            "        SUM (FDI.DEBIT_AMOUNT) - SUM (FDI.CREDIT_AMOUNT) != 0 " +
-            "    UNION" +
-            "    SELECT" +
-            "        ID," +
-            "        DOCUMENT_NUMBER," +
-            "        DOCUMENT_DATE," +
-            "        9 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(LIST_SEQ," +
-            "        ',') LIST_SEQ," +
-            "        ' مبالغ ردیف با بدهکار / بستانکار ارزی همخوانی ندارد ' AS ERROR_MESSAGE  " +
-            "    FROM" +
-            "        (SELECT" +
-            "            FD.ID," +
-            "            FD.DOCUMENT_NUMBER," +
-            "            FD.DOCUMENT_DATE," +
-            "            LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "            ',') LIST_SEQ          " +
-            "        FROM" +
-            "            FNDC.FINANCIAL_DOCUMENT FD         " +
-            "        INNER JOIN" +
-            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI            " +
-            "                ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID         " +
-            "        INNER JOIN" +
-            "            FNDC.FINANCIAL_DOCUMENT_ITEM_CURRENCY FDIC            " +
-            "                ON FDI.ID = FDIC.FINANCIAL_DOCUMENT_ITEM_ID         " +
-            "        WHERE" +
-            "            FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)            " +
+            "        GROUP BY  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE           " +
+            "        UNION  " +
+            "        SELECT  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE,  " +
+            "            6 AS ERROR_TYPE,  " +
+            "            'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER,  " +
+            "            ',') LIST_SEQ,  " +
+            "            ' اطلاعات ارزی برای ردیفهای ارزی کامل نیست ' AS ERROR_MESSAGE            " +
+            "        FROM  " +
+            "            FNDC.FINANCIAL_DOCUMENT FD           " +
+            "        INNER JOIN  " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                              " +
+            "                ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID           " +
+            "        INNER JOIN  " +
+            "            FNAC.FINANCIAL_ACCOUNT FA                              " +
+            "                ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID                           " +
+            "                AND FA.EXCHANGE_FLAG = 1           " +
+            "        INNER JOIN  " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM_CURRENCY DC                              " +
+            "                ON DC.FINANCIAL_DOCUMENT_ITEM_ID = FDI.ID           " +
+            "        WHERE  " +
+            "            (  " +
+            "                (  " +
+            "                    DC.FOREIGN_DEBIT_AMOUNT IS NULL                                   " +
+            "                    AND DC.FOREIGN_CREDIT_AMOUNT IS NULL                          " +
+            "                )                           " +
+            "                OR DC.EXCHANGE_RATE IS NULL                           " +
+            "                OR DC.MONEY_PRICING_REFRENCE_ID IS NULL                           " +
+            "                OR DC.MONEY_TYPE_ID IS NULL                  " +
+            "            )                   " +
+            "            AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                    " +
             "            AND FD.ORGANIZATION_ID = :organizationId           " +
-            "            and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "       and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "        and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )       " +
-            "        GROUP BY" +
-            "            FD.ID," +
-            "            FD.DOCUMENT_NUMBER," +
-            "            FD.DOCUMENT_DATE," +
-            "            FDI.DEBIT_AMOUNT," +
-            "            FDI.CREDIT_AMOUNT," +
-            "            FDI.SEQUENCE_NUMBER        " +
-            "        HAVING" +
-            "            (" +
-            "                (" +
-            "                    NVL(FDI.DEBIT_AMOUNT, 0) != 0 " +
-            "                    AND SUM(NVL(FDIC.FOREIGN_DEBIT_AMOUNT, 0)) = 0" +
-            "                ) " +
-            "                OR (" +
-            "                    NVL(FDI.DEBIT_AMOUNT, 0) = 0 " +
-            "                    AND SUM(NVL(FDIC.FOREIGN_DEBIT_AMOUNT, 0)) != 0" +
-            "                ) " +
-            "                OR (" +
-            "                    NVL(FDI.CREDIT_AMOUNT, 0) != 0 " +
-            "                    AND SUM(NVL(FDIC.FOREIGN_CREDIT_AMOUNT, 0)) = 0" +
-            "                ) " +
-            "                OR (" +
-            "                    NVL(FDI.CREDIT_AMOUNT, 0) = 0 " +
-            "                    AND SUM(NVL(FDIC.FOREIGN_CREDIT_AMOUNT, 0)) != 0" +
-            "                ) " +
-            "                OR (" +
-            "                    NVL(FDI.CREDIT_AMOUNT, 0) != 0 " +
-            "                    AND NVL(FDI.DEBIT_AMOUNT, 0) != 0" +
-            "                )" +
-            "            )) " +
-            "    GROUP BY" +
-            "        ID," +
-            "        DOCUMENT_NUMBER," +
-            "        DOCUMENT_DATE " +
-            "    UNION" +
-            "    SELECT" +
-            "        FD.ID," +
-            "        DOCUMENT_NUMBER," +
-            "        DOCUMENT_DATE," +
-            "        10 AS ERROR_TYPE," +
-            "        'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER," +
-            "        ',') LIST_SEQ," +
-            "        ' عدم همخوانی کد های تمرکز با مراجع' AS ERROR_MESSAGE    " +
-            "    FROM" +
-            "        FNDC.FINANCIAL_DOCUMENT FD  " +
-            "    INNER JOIN" +
-            "        FNDC.FINANCIAL_DOCUMENT_ITEM FDI     " +
-            "            ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID   " +
-            "    LEFT OUTER JOIN" +
-            "        FNAC.CENTRIC_ACCOUNT CN     " +
-            "            ON FDI.CENTRIC_ACCOUNT_ID_1 = CN.ID   " +
-            "    LEFT OUTER JOIN" +
-            "        FNAC.CENTRIC_ACCOUNT CN2     " +
-            "            ON FDI.CENTRIC_ACCOUNT_ID_2 = CN2.ID   " +
-            "    LEFT OUTER JOIN" +
-            "        FNAC.CENTRIC_ACCOUNT CN3     " +
-            "            ON FDI.CENTRIC_ACCOUNT_ID_3 = CN3.ID   " +
-            "    LEFT OUTER JOIN" +
-            "        FNAC.CENTRIC_ACCOUNT CN4     " +
-            "            ON FDI.CENTRIC_ACCOUNT_ID_4 = CN4.ID   " +
-            "    LEFT OUTER JOIN" +
-            "        FNAC.CENTRIC_ACCOUNT CN5     " +
-            "            ON FDI.CENTRIC_ACCOUNT_ID_5 = CN5.ID   " +
-            "    LEFT OUTER JOIN" +
-            "        FNAC.CENTRIC_ACCOUNT CN6     " +
-            "            ON FDI.CENTRIC_ACCOUNT_ID_6 = CN6.ID  " +
-            "    WHERE" +
-            "        FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)   " +
-            "        AND FD.ORGANIZATION_ID = :organizationId           " +
-            "       and ( :financialDepartment IS NULL OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId ) " +
-            "        " +
-            "     and ( :department IS NULL OR FD.DEPARTMENT_ID = :departmentId )    " +
-            "         and  ( :financialLedgerType IS NULL OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) " +
-            "        and   (" +
-            "            (" +
-            "                FDI.CENTRIC_ACCOUNT_ID_1 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_2 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_1 != NVL(CN2.PARENT_CENTRIC_ACCOUNT_ID, 0)" +
-            "            ) " +
-            "            OR        (" +
-            "                FDI.CENTRIC_ACCOUNT_ID_2 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_3 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_2 != NVL(CN3.PARENT_CENTRIC_ACCOUNT_ID, 0)" +
-            "            ) " +
-            "            OR        (" +
-            "                FDI.CENTRIC_ACCOUNT_ID_3 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_4 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_3 != NVL(CN4.PARENT_CENTRIC_ACCOUNT_ID, 0)" +
-            "            ) " +
-            "            OR        (" +
-            "                FDI.CENTRIC_ACCOUNT_ID_4 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_5 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_4 != NVL(CN5.PARENT_CENTRIC_ACCOUNT_ID, 0)" +
-            "            ) " +
-            "            OR        (" +
-            "                FDI.CENTRIC_ACCOUNT_ID_5 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_6 IS NOT NULL " +
-            "                AND        FDI.CENTRIC_ACCOUNT_ID_5 != NVL(CN6.PARENT_CENTRIC_ACCOUNT_ID, 0)" +
-            "            )" +
-            "        ) " +
-            "    GROUP BY" +
-            "        FD.ID," +
-            "        DOCUMENT_NUMBER," +
-            "        DOCUMENT_DATE) alll"
+            "        GROUP BY  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE           " +
+            "        UNION  " +
+            "        SELECT  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE,  " +
+            "            7 AS ERROR_TYPE,  " +
+            "            'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER,  " +
+            "            ',') LIST_SEQ,  " +
+            "            ' عدم همخوانی نوع ارز ' AS ERROR_MESSAGE             " +
+            "        FROM  " +
+            "            FNDC.FINANCIAL_DOCUMENT FD           " +
+            "        INNER JOIN  " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                              " +
+            "                ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID           " +
+            "        INNER JOIN  " +
+            "            FNAC.FINANCIAL_ACCOUNT FA                              " +
+            "                ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID                           " +
+            "                AND FA.EXCHANGE_FLAG = 1           " +
+            "        INNER JOIN  " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM_CURRENCY DC                              " +
+            "                ON DC.FINANCIAL_DOCUMENT_ITEM_ID = FDI.ID           " +
+            "        WHERE  " +
+            "            NOT EXISTS (  " +
+            "                SELECT  " +
+            "                    1                              " +
+            "                FROM  " +
+            "                    FNAC.ACCOUNT_MONEY_TYPE MT                             " +
+            "                WHERE  " +
+            "                    MT.FINANCIAL_ACCOUNT_ID = FA.ID                                       " +
+            "                    AND DC.MONEY_TYPE_ID = MT.MONEY_TYPE_ID                  " +
+            "            )                   " +
+            "            AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                    " +
+            "            AND FD.ORGANIZATION_ID = :organizationId           " +
+            "        GROUP BY  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE           " +
+            "        UNION  " +
+            "        SELECT  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE,  " +
+            "            8 AS ERROR_TYPE,  " +
+            "            NULL LIST_SEQ,  " +
+            "            ' سند بالانس نیست '  AS ERROR_MESSAGE             " +
+            "        FROM  " +
+            "            FNDC.FINANCIAL_DOCUMENT FD           " +
+            "        INNER JOIN  " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                              " +
+            "                ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID           " +
+            "        WHERE  " +
+            "            FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                    " +
+            "            AND FD.ORGANIZATION_ID = :organizationId           " +
+            "        GROUP BY  " +
+            "            FD.ID,  " +
+            "            FD.DOCUMENT_NUMBER,  " +
+            "            FD.DOCUMENT_DATE           " +
+            "        HAVING  " +
+            "            SUM (FDI.DEBIT_AMOUNT) - SUM (FDI.CREDIT_AMOUNT) != 0           " +
+            "        UNION  " +
+            "        SELECT  " +
+            "            ID,  " +
+            "            DOCUMENT_NUMBER,  " +
+            "            DOCUMENT_DATE,  " +
+            "            9 AS ERROR_TYPE,  " +
+            "            'ردیفهای : ' || LISTAGG(LIST_SEQ,  " +
+            "            ',') LIST_SEQ,  " +
+            "            ' مبالغ ردیف با بدهکار / بستانکار ارزی همخوانی ندارد ' AS ERROR_MESSAGE            " +
+            "        FROM  " +
+            "            (SELECT  " +
+            "                FD.ID,  " +
+            "                FD.DOCUMENT_NUMBER,  " +
+            "                FD.DOCUMENT_DATE,  " +
+            "                LISTAGG(FDI.SEQUENCE_NUMBER,  " +
+            "                ',') LIST_SEQ                            " +
+            "            FROM  " +
+            "                FNDC.FINANCIAL_DOCUMENT FD                           " +
+            "            INNER JOIN  " +
+            "                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                                              " +
+            "                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID                           " +
+            "            INNER JOIN  " +
+            "                FNDC.FINANCIAL_DOCUMENT_ITEM_CURRENCY FDIC                                              " +
+            "                    ON FDI.ID = FDIC.FINANCIAL_DOCUMENT_ITEM_ID                           " +
+            "            WHERE  " +
+            "                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                                      " +
+            "                AND FD.ORGANIZATION_ID = :organizationId                             " +
+            "            GROUP BY  " +
+            "                FD.ID,  " +
+            "                FD.DOCUMENT_NUMBER,  " +
+            "                FD.DOCUMENT_DATE,  " +
+            "                FDI.DEBIT_AMOUNT,  " +
+            "                FDI.CREDIT_AMOUNT,  " +
+            "                FDI.SEQUENCE_NUMBER                          " +
+            "            HAVING  " +
+            "                (  " +
+            "                    (  " +
+            "                        NVL(FDI.DEBIT_AMOUNT, 0) != 0                                           " +
+            "                        AND SUM(NVL(FDIC.FOREIGN_DEBIT_AMOUNT, 0)) = 0                                  " +
+            "                    )                                   " +
+            "                    OR (  " +
+            "                        NVL(FDI.DEBIT_AMOUNT, 0) = 0                                           " +
+            "                        AND SUM(NVL(FDIC.FOREIGN_DEBIT_AMOUNT, 0)) != 0                                  " +
+            "                    )                                   " +
+            "                    OR (  " +
+            "                        NVL(FDI.CREDIT_AMOUNT, 0) != 0                                           " +
+            "                        AND SUM(NVL(FDIC.FOREIGN_CREDIT_AMOUNT, 0)) = 0                                  " +
+            "                    )                                   " +
+            "                    OR (  " +
+            "                        NVL(FDI.CREDIT_AMOUNT, 0) = 0                                           " +
+            "                        AND SUM(NVL(FDIC.FOREIGN_CREDIT_AMOUNT, 0)) != 0                                  " +
+            "                    )                                   " +
+            "                    OR (  " +
+            "                        NVL(FDI.CREDIT_AMOUNT, 0) != 0                                           " +
+            "                        AND NVL(FDI.DEBIT_AMOUNT, 0) != 0                                  " +
+            "                    )                          " +
+            "                ))           " +
+            "        GROUP BY  " +
+            "            ID,  " +
+            "            DOCUMENT_NUMBER,  " +
+            "            DOCUMENT_DATE           " +
+            "        UNION  " +
+            "        SELECT  " +
+            "            FD.ID,  " +
+            "            DOCUMENT_NUMBER,  " +
+            "            DOCUMENT_DATE,  " +
+            "            10 AS ERROR_TYPE,  " +
+            "            'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER,  " +
+            "            ',') LIST_SEQ,  " +
+            "            ' عدم همخوانی کد های تمرکز با مراجع' AS ERROR_MESSAGE              " +
+            "        FROM  " +
+            "            FNDC.FINANCIAL_DOCUMENT FD            " +
+            "        INNER JOIN  " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                               " +
+            "                ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID             " +
+            "        LEFT OUTER JOIN  " +
+            "            FNAC.CENTRIC_ACCOUNT CN                               " +
+            "                ON FDI.CENTRIC_ACCOUNT_ID_1 = CN.ID             " +
+            "        LEFT OUTER JOIN  " +
+            "            FNAC.CENTRIC_ACCOUNT CN2                               " +
+            "                ON FDI.CENTRIC_ACCOUNT_ID_2 = CN2.ID             " +
+            "        LEFT OUTER JOIN  " +
+            "            FNAC.CENTRIC_ACCOUNT CN3                               " +
+            "                ON FDI.CENTRIC_ACCOUNT_ID_3 = CN3.ID             " +
+            "        LEFT OUTER JOIN  " +
+            "            FNAC.CENTRIC_ACCOUNT CN4                               " +
+            "                ON FDI.CENTRIC_ACCOUNT_ID_4 = CN4.ID             " +
+            "        LEFT OUTER JOIN  " +
+            "            FNAC.CENTRIC_ACCOUNT CN5                               " +
+            "                ON FDI.CENTRIC_ACCOUNT_ID_5 = CN5.ID             " +
+            "        LEFT OUTER JOIN  " +
+            "            FNAC.CENTRIC_ACCOUNT CN6                               " +
+            "                ON FDI.CENTRIC_ACCOUNT_ID_6 = CN6.ID            " +
+            "        WHERE  " +
+            "            FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                     " +
+            "            AND FD.ORGANIZATION_ID = :organizationId                             " +
+            "            and   (  " +
+            "                (  " +
+            "                    FDI.CENTRIC_ACCOUNT_ID_1 IS NOT NULL                                   " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_2 IS NOT NULL                                   " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_1 != NVL(CN2.PARENT_CENTRIC_ACCOUNT_ID, 0)                          " +
+            "                )                           " +
+            "                OR        (  " +
+            "                    FDI.CENTRIC_ACCOUNT_ID_2 IS NOT NULL                                   " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_3 IS NOT NULL                                   " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_2 != NVL(CN3.PARENT_CENTRIC_ACCOUNT_ID, 0)                          " +
+            "                )                           " +
+            "                OR        (  " +
+            "                    FDI.CENTRIC_ACCOUNT_ID_3 IS NOT NULL                                   " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_4 IS NOT NULL                                   " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_3 != NVL(CN4.PARENT_CENTRIC_ACCOUNT_ID, 0)                          " +
+            "                )                           " +
+            "                OR        (  " +
+            "                    FDI.CENTRIC_ACCOUNT_ID_4 IS NOT NULL                                   " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_5 IS NOT NULL                                   " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_4 != NVL(CN5.PARENT_CENTRIC_ACCOUNT_ID, 0)                          " +
+            "                )                           " +
+            "                OR        (  " +
+            "                    FDI.CENTRIC_ACCOUNT_ID_5 IS NOT NULL                                   " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_6 IS NOT NULL                                   " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_5 != NVL(CN6.PARENT_CENTRIC_ACCOUNT_ID, 0)                          " +
+            "                )                  " +
+            "            )           " +
+            "        GROUP BY  " +
+            "            FD.ID,  " +
+            "            DOCUMENT_NUMBER,  " +
+            "            DOCUMENT_DATE     " +
+            "    ) alll "
+            , countQuery = " select " +
+            "       count(*)      " +
+            "    FROM " +
+            "        (        SELECT " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE, " +
+            "            1 AS ERROR_TYPE, " +
+            "            'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER, " +
+            "            ',') LIST_SEQ, " +
+            "            'وجود ردیفهای دارای بدهکار و بستانکار به صورت همزمان ' AS ERROR_MESSAGE           " +
+            "        FROM " +
+            "            FNDC.FINANCIAL_DOCUMENT FD          " +
+            "        INNER JOIN " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                             " +
+            "                ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID          " +
+            "        WHERE " +
+            "            FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                   " +
+            "            AND FD.ORGANIZATION_ID = :organizationId                    " +
+            "            AND FDI.DEBIT_AMOUNT > 0                    " +
+            "            AND FDI.CREDIT_AMOUNT > 0          " +
+            "        GROUP BY " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE          " +
+            "        UNION " +
+            "        SELECT " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE, " +
+            "            2 AS ERROR_TYPE, " +
+            "            'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER, " +
+            "            ',') LIST_SEQ, " +
+            "            ' وجود ردیفهای بدون مبلغ ' AS ERROR_MESSAGE           " +
+            "        FROM " +
+            "            FNDC.FINANCIAL_DOCUMENT FD          " +
+            "        INNER JOIN " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                             " +
+            "                ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID          " +
+            "        WHERE " +
+            "            FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                    " +
+            "            AND FD.ORGANIZATION_ID = :organizationId                  " +
+            "            AND FDI.DEBIT_AMOUNT = 0                  " +
+            "            AND FDI.CREDIT_AMOUNT = 0                  " +
+            "            AND ( " +
+            "                FDI.DEBIT_AMOUNT IS NULL                          " +
+            "                OR FDI.CREDIT_AMOUNT IS NULL                 " +
+            "            )          " +
+            "        GROUP BY " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE          " +
+            "        UNION " +
+            "        SELECT " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE, " +
+            "            3 AS ERROR_TYPE, " +
+            "            ' ردیف : ' || LISTAGG(FDI.SEQUENCE_NUMBER, " +
+            "            ',') LIST_SEQ, " +
+            "            ' وجود ردیف با مبلغ منفی ' AS ERROR_MESSAGE           " +
+            "        FROM " +
+            "            FNDC.FINANCIAL_DOCUMENT FD          " +
+            "        INNER JOIN " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                             " +
+            "                ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID          " +
+            "        WHERE " +
+            "            FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                    " +
+            "            AND FD.ORGANIZATION_ID = :organizationId                  " +
+            "            AND ( " +
+            "                FDI.DEBIT_AMOUNT < 0                          " +
+            "                OR FDI.CREDIT_AMOUNT < 0                 " +
+            "            )          " +
+            "        GROUP BY " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE          " +
+            "        UNION " +
+            "        SELECT " +
+            "            CENTRIC_QRY.ID, " +
+            "            DOCUMENT_NUMBER, " +
+            "            DOCUMENT_DATE, " +
+            "            ERROR_TYPE, " +
+            "            TO_CHAR(DI.SEQUENCE_NUMBER), " +
+            "            ERROR_MESSAGE           " +
+            "        FROM " +
+            "            (SELECT " +
+            "                FD.ID, " +
+            "                DV.CENTRIC_ACCOUNT_ID, " +
+            "                FDI.ID AS FDI_ID, " +
+            "                FD.DOCUMENT_NUMBER, " +
+            "                FD.DOCUMENT_DATE, " +
+            "                4 AS ERROR_TYPE, " +
+            "                NULL LIST_SEQ, " +
+            "                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE                      " +
+            "            FROM " +
+            "                FNDC.FINANCIAL_DOCUMENT FD                    " +
+            "            INNER JOIN " +
+            "                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                                       " +
+            "                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID                    " +
+            "            INNER JOIN " +
+            "                FNAC.ACCOUNT_DEFAULT_VALUE DV                                       " +
+            "                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID                    " +
+            "            WHERE " +
+            "                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                               " +
+            "                AND FD.ORGANIZATION_ID = :organizationId                              " +
+            "                and ( " +
+            "                    :financialDepartment IS NULL                      " +
+            "                    OR FD.FINANCIAL_DEPARTMENT_ID = :financialDepartmentId                  " +
+            "                )                                 " +
+            "                and ( " +
+            "                    :department IS NULL                      " +
+            "                    OR FD.DEPARTMENT_ID = :departmentId                  " +
+            "                )                             " +
+            "                and  ( " +
+            "                    :financialLedgerType IS NULL                      " +
+            "                    OR FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId                 " +
+            "                )   ) CENTRIC_QRY     " +
+            "        INNER JOIN " +
+            "            fndc.FINANCIAL_DOCUMENT_ITEM DI                             " +
+            "                ON DI.ID = FDI_ID          " +
+            "        WHERE " +
+            "            ( " +
+            "                ( " +
+            "                    NOT EXISTS  ( " +
+            "                        SELECT " +
+            "                            1                                               " +
+            "                        FROM " +
+            "                            (SELECT " +
+            "                                FD.ID, " +
+            "                                DV.CENTRIC_ACCOUNT_ID, " +
+            "                                FDI.ID AS FDI_ID, " +
+            "                                FD.DOCUMENT_NUMBER, " +
+            "                                FD.DOCUMENT_DATE, " +
+            "                                4 AS ERROR_TYPE, " +
+            "                                NULL LIST_SEQ, " +
+            "                                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE              " +
+            "                            FROM " +
+            "                                FNDC.FINANCIAL_DOCUMENT FD            " +
+            "                            INNER JOIN " +
+            "                                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                               " +
+            "                                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID            " +
+            "                            INNER JOIN " +
+            "                                FNAC.ACCOUNT_DEFAULT_VALUE DV                               " +
+            "                                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID            " +
+            "                            WHERE " +
+            "                                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                      " +
+            "                                AND FD.ORGANIZATION_ID = :organizationId             ) DV                                              " +
+            "                        WHERE " +
+            "                            DI.CENTRIC_ACCOUNT_ID_1 = DV.CENTRIC_ACCOUNT_ID                                 " +
+            "                        )                         " +
+            "                )                          " +
+            "                OR ( " +
+            "                    NOT EXISTS  ( " +
+            "                        SELECT " +
+            "                            1                                               " +
+            "                        FROM " +
+            "                            (SELECT " +
+            "                                FD.ID, " +
+            "                                DV.CENTRIC_ACCOUNT_ID, " +
+            "                                FDI.ID AS FDI_ID, " +
+            "                                FD.DOCUMENT_NUMBER, " +
+            "                                FD.DOCUMENT_DATE, " +
+            "                                4 AS ERROR_TYPE, " +
+            "                                NULL LIST_SEQ, " +
+            "                                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE              " +
+            "                            FROM " +
+            "                                FNDC.FINANCIAL_DOCUMENT FD            " +
+            "                            INNER JOIN " +
+            "                                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                               " +
+            "                                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID            " +
+            "                            INNER JOIN " +
+            "                                FNAC.ACCOUNT_DEFAULT_VALUE DV                               " +
+            "                                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID            " +
+            "                            WHERE " +
+            "                                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                      " +
+            "                                AND FD.ORGANIZATION_ID = :organizationId            ) DV                                              " +
+            "                        WHERE " +
+            "                            DI.CENTRIC_ACCOUNT_ID_2 = DV.CENTRIC_ACCOUNT_ID                                 " +
+            "                        )                         " +
+            "                )                          " +
+            "                OR ( " +
+            "                    NOT EXISTS  ( " +
+            "                        SELECT " +
+            "                            1                                               " +
+            "                        FROM " +
+            "                            (SELECT " +
+            "                                FD.ID, " +
+            "                                DV.CENTRIC_ACCOUNT_ID, " +
+            "                                FDI.ID AS FDI_ID, " +
+            "                                FD.DOCUMENT_NUMBER, " +
+            "                                FD.DOCUMENT_DATE, " +
+            "                                4 AS ERROR_TYPE, " +
+            "                                NULL LIST_SEQ, " +
+            "                                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE              " +
+            "                            FROM " +
+            "                                FNDC.FINANCIAL_DOCUMENT FD            " +
+            "                            INNER JOIN " +
+            "                                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                               " +
+            "                                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID            " +
+            "                            INNER JOIN " +
+            "                                FNAC.ACCOUNT_DEFAULT_VALUE DV                               " +
+            "                                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID            " +
+            "                            WHERE " +
+            "                                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                      " +
+            "                                AND FD.ORGANIZATION_ID = :organizationId            ) DV                                              " +
+            "                        WHERE " +
+            "                            DI.CENTRIC_ACCOUNT_ID_3 = DV.CENTRIC_ACCOUNT_ID                                 " +
+            "                        )                         " +
+            "                )                          " +
+            "                OR ( " +
+            "                    NOT EXISTS  ( " +
+            "                        SELECT " +
+            "                            1                                               " +
+            "                        FROM " +
+            "                            (SELECT " +
+            "                                FD.ID, " +
+            "                                DV.CENTRIC_ACCOUNT_ID, " +
+            "                                FDI.ID AS FDI_ID, " +
+            "                                FD.DOCUMENT_NUMBER, " +
+            "                                FD.DOCUMENT_DATE, " +
+            "                                4 AS ERROR_TYPE, " +
+            "                                NULL LIST_SEQ, " +
+            "                                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE              " +
+            "                            FROM " +
+            "                                FNDC.FINANCIAL_DOCUMENT FD            " +
+            "                            INNER JOIN " +
+            "                                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                               " +
+            "                                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID            " +
+            "                            INNER JOIN " +
+            "                                FNAC.ACCOUNT_DEFAULT_VALUE DV                               " +
+            "                                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID            " +
+            "                            WHERE " +
+            "                                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                      " +
+            "                                AND FD.ORGANIZATION_ID = :organizationId            ) DV                                              " +
+            "                        WHERE " +
+            "                            DI.CENTRIC_ACCOUNT_ID_4 = DV.CENTRIC_ACCOUNT_ID                                 " +
+            "                        )                         " +
+            "                )                          " +
+            "                OR ( " +
+            "                    NOT EXISTS  ( " +
+            "                        SELECT " +
+            "                            1                                               " +
+            "                        FROM " +
+            "                            (SELECT " +
+            "                                FD.ID, " +
+            "                                DV.CENTRIC_ACCOUNT_ID, " +
+            "                                FDI.ID AS FDI_ID, " +
+            "                                FD.DOCUMENT_NUMBER, " +
+            "                                FD.DOCUMENT_DATE, " +
+            "                                4 AS ERROR_TYPE, " +
+            "                                NULL LIST_SEQ, " +
+            "                                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE              " +
+            "                            FROM " +
+            "                                FNDC.FINANCIAL_DOCUMENT FD            " +
+            "                            INNER JOIN " +
+            "                                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                               " +
+            "                                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID            " +
+            "                            INNER JOIN " +
+            "                                FNAC.ACCOUNT_DEFAULT_VALUE DV                               " +
+            "                                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID            " +
+            "                            WHERE " +
+            "                                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                      " +
+            "                                AND FD.ORGANIZATION_ID = :organizationId            ) DV                                              " +
+            "                        WHERE " +
+            "                            DI.CENTRIC_ACCOUNT_ID_5 = DV.CENTRIC_ACCOUNT_ID                                 " +
+            "                        )                         " +
+            "                )                          " +
+            "                OR ( " +
+            "                    NOT EXISTS  ( " +
+            "                        SELECT " +
+            "                            1                                               " +
+            "                        FROM " +
+            "                            (SELECT " +
+            "                                FD.ID, " +
+            "                                DV.CENTRIC_ACCOUNT_ID, " +
+            "                                FDI.ID AS FDI_ID, " +
+            "                                FD.DOCUMENT_NUMBER, " +
+            "                                FD.DOCUMENT_DATE, " +
+            "                                4 AS ERROR_TYPE, " +
+            "                                NULL LIST_SEQ, " +
+            "                                ' عدم همخوانی تمرکز و حساب ' AS ERROR_MESSAGE              " +
+            "                            FROM " +
+            "                                FNDC.FINANCIAL_DOCUMENT FD            " +
+            "                            INNER JOIN " +
+            "                                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                               " +
+            "                                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID            " +
+            "                            INNER JOIN " +
+            "                                FNAC.ACCOUNT_DEFAULT_VALUE DV                               " +
+            "                                    ON DV.FINANCIAL_ACCOUNT_ID = FDI.FINANCIAL_ACCOUNT_ID            " +
+            "                            WHERE " +
+            "                                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                      " +
+            "                                AND FD.ORGANIZATION_ID = :organizationId            ) DV                                              " +
+            "                        WHERE " +
+            "                            DI.CENTRIC_ACCOUNT_ID_6 = DV.CENTRIC_ACCOUNT_ID                                 " +
+            "                        )                         " +
+            "                )                 " +
+            "            )          " +
+            "        UNION " +
+            "        SELECT " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE, " +
+            "            5 AS ERROR_TYPE, " +
+            "            'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER, " +
+            "            ',') LIST_SEQ, " +
+            "            ' سطح آخر نبودن حساب انتخاب شده روی ردیف ' AS ERROR_MESSAGE           " +
+            "        FROM " +
+            "            FNDC.FINANCIAL_DOCUMENT FD          " +
+            "        INNER JOIN " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                             " +
+            "                ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID          " +
+            "        INNER JOIN " +
+            "            FNAC.FINANCIAL_ACCOUNT FA                             " +
+            "                ON FA.ID = FDI.FINANCIAL_ACCOUNT_ID          " +
+            "        INNER JOIN " +
+            "            FNAC.FINANCIAL_ACCOUNT_STRUCTURE FS                             " +
+            "                ON FA.FINANCIAL_ACCOUNT_STRUCTURE_ID = FS.ID          " +
+            "        WHERE " +
+            "            EXISTS ( " +
+            "                SELECT " +
+            "                    1                             " +
+            "                FROM " +
+            "                    FNAC.FINANCIAL_ACCOUNT FIAC_INNER                            " +
+            "                WHERE " +
+            "                    FIAC_INNER.FINANCIAL_ACCOUNT_PARENT_ID = FA.ID                                      " +
+            "                    AND FIAC_INNER.DELETED_DATE IS NULL                 " +
+            "            )                  " +
+            "            AND FA.DISABLE_DATE IS NULL                  " +
+            "            AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                   " +
+            "            AND FD.ORGANIZATION_ID = :organizationId          " +
+            "        GROUP BY " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE          " +
+            "        UNION " +
+            "        SELECT " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE, " +
+            "            6 AS ERROR_TYPE, " +
+            "            'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER, " +
+            "            ',') LIST_SEQ, " +
+            "            ' اطلاعات ارزی برای ردیفهای ارزی کامل نیست ' AS ERROR_MESSAGE           " +
+            "        FROM " +
+            "            FNDC.FINANCIAL_DOCUMENT FD          " +
+            "        INNER JOIN " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                             " +
+            "                ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID          " +
+            "        INNER JOIN " +
+            "            FNAC.FINANCIAL_ACCOUNT FA                             " +
+            "                ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID                          " +
+            "                AND FA.EXCHANGE_FLAG = 1          " +
+            "        INNER JOIN " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM_CURRENCY DC                             " +
+            "                ON DC.FINANCIAL_DOCUMENT_ITEM_ID = FDI.ID          " +
+            "        WHERE " +
+            "            ( " +
+            "                ( " +
+            "                    DC.FOREIGN_DEBIT_AMOUNT IS NULL                                  " +
+            "                    AND DC.FOREIGN_CREDIT_AMOUNT IS NULL                         " +
+            "                )                          " +
+            "                OR DC.EXCHANGE_RATE IS NULL                          " +
+            "                OR DC.MONEY_PRICING_REFRENCE_ID IS NULL                          " +
+            "                OR DC.MONEY_TYPE_ID IS NULL                 " +
+            "            )                  " +
+            "            AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                   " +
+            "            AND FD.ORGANIZATION_ID = :organizationId          " +
+            "        GROUP BY " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE          " +
+            "        UNION " +
+            "        SELECT " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE, " +
+            "            7 AS ERROR_TYPE, " +
+            "            'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER, " +
+            "            ',') LIST_SEQ, " +
+            "            ' عدم همخوانی نوع ارز ' AS ERROR_MESSAGE            " +
+            "        FROM " +
+            "            FNDC.FINANCIAL_DOCUMENT FD          " +
+            "        INNER JOIN " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                             " +
+            "                ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID          " +
+            "        INNER JOIN " +
+            "            FNAC.FINANCIAL_ACCOUNT FA                             " +
+            "                ON FDI.FINANCIAL_ACCOUNT_ID = FA.ID                          " +
+            "                AND FA.EXCHANGE_FLAG = 1          " +
+            "        INNER JOIN " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM_CURRENCY DC                             " +
+            "                ON DC.FINANCIAL_DOCUMENT_ITEM_ID = FDI.ID          " +
+            "        WHERE " +
+            "            NOT EXISTS ( " +
+            "                SELECT " +
+            "                    1                             " +
+            "                FROM " +
+            "                    FNAC.ACCOUNT_MONEY_TYPE MT                            " +
+            "                WHERE " +
+            "                    MT.FINANCIAL_ACCOUNT_ID = FA.ID                                      " +
+            "                    AND DC.MONEY_TYPE_ID = MT.MONEY_TYPE_ID                 " +
+            "            )                  " +
+            "            AND FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                   " +
+            "            AND FD.ORGANIZATION_ID = :organizationId          " +
+            "        GROUP BY " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE          " +
+            "        UNION " +
+            "        SELECT " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE, " +
+            "            8 AS ERROR_TYPE, " +
+            "            NULL LIST_SEQ, " +
+            "            ' سند بالانس نیست '  AS ERROR_MESSAGE            " +
+            "        FROM " +
+            "            FNDC.FINANCIAL_DOCUMENT FD          " +
+            "        INNER JOIN " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                             " +
+            "                ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID          " +
+            "        WHERE " +
+            "            FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                   " +
+            "            AND FD.ORGANIZATION_ID = :organizationId          " +
+            "        GROUP BY " +
+            "            FD.ID, " +
+            "            FD.DOCUMENT_NUMBER, " +
+            "            FD.DOCUMENT_DATE          " +
+            "        HAVING " +
+            "            SUM (FDI.DEBIT_AMOUNT) - SUM (FDI.CREDIT_AMOUNT) != 0          " +
+            "        UNION " +
+            "        SELECT " +
+            "            ID, " +
+            "            DOCUMENT_NUMBER, " +
+            "            DOCUMENT_DATE, " +
+            "            9 AS ERROR_TYPE, " +
+            "            'ردیفهای : ' || LISTAGG(LIST_SEQ, " +
+            "            ',') LIST_SEQ, " +
+            "            ' مبالغ ردیف با بدهکار / بستانکار ارزی همخوانی ندارد ' AS ERROR_MESSAGE           " +
+            "        FROM " +
+            "            (SELECT " +
+            "                FD.ID, " +
+            "                FD.DOCUMENT_NUMBER, " +
+            "                FD.DOCUMENT_DATE, " +
+            "                LISTAGG(FDI.SEQUENCE_NUMBER, " +
+            "                ',') LIST_SEQ                           " +
+            "            FROM " +
+            "                FNDC.FINANCIAL_DOCUMENT FD                          " +
+            "            INNER JOIN " +
+            "                FNDC.FINANCIAL_DOCUMENT_ITEM FDI                                             " +
+            "                    ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID                          " +
+            "            INNER JOIN " +
+            "                FNDC.FINANCIAL_DOCUMENT_ITEM_CURRENCY FDIC                                             " +
+            "                    ON FDI.ID = FDIC.FINANCIAL_DOCUMENT_ITEM_ID                          " +
+            "            WHERE " +
+            "                FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                                     " +
+            "                AND FD.ORGANIZATION_ID = :organizationId                            " +
+            "            GROUP BY " +
+            "                FD.ID, " +
+            "                FD.DOCUMENT_NUMBER, " +
+            "                FD.DOCUMENT_DATE, " +
+            "                FDI.DEBIT_AMOUNT, " +
+            "                FDI.CREDIT_AMOUNT, " +
+            "                FDI.SEQUENCE_NUMBER                         " +
+            "            HAVING " +
+            "                ( " +
+            "                    ( " +
+            "                        NVL(FDI.DEBIT_AMOUNT, 0) != 0                                          " +
+            "                        AND SUM(NVL(FDIC.FOREIGN_DEBIT_AMOUNT, 0)) = 0                                 " +
+            "                    )                                  " +
+            "                    OR ( " +
+            "                        NVL(FDI.DEBIT_AMOUNT, 0) = 0                                          " +
+            "                        AND SUM(NVL(FDIC.FOREIGN_DEBIT_AMOUNT, 0)) != 0                                 " +
+            "                    )                                  " +
+            "                    OR ( " +
+            "                        NVL(FDI.CREDIT_AMOUNT, 0) != 0                                          " +
+            "                        AND SUM(NVL(FDIC.FOREIGN_CREDIT_AMOUNT, 0)) = 0                                 " +
+            "                    )                                  " +
+            "                    OR ( " +
+            "                        NVL(FDI.CREDIT_AMOUNT, 0) = 0                                          " +
+            "                        AND SUM(NVL(FDIC.FOREIGN_CREDIT_AMOUNT, 0)) != 0                                 " +
+            "                    )                                  " +
+            "                    OR ( " +
+            "                        NVL(FDI.CREDIT_AMOUNT, 0) != 0                                          " +
+            "                        AND NVL(FDI.DEBIT_AMOUNT, 0) != 0                                 " +
+            "                    )                         " +
+            "                ))          " +
+            "        GROUP BY " +
+            "            ID, " +
+            "            DOCUMENT_NUMBER, " +
+            "            DOCUMENT_DATE          " +
+            "        UNION " +
+            "        SELECT " +
+            "            FD.ID, " +
+            "            DOCUMENT_NUMBER, " +
+            "            DOCUMENT_DATE, " +
+            "            10 AS ERROR_TYPE, " +
+            "            'ردیفهای : ' || LISTAGG(FDI.SEQUENCE_NUMBER, " +
+            "            ',') LIST_SEQ, " +
+            "            ' عدم همخوانی کد های تمرکز با مراجع' AS ERROR_MESSAGE             " +
+            "        FROM " +
+            "            FNDC.FINANCIAL_DOCUMENT FD           " +
+            "        INNER JOIN " +
+            "            FNDC.FINANCIAL_DOCUMENT_ITEM FDI                              " +
+            "                ON FD.ID = FDI.FINANCIAL_DOCUMENT_ID            " +
+            "        LEFT OUTER JOIN " +
+            "            FNAC.CENTRIC_ACCOUNT CN                              " +
+            "                ON FDI.CENTRIC_ACCOUNT_ID_1 = CN.ID            " +
+            "        LEFT OUTER JOIN " +
+            "            FNAC.CENTRIC_ACCOUNT CN2                              " +
+            "                ON FDI.CENTRIC_ACCOUNT_ID_2 = CN2.ID            " +
+            "        LEFT OUTER JOIN " +
+            "            FNAC.CENTRIC_ACCOUNT CN3                              " +
+            "                ON FDI.CENTRIC_ACCOUNT_ID_3 = CN3.ID            " +
+            "        LEFT OUTER JOIN " +
+            "            FNAC.CENTRIC_ACCOUNT CN4                              " +
+            "                ON FDI.CENTRIC_ACCOUNT_ID_4 = CN4.ID            " +
+            "        LEFT OUTER JOIN " +
+            "            FNAC.CENTRIC_ACCOUNT CN5                              " +
+            "                ON FDI.CENTRIC_ACCOUNT_ID_5 = CN5.ID            " +
+            "        LEFT OUTER JOIN " +
+            "            FNAC.CENTRIC_ACCOUNT CN6                              " +
+            "                ON FDI.CENTRIC_ACCOUNT_ID_6 = CN6.ID           " +
+            "        WHERE " +
+            "            FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)                    " +
+            "            AND FD.ORGANIZATION_ID = :organizationId                            " +
+            "            and   ( " +
+            "                ( " +
+            "                    FDI.CENTRIC_ACCOUNT_ID_1 IS NOT NULL                                  " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_2 IS NOT NULL                                  " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_1 != NVL(CN2.PARENT_CENTRIC_ACCOUNT_ID, 0)                         " +
+            "                )                          " +
+            "                OR        ( " +
+            "                    FDI.CENTRIC_ACCOUNT_ID_2 IS NOT NULL                                  " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_3 IS NOT NULL                                  " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_2 != NVL(CN3.PARENT_CENTRIC_ACCOUNT_ID, 0)                         " +
+            "                )                          " +
+            "                OR        ( " +
+            "                    FDI.CENTRIC_ACCOUNT_ID_3 IS NOT NULL                                  " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_4 IS NOT NULL                                  " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_3 != NVL(CN4.PARENT_CENTRIC_ACCOUNT_ID, 0)                         " +
+            "                )                          " +
+            "                OR        ( " +
+            "                    FDI.CENTRIC_ACCOUNT_ID_4 IS NOT NULL                                  " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_5 IS NOT NULL                                  " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_4 != NVL(CN5.PARENT_CENTRIC_ACCOUNT_ID, 0)                         " +
+            "                )                          " +
+            "                OR        ( " +
+            "                    FDI.CENTRIC_ACCOUNT_ID_5 IS NOT NULL                                  " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_6 IS NOT NULL                                  " +
+            "                    AND        FDI.CENTRIC_ACCOUNT_ID_5 != NVL(CN6.PARENT_CENTRIC_ACCOUNT_ID, 0)                         " +
+            "                )                 " +
+            "            )          " +
+            "        GROUP BY " +
+            "            FD.ID, " +
+            "            DOCUMENT_NUMBER, " +
+            "            DOCUMENT_DATE    " +
+            "    ) alll "
             , nativeQuery = true)
-    Page<Object[]> findByFinancialDocument(Long organizationId, LocalDateTime fromDate, LocalDateTime toDate, Object financialDepartment, Long financialDepartmentId, Object department,
-                                           Long departmentId,Object financialLedgerType,Long financialLedgerTypeId,Pageable pageable);
+    Page<Object[]> findByFinancialDocument(Long organizationId, LocalDateTime fromDate, LocalDateTime toDate, Object financialDepartment, Long financialDepartmentId,
+                                       Object  department,Long departmentId,Object financialLedgerType,Long financialLedgerTypeId,Pageable pageable);
 }
