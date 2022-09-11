@@ -14,7 +14,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
     @Query(value = " SELECT FIDC.ID as documentId ," +
             "       FIDC.DOCUMENT_DATE as documentDate," +
             "       FIDC.DESCRIPTION as description," +
-            "       FIDC.DOCUMENT_NUMBER," +
+            "       FNDN.DOCUMENT_NUMBER," +
             "       FIDC.FINANCIAL_DOCUMENT_TYPE_ID," +
             "       FNDT.DESCRIPTION AS FINANCIAL_DOCUMENT_TYPE_DESCRIPTION," +
             "       FIDC.DESCRIPTION AS FULL_DESCRIPTION," +
@@ -70,8 +70,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "          FNDI.DEBIT_AMOUNT" +
             "       END" +
             "   AND FNDN.FINANCIAL_NUMBERING_TYPE_ID = :financialNumberingTypeId" +
-            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL) " +
-            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL) " +
+            "   AND (FNDN.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL) " +
+            "   AND (FNDN.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL) " +
             "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId) " +
             "   AND (FIDC.DESCRIPTION LIKE '%' || :description || '%' OR" +
             "       :description IS NULL) " +
@@ -113,7 +113,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0 ))))) " +
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) " +
             "   and FNSC.SEC_RESULT = 1" +
-            "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,fidc.financial_document_type_id,fndt.description," +
+            "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,FNDN.document_number,fidc.financial_document_type_id,fndt.description," +
             " FINANCIAL_DOCUMENT_STATUS_ID, " +
             "          DS.NAME , " +
             "          DS.CODE," +
@@ -163,8 +163,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "          FNDI.DEBIT_AMOUNT" +
             "       END" +
             "   AND FNDN.FINANCIAL_NUMBERING_TYPE_ID = :financialNumberingTypeId" +
-            "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL) " +
-            "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL) " +
+            "   AND (FNDN.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL) " +
+            "   AND (FNDN.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL) " +
             "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId) " +
             "   AND (FIDC.DESCRIPTION LIKE '%' || :description || '%' OR" +
             "       :description IS NULL) " +
@@ -206,7 +206,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0 ))))) " +
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) " +
             "   and FNSC.SEC_RESULT = 1" +
-            "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,fidc.document_number,financial_document_type_id,fndt.description, " +
+            "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,FNDN.document_number,financial_document_type_id,fndt.description, " +
             "   FINANCIAL_DOCUMENT_STATUS_ID, " +
             "                      DS.NAME , " +
             "                     DS.CODE," +
