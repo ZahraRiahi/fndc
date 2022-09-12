@@ -7,6 +7,7 @@ import ir.demisco.cfs.model.dto.request.FinancialDocumentSecurityInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodStatusRequest;
+import ir.demisco.cfs.model.dto.request.GetDocFromoldSystemInputRequest;
 import ir.demisco.cfs.model.dto.response.FinancialCentricAccountDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentAccountDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentChangeDescriptionDto;
@@ -77,6 +78,7 @@ import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+
 import static ir.demisco.cloud.core.middle.service.system.impl.MessageBundleImpl.message;
 
 @Service
@@ -1432,4 +1434,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         return dataSourceResult;
     }
 
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public Boolean copyDocFromOldSystem(GetDocFromoldSystemInputRequest getDocFromoldSystemInputRequest) {
+        if (getDocFromoldSystemInputRequest.getDchdId() == null || getDocFromoldSystemInputRequest.getDchdNum() == null){
+            throw new RuleException("لطفا یکی از مقادیر را وارد نمایید.");
+        }
+            return true;
+    }
 }

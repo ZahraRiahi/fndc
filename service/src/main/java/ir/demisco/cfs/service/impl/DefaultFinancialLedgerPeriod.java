@@ -1,6 +1,8 @@
 package ir.demisco.cfs.service.impl;
 
+import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodFilterRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodRequest;
+import ir.demisco.cfs.model.dto.response.FinancialLedgerPeriodOutputResponse;
 import ir.demisco.cfs.model.entity.FinancialLedgerMonth;
 import ir.demisco.cfs.model.entity.FinancialLedgerPeriod;
 import ir.demisco.cfs.service.api.FinancialLedgerPeriodService;
@@ -12,10 +14,20 @@ import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
 import ir.demisco.cfs.service.repository.FinancialMonthRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
+import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
+import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
+
 
 @Service
 public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodService {
@@ -80,4 +92,57 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
 
         return true;
     }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public DataSourceResult getFinancialLedgerPeriodList(DataSourceRequest dataSourceRequest) {
+        List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
+        if(dataSourceRequest.getFilter().getFilters().get(0).getValue()==null){
+            throw new RuleException("دفتر مالی را مشخص نمایید");
+        }
+        FinancialLedgerPeriodFilterRequest paramSearch = setParameter(filters);
+        List<Sort.Order> sorts = new ArrayList<>();
+        dataSourceRequest.getSort()
+                .forEach((DataSourceRequest.SortDescriptor sortDescriptor) ->
+                        {
+                            if (sortDescriptor.getDir().equals("asc")) {
+                                sorts.add(Sort.Order.asc(sortDescriptor.getField()));
+                            } else {
+                                sorts.add(Sort.Order.desc(sortDescriptor.getField()));
+                            }
+                        }
+                );
+        Pageable pageable = PageRequest.of((dataSourceRequest.getSkip() / dataSourceRequest.getTake()), dataSourceRequest.getTake(), Sort.by(sorts));
+        Page<Object[]> list = financialLedgerPeriodRepository.findByFinancialLedgerTypeIdAndId(paramSearch.getFinancialLedgerTypeId(), pageable);
+        List<FinancialLedgerPeriodOutputResponse> financialLedgerPeriodDtoList = list.stream().map(item ->
+                FinancialLedgerPeriodOutputResponse.builder()
+                        .id(item[0] == null ? null : (Long.parseLong(item[0].toString())))
+                        .startDate(item[1] == null ? null : ((Date) item[1]))
+                        .endDate(item[2] == null ? null : ((Date) item[2]))
+                        .openMonthCount(item[3] == null ? null : (Long.parseLong(item[3].toString())))
+                        .description(item[4] == null ? null : item[4].toString())
+                        .name(item[5] == null ? null : item[5].toString())
+                        .build()).collect(Collectors.toList());
+        DataSourceResult dataSourceResult = new DataSourceResult();
+        dataSourceResult.setData(financialLedgerPeriodDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
+        dataSourceResult.setData(financialLedgerPeriodDtoList);
+        dataSourceResult.setTotal(list.getTotalElements());
+        return dataSourceResult;
+    }
+
+    private FinancialLedgerPeriodFilterRequest setParameter(List<DataSourceRequest.FilterDescriptor> filters) {
+        FinancialLedgerPeriodFilterRequest financialLedgerPeriodFilterRequest = new FinancialLedgerPeriodFilterRequest();
+        for (DataSourceRequest.FilterDescriptor item : filters) {
+            switch (item.getField()) {
+                case "financialLedgerTypeId":
+                    financialLedgerPeriodFilterRequest.setFinancialLedgerTypeId(Long.parseLong(item.getValue().toString()));
+                    break;
+
+                default:
+                    break;
+            }
+        }
+        return financialLedgerPeriodFilterRequest;
+    }
+
 }
