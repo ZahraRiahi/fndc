@@ -925,7 +925,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                      AND ASL.DELETED_DATE IS NULL)) " +
             "             AND FDS.CODE > 10 " +
             "          UNION " +
-            "          SELECT FD.DOCUMENT_NUMBER," +
+            "          SELECT FDN.DOCUMENT_NUMBER," +
             "FD.DOCUMENT_DATE   as DOCUMENT_DATE," +
             "                 FDI.DESCRIPTION   AS DOCUMENT_DESCRIPTION_ITEM," +
             " FDI.ID                   AS FINANCIAL_DOCUMENT_ITEM_ID," +
@@ -1062,7 +1062,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "    AND (:financialAccount is null or  fdi.financial_account_id  = :financialAccountId ) " +
             "                                and (  FA2.ID =   fdi.financial_account_id ) " +
             "             AND FDS.CODE > 10 " +
-            "           GROUP BY FD.DOCUMENT_NUMBER," +
+            "           GROUP BY FDN.DOCUMENT_NUMBER," +
             "                    FD.DOCUMENT_DATE, " +
             "                    FDI.DESCRIPTION, " +
             " FDI.ID," +
@@ -1385,7 +1385,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                      AND ASL.DELETED_DATE IS NULL)) " +
             "             AND FDS.CODE > 10 " +
             "          UNION " +
-            "          SELECT FD.DOCUMENT_NUMBER," +
+            "          SELECT FDN.DOCUMENT_NUMBER," +
             " FD.DOCUMENT_DATE  as DOCUMENT_DATE," +
             "                 FDI.DESCRIPTION AS DOCUMENT_DESCRIPTION_ITEM," +
             "FDI.ID                   AS FINANCIAL_DOCUMENT_ITEM_ID," +
@@ -1521,7 +1521,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 :dateFilterFlg = 1) " +
             "    AND FA2.ID = nvl(:financialAccountId, fdi.financial_account_id) " +
             "             AND FDS.CODE > 10 " +
-            "           GROUP BY FD.DOCUMENT_NUMBER," +
+            "           GROUP BY FDN.DOCUMENT_NUMBER," +
             " FD.DOCUMENT_DATE, " +
             "                    FDI.DESCRIPTION," +
             " FDI.ID,  " +
