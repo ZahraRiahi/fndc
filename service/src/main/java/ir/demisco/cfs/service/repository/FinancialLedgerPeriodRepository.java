@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface FinancialLedgerPeriodRepository extends JpaRepository<FinancialLedgerPeriod, Long> {
     @Query(value = " select count(flp.id)" +
             "  from fndc.financial_ledger_period flp" +
@@ -31,4 +33,14 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "    ON FNPS.ID = FNP.FINANCIAL_PERIOD_STATUS_ID" +
             " WHERE FNLP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ", nativeQuery = true)
     Page<Object[]> findByFinancialLedgerTypeIdAndId(Long financialLedgerTypeId, Pageable pageable);
+
+    @Query(value = " SELECT FNLP.ID    AS FINANCIAL_LEDGER_PERIOD_ID," +
+            "       FNLT.ID   AS FINANCIAL_LEDGER_TYPE_ID," +
+            "       FNLT.DESCRIPTION AS FINANCIAL_LEDGER_TYPE_DESC" +
+            "  FROM FNDC.FINANCIAL_LEDGER_PERIOD FNLP " +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_TYPE FNLT" +
+            "    ON FNLP.FINANCIAL_LEDGER_TYPE_ID = FNLT.ID" +
+            " WHERE FNLP.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "   AND FNLT.ORGANIZATION_ID = :organizationId", nativeQuery = true)
+    List<Object[]> getFinancialLedgerTypeByOrganizationAndPeriodId(Long organizationId, Long financialPeriodId);
 }

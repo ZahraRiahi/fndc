@@ -3,6 +3,7 @@ package ir.demisco.cfs.service.impl;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodFilterRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodRequest;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerPeriodOutputResponse;
+import ir.demisco.cfs.model.dto.response.FinancialPeriodLedgerGetResponse;
 import ir.demisco.cfs.model.entity.FinancialLedgerMonth;
 import ir.demisco.cfs.model.entity.FinancialLedgerPeriod;
 import ir.demisco.cfs.service.api.FinancialLedgerPeriodService;
@@ -16,6 +17,7 @@ import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -97,7 +99,7 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
     @Transactional(rollbackOn = Throwable.class)
     public DataSourceResult getFinancialLedgerPeriodList(DataSourceRequest dataSourceRequest) {
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
-        if(dataSourceRequest.getFilter().getFilters().get(0).getValue()==null){
+        if (dataSourceRequest.getFilter().getFilters().get(0).getValue() == null) {
             throw new RuleException("دفتر مالی را مشخص نمایید");
         }
         FinancialLedgerPeriodFilterRequest paramSearch = setParameter(filters);
@@ -128,6 +130,20 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
         dataSourceResult.setData(financialLedgerPeriodDtoList);
         dataSourceResult.setTotal(list.getTotalElements());
         return dataSourceResult;
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public List<FinancialPeriodLedgerGetResponse> getFinancialGetByPeriod(Long financialPeriodId) {
+        if(financialPeriodId==null){
+            throw new RuleException("دوره مالی را مشخص نمایید");
+        }
+        List<Object[]> financialLedgerTypeList = financialLedgerPeriodRepository.getFinancialLedgerTypeByOrganizationAndPeriodId(SecurityHelper.getCurrentUser().getOrganizationId(), financialPeriodId);
+        return financialLedgerTypeList.stream().map(objects -> FinancialPeriodLedgerGetResponse.builder().financialLedgerPeriodId(Long.parseLong(objects[0].toString()))
+                .financialLedgerTypeId(Long.parseLong(objects[1].toString()))
+                .financialLedgerTypeDescription(objects[2].toString())
+                .build()).collect(Collectors.toList());
+
     }
 
     private FinancialLedgerPeriodFilterRequest setParameter(List<DataSourceRequest.FilterDescriptor> filters) {
