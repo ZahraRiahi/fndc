@@ -2,6 +2,8 @@ package ir.demisco.cfs.app.web.controller;
 
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodRequest;
 import ir.demisco.cfs.service.api.FinancialLedgerPeriodService;
+import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
+import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -22,5 +24,10 @@ public class FinancialLedgerPeriodController {
         boolean result;
         result = financialLedgerPeriodService.saveFinancialLedgerPeriod(financialLedgerPeriodRequest);
         return ResponseEntity.ok(result);
+    }
+
+    @PostMapping("/Get")
+    public ResponseEntity<DataSourceResult> financialLedgerPeriodList(@RequestBody DataSourceRequest dataSourceRequest) {
+        return ResponseEntity.ok(financialLedgerPeriodService.getFinancialLedgerPeriodList(dataSourceRequest));
     }
 }

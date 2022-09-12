@@ -1,6 +1,7 @@
 package ir.demisco.cfs.service.api;
 
 import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
+import ir.demisco.cfs.model.dto.request.GetDocFromoldSystemInputRequest;
 import ir.demisco.cfs.model.dto.response.FinancialCentricAccountDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentAccountDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentChangeDescriptionDto;
@@ -50,4 +51,5 @@ public interface FinancialDocumentService {
 
     DataSourceResult getProblemReport(DataSourceRequest dataSourceRequest);
 
+    Boolean copyDocFromOldSystem(GetDocFromoldSystemInputRequest getDocFromoldSystemInputRequest);
 }

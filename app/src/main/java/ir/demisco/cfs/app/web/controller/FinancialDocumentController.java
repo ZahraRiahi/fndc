@@ -2,6 +2,7 @@ package ir.demisco.cfs.app.web.controller;
 
 import ir.demisco.cfs.model.dto.request.FinancialDocumentTransferRequest;
 import ir.demisco.cfs.model.dto.request.FinancialPeriodLedgerStatusRequest;
+import ir.demisco.cfs.model.dto.request.GetDocFromoldSystemInputRequest;
 import ir.demisco.cfs.model.dto.response.FinancialCentricAccountDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentAccountDto;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentAccountMessageDto;
@@ -165,5 +166,12 @@ public class FinancialDocumentController {
     @PostMapping("/GetProblem")
     public ResponseEntity<DataSourceResult> financialDocumentResponseEntity(@RequestBody DataSourceRequest dataSourceRequest) {
         return ResponseEntity.ok(financialDocumentService.getProblemReport(dataSourceRequest));
+    }
+
+    @PostMapping("/CopyDocFromOldSystem")
+    public ResponseEntity<Boolean> copyDocFromOldSystem(@RequestBody GetDocFromoldSystemInputRequest getDocFromoldSystemInputRequest) {
+        boolean result;
+        result = financialDocumentService.copyDocFromOldSystem(getDocFromoldSystemInputRequest);
+        return ResponseEntity.ok(result);
     }
 }

@@ -1,6 +1,8 @@
 package ir.demisco.cfs.service.repository;
 
 import ir.demisco.cfs.model.entity.FinancialLedgerPeriod;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,4 +17,18 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "   and flp.financial_ledger_type_id = :financialLedgerTypeId "
             , nativeQuery = true)
     Long getCountByFinancialLedgerPeriodByPeriodIdAndLedgerTypeId(Long financialPeriodId, Long financialLedgerTypeId);
+
+    @Query(value = " SELECT FNP.ID," +
+            "       FNP.START_DATE," +
+            "       FNP.END_DATE," +
+            "       FNP.OPEN_MONTH_COUNT," +
+            "       FNP.DESCRIPTION," +
+            "       FNPS.NAME" +
+            "  FROM FNDC.FINANCIAL_LEDGER_PERIOD FNLP" +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD FNP" +
+            "    ON FNLP.FINANCIAL_PERIOD_ID = FNP.ID" +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD_STATUS FNPS" +
+            "    ON FNPS.ID = FNP.FINANCIAL_PERIOD_STATUS_ID" +
+            " WHERE FNLP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ", nativeQuery = true)
+    Page<Object[]> findByFinancialLedgerTypeIdAndId(Long financialLedgerTypeId, Pageable pageable);
 }

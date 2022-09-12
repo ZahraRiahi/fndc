@@ -2,7 +2,7 @@ package ir.demisco.cfs.model.dto.request;
 
 public class GetDocFromoldSystemInputRequest {
     private Long dchdId;
-    private Long dchdNum;
+    private String dchdNum;
 
     public Long getDchdId() {
         return dchdId;
@@ -12,11 +12,11 @@ public class GetDocFromoldSystemInputRequest {
         this.dchdId = dchdId;
     }
 
-    public Long getDchdNum() {
+    public String getDchdNum() {
         return dchdNum;
     }
 
-    public void setDchdNum(Long dchdNum) {
+    public void setDchdNum(String dchdNum) {
         this.dchdNum = dchdNum;
     }
 }
