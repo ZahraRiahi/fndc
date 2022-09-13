@@ -2,6 +2,7 @@ package ir.demisco.cfs.app.web.controller;
 
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodRequest;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodLedgerGetResponse;
+import ir.demisco.cfs.model.dto.response.FinancialPeriodOutputResponse;
 import ir.demisco.cfs.service.api.FinancialLedgerPeriodService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -37,7 +38,11 @@ public class FinancialLedgerPeriodController {
     }
 
     @GetMapping("/GetByPeriod/{financialPeriodId}")
-    public ResponseEntity<List<FinancialPeriodLedgerGetResponse>>  responseEntityFinancialDocumentItem(@PathVariable Long financialPeriodId) {
+    public ResponseEntity<List<FinancialPeriodLedgerGetResponse>>  responseEntityFinancialPeriod(@PathVariable Long financialPeriodId) {
         return ResponseEntity.ok(financialLedgerPeriodService.getFinancialGetByPeriod(financialPeriodId));
+    }
+    @GetMapping("/NotAssignedFinancialPeriod/{financialLedgerTypeId}")
+    public ResponseEntity<List<FinancialPeriodOutputResponse>>  responseEntityFinancialLedgerType(@PathVariable Long financialLedgerTypeId) {
+        return ResponseEntity.ok(financialLedgerPeriodService.getFinancialGetByLedgerType(financialLedgerTypeId));
     }
 }

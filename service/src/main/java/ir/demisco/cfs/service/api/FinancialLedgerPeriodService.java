@@ -2,6 +2,7 @@ package ir.demisco.cfs.service.api;
 
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodRequest;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodLedgerGetResponse;
+import ir.demisco.cfs.model.dto.response.FinancialPeriodOutputResponse;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 
@@ -14,5 +15,5 @@ public interface FinancialLedgerPeriodService {
 
     List<FinancialPeriodLedgerGetResponse> getFinancialGetByPeriod(Long financialPeriodId);
 
-
+    List<FinancialPeriodOutputResponse> getFinancialGetByLedgerType(Long financialLedgerTypeId);
 }

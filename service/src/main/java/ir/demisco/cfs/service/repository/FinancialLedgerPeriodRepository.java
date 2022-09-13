@@ -43,4 +43,13 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             " WHERE FNLP.FINANCIAL_PERIOD_ID = :financialPeriodId " +
             "   AND FNLT.ORGANIZATION_ID = :organizationId", nativeQuery = true)
     List<Object[]> getFinancialLedgerTypeByOrganizationAndPeriodId(Long organizationId, Long financialPeriodId);
+
+    @Query(value = " SELECT FNP.ID, FNP.DESCRIPTION" +
+            "  FROM FNPR.FINANCIAL_PERIOD FNP" +
+            " WHERE NOT EXISTS" +
+            " (SELECT 1" +
+            "          FROM FNDC.FINANCIAL_LEDGER_PERIOD T" +
+            "         WHERE T.FINANCIAL_PERIOD_ID = FNP.ID" +
+            "           AND T.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId) ", nativeQuery = true)
+    List<Object[]> getFinancialLedgerTypeById( Long financialLedgerTypeId);
 }
