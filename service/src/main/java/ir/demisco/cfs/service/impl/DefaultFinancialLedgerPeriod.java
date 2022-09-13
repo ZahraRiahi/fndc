@@ -4,6 +4,7 @@ import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodFilterRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodRequest;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerPeriodOutputResponse;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodLedgerGetResponse;
+import ir.demisco.cfs.model.dto.response.FinancialPeriodOutputResponse;
 import ir.demisco.cfs.model.entity.FinancialLedgerMonth;
 import ir.demisco.cfs.model.entity.FinancialLedgerPeriod;
 import ir.demisco.cfs.service.api.FinancialLedgerPeriodService;
@@ -136,7 +137,7 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
     @Transactional(rollbackOn = Throwable.class)
     public List<FinancialPeriodLedgerGetResponse> getFinancialGetByPeriod(Long financialPeriodId) {
         if(financialPeriodId==null){
-            throw new RuleException("دوره مالی را مشخص نمایید");
+            throw new RuleException("دفتر مالی را مشخص نمایید");
         }
         List<Object[]> financialLedgerTypeList = financialLedgerPeriodRepository.getFinancialLedgerTypeByOrganizationAndPeriodId(SecurityHelper.getCurrentUser().getOrganizationId(), financialPeriodId);
         return financialLedgerTypeList.stream().map(objects -> FinancialPeriodLedgerGetResponse.builder().financialLedgerPeriodId(Long.parseLong(objects[0].toString()))
@@ -144,6 +145,18 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
                 .financialLedgerTypeDescription(objects[2].toString())
                 .build()).collect(Collectors.toList());
 
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public List<FinancialPeriodOutputResponse> getFinancialGetByLedgerType(Long financialLedgerTypeId) {
+        if(financialLedgerTypeId==null){
+            throw new RuleException("دوره مالی را مشخص نمایید");
+        }
+        List<Object[]> financialLedgerTypeList = financialLedgerPeriodRepository.getFinancialLedgerTypeById(financialLedgerTypeId);
+        return financialLedgerTypeList.stream().map(objects -> FinancialPeriodOutputResponse.builder().id(Long.parseLong(objects[0].toString()))
+                .description(objects[1].toString())
+                .build()).collect(Collectors.toList());
     }
 
     private FinancialLedgerPeriodFilterRequest setParameter(List<DataSourceRequest.FilterDescriptor> filters) {
