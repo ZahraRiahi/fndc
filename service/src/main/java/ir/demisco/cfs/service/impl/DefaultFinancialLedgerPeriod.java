@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.impl;
 
+import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodFilterModelRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodFilterRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodRequest;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerPeriodOutputResponse;
@@ -136,7 +137,7 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public List<FinancialPeriodLedgerGetResponse> getFinancialGetByPeriod(Long financialPeriodId) {
-        if(financialPeriodId==null){
+        if (financialPeriodId == null) {
             throw new RuleException("دفتر مالی را مشخص نمایید");
         }
         List<Object[]> financialLedgerTypeList = financialLedgerPeriodRepository.getFinancialLedgerTypeByOrganizationAndPeriodId(SecurityHelper.getCurrentUser().getOrganizationId(), financialPeriodId);
@@ -150,13 +151,32 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public List<FinancialPeriodOutputResponse> getFinancialGetByLedgerType(Long financialLedgerTypeId) {
-        if(financialLedgerTypeId==null){
+        if (financialLedgerTypeId == null) {
             throw new RuleException("دوره مالی را مشخص نمایید");
         }
         List<Object[]> financialLedgerTypeList = financialLedgerPeriodRepository.getFinancialLedgerTypeById(financialLedgerTypeId);
         return financialLedgerTypeList.stream().map(objects -> FinancialPeriodOutputResponse.builder().id(Long.parseLong(objects[0].toString()))
                 .description(objects[1].toString())
                 .build()).collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean deleteFinancialLedgerPeriod(FinancialLedgerPeriodFilterModelRequest financialLedgerPeriodFilterModelRequest) {
+        if (financialLedgerPeriodFilterModelRequest.getFinancialLedgerTypeId() == null) {
+            throw new RuleException("دوره مالی را مشخص نمایید");
+        }
+        if (financialLedgerPeriodFilterModelRequest.getFinancialPeriodId() == null) {
+            throw new RuleException("دفتر مالی را مشخص نمایید");
+        }
+        Long financialLedgerPeriodDelete = financialLedgerPeriodRepository.getFinancialLedgerPeriodForDelete(financialLedgerPeriodFilterModelRequest.getFinancialPeriodId(), financialLedgerPeriodFilterModelRequest.getFinancialLedgerTypeId());
+        if (financialLedgerPeriodDelete != null) {
+            financialLedgerPeriodRepository.deleteById(financialLedgerPeriodDelete);
+
+        } else {
+            throw new RuleException("این رکورد موجود نیست");
+        }
+        return true;
     }
 
     private FinancialLedgerPeriodFilterRequest setParameter(List<DataSourceRequest.FilterDescriptor> filters) {

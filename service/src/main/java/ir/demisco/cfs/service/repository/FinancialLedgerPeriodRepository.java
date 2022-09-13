@@ -52,4 +52,10 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "         WHERE T.FINANCIAL_PERIOD_ID = FNP.ID" +
             "           AND T.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId) ", nativeQuery = true)
     List<Object[]> getFinancialLedgerTypeById( Long financialLedgerTypeId);
+
+    @Query(value = "select T.id" +
+            " from  FNDC.FINANCIAL_LEDGER_PERIOD T " +
+            "  WHERE T.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "     AND T.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ", nativeQuery = true)
+    Long getFinancialLedgerPeriodForDelete(Long financialPeriodId,Long financialLedgerTypeId);
 }

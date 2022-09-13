@@ -1,5 +1,6 @@
 package ir.demisco.cfs.service.api;
 
+import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodFilterModelRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodRequest;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodLedgerGetResponse;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodOutputResponse;
@@ -16,4 +17,6 @@ public interface FinancialLedgerPeriodService {
     List<FinancialPeriodLedgerGetResponse> getFinancialGetByPeriod(Long financialPeriodId);
 
     List<FinancialPeriodOutputResponse> getFinancialGetByLedgerType(Long financialLedgerTypeId);
+
+    Boolean deleteFinancialLedgerPeriod(FinancialLedgerPeriodFilterModelRequest financialLedgerPeriodFilterModelRequest);
 }
