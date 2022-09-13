@@ -1,5 +1,6 @@
 package ir.demisco.cfs.app.web.controller;
 
+import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodFilterModelRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodRequest;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodLedgerGetResponse;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodOutputResponse;
@@ -44,5 +45,12 @@ public class FinancialLedgerPeriodController {
     @GetMapping("/NotAssignedFinancialPeriod/{financialLedgerTypeId}")
     public ResponseEntity<List<FinancialPeriodOutputResponse>>  responseEntityFinancialLedgerType(@PathVariable Long financialLedgerTypeId) {
         return ResponseEntity.ok(financialLedgerPeriodService.getFinancialGetByLedgerType(financialLedgerTypeId));
+    }
+
+    @PostMapping("/DELETE")
+    public ResponseEntity<Boolean> deleteFinancialLedgerPeriod(@RequestBody FinancialLedgerPeriodFilterModelRequest financialLedgerPeriodFilterModelRequest) {
+        boolean result;
+        result = financialLedgerPeriodService.deleteFinancialLedgerPeriod(financialLedgerPeriodFilterModelRequest);
+        return ResponseEntity.ok(result);
     }
 }
