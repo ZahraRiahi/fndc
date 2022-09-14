@@ -16,7 +16,15 @@ public interface FinancialDocumentNumberRepository extends JpaRepository<Financi
 
     List<FinancialDocumentNumber> findByFinancialDocumentIdAndDeletedDateIsNull(Long financialDocumentId);
 
-    @Query("select fdn from FinancialDocumentNumber fdn where fdn.financialDocument.id =:documentId   and fdn.deletedDate is null")
-    List<FinancialDocumentNumber> findByFinancialDocumentIdList(Long documentId);
+    @Query(value = "   select * " +
+            "          from FNDC.FINANCIAL_DOCUMENT_NUMBER T" +
+            "         WHERE T.FINANCIAL_DOCUMENT_ID = :financialDocumentId " +
+            "           AND EXISTS " +
+            "         (SELECT 1" +
+            "                  FROM FNDC.FINANCIAL_NUMBERING_TYPE NFT" +
+            "                 WHERE NFT.ID = T.FINANCIAL_NUMBERING_TYPE_ID" +
+            "                   AND NFT.TYPE_STATUS = :financialNumberingTypeId)"
+            , nativeQuery = true)
+    List<FinancialDocumentNumber> findByFinancialDocumentIdList(Long financialDocumentId,Long financialNumberingTypeId);
 
 }
