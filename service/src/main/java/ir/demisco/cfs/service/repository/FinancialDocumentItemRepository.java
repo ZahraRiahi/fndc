@@ -90,7 +90,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL)" +
             "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL)" +
             "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId) " +
-            "   and (:description is null or fidc.description  like %:description%) " +
+            "   and (:description is null or FNDI.description  like %:description%) " +
             "   and ((:fromAccountCode is null or FIAC.CODE >= :fromAccountCode  ) " +
             "   and (:toAccountCode is null or FIAC.CODE <= :toAccountCode )) " +
             "   AND (:centricAccount IS NULL OR " +
@@ -189,7 +189,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "   AND (FIDC.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL)" +
             "   AND (FIDC.DOCUMENT_NUMBER <= :toNumberId OR :toNumber IS NULL)" +
             "   AND FIDC.FINANCIAL_DOCUMENT_STATUS_ID IN (:documentStatusId) " +
-            "   and (:description is null or fidc.description  like %:description%) " +
+            "   and (:description is null or FNDI.description  like %:description%) " +
             "   and ((:fromAccountCode is null or FIAC.CODE >= :fromAccountCode  ) " +
             "   and (:toAccountCode is null or FIAC.CODE <= :toAccountCode )) " +
             "   AND (:centricAccount IS NULL OR " +
