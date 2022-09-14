@@ -749,6 +749,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             if (record1.getNumberingTypeId() == 2) {
                 documentNumber.set(record1.getFinancialDocumentNumber());
             }
+            if (record1.getNumberingTypeId() == 3) {
+                documentNumber.set(record1.getFinancialDocumentNumber());
+            }
         });
         return documentNumber.get();
     }
@@ -787,7 +790,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         List<Object[]> listDocumentNumber =
                 financialDocumentRepository.findDocumentNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         List<FinancialDocumentNumber> financialDocumentNumberList =
-                financialDocumentNumberRepository.findByFinancialDocumentIdList(financialDocumentNumberDto.getFinancialDocumentId(),financialDocumentNumberDto.getNumberingType());
+                financialDocumentNumberRepository.findByFinancialDocumentIdList(financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         financialDocumentNumberList.forEach(financialDocumentNumberRepository::delete);
         listDocumentNumber.forEach((Object[] documentNumberObject) -> {
             FinancialDocumentNumber financialDocumentNumber = new FinancialDocumentNumber();
@@ -805,6 +808,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
         financialNumberingRecordDtoList.forEach((FinancialNumberingRecordDto record1) -> {
             if (record1.getNumberingTypeId() == 2) {
+                documentNumber.set(record1.getFinancialDocumentNumber());
+            }
+            if (record1.getNumberingTypeId() == 3) {
                 documentNumber.set(record1.getFinancialDocumentNumber());
             }
         });
@@ -1437,9 +1443,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public Boolean copyDocFromOldSystem(GetDocFromoldSystemInputRequest getDocFromoldSystemInputRequest) {
-        if (getDocFromoldSystemInputRequest.getDchdId() == null || getDocFromoldSystemInputRequest.getDchdNum() == null){
+        if (getDocFromoldSystemInputRequest.getDchdId() == null || getDocFromoldSystemInputRequest.getDchdNum() == null) {
             throw new RuleException("لطفا یکی از مقادیر را وارد نمایید.");
         }
-            return true;
+        return true;
     }
 }
