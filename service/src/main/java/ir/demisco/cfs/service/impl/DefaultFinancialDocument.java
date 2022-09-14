@@ -787,7 +787,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         List<Object[]> listDocumentNumber =
                 financialDocumentRepository.findDocumentNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         List<FinancialDocumentNumber> financialDocumentNumberList =
-                financialDocumentNumberRepository.findByFinancialDocumentIdList(financialDocumentNumberDto.getFinancialDocumentId());
+                financialDocumentNumberRepository.findByFinancialDocumentIdList(financialDocumentNumberDto.getFinancialDocumentId(),financialDocumentNumberDto.getNumberingType());
         financialDocumentNumberList.forEach(financialDocumentNumberRepository::delete);
         listDocumentNumber.forEach((Object[] documentNumberObject) -> {
             FinancialDocumentNumber financialDocumentNumber = new FinancialDocumentNumber();
