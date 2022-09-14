@@ -701,7 +701,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     public String creatDocumentNumber(FinancialDocumentNumberDto financialDocumentNumberDto) {
         List<FinancialNumberingRecordDto> financialNumberingRecordDtoList = new ArrayList<>();
         AtomicReference<String> documentNumber = new AtomicReference<>("");
-
         List<Object[]> list = financialDocumentRepository.getSerialNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
         if (!list.isEmpty()) {
             list.forEach((Object[] objects) -> {
@@ -746,8 +745,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         });
 
         financialNumberingRecordDtoList.forEach((FinancialNumberingRecordDto record1) -> {
-            if (record1.getNumberingTypeId() == 2) {
-                documentNumber.set(record1.getFinancialDocumentNumber());
+            if (record1.getNumberingTypeId() == 1) {
+                documentNumber.set( listDocumentNumber.get(1)[1].toString());
             }
             if (record1.getNumberingTypeId() == 3) {
                 documentNumber.set(record1.getFinancialDocumentNumber());
