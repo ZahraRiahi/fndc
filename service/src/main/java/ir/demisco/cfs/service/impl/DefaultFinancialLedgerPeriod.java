@@ -156,7 +156,7 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
         }
         List<Object[]> financialLedgerTypeList = financialLedgerPeriodRepository.getFinancialLedgerTypeById(financialLedgerTypeId);
         return financialLedgerTypeList.stream().map(objects -> FinancialPeriodOutputResponse.builder().id(Long.parseLong(objects[0].toString()))
-                .description(objects[1].toString())
+                .description(objects[1] == null ? null : objects[1].toString())
                 .build()).collect(Collectors.toList());
     }
 
