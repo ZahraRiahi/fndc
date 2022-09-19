@@ -30,9 +30,6 @@ public class DefaultFinancialSecurity implements FinancialSecurityService {
         if (financialSecurityFilterRequest.getUserId() == null) {
             throw new RuleException("لطفا شناسه ی کاربر را وارد نمایید.");
         }
-        if (financialSecurityFilterRequest.getDocumentTypeId() == null) {
-            throw new RuleException("لطفا شناسه ی نوع سند را وارد نمایید.");
-        }
         if (financialSecurityFilterRequest.getActivityCode() == null) {
             throw new RuleException("لطفا کد نوع فعالیت را وارد نمایید.");
         }
