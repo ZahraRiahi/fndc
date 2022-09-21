@@ -1,6 +1,7 @@
 package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.request.FinancialSecurityFilterRequest;
+import ir.demisco.cfs.model.dto.request.GetDocFromoldSystemInputRequest;
 import ir.demisco.cfs.model.dto.response.FinancialSecurityOutputResponse;
 import ir.demisco.cfs.service.api.FinancialSecurityService;
 import ir.demisco.cfs.service.repository.FinancialActivityTypeRepository;
@@ -72,6 +73,20 @@ public class DefaultFinancialSecurity implements FinancialSecurityService {
                 .setParameter(7, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getFinancialLedgerId()))
                 .setParameter(8, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getDepartmentId()))
                 .setParameter(9, new TypedParameterValue(StandardBasicTypes.LONG, financialSecurityFilterRequest.getUserId()))
+                .getResultList();
+
+        return Integer.parseInt(resultList.get(0).toString());
+    }
+
+    @Override
+    @Transactional(rollbackFor = Throwable.class)
+    public int resultSetCopyDocFromOld(GetDocFromoldSystemInputRequest getDocFromoldSystemInputRequest) {
+        List<Object> resultList = entityManager.createNativeQuery(
+                " select * from table(FNDC.FRD_BFS_FNDC_TRANSFER_PKG.INSERT_DOCUMENT_DATA(" +
+                        " p_dcht_id => ? 1," +
+                        " p_dchd_num => ? 2 ))")
+                .setParameter(1, new TypedParameterValue(StandardBasicTypes.LONG, getDocFromoldSystemInputRequest.getDchdId()))
+                .setParameter(2, new TypedParameterValue(StandardBasicTypes.LONG, getDocFromoldSystemInputRequest.getDchdNum()))
                 .getResultList();
 
         return Integer.parseInt(resultList.get(0).toString());
