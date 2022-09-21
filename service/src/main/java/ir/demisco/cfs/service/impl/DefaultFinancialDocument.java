@@ -1449,6 +1449,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             throw new RuleException("لطفا یکی از مقادیر را وارد نمایید.");
         }
         int resultSet = financialSecurityService.resultSetCopyDocFromOld(getDocFromoldSystemInputRequest);
+        if (resultSet == 0) {
+            return false;
+        }
+
         return true;
     }
 }
