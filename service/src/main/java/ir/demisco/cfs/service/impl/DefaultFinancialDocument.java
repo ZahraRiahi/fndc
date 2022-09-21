@@ -1451,8 +1451,9 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         int resultSet = financialSecurityService.resultSetCopyDocFromOld(getDocFromoldSystemInputRequest);
         if (resultSet == 0) {
             return false;
+        }else{
+            return true;
         }
 
-        return true;
     }
 }
