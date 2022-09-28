@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Date;
 import java.util.List;
 
 public interface FinancialLedgerPeriodRepository extends JpaRepository<FinancialLedgerPeriod, Long> {
@@ -51,11 +52,39 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "          FROM FNDC.FINANCIAL_LEDGER_PERIOD T" +
             "         WHERE T.FINANCIAL_PERIOD_ID = FNP.ID" +
             "           AND T.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId) ", nativeQuery = true)
-    List<Object[]> getFinancialLedgerTypeById( Long financialLedgerTypeId);
+    List<Object[]> getFinancialLedgerTypeById(Long financialLedgerTypeId);
 
     @Query(value = "select T.id" +
             " from  FNDC.FINANCIAL_LEDGER_PERIOD T " +
             "  WHERE T.FINANCIAL_PERIOD_ID = :financialPeriodId " +
             "     AND T.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ", nativeQuery = true)
-    Long getFinancialLedgerPeriodForDelete(Long financialPeriodId,Long financialLedgerTypeId);
+    Long getFinancialLedgerPeriodForDelete(Long financialPeriodId, Long financialLedgerTypeId);
+
+    @Query(value = "SELECT LM.FIN_LEDGER_MONTH_STAT_ID" +
+            "  FROM FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD FP" +
+            "    ON FP.ID = LP.FINANCIAL_PERIOD_ID" +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM" +
+            "    ON LM.FINANCIAL_LEDGER_PERIOD_ID = LP.ID" +
+            " INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "    ON FM.ID = LM.FINANCIAL_MONTH_ID" +
+            " WHERE LP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId" +
+            "   AND FM.END_DATE =" +
+            "       (SELECT CASE" +
+            "                 WHEN :nextPrevMonth = -1 THEN" +
+            "                  MAX(FM.END_DATE)" +
+            "                 WHEN :nextPrevMonth = 1 THEN" +
+            "                  MIN(FM.END_DATE)" +
+            "               END" +
+            "          FROM FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            "         INNER JOIN FNPR.FINANCIAL_PERIOD FP" +
+            "            ON FP.ID = LP.FINANCIAL_PERIOD_ID" +
+            "         INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM" +
+            "            ON LM.FINANCIAL_LEDGER_PERIOD_ID = LP.ID" +
+            "         INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "            ON FM.ID = LM.FINANCIAL_MONTH_ID" +
+            "           AND ((:nextPrevMonth = -1 AND FM.END_DATE < trunc(:startDate)) OR" +
+            "               (:nextPrevMonth = 1 AND FM.END_DATE > trunc(:endDate)))" +
+            "         WHERE LP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId)", nativeQuery = true)
+    Long getFinancialLedgerPeriodByLedgerAndNextAndDate(Long financialLedgerTypeId, Long nextPrevMonth, Date startDate, Date endDate);
 }
