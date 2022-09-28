@@ -29,8 +29,8 @@ public class DefaultFinancialLedgerPeriodMonthStatus implements FinancialLedgerP
         List<Object[]> list = financialLedgerPeriodMonthStatusRepository.getFinancialLedgerPeriodMonthStatusList(getLedgerPeriodMonthStatusRequest.getFinancialLedgerMonthId()
                 , getLedgerPeriodMonthStatusRequest.getFinancialLedgerPeriodId());
         Long statusId = null;
-        if (getLedgerPeriodMonthStatusRequest.getCheckOtherPeriods() == 1 && (Long.parseLong(list.get(0)[0].toString()) == 1 && getLedgerPeriodMonthStatusRequest.getNextPrevMonth() == -1)
-                || (list.get(0)[0].toString().equals(12)) && getLedgerPeriodMonthStatusRequest.getNextPrevMonth() == 1) {
+        if ((getLedgerPeriodMonthStatusRequest.getCheckOtherPeriods() == 1 && (Long.parseLong(list.get(0)[0].toString()) == 1 && getLedgerPeriodMonthStatusRequest.getNextPrevMonth() == -1))
+                || ((list.get(0)[0].equals(12)) && getLedgerPeriodMonthStatusRequest.getNextPrevMonth() == 1)) {
             statusId = financialLedgerPeriodRepository.getFinancialLedgerPeriodByLedgerAndNextAndDate(Long.parseLong(list.get(0)[3].toString()),
                     getLedgerPeriodMonthStatusRequest.getNextPrevMonth(), (Date) list.get(0)[1], (Date) list.get(0)[2]);
 
