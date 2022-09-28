@@ -18,4 +18,26 @@ public interface FinancialLedgerMonthRepository extends JpaRepository<FinancialL
             " and flm. financial_ledger_period_id =:financialLedgerPeriodId"
             , nativeQuery = true)
     Long getCountByFinancialLedgerMonthByIdAndLedgerTypeIdAndLedgerPeriod(Long financialMonthId, Long financialLedgerTypeId, Long financialLedgerPeriodId);
+
+    @Query(value = " SELECT LM.FIN_LEDGER_MONTH_STAT_ID" +
+            "  FROM FNDC.FINANCIAL_LEDGER_MONTH LM" +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            "    ON LP.ID = LM.FINANCIAL_LEDGER_PERIOD_ID" +
+            " INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "    ON FM.ID = LM.FINANCIAL_MONTH_ID" +
+            " INNER JOIN FNPR.FINANCIAL_MONTH_TYPE MT" +
+            "    ON MT.ID = FM.FINANCIAL_MONTH_TYPE_ID" +
+            "   AND LM.FINANCIAL_LEDGER_PERIOD_ID = :financialLedgerPeriodId " +
+            "   AND MT.MONTH_NUMBER =" +
+            "       (SELECT MT.MONTH_NUMBER + :nextPrevMonth " +
+            "          FROM FNDC.FINANCIAL_LEDGER_MONTH LM" +
+            "         INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            "            ON LP.ID = LM.FINANCIAL_LEDGER_PERIOD_ID" +
+            "         INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "            ON FM.ID = LM.FINANCIAL_MONTH_ID" +
+            "         INNER JOIN FNPR.FINANCIAL_MONTH_TYPE MT" +
+            "            ON MT.ID = FM.FINANCIAL_MONTH_TYPE_ID" +
+            "         WHERE LM.ID = :financialLedgerMonthId)"
+            , nativeQuery = true)
+    Long getLedgerMonthByLedgerPeriodAndPrevMonth(Long financialLedgerPeriodId, Long nextPrevMonth, Long financialLedgerMonthId);
 }
