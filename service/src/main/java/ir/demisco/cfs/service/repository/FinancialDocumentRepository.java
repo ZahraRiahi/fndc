@@ -1684,4 +1684,39 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     Page<Object[]> findByFinancialDocument(Long organizationId, LocalDateTime fromDate, LocalDateTime toDate, Object financialDepartment, Long financialDepartmentId,
                                        Object  department,Long departmentId,Object financialLedgerType,Long financialLedgerTypeId,Pageable pageable);
+
+    @Query(value = " SELECT FD.ID " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT FD " +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM " +
+            "    ON LM.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
+            "   AND LM.ID = :financialLedgerMonthId " +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+            "    ON LP.ID = LM.FINANCIAL_LEDGER_PERIOD_ID " +
+            "   AND LP.FINANCIAL_PERIOD_ID = FD.FINANCIAL_PERIOD_ID " +
+            "   AND LP.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_TYPE LT " +
+            "    ON LT.ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
+            "   AND LT.ORGANIZATION_ID = :organizationId " +
+            " INNER JOIN FNPR.FINANCIAL_MONTH FM " +
+            "    ON FM.ID = LM.FINANCIAL_MONTH_ID" +
+            " WHERE FD.ORGANIZATION_ID = LT.ORGANIZATION_ID " +
+            "   AND FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE "
+            , nativeQuery = true)
+    List<Long> findByListFinancialDocumentId(Long financialLedgerMonthId,Long organizationId);
+
+    @Query(" select 1 from FinancialDocument fd " +
+            " where fd.financialDocumentStatus.id != 30 " +
+            " and fd.id in (:documentIdList)  ")
+    List<Long> getFinancialDocumentListId(List<Long> documentIdList);
+
+
+    @Query(value = " SELECT 1 " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            "  LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER FN" +
+            "    ON FN.FINANCIAL_DOCUMENT_ID = FD.ID" +
+            "   AND FN.FINANCIAL_NUMBERING_TYPE_ID = 3" +
+            " WHERE (FD.PERMANENT_DOCUMENT_NUMBER IS NOT NULL OR FN.ID IS NOT NULL)" +
+            "   AND FD.ID = :financialDocumentId "
+            , nativeQuery = true)
+    Long getFinancialDocumentByNumberAndId(Long financialDocumentId);
 }
