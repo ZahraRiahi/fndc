@@ -363,12 +363,6 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "  GROUP BY FA.ID,FA.CODE, FA.DESCRIPTION", nativeQuery = true)
     Page<Object[]> getDocumentByStructure(Long financialDocumentId, Long financialStructureId, Pageable pageable);
 
-    @Query(" select fdi from  FinancialDocumentItem fdi " +
-            "where fdi.financialDocument.id=:financialDocumentId " +
-            "and fdi.sequenceNumber=:sequenceNumber " +
-            "and fdi.deletedDate is null")
-    FinancialDocumentItem findBySequence(Long financialDocumentId, Long sequenceNumber);
-
     @Query(" select DISTINCT fs_final.id as documentStructueId," +
             "       fs_final.sequence as sequence, " +
             "       fs_final.description as description, " +
@@ -396,57 +390,6 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " from FinancialDocumentItem fdi where fdi.financialDocument.id =:financialDocumentId and fdi.id in (:financialDocumentItemIdList) " +
             " and fdi.deletedDate is null ")
     List<Object[]> findFinancialDocumentItemByFinancialDocumentIdList(Long financialDocumentId, List<Long> financialDocumentItemIdList);
-
-
-    @Query(value = " SELECT FNDI.ID, " +
-            "       FNDI.FINANCIAL_DOCUMENT_ID, " +
-            "       FNDI.SEQUENCE_NUMBER," +
-            "       FNDI.FINANCIAL_ACCOUNT_ID," +
-            "       FNC.DESCRIPTION as FINANCIAL_ACCOUNT_DESCRIPTION," +
-            " FNC.CODE AS FINANCIAL_ACCOUNT_CODE, " +
-            "       FNDI.DEBIT_AMOUNT," +
-            "       FNDI.CREDIT_AMOUNT," +
-            "       FNDI.DESCRIPTION," +
-            "       NVL(CNAC1.CODE, '') || NVL(CNAC1.NAME, '') ||" +
-            "       NVL2(CNAC2.CODE, '-' || CNAC2.CODE, '') || NVL(CNAC2.NAME, '') ||" +
-            "       NVL2(CNAC3.CODE, '-' || CNAC3.CODE, '') || NVL(CNAC3.NAME, '')  ||" +
-            "       NVL2(CNAC4.CODE, '-' || CNAC4.CODE, '') || NVL(CNAC4.NAME, '')  ||" +
-            "       NVL2(CNAC5.CODE, '-' || CNAC5.CODE, '') || NVL(CNAC5.NAME, '')  ||" +
-            "       NVL2(CNAC6.CODE, '-' || CNAC6.CODE, '') || NVL(CNAC6.NAME, '')  AS CENTRICACCOUNTDESCRIPTION," +
-            "       FNC.ACCOUNT_RELATION_TYPE_ID," +
-            "       FNDI.CENTRIC_ACCOUNT_ID_1," +
-            "       CNAC1.NAME as CENTRIC_ACCOUNT_DESCRIPTION_1," +
-            "       FNDI.CENTRIC_ACCOUNT_ID_2," +
-            "       CNAC2.NAME as CENTRIC_ACCOUNT_DESCRIPTION_2," +
-            "       FNDI.CENTRIC_ACCOUNT_ID_3," +
-            "       CNAC3.NAME as CENTRIC_ACCOUNT_DESCRIPTION_3," +
-            "       FNDI.CENTRIC_ACCOUNT_ID_4," +
-            "       CNAC4.NAME as CENTRIC_ACCOUNT_DESCRIPTION_4," +
-            "       FNDI.CENTRIC_ACCOUNT_ID_5," +
-            "       CNAC5.NAME  as CENTRIC_ACCOUNT_DESCRIPTION_5," +
-            "       FNDI.CENTRIC_ACCOUNT_ID_6," +
-            "       CNAC6.NAME as CENTRIC_ACCOUNT_DESCRIPTION_6," +
-            " FNDI.CREATOR_ID " +
-            "  FROM FNDC.FINANCIAL_DOCUMENT_ITEM FNDI" +
-            " INNER JOIN FNAC.FINANCIAL_ACCOUNT FNC" +
-            "    ON FNC.ID = FNDI.FINANCIAL_ACCOUNT_ID" +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC1" +
-            "    ON CNAC1.ID = FNDI.CENTRIC_ACCOUNT_ID_1" +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC2" +
-            "    ON CNAC2.ID = FNDI.CENTRIC_ACCOUNT_ID_2" +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC3" +
-            "    ON CNAC3.ID = FNDI.CENTRIC_ACCOUNT_ID_3" +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC4" +
-            "    ON CNAC4.ID = FNDI.CENTRIC_ACCOUNT_ID_4" +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC5" +
-            "    ON CNAC5.ID = FNDI.CENTRIC_ACCOUNT_ID_5" +
-            "  LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
-            "    ON CNAC6.ID = FNDI.CENTRIC_ACCOUNT_ID_6" +
-            " WHERE FNDI.FINANCIAL_DOCUMENT_ID = :financialDocumentId " +
-            " and  ( :financialDocumentItem is null or FNDI.ID = :financialDocumentItemId) " +
-            " order by FNDI.Creation_Date asc ",
-            nativeQuery = true)
-    List<Object[]> findByFinancialDocumentItemId(Long financialDocumentId, Object financialDocumentItem, Long financialDocumentItemId);
 
     @Query(value = "WITH QRY AS " +
             " (SELECT SUM(NVL(FDI.DEBIT_AMOUNT, 0)) SUM_DEBIT, " +

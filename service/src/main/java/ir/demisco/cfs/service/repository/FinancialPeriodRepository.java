@@ -926,7 +926,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "             AND FDS.CODE > 10 " +
             "          UNION " +
             "          SELECT FDN.DOCUMENT_NUMBER," +
-            "FD.DOCUMENT_DATE   as DOCUMENT_DATE," +
+            " FD.DOCUMENT_DATE   as DOCUMENT_DATE," +
             "                 FDI.DESCRIPTION   AS DOCUMENT_DESCRIPTION_ITEM," +
             " FDI.ID                   AS FINANCIAL_DOCUMENT_ITEM_ID," +
             "                 FD.ID  FINANCIAL_DOCUMENT_ID," +
@@ -2165,4 +2165,10 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " WHERE T.ID = :financialDocumentId "
             , nativeQuery = true)
     List<Object[]> getFinancialPeriodByFinancialDocumentId(Long financialDocumentId);
+
+    @Query(" select 1 from FinancialPeriod fp " +
+            " where fp.id = :financialPeriodId " +
+            " and fp.financialPeriodStatus.id=2 ")
+    Long getFinancialPeriodByIdAndStatus(Long financialPeriodId);
+
 }
