@@ -61,6 +61,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import javax.persistence.EntityManager;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
@@ -154,7 +155,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 paramSearch.getPriceType(), paramSearch.getFromPrice(),
                 paramSearch.getFromPriceAmount(), paramSearch.getToPrice(),
                 paramSearch.getToPriceAmount(), paramSearch.getTolerance(),
-                paramSearch.getFinancialDocumentType(), paramSearch.getFinancialDocumentTypeId(), paramSearch.getFlgCreationMod(), pageable);
+                paramSearch.getFinancialDocumentType(), paramSearch.getFinancialDocumentTypeId(), pageable);
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -250,26 +251,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     checkFinancialDocumentTypeId(responseFinancialDocumentDto, item);
                     break;
 
-                case "flgCreationMod":
-                    checkFlgCreationMod(responseFinancialDocumentDto, item);
-                    break;
                 default:
                     break;
             }
         }
         return responseFinancialDocumentDto;
-    }
-
-    private void checkFlgCreationMod(ResponseFinancialDocumentDto
-                                             responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
-        Map<String, Object> map = new HashMap<>();
-        if (item.getValue() != null) {
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFlgCreationMod(Long.parseLong(item.getValue().toString()));
-        } else {
-            responseFinancialDocumentDto.setParamMap(map);
-            responseFinancialDocumentDto.setFlgCreationMod(0L);
-        }
     }
 
     private void checkFinancialDocumentTypeId(ResponseFinancialDocumentDto
@@ -1463,7 +1449,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             throw new RuleException("لطفا یکی از مقادیر را وارد نمایید.");
         }
         String s = financialDocumentRepository.CopyDocFromOldSystem(getDocFromoldSystemInputRequest.getDchdId(), getDocFromoldSystemInputRequest.getDchdNum());
-        if (s !=null && s.length() != 0) {
+        if (s != null && s.length() != 0) {
             throw new RuleException(s);
         }
         return true;
