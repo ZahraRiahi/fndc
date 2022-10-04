@@ -36,7 +36,6 @@ import ir.demisco.cfs.model.entity.NumberingFormatSerial;
 import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.FinancialPeriodService;
-import ir.demisco.cfs.service.api.FinancialSecurityService;
 import ir.demisco.cfs.service.repository.CentricAccountRepository;
 import ir.demisco.cfs.service.repository.FinancialAccountRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemCurrencyRepository;
@@ -102,13 +101,12 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialPeriodService financialPeriodService;
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
     private final FinancialPeriodRepository financialPeriodRepository;
-    private final FinancialSecurityService financialSecurityService;
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
                                     FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                     FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
-                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialPeriodRepository financialPeriodRepository, FinancialSecurityService financialSecurityService) {
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialPeriodRepository financialPeriodRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -125,7 +123,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.financialPeriodService = financialPeriodService;
         this.financialDocumentSecurityService = financialDocumentSecurityService;
         this.financialPeriodRepository = financialPeriodRepository;
-        this.financialSecurityService = financialSecurityService;
+
     }
 
 
@@ -157,7 +155,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 paramSearch.getPriceType(), paramSearch.getFromPrice(),
                 paramSearch.getFromPriceAmount(), paramSearch.getToPrice(),
                 paramSearch.getToPriceAmount(), paramSearch.getTolerance(),
-                paramSearch.getFinancialDocumentType(), paramSearch.getFinancialDocumentTypeId(), pageable);
+                paramSearch.getFinancialDocumentType(), paramSearch.getFinancialDocumentTypeId(), paramSearch.getFlgCreationMod(), pageable);
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -252,11 +250,27 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 case "financialDocumentType.id":
                     checkFinancialDocumentTypeId(responseFinancialDocumentDto, item);
                     break;
+
+                case "flgCreationMod":
+                    checkFlgCreationMod(responseFinancialDocumentDto, item);
+                    break;
                 default:
                     break;
             }
         }
         return responseFinancialDocumentDto;
+    }
+
+    private void checkFlgCreationMod(ResponseFinancialDocumentDto
+                                             responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+        Map<String, Object> map = new HashMap<>();
+        if (item.getValue() != null) {
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFlgCreationMod(Long.parseLong(item.getValue().toString()));
+        } else {
+            responseFinancialDocumentDto.setParamMap(map);
+            responseFinancialDocumentDto.setFlgCreationMod(0L);
+        }
     }
 
     private void checkFinancialDocumentTypeId(ResponseFinancialDocumentDto
@@ -1445,9 +1459,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public Boolean copyDocFromOldSystem(GetDocFromoldSystemInputRequest getDocFromoldSystemInputRequest) {
-        if (getDocFromoldSystemInputRequest.getDchdId() == null || getDocFromoldSystemInputRequest.getDchdNum() == null) {
+        if (getDocFromoldSystemInputRequest.getDchdId() == null && getDocFromoldSystemInputRequest.getDchdNum() == null) {
             throw new RuleException("لطفا یکی از مقادیر را وارد نمایید.");
         }
-        return financialSecurityService.resultSetCopyDocFromOld(getDocFromoldSystemInputRequest) !=0;
+        String s = financialDocumentRepository.CopyDocFromOldSystem(getDocFromoldSystemInputRequest.getDchdId(), getDocFromoldSystemInputRequest.getDchdNum());
+        if (s !=null && s.length() != 0) {
+            throw new RuleException(s);
+        }
+        return true;
     }
 }
