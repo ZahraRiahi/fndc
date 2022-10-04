@@ -36,7 +36,6 @@ import ir.demisco.cfs.model.entity.NumberingFormatSerial;
 import ir.demisco.cfs.service.api.FinancialDocumentSecurityService;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.FinancialPeriodService;
-import ir.demisco.cfs.service.api.FinancialSecurityService;
 import ir.demisco.cfs.service.repository.CentricAccountRepository;
 import ir.demisco.cfs.service.repository.FinancialAccountRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentItemCurrencyRepository;
@@ -156,7 +155,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 paramSearch.getPriceType(), paramSearch.getFromPrice(),
                 paramSearch.getFromPriceAmount(), paramSearch.getToPrice(),
                 paramSearch.getToPriceAmount(), paramSearch.getTolerance(),
-                paramSearch.getFinancialDocumentType(), paramSearch.getFinancialDocumentTypeId(),paramSearch.getFlgCreationMod(), pageable);
+                paramSearch.getFinancialDocumentType(), paramSearch.getFinancialDocumentTypeId(), paramSearch.getFlgCreationMod(), pageable);
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -261,21 +260,19 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         }
         return responseFinancialDocumentDto;
     }
+
     private void checkFlgCreationMod(ResponseFinancialDocumentDto
-                                                      responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
+                                             responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
         if (item.getValue() != null) {
-//            map.put("flgCreationMod", "flgCreationMod");
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setFlgCreationMod(Long.parseLong(item.getValue().toString()));
-//            responseFinancialDocumentDto.setFlgCreationMod("flgCreationMod");
         } else {
-//            map.put("flgCreationMod", null);
             responseFinancialDocumentDto.setParamMap(map);
             responseFinancialDocumentDto.setFlgCreationMod(0L);
-//            responseFinancialDocumentDto.setFlgCreationMod(null);
         }
     }
+
     private void checkFinancialDocumentTypeId(ResponseFinancialDocumentDto
                                                       responseFinancialDocumentDto, DataSourceRequest.FilterDescriptor item) {
         Map<String, Object> map = new HashMap<>();
@@ -1465,7 +1462,10 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (getDocFromoldSystemInputRequest.getDchdId() == null && getDocFromoldSystemInputRequest.getDchdNum() == null) {
             throw new RuleException("لطفا یکی از مقادیر را وارد نمایید.");
         }
-        String s=financialDocumentRepository.CopyDocFromOldSystem(getDocFromoldSystemInputRequest.getDchdId(),getDocFromoldSystemInputRequest.getDchdNum());
+        String s = financialDocumentRepository.CopyDocFromOldSystem(getDocFromoldSystemInputRequest.getDchdId(), getDocFromoldSystemInputRequest.getDchdNum());
+        if (s !=null && s.length() != 0) {
+            throw new RuleException(s);
+        }
         return true;
     }
 }
