@@ -5,6 +5,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.jpa.repository.query.Procedure;
+import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -112,7 +114,19 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       (FNDI.CREDIT_AMOUNT <= " +
             "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0 ))))) " +
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) " +
-            "   and FNSC.SEC_RESULT = 1" +
+            "   and FNSC.SEC_RESULT = 1 " +
+//            " AND (NVL(:flgCreationModId, 0) = 0 OR " +
+//            "       (:flgCreationModId = 1 AND :flgCreationMod is null ) OR" +
+//            " (:flgCreationModId = 2 AND :flgCreationMod is NOT null )) " +
+
+
+
+            " AND (NVL(:flgCreationMod, 0) = 0 OR " +
+            "       (:flgCreationMod = 1 AND FIDC.DCHD_ID IS NULL) OR " +
+            "       (:flgCreationMod = 2 AND FIDC.DCHD_ID IS NOT NULL))" +
+
+
+
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,FNDN.document_number,fidc.financial_document_type_id,fndt.description," +
             " FINANCIAL_DOCUMENT_STATUS_ID, " +
             "          DS.NAME , " +
@@ -206,6 +220,11 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0 ))))) " +
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) " +
             "   and FNSC.SEC_RESULT = 1" +
+            " AND (NVL(:flgCreationMod, 0) = 0 OR " +
+            "       (:flgCreationMod = 1 AND FIDC.DCHD_ID IS NULL) OR " +
+            "       (:flgCreationMod = 2 AND FIDC.DCHD_ID IS NOT NULL))" +
+
+
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,FNDN.document_number,financial_document_type_id,fndt.description, " +
             "   FINANCIAL_DOCUMENT_STATUS_ID, " +
             "                      DS.NAME , " +
@@ -219,7 +238,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
                                             String toAccountCode, Object toAccount, Object centricAccount, Long centricAccountId,
                                             Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId, Object priceType, Object fromPrice,
                                             Long fromPriceAmount, Object toPrice, Long toPriceAmount,
-                                            Double tolerance, Object financialDocumentType, Long financialDocumentTypeId, Pageable pageable);
+                                            Double tolerance, Object financialDocumentType, Long financialDocumentTypeId,Long flgCreationMod, Pageable pageable);
 
     @Query(" SELECT fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:financialDocumentId")
     FinancialDocument getActivePeriodInDocument(Long financialDocumentId);
@@ -1683,7 +1702,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "    ) alll "
             , nativeQuery = true)
     Page<Object[]> findByFinancialDocument(Long organizationId, LocalDateTime fromDate, LocalDateTime toDate, Object financialDepartment, Long financialDepartmentId,
-                                       Object  department,Long departmentId,Object financialLedgerType,Long financialLedgerTypeId,Pageable pageable);
+                                           Object department, Long departmentId, Object financialLedgerType, Long financialLedgerTypeId, Pageable pageable);
 
     @Query(value = " SELECT FD.ID " +
             "  FROM FNDC.FINANCIAL_DOCUMENT FD " +
@@ -1702,7 +1721,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " WHERE FD.ORGANIZATION_ID = LT.ORGANIZATION_ID " +
             "   AND FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE "
             , nativeQuery = true)
-    List<Long> findByListFinancialDocumentId(Long financialLedgerMonthId,Long organizationId);
+    List<Long> findByListFinancialDocumentId(Long financialLedgerMonthId, Long organizationId);
 
     @Query(" select 1 from FinancialDocument fd " +
             " where fd.financialDocumentStatus.id != 30 " +
@@ -1719,4 +1738,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "   AND FD.ID = :financialDocumentId "
             , nativeQuery = true)
     Long getFinancialDocumentByNumberAndId(Long financialDocumentId);
+
+    @Procedure(procedureName="fndc.FRD_BFS_FNDC_TRANSFER_PKG.INSERT_DOCUMENT_DATA",outputParameterName="P_ERR")
+    String CopyDocFromOldSystem(@Param("P_DCHT_ID") Long P_DCHT_ID,@Param("P_DCHT_NUM") String P_DCHT_NUM);
 }
