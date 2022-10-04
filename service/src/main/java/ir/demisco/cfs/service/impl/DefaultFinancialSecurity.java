@@ -83,10 +83,10 @@ public class DefaultFinancialSecurity implements FinancialSecurityService {
     public int resultSetCopyDocFromOld(GetDocFromoldSystemInputRequest getDocFromoldSystemInputRequest) {
         List<Object> resultList = entityManager.createNativeQuery(
                 " select * from table(FNDC.FRD_BFS_FNDC_TRANSFER_PKG.INSERT_DOCUMENT_DATA(" +
-                        " p_dcht_id => ? 1," +
-                        " p_dchd_num => ? 2 ))")
+                        " p_dcht_id => ?1," +
+                        " p_dchd_num => ?2 ))")
                 .setParameter(1, new TypedParameterValue(StandardBasicTypes.LONG, getDocFromoldSystemInputRequest.getDchdId()))
-                .setParameter(2, new TypedParameterValue(StandardBasicTypes.LONG, getDocFromoldSystemInputRequest.getDchdNum()))
+                .setParameter(2, new TypedParameterValue(StandardBasicTypes.STRING, getDocFromoldSystemInputRequest.getDchdNum()))
                 .getResultList();
 
         return Integer.parseInt(resultList.get(0).toString());

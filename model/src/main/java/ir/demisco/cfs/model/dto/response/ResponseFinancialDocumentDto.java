@@ -39,6 +39,8 @@ public class ResponseFinancialDocumentDto {
     private Object documentUser;
     private Object fromAccount;
     private Object toAccount;
+//    private Long flgCreationModId;
+    private Long flgCreationMod;
     Map<String, Object> paramMap;
 
     public LocalDateTime getStartDate() {
@@ -313,6 +315,23 @@ public class ResponseFinancialDocumentDto {
         this.toAccount = toAccount;
     }
 
+//    public Long getFlgCreationModId() {
+//        return flgCreationModId;
+//    }
+//
+//    public void setFlgCreationModId(Long flgCreationModId) {
+//        this.flgCreationModId = flgCreationModId;
+//    }
+
+
+    public Long getFlgCreationMod() {
+        return flgCreationMod;
+    }
+
+    public void setFlgCreationMod(Long flgCreationMod) {
+        this.flgCreationMod = flgCreationMod;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -493,6 +512,10 @@ public class ResponseFinancialDocumentDto {
             return this;
         }
 
+        public Builder flgCreationMod(Long flgCreationMod) {
+            responseFinancialDocumentDto.setFlgCreationMod(flgCreationMod);
+            return this;
+        }
         public ResponseFinancialDocumentDto build() {
             return responseFinancialDocumentDto;
         }
