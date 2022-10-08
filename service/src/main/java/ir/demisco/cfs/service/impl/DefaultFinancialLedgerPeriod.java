@@ -86,7 +86,7 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
         }
         financialMonth.forEach((Long e) -> {
             FinancialLedgerMonth financialLedgerMonth = new FinancialLedgerMonth();
-            financialLedgerMonth.setFinancialLedgerMonthStatus(financialLedgerMonthStatusRepository.getOne(1L));
+            financialLedgerMonth.setFinancialLedgerMonthStatus(financialLedgerMonthStatusRepository.getOne(2L));
             financialLedgerMonth.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialLedgerPeriodRequest.getFinancialLedgerTypeId()));
             financialLedgerMonth.setFinancialMonth(financialMonthRepository.getOne(financialMonth.get(0)));
             financialLedgerMonth.setFinancialLedgerPeriod(financialLedgerPeriodRepository.getOne(financialLedgerPeriod.getId()));
