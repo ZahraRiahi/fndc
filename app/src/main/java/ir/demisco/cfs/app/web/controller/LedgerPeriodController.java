@@ -26,7 +26,7 @@ public class LedgerPeriodController {
     }
 
     @PostMapping("/OpenMonth")
-    public ResponseEntity<Boolean> OpenMonth(@RequestBody FinancialLedgerCloseMonthInputRequest financialLedgerCloseMonthInputRequest) {
+    public ResponseEntity<Boolean> openMonth(@RequestBody FinancialLedgerCloseMonthInputRequest financialLedgerCloseMonthInputRequest) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         financialLedgerCloseMonthInputRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(ledgerPeriodService.openMonth(financialLedgerCloseMonthInputRequest));
