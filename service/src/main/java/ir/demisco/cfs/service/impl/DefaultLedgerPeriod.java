@@ -123,7 +123,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         if (financialLedgerMonth != null) {
             throw new RuleException("وضعیت ماه انتخاب شده در  حال حاضر باز است");
         }
-        Long OpenFinancialLedgerMonth = financialLedgerMonthRepository.getOpenFinancialLedgerMonthByIdAndPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(),
+        Long openFinancialLedgerMonth = financialLedgerMonthRepository.getOpenFinancialLedgerMonthByIdAndPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(),
                 financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId());
         if (OpenFinancialLedgerMonth != null) {
             throw new RuleException("تعداد ماه باز نمیتواند از حداکثر تعداد ماه باز دوره بیشتر باشد.امکان انجام عملیات وجود ندارد");
