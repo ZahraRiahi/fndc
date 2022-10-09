@@ -115,18 +115,9 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       :toPriceAmount + ((:toPriceAmount * NVL(:tolerance, 0)) / 100.0 ))))) " +
             " and (:financialDocumentType is null or FIDC.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId ) " +
             "   and FNSC.SEC_RESULT = 1 " +
-//            " AND (NVL(:flgCreationModId, 0) = 0 OR " +
-//            "       (:flgCreationModId = 1 AND :flgCreationMod is null ) OR" +
-//            " (:flgCreationModId = 2 AND :flgCreationMod is NOT null )) " +
-
-
-
             " AND (NVL(:flgCreationMod, 0) = 0 OR " +
             "       (:flgCreationMod = 1 AND FIDC.DCHD_ID IS NULL) OR " +
             "       (:flgCreationMod = 2 AND FIDC.DCHD_ID IS NOT NULL))" +
-
-
-
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,FNDN.document_number,fidc.financial_document_type_id,fndt.description," +
             " FINANCIAL_DOCUMENT_STATUS_ID, " +
             "          DS.NAME , " +
@@ -1727,7 +1718,6 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " where fd.financialDocumentStatus.id != 30 " +
             " and fd.id in (:documentIdList)  ")
     List<Long> getFinancialDocumentListId(List<Long> documentIdList);
-
 
     @Query(value = " SELECT 1 " +
             "  FROM FNDC.FINANCIAL_DOCUMENT FD" +
