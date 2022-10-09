@@ -966,7 +966,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     }
 
     private Long getItemForLong(Object[] item, int i) {
-        return item[i] == null ? null : Long.parseLong(item[i].toString());
+        return item[i] == null ? null : Long.parseLong(String.format("%.0f", Double.parseDouble(item[i].toString())));
     }
 
     private String getItemForString(Object[] item, int i) {
