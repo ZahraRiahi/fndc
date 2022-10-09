@@ -8,8 +8,10 @@ import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.FinancialLedgerPeriodMonthStatusService;
 import ir.demisco.cfs.service.api.FinancialLedgerPeriodSecurityService;
 import ir.demisco.cfs.service.api.LedgerPeriodService;
+import ir.demisco.cfs.service.repository.FinancialDocumentNumberRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cfs.service.repository.FinancialLedgerMonthRepository;
+import ir.demisco.cfs.service.repository.FinancialLedgerPeriodRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
@@ -28,8 +30,10 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
     private final FinancialDocumentRepository financialDocumentRepository;
     private final FinancialDocumentService financialDocumentService;
     private final EntityManager entityManager;
+    private final FinancialLedgerPeriodRepository financialLedgerPeriodRepository;
+    private final FinancialDocumentNumberRepository financialDocumentNumberRepository;
 
-    public DefaultLedgerPeriod(FinancialPeriodRepository financialPeriodRepository, FinancialLedgerMonthRepository financialLedgerMonthRepository, FinancialLedgerPeriodSecurityService financialLedgerPeriodSecurityService, FinancialLedgerPeriodMonthStatusService financialLedgerPeriodMonthStatusService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentService financialDocumentService, EntityManager entityManager) {
+    public DefaultLedgerPeriod(FinancialPeriodRepository financialPeriodRepository, FinancialLedgerMonthRepository financialLedgerMonthRepository, FinancialLedgerPeriodSecurityService financialLedgerPeriodSecurityService, FinancialLedgerPeriodMonthStatusService financialLedgerPeriodMonthStatusService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentService financialDocumentService, EntityManager entityManager, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository) {
         this.financialPeriodRepository = financialPeriodRepository;
         this.financialLedgerMonthRepository = financialLedgerMonthRepository;
         this.financialLedgerPeriodSecurityService = financialLedgerPeriodSecurityService;
@@ -37,6 +41,8 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         this.financialDocumentRepository = financialDocumentRepository;
         this.financialDocumentService = financialDocumentService;
         this.entityManager = entityManager;
+        this.financialLedgerPeriodRepository = financialLedgerPeriodRepository;
+        this.financialDocumentNumberRepository = financialDocumentNumberRepository;
     }
 
     @Override
@@ -104,5 +110,87 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 .setParameter("financialLedgerPeriodId", financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId())
                 .executeUpdate();
         return true;
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean openMonth(FinancialLedgerCloseMonthInputRequest financialLedgerCloseMonthInputRequest) {
+        Long financialPeriod = financialPeriodRepository.getFinancialPeriodByIdAndStatus(financialLedgerCloseMonthInputRequest.getFinancialPeriodId());
+        if (financialPeriod != null) {
+            throw new RuleException("وضعیت دوره مالی در حالت بسته میباشد");
+        }
+        Long financialLedgerMonth = financialLedgerMonthRepository.getOpenFinancialLedgerMonthById(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId());
+        if (financialLedgerMonth != null) {
+            throw new RuleException("وضعیت ماه انتخاب شده در  حال حاضر باز است");
+        }
+        Long OpenFinancialLedgerMonth = financialLedgerMonthRepository.getOpenFinancialLedgerMonthByIdAndPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(),
+                financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId());
+        if (OpenFinancialLedgerMonth != null) {
+            throw new RuleException("تعداد ماه باز نمیتواند از حداکثر تعداد ماه باز دوره بیشتر باشد.امکان انجام عملیات وجود ندارد");
+        }
+        Long financialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodById(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId());
+        if (financialLedgerPeriod != null) {
+            throw new RuleException("سند بستن حسابهای موقت / دائم ثبت شده است");
+        }
+        CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
+        checkLedgerPermissionInputRequest.setPeriodId(financialLedgerCloseMonthInputRequest.getFinancialPeriodId());
+        checkLedgerPermissionInputRequest.setLedgerTypeId(financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId());
+        checkLedgerPermissionInputRequest.setActivityCode("FINANCIAL_LEG_MONTH");
+
+        GetLedgerPeriodMonthStatusRequest getLedgerPeriodMonthStatusRequest = new GetLedgerPeriodMonthStatusRequest();
+        getLedgerPeriodMonthStatusRequest.setNextPrevMonth(1L);
+        getLedgerPeriodMonthStatusRequest.setCheckOtherPeriods(1L);
+        getLedgerPeriodMonthStatusRequest.setFinancialLedgerMonthId(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId());
+        getLedgerPeriodMonthStatusRequest.setFinancialLedgerPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId());
+        Long ledgerPeriodMonthStatus = financialLedgerPeriodMonthStatusService.getLedgerPeriodMonthStatus(getLedgerPeriodMonthStatusRequest);
+        if (ledgerPeriodMonthStatus == 2) {
+            throw new RuleException("وضعیت ماه قبل بسته است و امکان انجام عملیات وجود ندارد");
+        }
+
+        financialDocumentNumberRepository.getFinancialDocumentNumberByOrgAndPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
+                SecurityHelper.getCurrentUser().getOrganizationId(), financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId(),
+                financialLedgerCloseMonthInputRequest.getFinancialPeriodId())
+                .forEach(financialDocumentNumberRepository::delete);
+
+        entityManager.createNativeQuery(" UPDATE FNDC.FINANCIAL_DOCUMENT DOC " +
+                "   SET DOC.PERMANENT_DOCUMENT_NUMBER = NULL " +
+                " WHERE DOC.ID IN " +
+                "       (SELECT FD.ID " +
+                "          FROM FNDC.FINANCIAL_DOCUMENT FD " +
+                "         INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM " +
+                "            ON LM.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
+                "           AND LM.ID = :financialLedgerMonthId " +
+                "         INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+                "            ON LP.ID = LM.FINANCIAL_LEDGER_PERIOD_ID " +
+                "           AND LP.FINANCIAL_PERIOD_ID = FD.FINANCIAL_PERIOD_ID " +
+                "           AND LP.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
+                "         INNER JOIN FNDC.FINANCIAL_LEDGER_TYPE LT " +
+                "            ON LT.ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
+                "           AND LT.ORGANIZATION_ID = :organizationId " +
+                "         INNER JOIN FNPR.FINANCIAL_MONTH FM " +
+                "            ON FM.ID = LM.FINANCIAL_MONTH_ID " +
+                "         WHERE FD.ORGANIZATION_ID = LT.ORGANIZATION_ID " +
+                "           AND FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE " +
+                "           AND FD.FINANCIAL_LEDGER_TYPE_ID =:financialLedgerTypeId " +
+                "           AND FD.FINANCIAL_PERIOD_ID = :financialPeriodId) ").setParameter("financialLedgerMonthId", financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId())
+                .setParameter("organizationId", SecurityHelper.getCurrentUser().getOrganizationId())
+                .setParameter("financialLedgerTypeId", financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId())
+                .setParameter("financialPeriodId", financialLedgerCloseMonthInputRequest.getFinancialPeriodId())
+                .executeUpdate();
+        entityManager.createNativeQuery(" UPDATE FNDC.FINANCIAL_LEDGER_PERIOD FP " +
+                "   SET FP.FIN_LEDGER_PERIOD_STAT_ID = 1 " +
+                " WHERE FP.ID = :financialLedgerPeriodId " +
+                "   AND FP.FIN_LEDGER_PERIOD_STAT_ID = 2 ")
+                .setParameter("financialLedgerPeriodId", financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId())
+                .executeUpdate();
+
+        entityManager.createNativeQuery("  UPDATE FNDC.FINANCIAL_LEDGER_MONTH LM " +
+                "   SET LM.FIN_LEDGER_MONTH_STAT_ID = 1 " +
+                " WHERE LM.ID = :financialLedgerMonthId ")
+                .setParameter("financialLedgerMonthId", financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId())
+                .executeUpdate();
+
+        return true;
+
     }
 }
