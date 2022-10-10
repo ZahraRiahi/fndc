@@ -173,7 +173,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         .financialDocumentStatusName(item[12].toString())
                         .financialDocumentStatusCode(item[13].toString())
                         .departmentId(Long.parseLong(item[14].toString()))
-                        .dchdNum(item[15].toString())
+                        .dchdNum(item[15] == null ? null : item[15].toString())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(documentDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
@@ -1460,7 +1460,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public Boolean copyDocFromOldSystem(GetDocFromoldSystemInputRequest getDocFromoldSystemInputRequest) {
-        System.out.println("----------------------------------------TEST");
         if (getDocFromoldSystemInputRequest.getDchdId() == null && getDocFromoldSystemInputRequest.getDchdNum() == null) {
             throw new RuleException("لطفا یکی از مقادیر را وارد نمایید.");
         }
