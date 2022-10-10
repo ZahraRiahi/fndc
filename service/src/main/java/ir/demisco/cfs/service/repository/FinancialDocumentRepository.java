@@ -27,8 +27,9 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       FIDC.FINANCIAL_DOCUMENT_STATUS_ID," +
             "       DS.NAME DOCUMENT_STATUS_NAME," +
             "       DS.CODE DOCUMENT_STATUS_CODE, " +
-            " FIDC.DEPARTMENT_ID as departmentId" +
-            "  FROM fndc.FINANCIAL_DOCUMENT FIDC" +
+            " FIDC.DEPARTMENT_ID as departmentId , " +
+            " FIDC.DCHD_NUM " +
+            "  FROM fndc.FINANCIAL_DOCUMENT FIDC " +
             "  INNER JOIN FNDC.FINANCIAL_DOCUMENT_TYPE FNDT " +
             "    ON FIDC.FINANCIAL_DOCUMENT_TYPE_ID = FNDT.ID " +
             "   AND FNDT.DELETED_DATE IS NULL " +
@@ -122,7 +123,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " FINANCIAL_DOCUMENT_STATUS_ID, " +
             "          DS.NAME , " +
             "          DS.CODE," +
-            " FIDC.DEPARTMENT_ID  "
+            " FIDC.DEPARTMENT_ID,FIDC.DCHD_NUM  "
             , countQuery = " select count(fidc.id) " +
             "  from fndc.financial_document fidc " +
             "  inner join fndc.financial_document_type fndt " +
@@ -214,13 +215,11 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " AND (NVL(:flgCreationMod, 0) = 0 OR " +
             "       (:flgCreationMod = 1 AND FIDC.DCHD_ID IS NULL) OR " +
             "       (:flgCreationMod = 2 AND FIDC.DCHD_ID IS NOT NULL))" +
-
-
             "  group by fidc.id,usr.id,usr.nick_name,document_date,fidc.description,FNDN.document_number,financial_document_type_id,fndt.description, " +
             "   FINANCIAL_DOCUMENT_STATUS_ID, " +
             "                      DS.NAME , " +
             "                     DS.CODE," +
-            " FIDC.DEPARTMENT_ID "
+            " FIDC.DEPARTMENT_ID,FIDC.DCHD_NUM "
             , nativeQuery = true)
     Page<Object[]> getFinancialDocumentList(String activityCode, Long departmentId, Long userId,
                                             Long organizationId, Long ledgerTypeId, LocalDateTime startDate, LocalDateTime endDate,

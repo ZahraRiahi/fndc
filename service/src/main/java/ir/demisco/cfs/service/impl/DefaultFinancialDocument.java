@@ -173,6 +173,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                         .financialDocumentStatusName(item[12].toString())
                         .financialDocumentStatusCode(item[13].toString())
                         .departmentId(Long.parseLong(item[14].toString()))
+                        .dchdNum(item[15].toString())
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(documentDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
