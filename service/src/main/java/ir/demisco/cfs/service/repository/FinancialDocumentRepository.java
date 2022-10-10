@@ -228,7 +228,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
                                             String toAccountCode, Object toAccount, Object centricAccount, Long centricAccountId,
                                             Object centricAccountType, Long centricAccountTypeId, Object documentUser, Long documentUserId, Object priceType, Object fromPrice,
                                             Long fromPriceAmount, Object toPrice, Long toPriceAmount,
-                                            Double tolerance, Object financialDocumentType, Long financialDocumentTypeId,Long flgCreationMod, Pageable pageable);
+                                            Double tolerance, Object financialDocumentType, Long financialDocumentTypeId, Long flgCreationMod, Pageable pageable);
 
     @Query(" SELECT fd from FinancialDocument fd join fd.financialPeriod   fp where fp.financialPeriodStatus.id=1 and fd.id=:financialDocumentId")
     FinancialDocument getActivePeriodInDocument(Long financialDocumentId);
@@ -1728,6 +1728,6 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     Long getFinancialDocumentByNumberAndId(Long financialDocumentId);
 
-    @Procedure(procedureName="fndc.FRD_BFS_FNDC_TRANSFER_PKG.INSERT_DOCUMENT_DATA",outputParameterName="P_ERR")
-    String CopyDocFromOldSystem(@Param("P_DCHT_ID") Long P_DCHT_ID,@Param("P_DCHT_NUM") String P_DCHT_NUM);
+    @Procedure(procedureName = "fndc.FRD_BFS_FNDC_TRANSFER_PKG.INSERT_DOCUMENT_DATA", outputParameterName = "P_ERR")
+    String CopyDocFromOldSystem(@Param("P_DCHT_ID") Long P_DCHT_ID, @Param("P_DCHT_NUM") String P_DCHT_NUM);
 }
