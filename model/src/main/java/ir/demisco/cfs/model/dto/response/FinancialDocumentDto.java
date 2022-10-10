@@ -21,6 +21,7 @@ public class FinancialDocumentDto {
     private String financialDocumentStatusName;
     private String financialDocumentStatusCode;
     private Long departmentId;
+    private String dchdNum;
 
     public Long getId() {
         return id;
@@ -151,6 +152,14 @@ public class FinancialDocumentDto {
         this.departmentId = departmentId;
     }
 
+    public String getDchdNum() {
+        return dchdNum;
+    }
+
+    public void setDchdNum(String dchdNum) {
+        this.dchdNum = dchdNum;
+    }
+
     public static Builder builder() {
         return new Builder();
     }
@@ -243,6 +252,10 @@ public class FinancialDocumentDto {
         }
         public Builder departmentId(Long departmentId) {
             financialDocumentDto.setDepartmentId(departmentId);
+            return this;
+        }
+        public Builder dchdNum(String dchdNum) {
+            financialDocumentDto.setDchdNum(dchdNum);
             return this;
         }
         public FinancialDocumentDto build() {
