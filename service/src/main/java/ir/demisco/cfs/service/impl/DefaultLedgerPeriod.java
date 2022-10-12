@@ -19,6 +19,7 @@ import ir.demisco.cfs.service.repository.CentricAccountRepository;
 import ir.demisco.cfs.service.repository.DepartmentRepository;
 import ir.demisco.cfs.service.repository.FinancialAccountRepository;
 import ir.demisco.cfs.service.repository.FinancialDepartmentRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentItemRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentNumberRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentStatusRepository;
@@ -67,8 +68,9 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
     private final FinancialLedgerPeriodDocItemsService financialLedgerPeriodDocItemsService;
     private final FinancialAccountRepository financialAccountRepository;
     private final CentricAccountRepository centricAccountRepository;
+    private final FinancialDocumentItemRepository financialDocumentItemRepository;
 
-    public DefaultLedgerPeriod(FinancialPeriodRepository financialPeriodRepository, FinancialLedgerMonthRepository financialLedgerMonthRepository, FinancialLedgerPeriodSecurityService financialLedgerPeriodSecurityService, FinancialLedgerPeriodMonthStatusService financialLedgerPeriodMonthStatusService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentService financialDocumentService, EntityManager entityManager, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, DepartmentRepository departmentRepository, FinancialDepartmentRepository financialDepartmentRepository, FinancialLedgerPeriodDocItemsService financialLedgerPeriodDocItemsService, FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository) {
+    public DefaultLedgerPeriod(FinancialPeriodRepository financialPeriodRepository, FinancialLedgerMonthRepository financialLedgerMonthRepository, FinancialLedgerPeriodSecurityService financialLedgerPeriodSecurityService, FinancialLedgerPeriodMonthStatusService financialLedgerPeriodMonthStatusService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentService financialDocumentService, EntityManager entityManager, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, DepartmentRepository departmentRepository, FinancialDepartmentRepository financialDepartmentRepository, FinancialLedgerPeriodDocItemsService financialLedgerPeriodDocItemsService, FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository, FinancialDocumentItemRepository financialDocumentItemRepository) {
         this.financialPeriodRepository = financialPeriodRepository;
         this.financialLedgerMonthRepository = financialLedgerMonthRepository;
         this.financialLedgerPeriodSecurityService = financialLedgerPeriodSecurityService;
@@ -87,6 +89,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         this.financialLedgerPeriodDocItemsService = financialLedgerPeriodDocItemsService;
         this.financialAccountRepository = financialAccountRepository;
         this.centricAccountRepository = centricAccountRepository;
+        this.financialDocumentItemRepository = financialDocumentItemRepository;
     }
 
     @Override
@@ -330,9 +333,15 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             financialDocumentItemSave.setCreditAmount(financialLedgerClosingTempOutputResponse.getRemDebit().doubleValue());
             financialDocumentItemSave.setDebitAmount(financialLedgerClosingTempOutputResponse.getRemCredit().doubleValue());
             financialDocumentItemSave.setDescription(financialLedgerClosingTempOutputResponse.getDocItemDes());
+            financialDocumentItemRepository.save(financialDocumentItemSave);
         });
 
-
+        entityManager.createNativeQuery(" Update FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+                "  SET LP.FINANCIAL_DOCUMENT_TEMPRORY_ID = :newDocId " +
+                " WHERE LP.ID = :financialLedgerPeriodId " +
+                "   AND LP.FINANCIAL_DOCUMENT_TEMPRORY_ID IS NULL ").setParameter("newDocId", financialDocumentSave.getId())
+                .setParameter("financialLedgerPeriodId", financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId())
+                .executeUpdate();
         return true;
     }
 
