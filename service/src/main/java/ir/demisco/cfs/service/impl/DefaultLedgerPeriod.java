@@ -32,6 +32,7 @@ import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
+import ir.demisco.core.utils.DateUtil;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -315,7 +316,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         getDocumentItemsForLedgerInputRequest.setFinancialPeriodDes(financialLedgerClosingTempInputRequest.getFinancialPeriodDes());
 
         List<FinancialLedgerClosingTempOutputResponse> getDocumentItemsForLedgerOutput = financialLedgerPeriodDocItemsService.getFinancialLedgerPeriodDocItems(getDocumentItemsForLedgerInputRequest);
-        getDocumentItemsForLedgerOutput.forEach(financialLedgerClosingTempOutputResponse -> {
+        getDocumentItemsForLedgerOutput.forEach((FinancialLedgerClosingTempOutputResponse financialLedgerClosingTempOutputResponse) -> {
             FinancialDocumentItem financialDocumentItemSave = new FinancialDocumentItem();
             financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(financialDocumentSave.getId()));
             financialDocumentItemSave.setSequenceNumber(financialLedgerClosingTempOutputResponse.getSequence());
@@ -332,7 +333,27 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         });
 
 
-        return null;
+        return true;
+    }
+
+    private Long getItemForLong(Object[] financialDocumentItem, int i) {
+        return financialDocumentItem[i] == null ? null : Long.parseLong(financialDocumentItem[i].toString());
+    }
+
+    private String getItemForString(Object[] item, int i) {
+        return item[i] == null ? null : item[i].toString();
+    }
+
+    private Date getItemForDate(Object[] item, int i) {
+        return item[i] == null ? null : convertDate(item[i].toString());
+    }
+
+    private Date convertDate(String date) {
+        if (date.length() == 7) {
+            return DateUtil.jalaliToGregorian(date, "yyyy/MM");
+        } else {
+            return DateUtil.jalaliToGregorian(date);
+        }
     }
 
     @Override
@@ -345,25 +366,25 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 pageable);
         List<InsertLedgerPeriodMonthListOutputResponse> documentDtoList = list.stream().map(item ->
                 InsertLedgerPeriodMonthListOutputResponse.builder()
-                        .minDocTmpNumber(item[0] == null ? 0 : Long.parseLong(item[0].toString()))
-                        .maxDocTmpNumber(item[1] == null ? 0 : Long.parseLong(item[1].toString()))
-                        .minDocPrmNUmber(item[2] == null ? 0 : Long.parseLong(item[2].toString()))
-                        .maxDocPrmNumber(item[3] == null ? 0 : Long.parseLong(item[3].toString()))
-                        .financialPeriodId(item[4] == null ? 0 : Long.parseLong(item[4].toString()))
-                        .financialLedgerTypeId(item[5] == null ? 0 : Long.parseLong(item[5].toString()))
-                        .monthDescription(item[6] == null ? null : item[6].toString())
-                        .monthStartDate(item[7] == null ? null : (Date) item[7])
-                        .endDateMonthEndDate(item[8] == null ? null : (Date) item[8])
-                        .financialLedgerMonthId(item[9] == null ? 0 : Long.parseLong(item[9].toString()))
-                        .monthStatusId(item[10] == null ? 0 : Long.parseLong(item[10].toString()))
-                        .monthStatusCode(item[11] == null ? null : item[11].toString())
-                        .monthStatusDescription(item[12] == null ? null : item[12].toString())
-                        .financialDocumentOpeningId(item[13] == null ? 0 : Long.parseLong(item[13].toString()))
-                        .financialDocumentTemproryId(item[14] == null ? 0 : Long.parseLong(item[14].toString()))
-                        .financialDocumentPermanentId(item[15] == null ? 0 : Long.parseLong(item[15].toString()))
-                        .tempClosedFlag(item[16] == null ? 0 : Long.parseLong(item[16].toString()))
-                        .hasOpeningFlag(item[17] == null ? 0 : Long.parseLong(item[17].toString()))
-                        .permanentCloseFlag(item[18] == null ? 0 : Long.parseLong(item[18].toString()))
+                        .minDocTmpNumber(getItemForLong(item, 0))
+                        .maxDocTmpNumber(getItemForLong(item, 1))
+                        .minDocPrmNUmber(getItemForLong(item, 2))
+                        .maxDocPrmNumber(getItemForLong(item, 3))
+                        .financialPeriodId(getItemForLong(item, 4))
+                        .financialLedgerTypeId(getItemForLong(item, 5))
+                        .monthDescription(getItemForString(item, 6))
+                        .monthStartDate(getItemForDate(item, 7))
+                        .endDateMonthEndDate(getItemForDate(item, 8))
+                        .financialLedgerMonthId(getItemForLong(item, 9))
+                        .monthStatusId(getItemForLong(item, 10))
+                        .monthStatusCode(getItemForString(item, 11))
+                        .monthStatusDescription(getItemForString(item, 12))
+                        .financialDocumentOpeningId(getItemForLong(item, 13))
+                        .financialDocumentTemproryId(getItemForLong(item, 14))
+                        .financialDocumentPermanentId(getItemForLong(item, 15))
+                        .tempClosedFlag(getItemForLong(item, 16))
+                        .hasOpeningFlag(getItemForLong(item, 17))
+                        .permanentCloseFlag(getItemForLong(item, 18))
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(documentDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
