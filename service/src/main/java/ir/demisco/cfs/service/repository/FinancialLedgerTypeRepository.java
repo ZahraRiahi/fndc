@@ -66,6 +66,11 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             "       :financialCodingType is null)" +
             "   and (fnlt.id = :financialLedgerTypeId or :financialLedgerType is null)" +
             "   and FNSC.SEC_RESULT = 1 " +
+            " and EXISTS (SELECT 1" +
+            "          FROM FNAC.CODING_TYPE_ORG_REL INER_ORG_REL" +
+            "         WHERE INER_ORG_REL.ORGANIZATION_ID = fnlt.organization_id " +
+            "           AND INER_ORG_REL.FINANCIAL_CODING_TYPE_ID = FNCT.ID " +
+            "           AND INER_ORG_REL.ACTIVE_FLAG = 1) " +
             " group by fnlt.id," +
             "          fnlt.description," +
             "          fnlt.financial_coding_type_id," +
