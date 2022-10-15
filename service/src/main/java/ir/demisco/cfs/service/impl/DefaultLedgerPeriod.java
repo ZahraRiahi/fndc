@@ -11,6 +11,7 @@ import ir.demisco.cfs.model.dto.response.FinancialLedgerClosingTempOutputRespons
 import ir.demisco.cfs.model.dto.response.InsertLedgerPeriodMonthListOutputResponse;
 import ir.demisco.cfs.model.entity.FinancialDocument;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
+import ir.demisco.cfs.model.entity.FinancialLedgerMonth;
 import ir.demisco.cfs.model.entity.FinancialLedgerPeriod;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.FinancialLedgerPeriodDocItemsService;
@@ -27,9 +28,11 @@ import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentStatusRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentTypeRepository;
 import ir.demisco.cfs.service.repository.FinancialLedgerMonthRepository;
+import ir.demisco.cfs.service.repository.FinancialLedgerMonthStatusRepository;
 import ir.demisco.cfs.service.repository.FinancialLedgerPeriodRepository;
 import ir.demisco.cfs.service.repository.FinancialLedgerPeriodStatusRepository;
 import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
+import ir.demisco.cfs.service.repository.FinancialMonthRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
 import ir.demisco.cfs.service.repository.OrganizationRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
@@ -72,8 +75,10 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
     private final CentricAccountRepository centricAccountRepository;
     private final FinancialDocumentItemRepository financialDocumentItemRepository;
     private final FinancialLedgerPeriodStatusRepository financialLedgerPeriodStatusRepository;
+    private final FinancialMonthRepository financialMonthRepository;
+    private final FinancialLedgerMonthStatusRepository financialLedgerMonthStatusRepository;
 
-    public DefaultLedgerPeriod(FinancialPeriodRepository financialPeriodRepository, FinancialLedgerMonthRepository financialLedgerMonthRepository, FinancialLedgerPeriodSecurityService financialLedgerPeriodSecurityService, FinancialLedgerPeriodMonthStatusService financialLedgerPeriodMonthStatusService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentService financialDocumentService, EntityManager entityManager, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, DepartmentRepository departmentRepository, FinancialDepartmentRepository financialDepartmentRepository, FinancialLedgerPeriodDocItemsService financialLedgerPeriodDocItemsService, FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialLedgerPeriodStatusRepository financialLedgerPeriodStatusRepository) {
+    public DefaultLedgerPeriod(FinancialPeriodRepository financialPeriodRepository, FinancialLedgerMonthRepository financialLedgerMonthRepository, FinancialLedgerPeriodSecurityService financialLedgerPeriodSecurityService, FinancialLedgerPeriodMonthStatusService financialLedgerPeriodMonthStatusService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentService financialDocumentService, EntityManager entityManager, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, DepartmentRepository departmentRepository, FinancialDepartmentRepository financialDepartmentRepository, FinancialLedgerPeriodDocItemsService financialLedgerPeriodDocItemsService, FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialLedgerPeriodStatusRepository financialLedgerPeriodStatusRepository, FinancialMonthRepository financialMonthRepository, FinancialLedgerMonthStatusRepository financialLedgerMonthStatusRepository) {
         this.financialPeriodRepository = financialPeriodRepository;
         this.financialLedgerMonthRepository = financialLedgerMonthRepository;
         this.financialLedgerPeriodSecurityService = financialLedgerPeriodSecurityService;
@@ -94,6 +99,8 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         this.centricAccountRepository = centricAccountRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
         this.financialLedgerPeriodStatusRepository = financialLedgerPeriodStatusRepository;
+        this.financialMonthRepository = financialMonthRepository;
+        this.financialLedgerMonthStatusRepository = financialLedgerMonthStatusRepository;
     }
 
     @Override
@@ -421,14 +428,42 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         if (insertLedgerPeriodInputRequest.getFinancialLedgerTypeId() == null) {
             throw new RuleException("دفتر مالی انتخاب نشده");
         }
-        insertLedgerPeriodInputRequest.getFinancialPeriodId().forEach((Long e) -> {
-            Long financialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdAndLedgerType(insertLedgerPeriodInputRequest.getFinancialLedgerTypeId(), insertLedgerPeriodInputRequest.getFinancialPeriodId().get(1));
+        for (Long e : insertLedgerPeriodInputRequest.getFinancialPeriodId()) {
+            Long financialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdAndLedgerType(insertLedgerPeriodInputRequest.getFinancialLedgerTypeId(), e);
             if (financialLedgerPeriod == null) {
                 FinancialLedgerPeriod ledgerPeriod = new FinancialLedgerPeriod();
                 ledgerPeriod.setFinancialLedgerPeriodStatus(financialLedgerPeriodStatusRepository.getOne(1L));
-                ledgerPeriod.setFinancialPeriod(financialPeriodRepository.getOne(insertLedgerPeriodInputRequest.getFinancialPeriodId().get(1)));
+                ledgerPeriod.setFinancialPeriod(financialPeriodRepository.getOne(e));
             }
-        });
+            FinancialLedgerPeriod ledgerPeriod = financialLedgerPeriodRepository.findById(insertLedgerPeriodInputRequest.getId() == null ? 0 : insertLedgerPeriodInputRequest.getId()).orElse(new FinancialLedgerPeriod());
+
+            Long financialLedgerPeriodUniqueCount = financialLedgerPeriodRepository.getCountByFinancialLedgerPeriodByPeriodIdAndLedgerTypeId(e, insertLedgerPeriodInputRequest.getFinancialLedgerTypeId());
+            if (financialLedgerPeriodUniqueCount != 0) {
+                throw new RuleException("fin.financialLedgerPeriodUnique.save");
+            }
+            ledgerPeriod.setFinancialLedgerPeriodStatus(financialLedgerPeriodStatusRepository.getOne(1L));
+            ledgerPeriod.setFinancialPeriod(financialPeriodRepository.getOne(e));
+            ledgerPeriod.setFinancialLedgerType(financialLedgerTypeRepository.getOne(insertLedgerPeriodInputRequest.getFinancialLedgerTypeId()));
+            ledgerPeriod.setFinancialDocumentOpening(null);
+            ledgerPeriod.setFinancialDocumentTemprory(null);
+            ledgerPeriod.setFinancialDocumentPermanent(null);
+            financialLedgerPeriodRepository.save(ledgerPeriod);
+            financialLedgerPeriodRepository.flush();
+            List<Long> financialMonth = financialMonthRepository.findByFinancialMonth(e);
+            if (financialMonth.size() == 0) {
+                throw new RuleException("به ازای این دوره مالی ماه عملیاتی یافت نشد");
+            }
+            financialMonth.forEach((Long e1) -> {
+                FinancialLedgerMonth financialLedgerMonth = new FinancialLedgerMonth();
+                financialLedgerMonth.setFinancialLedgerMonthStatus(financialLedgerMonthStatusRepository.getOne(2L));
+                financialLedgerMonth.setFinancialLedgerType(financialLedgerTypeRepository.getOne(insertLedgerPeriodInputRequest.getFinancialLedgerTypeId()));
+                financialLedgerMonth.setFinancialMonth(financialMonthRepository.getOne(e1));
+                financialLedgerMonth.setFinancialLedgerPeriod(ledgerPeriod);
+                financialLedgerMonthRepository.save(financialLedgerMonth);
+                financialLedgerMonthRepository.flush();
+            });
+        }
+
         return true;
     }
 }
