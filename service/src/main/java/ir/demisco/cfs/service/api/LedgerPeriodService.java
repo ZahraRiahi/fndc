@@ -2,6 +2,7 @@ package ir.demisco.cfs.service.api;
 
 import ir.demisco.cfs.model.dto.request.FinancialLedgerCloseMonthInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerClosingTempInputRequest;
+import ir.demisco.cfs.model.dto.request.InsertLedgerPeriodInputRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 
@@ -13,4 +14,6 @@ public interface LedgerPeriodService {
     Boolean closingTemp(FinancialLedgerClosingTempInputRequest financialLedgerClosingTempInputRequest);
 
     DataSourceResult getLedgerPeriodMonthList(DataSourceRequest dataSourceRequest);
+
+    Boolean insertLedgerPeriod(InsertLedgerPeriodInputRequest insertLedgerPeriodInputRequest);
 }
