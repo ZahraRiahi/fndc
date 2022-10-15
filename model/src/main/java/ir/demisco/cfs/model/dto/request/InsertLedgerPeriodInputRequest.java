@@ -5,6 +5,7 @@ import java.util.List;
 public class InsertLedgerPeriodInputRequest {
     private Long financialLedgerTypeId;
     private List<Long> financialPeriodId;
+    private Long id;
 
     public Long getFinancialLedgerTypeId() {
         return financialLedgerTypeId;
@@ -20,5 +21,13 @@ public class InsertLedgerPeriodInputRequest {
 
     public void setFinancialPeriodId(List<Long> financialPeriodId) {
         this.financialPeriodId = financialPeriodId;
+    }
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 }
