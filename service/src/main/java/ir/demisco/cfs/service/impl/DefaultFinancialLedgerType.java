@@ -376,7 +376,6 @@ public class DefaultFinancialLedgerType implements FinancialLedgerTypeService {
             }
             ledgerNumberingTypeNew.setFinancialNumberingType(financialNumberingType);
             ledgerNumberingTypeRepository.save(ledgerNumberingTypeNew);
-            ledgerNumberingTypeRepository.flush();
         }
         return true;
     }
