@@ -2,6 +2,7 @@ package ir.demisco.cfs.app.web.controller;
 
 import ir.demisco.cfs.model.dto.request.FinancialLedgerCloseMonthInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerClosingTempInputRequest;
+import ir.demisco.cfs.model.dto.request.FinancialLedgerClosingTempRequest;
 import ir.demisco.cfs.model.dto.request.InsertLedgerPeriodInputRequest;
 import ir.demisco.cfs.service.api.LedgerPeriodService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
@@ -51,4 +52,11 @@ public class LedgerPeriodController {
     public ResponseEntity<Boolean> insertLedgerPeriod(@RequestBody InsertLedgerPeriodInputRequest insertLedgerPeriodInputRequest) {
         return ResponseEntity.ok(ledgerPeriodService.insertLedgerPeriod(insertLedgerPeriodInputRequest));
     }
+    @PostMapping("/DelClosingTemp")
+    public ResponseEntity<Boolean> delClosingTemp(@RequestBody FinancialLedgerClosingTempRequest financialLedgerClosingTempRequest) {
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        financialLedgerClosingTempRequest.setOrganizationId(organizationId);
+        return ResponseEntity.ok(ledgerPeriodService.delClosingTemp(financialLedgerClosingTempRequest));
+    }
+
 }

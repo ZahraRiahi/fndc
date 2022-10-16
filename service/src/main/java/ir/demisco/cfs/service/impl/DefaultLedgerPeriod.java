@@ -3,6 +3,7 @@ package ir.demisco.cfs.service.impl;
 import ir.demisco.cfs.model.dto.request.CheckLedgerPermissionInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerCloseMonthInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerClosingTempInputRequest;
+import ir.demisco.cfs.model.dto.request.FinancialLedgerClosingTempRequest;
 import ir.demisco.cfs.model.dto.request.GetDocumentItemsForLedgerInputRequest;
 import ir.demisco.cfs.model.dto.request.GetLedgerPeriodMonthStatusRequest;
 import ir.demisco.cfs.model.dto.request.InsertLedgerPeriodInputRequest;
@@ -448,8 +449,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             ledgerPeriod.setFinancialDocumentTemprory(null);
             ledgerPeriod.setFinancialDocumentPermanent(null);
             financialLedgerPeriodRepository.save(ledgerPeriod);
-            financialLedgerPeriodRepository.flush();
-            List<Long> financialMonth = financialMonthRepository.findByFinancialMonth(e);
+            List<Long> financialMonth = financialMonthRepository.findByFinancialMonth(e.longValue());
             if (financialMonth.size() == 0) {
                 throw new RuleException("به ازای این دوره مالی ماه عملیاتی یافت نشد");
             }
@@ -460,10 +460,43 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 financialLedgerMonth.setFinancialMonth(financialMonthRepository.getOne(e1));
                 financialLedgerMonth.setFinancialLedgerPeriod(ledgerPeriod);
                 financialLedgerMonthRepository.save(financialLedgerMonth);
-                financialLedgerMonthRepository.flush();
             });
         }
 
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean delClosingTemp(FinancialLedgerClosingTempRequest financialLedgerClosingTempRequest) {
+        CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
+        checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempRequest.getFinancialPeriodId());
+        checkLedgerPermissionInputRequest.setLedgerTypeId(financialLedgerClosingTempRequest.getFinancialLedgerTypeId());
+        checkLedgerPermissionInputRequest.setActivityCode("FINANCIAL_LEG_TEMPORARY");
+        financialLedgerPeriodSecurityService.checkFinancialLedgerPeriodSecurity(checkLedgerPermissionInputRequest);
+
+        Long financialPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodId(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
+        if (financialPeriod != null) {
+            throw new RuleException("امکان انجام عملیات به دلیل وجود سند اختتامیه وجود ندارد");
+        }
+
+        Long financialPeriodTemprory = financialLedgerPeriodRepository.getFinancialLedgerPeriodByTemprory(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
+        if (financialPeriodTemprory == null) {
+            throw new RuleException("سند بستن حسابهای سود و زیانی پیدا نشد");
+        }
+        financialDocumentNumberRepository.findByFinancialDocumentNumberAndFinancialDocumentId(financialPeriodTemprory)
+                .forEach(financialDocumentNumberRepository::delete);
+
+        financialDocumentItemRepository.findByFinancialDocumentIdByDocumentId(financialPeriodTemprory)
+                .forEach(financialDocumentItemRepository::deleteById);
+
+        entityManager.createNativeQuery(" Update FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+                "  SET LP.FINANCIAL_DOCUMENT_TEMPRORY_ID = null " +
+                " WHERE LP.FINANCIAL_DOCUMENT_TEMPRORY_ID = :financialPeriodTemprory " +
+                "   AND LP.ID = :financialLedgerPeriodId ").setParameter("financialPeriodTemprory", financialPeriodTemprory)
+                .setParameter("financialLedgerPeriodId", financialLedgerClosingTempRequest.getFinancialLedgerPeriodId())
+                .executeUpdate();
+        financialDocumentRepository.deleteById(financialPeriodTemprory);
         return true;
     }
 }
