@@ -1714,7 +1714,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
     List<Long> findByListFinancialDocumentId(Long financialLedgerMonthId, Long organizationId);
 
     @Query(" select 1 from FinancialDocument fd " +
-            " where fd.financialDocumentStatus.id != 30 " +
+            " where fd.financialDocumentStatus.id != 3 " +
             " and fd.id in (:documentIdList)  ")
     List<Long> getFinancialDocumentListId(List<Long> documentIdList);
 
