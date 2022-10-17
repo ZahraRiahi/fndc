@@ -127,7 +127,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         getLedgerPeriodMonthStatusRequest.setFinancialLedgerMonthId(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId());
         getLedgerPeriodMonthStatusRequest.setFinancialLedgerPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId());
         Long ledgerPeriodMonthStatus = financialLedgerPeriodMonthStatusService.getLedgerPeriodMonthStatus(getLedgerPeriodMonthStatusRequest);
-        if (ledgerPeriodMonthStatus == 2) {
+        if (ledgerPeriodMonthStatus != 2) {
             throw new RuleException("وضعیت ماه قبل باز است و امکان انجام عملیات وجود ندارد");
         }
         List<Long> financialDocumentIdList = financialDocumentRepository.findByListFinancialDocumentId(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
@@ -497,6 +497,28 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 .setParameter("financialLedgerPeriodId", financialLedgerClosingTempRequest.getFinancialLedgerPeriodId())
                 .executeUpdate();
         financialDocumentRepository.deleteById(financialPeriodTemprory);
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean closingPermanent(FinancialLedgerClosingTempInputRequest financialLedgerClosingTempInputRequest) {
+        Long financialLedgerMonthPeriodId = financialLedgerMonthRepository.getFinancialLedgerMonthByLedgerPeriodId(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
+        if (financialLedgerMonthPeriodId != null) {
+            throw new RuleException("تمامی ماه های عملیاتی این دوره میبایست در وضعیت بسته باشد");
+        }
+        Long financialPeriod = financialPeriodRepository.getFinancialPeriodByIdAndStatus(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
+        if (financialPeriod != null) {
+            throw new RuleException("وضعیت دوره مالی مربوط به دفتر در حالت بسته میباشد");
+        }
+        Long financialPeriodId = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodId(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
+        if (financialPeriodId != null) {
+            throw new RuleException("سند بستن حسابهای دائم / اختتامیه قبلا روی این دوره از دفتر مالی ثبت شده است");
+        }
+        Long financialLedgerPeriodIdDocumentOpen = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdDocumentOpen(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
+        if (financialLedgerPeriodIdDocumentOpen != null) {
+            throw new RuleException("امکان ادامه عملیات وجود ندارد.سند افتتاحیه این دوره پیدا نشد");
+        }
         return true;
     }
 }
