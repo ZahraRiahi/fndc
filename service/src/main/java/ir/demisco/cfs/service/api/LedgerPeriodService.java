@@ -19,4 +19,6 @@ public interface LedgerPeriodService {
     Boolean insertLedgerPeriod(InsertLedgerPeriodInputRequest insertLedgerPeriodInputRequest);
 
     Boolean delClosingTemp(FinancialLedgerClosingTempRequest financialLedgerClosingTempRequest);
+
+    Boolean closingPermanent(FinancialLedgerClosingTempInputRequest financialLedgerClosingTempInputRequest);
 }
