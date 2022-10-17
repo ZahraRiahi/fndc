@@ -1901,13 +1901,13 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
     Long findFinancialPeriodByFinancialPeriodIdAndDocumentDate(Long financialPeriodId, LocalDateTime documentDate);
 
     @Query(value = " SELECT " +
-            "       NVL((SELECT FLPS.CODE" +
+            "       (SELECT FLPS.CODE" +
             "             FROM FNDC.FINANCIAL_LEDGER_PERIOD FNLP" +
             "            INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD_STATUS FLPS" +
             "               ON FNLP.FIN_LEDGER_PERIOD_STAT_ID = FLPS.ID" +
             "            WHERE FNLP.FINANCIAL_PERIOD_ID = :financialPeriodId " +
-            "              AND FNLP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId)," +
-            "           0) AS CODE" +
+            "              AND FNLP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId)" +
+            "           AS CODE" +
             "  FROM DUAL "
             , nativeQuery = true)
     Long findFinancialPeriodByIdAndLedgerType(Long financialPeriodId, Long financialLedgerTypeId);
