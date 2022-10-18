@@ -614,7 +614,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             throw new RuleException("امکان انجام عملیات به دلیل وجود سند افتتاحیه وجود ندارد");
         }
         Long financialPeriodPermanent = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodIdPermanent(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
-        if (financialPeriodOpen == null) {
+        if (financialPeriodPermanent == null) {
             throw new RuleException("سند بستن حسابهای دائم / سند اختتامیه پیدا نشد");
         }
         entityManager.createNativeQuery(" UPDATE FNDC.FINANCIAL_LEDGER_PERIOD LP " +
