@@ -599,4 +599,36 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 .executeUpdate();
         return true;
     }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean delClosingPermanent(FinancialLedgerClosingTempRequest financialLedgerClosingTempRequest) {
+        CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
+        checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempRequest.getFinancialPeriodId());
+        checkLedgerPermissionInputRequest.setLedgerTypeId(financialLedgerClosingTempRequest.getFinancialLedgerTypeId());
+        checkLedgerPermissionInputRequest.setActivityCode("FINANCIAL_LEG_PERMANENT");
+        financialLedgerPeriodSecurityService.checkFinancialLedgerPeriodSecurity(checkLedgerPermissionInputRequest);
+
+        Long financialPeriodOpen = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodIdOpenning(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
+        if (financialPeriodOpen != null) {
+            throw new RuleException("امکان انجام عملیات به دلیل وجود سند افتتاحیه وجود ندارد");
+        }
+        Long financialPeriodPermanent = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodIdPermanent(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
+        if (financialPeriodPermanent == null) {
+            throw new RuleException("سند بستن حسابهای دائم / سند اختتامیه پیدا نشد");
+        }
+        entityManager.createNativeQuery(" UPDATE FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+                "   SET LP.FINANCIAL_DOCUMENT_PERMANENT_ID = NULL " +
+                " WHERE LP.FINANCIAL_DOCUMENT_PERMANENT_ID = :closePermanentDocumentId " +
+                "   AND LP.ID = :financialLedgerPeriodId  ").setParameter("closePermanentDocumentId", financialPeriodPermanent.longValue())
+                .setParameter("financialLedgerPeriodId", financialLedgerClosingTempRequest.getFinancialLedgerPeriodId())
+                .executeUpdate();
+        financialDocumentNumberRepository.findByFinancialDocumentNumberAndFinancialDocumentId(financialPeriodPermanent)
+                .forEach(financialDocumentNumberRepository::delete);
+
+        financialDocumentItemRepository.findByFinancialDocumentIdByDocumentId(financialPeriodPermanent)
+                .forEach(financialDocumentItemRepository::deleteById);
+        financialDocumentRepository.deleteById(financialPeriodPermanent);
+        return true;
+    }
 }
