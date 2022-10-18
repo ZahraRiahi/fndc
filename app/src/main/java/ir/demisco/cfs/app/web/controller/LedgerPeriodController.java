@@ -64,4 +64,10 @@ public class LedgerPeriodController {
         financialLedgerClosingTempInputRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(ledgerPeriodService.closingPermanent(financialLedgerClosingTempInputRequest));
     }
+    @PostMapping("/DelClosingPermanent")
+    public ResponseEntity<Boolean> delClosingPermanent(@RequestBody FinancialLedgerClosingTempRequest financialLedgerClosingTempRequest) {
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        financialLedgerClosingTempRequest.setOrganizationId(organizationId);
+        return ResponseEntity.ok(ledgerPeriodService.delClosingPermanent(financialLedgerClosingTempRequest));
+    }
 }
