@@ -133,7 +133,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         List<Long> financialDocumentIdList = financialDocumentRepository.findByListFinancialDocumentId(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
                 SecurityHelper.getCurrentUser().getOrganizationId());
         List<Long> financialDocumentIdListStatus = financialDocumentRepository.getFinancialDocumentListId(financialDocumentIdList);
-        if (financialDocumentIdListStatus != null) {
+        if (financialDocumentIdListStatus.size() != 0) {
             throw new RuleException("تمامی اسناد میبایست در وضعیت قطعی باشد");
         }
         financialDocumentIdList.forEach((Long e) -> {
@@ -631,4 +631,5 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         financialDocumentRepository.deleteById(financialPeriodPermanent);
         return true;
     }
+
 }
