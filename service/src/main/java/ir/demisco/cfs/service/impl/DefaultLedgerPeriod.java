@@ -624,4 +624,66 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         return true;
     }
 
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean openingDocument(FinancialLedgerClosingTempInputRequest financialLedgerClosingTempInputRequest) {
+        Long financialPeriod = financialPeriodRepository.getFinancialPeriodByIdAndStatus(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
+        if (financialPeriod != null) {
+            throw new RuleException("وضعیت دوره مالی مربوط به دفتر در حالت بسته میباشد");
+        }
+        Long financialPeriodOpen = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodIdOpenning(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
+        if (financialPeriodOpen != null) {
+            throw new RuleException("سند افتتاحیه قبلا برای این دوره ایجاد شده است");
+        }
+        List<Object[]> financialPeriodDStartDateAndEndDate =
+                financialPeriodRepository.getFinancialPeriodByStartDateAndEndDateAndDes(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
+        financialLedgerPeriodRepository.getFinancialLedgerPeriodByOrganAndStartDate(SecurityHelper.getCurrentUser().getOrganizationId(),
+                (Date) financialPeriodDStartDateAndEndDate.get(0)[0], financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
+
+        List<Object[]> financialLedgerEndDate =
+                financialLedgerPeriodRepository.getFinancialLedgerPeriodByOrganAndEndDate(SecurityHelper.getCurrentUser().getOrganizationId(),
+                        (Date) financialPeriodDStartDateAndEndDate.get(0)[1], financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
+        if (financialLedgerEndDate.get(0)[1] == null) {
+            throw new RuleException("سند اختتامیه برای دوره قبل ایجاد نشده");
+        }
+        CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
+        checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
+        checkLedgerPermissionInputRequest.setLedgerTypeId(financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
+        checkLedgerPermissionInputRequest.setActivityCode("FINANCIAL_LEG_PERMANENT");
+        financialLedgerPeriodSecurityService.checkFinancialLedgerPeriodSecurity(checkLedgerPermissionInputRequest);
+
+        Random rand = new Random(System.currentTimeMillis());
+        FinancialDocument financialDocumentSave = new FinancialDocument();
+        financialDocumentSave.setDocumentDate(financialPeriodDStartDateAndEndDate.get(0)[0] == null ? null : ((Timestamp) financialPeriodDStartDateAndEndDate.get(0)[0]).toLocalDateTime());
+        financialDocumentSave.setDescription(" سند افتتاحیه " + financialLedgerClosingTempInputRequest.getFinancialPeriodDes());
+        financialDocumentSave.setFinancialDocumentStatus(financialDocumentStatusRepository.getOne(3L));
+        financialDocumentSave.setPermanentDocumentNumber(null);
+        financialDocumentSave.setAutomaticFlag(true);
+        financialDocumentSave.setOrganization(organizationRepository.getOne(SecurityHelper.getCurrentUser().getOrganizationId()));
+        financialDocumentSave.setFinancialDocumentType(financialDocumentTypeRepository.getOne(70L));
+        financialDocumentSave.setFinancialPeriod(financialPeriodRepository.getOne(financialLedgerClosingTempInputRequest.getFinancialPeriodId()));
+        financialDocumentSave.setFinancialLedgerType(financialLedgerTypeRepository.getOne(financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId()));
+        financialDocumentSave.setFinancialDepartment(financialDepartmentRepository.getOne(financialLedgerClosingTempInputRequest.getFinancialDepartmentId()));
+        financialDocumentSave.setDocumentNumber("X" + rand);
+        financialDocumentSave.setDepartment(departmentRepository.getOne(financialLedgerClosingTempInputRequest.getDepartmentId()));
+        financialDocumentRepository.save(financialDocumentSave);
+        FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
+        financialDocumentNumberDto.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        financialDocumentNumberDto.setFinancialDocumentId(financialDocumentSave.getId());
+        financialDocumentNumberDto.setNumberingType(1L);
+        String documentNumberNew;
+        documentNumberNew = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+        if (documentNumberNew == null) {
+            throw new RuleException("اشکال در ایجاد شماره عطف");
+        }
+        entityManager.createNativeQuery(" Update fndc.FINANCIAL_DOCUMENT " +
+                "   Set DOCUMENT_NUMBER = :newNumber " +
+                " Where id = :newDocumentId ").setParameter("newNumber", documentNumberNew)
+                .setParameter("newDocumentId", financialDocumentNumberDto.getFinancialDocumentId())
+                .executeUpdate();
+
+
+        return true;
+    }
+
 }
