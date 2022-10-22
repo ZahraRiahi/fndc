@@ -27,7 +27,7 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "       FNP.OPEN_MONTH_COUNT," +
             "       FNP.DESCRIPTION," +
             "       FNPS.NAME," +
-            " FNLP.id " +
+            " FNLP.id as financialLedgerPeriodId" +
             "  FROM FNDC.FINANCIAL_LEDGER_PERIOD FNLP" +
             " INNER JOIN FNPR.FINANCIAL_PERIOD FNP" +
             "    ON FNLP.FINANCIAL_PERIOD_ID = FNP.ID" +
