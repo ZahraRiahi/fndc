@@ -305,7 +305,6 @@ public class DefaultTeransferFinancialDocument implements TransferFinancialDocum
         financialDocumentSave.setDocumentNumber("X" + rand);
         financialDocumentSave.setDepartment(departmentRepository.getOne(financialDocumentHeaderOutputResponse.getDepartmentId()));
         financialDocumentSave = financialDocumentRepository.save(financialDocumentSave);
-        financialDocumentRepository.flush();
 
         String newNumber;
         FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();

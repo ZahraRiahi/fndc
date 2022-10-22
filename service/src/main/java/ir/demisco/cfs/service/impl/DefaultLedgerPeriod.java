@@ -268,10 +268,6 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         if (financialLedgerPeriodId != null) {
             throw new RuleException("سند بستن حسابهای موقت قبلا روی این دوره از دفتر مالی ثبت شده است");
         }
-        Long financialLedgerPeriodIdDocumentOpen = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdDocumentOpen(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
-        if (financialLedgerPeriodIdDocumentOpen != null) {
-            throw new RuleException("امکان ادامه عملیات وجود ندارد.سند افتتاحیه این دوره پیدا نشد");
-        }
         CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
         checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
         checkLedgerPermissionInputRequest.setLedgerTypeId(financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
@@ -514,10 +510,6 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         Long financialPeriodId = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodId(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
         if (financialPeriodId != null) {
             throw new RuleException("سند بستن حسابهای دائم / اختتامیه قبلا روی این دوره از دفتر مالی ثبت شده است");
-        }
-        Long financialLedgerPeriodIdDocumentOpen = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdDocumentOpen(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
-        if (financialLedgerPeriodIdDocumentOpen != null) {
-            throw new RuleException("امکان ادامه عملیات وجود ندارد.سند افتتاحیه این دوره پیدا نشد");
         }
         CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
         checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
