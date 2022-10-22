@@ -9,6 +9,7 @@ public class FinancialLedgerPeriodOutputResponse {
     private Long openMonthCount;
     private String description;
     private String name;
+    private Long financialLedgerPeriodId;
 
     public Long getId() {
         return id;
@@ -57,6 +58,15 @@ public class FinancialLedgerPeriodOutputResponse {
     public void setName(String name) {
         this.name = name;
     }
+
+    public Long getFinancialLedgerPeriodId() {
+        return financialLedgerPeriodId;
+    }
+
+    public void setFinancialLedgerPeriodId(Long financialLedgerPeriodId) {
+        this.financialLedgerPeriodId = financialLedgerPeriodId;
+    }
+
     public static FinancialLedgerPeriodOutputResponse.Builder builder() {
         return new FinancialLedgerPeriodOutputResponse.Builder();
     }
@@ -101,7 +111,10 @@ public class FinancialLedgerPeriodOutputResponse {
             financialLedgerPeriodOutputResponse.setName(name);
             return this;
         }
-
+        public Builder financialLedgerPeriodId(Long financialLedgerPeriodId) {
+            financialLedgerPeriodOutputResponse.setFinancialLedgerPeriodId(financialLedgerPeriodId);
+            return this;
+        }
         public FinancialLedgerPeriodOutputResponse build() {
             return financialLedgerPeriodOutputResponse;
         }

@@ -126,6 +126,7 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
                         .openMonthCount(item[3] == null ? null : (Long.parseLong(item[3].toString())))
                         .description(item[4] == null ? null : item[4].toString())
                         .name(item[5] == null ? null : item[5].toString())
+                        .financialLedgerPeriodId(item[6] == null ? null : (Long.parseLong(item[6].toString())))
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialLedgerPeriodDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
