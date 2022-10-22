@@ -26,7 +26,7 @@ public interface FinancialDocumentNumberRepository extends JpaRepository<Financi
             "                   AND NFT.TYPE_STATUS = :financialNumberingTypeId)"
             , nativeQuery = true)
     List<FinancialDocumentNumber> findByFinancialDocumentIdList(Long financialDocumentId,Long financialNumberingTypeId);
-    @Query(value = " select DOC.id from FNDC.FINANCIAL_DOCUMENT_NUMBER DOC " +
+    @Query(value = " select DOC.* from FNDC.FINANCIAL_DOCUMENT_NUMBER DOC " +
             " WHERE DOC.FINANCIAL_NUMBERING_TYPE_ID IN " +
             "       (SELECT FT.ID" +
             "          FROM FNDC.FINANCIAL_NUMBERING_TYPE FT " +
