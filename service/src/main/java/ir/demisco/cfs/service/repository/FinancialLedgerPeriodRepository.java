@@ -145,5 +145,33 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             , nativeQuery = true)
     Long getFinancialLedgerPeriodByPeriodIdPermanent(Long financialLedgerPeriodId);
 
+    @Query(value = " SELECT MAX(FP_IN.END_DATE) " +
+            "  FROM FNDC.FINANCIAL_LEDGER_PERIOD LP_IN " +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD FP_IN " +
+            "    ON LP_IN.FINANCIAL_PERIOD_ID = FP_IN.ID " +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FA_IN " +
+            "    ON FA_IN.FINANCIAL_PERIOD_ID = FP_IN.ID " +
+            "   AND FA_IN.ORGANIZATION_ID = :organizationId " +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_TYPE LT_IN " +
+            "    ON LT_IN.ORGANIZATION_ID = FA_IN.ORGANIZATION_ID " +
+            "   AND LT_IN.ID = LP_IN.FINANCIAL_LEDGER_TYPE_ID " +
+            " WHERE FP_IN.END_DATE < :startDate " +
+            "   AND LP_IN.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId  "
+            , nativeQuery = true)
+    Date getFinancialLedgerPeriodByOrganAndStartDate(Long organizationId, Date startDate, Long financialLedgerTypeId);
 
+    @Query(value = " SELECT LP.ID, LP.FINANCIAL_DOCUMENT_PERMANENT_ID " +
+            "  FROM FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD FP " +
+            "    ON LP.FINANCIAL_PERIOD_ID = FP.ID" +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FA " +
+            "    ON FA.FINANCIAL_PERIOD_ID = FP.ID " +
+            "   AND FA.ORGANIZATION_ID = :organizationId " +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_TYPE LT " +
+            "    ON LT.ORGANIZATION_ID = FA.ORGANIZATION_ID " +
+            "   AND LT.ID = LP.FINANCIAL_LEDGER_TYPE_ID " +
+            " WHERE FP.END_DATE = :endDate " +
+            "   AND LP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId "
+            , nativeQuery = true)
+    List<Object[]> getFinancialLedgerPeriodByOrganAndEndDate(Long organizationId, Date endDate, Long financialLedgerTypeId);
 }
