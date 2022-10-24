@@ -47,6 +47,7 @@ import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
+import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.util.Date;
 import java.util.List;
@@ -707,4 +708,38 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         return true;
     }
 
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean delOpeningDocument(FinancialLedgerClosingTempRequest financialLedgerClosingTempRequest) {
+        Long financialPeriod = financialPeriodRepository.getFinancialPeriodByIdAndStatus(financialLedgerClosingTempRequest.getFinancialPeriodId());
+        if (financialPeriod != null) {
+            throw new RuleException("وضعیت دوره مالی در حالت بسته میباشد");
+        }
+        Long financialLedgerMonth = financialLedgerMonthRepository.getFinancialLedgerMonth(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
+        if (financialLedgerMonth != null) {
+            throw new RuleException(" وضعیت ماه عملیاتی در حالت بسته است");
+        }
+        List<Object[]> financialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdOpen(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
+        if (((BigDecimal) financialLedgerPeriod.get(0)[1]).longValue() == 2L) {
+            throw new RuleException(" وضعیت دوره برای دفتر مالی در حالت بسته میباشد ");
+        }
+        CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
+        checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempRequest.getFinancialPeriodId());
+        checkLedgerPermissionInputRequest.setLedgerTypeId(financialLedgerClosingTempRequest.getFinancialLedgerTypeId());
+        checkLedgerPermissionInputRequest.setActivityCode("FINANCIAL_LEG_PERMANENT");
+        financialLedgerPeriodSecurityService.checkFinancialLedgerPeriodSecurity(checkLedgerPermissionInputRequest);
+        entityManager.createNativeQuery(" UPDATE FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+                "    SET LP.FINANCIAL_DOCUMENT_OPENING_ID = NULL " +
+                "  WHERE LP.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+                "    AND LP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
+                "    AND LP. FINANCIAL_DOCUMENT_OPENING_ID IS NOT NULL   ").setParameter("financialPeriodId", financialLedgerClosingTempRequest.getFinancialPeriodId())
+                .setParameter("financialLedgerTypeId", financialLedgerClosingTempRequest.getFinancialLedgerTypeId())
+                .executeUpdate();
+        financialDocumentNumberRepository.findByFinancialDocumentNumberAndFinancialDocumentId(((BigDecimal) financialLedgerPeriod.get(0)[0]).longValue())
+                .forEach(financialDocumentNumberRepository::delete);
+        financialDocumentItemRepository.findByFinancialDocumentIdByDocumentId(((BigDecimal) financialLedgerPeriod.get(0)[0]).longValue())
+                .forEach(financialDocumentItemRepository::deleteById);
+        financialDocumentRepository.deleteById(((BigDecimal) financialLedgerPeriod.get(0)[0]).longValue());
+        return true;
+    }
 }
