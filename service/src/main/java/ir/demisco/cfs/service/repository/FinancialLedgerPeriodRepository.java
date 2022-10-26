@@ -181,4 +181,32 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             " WHERE LP.ID = :financialLedgerPeriodId  "
             , nativeQuery = true)
     List<Object[]> getFinancialLedgerPeriodByIdOpen(Long financialLedgerPeriodId);
+
+    @Query(value = " SELECT LP.ID                        FINANCIAL_LEDGER_PERIOD_ID," +
+            "       FP.ID                        FINANCIAL_PERIOD_ID," +
+            "       FP.START_DATE                PERIOD_START_DATE," +
+            "       FP.END_DATE                  PERIOD_END_DATE," +
+            "       FP.DESCRIPTION               PERIOD_DESCRIPTION," +
+            "       FD_OPENING.DOCUMENT_NUMBER   OPENING_DOC_NUMBER," +
+            "       FD_OPENING.DOCUMENT_DATE     OPENING_DOC_DATE," +
+            "       FD_TMP_CLOSE.DOCUMENT_NUMBER TEMPORARY_DOC_NUMBER," +
+            "       FD_TMP_CLOSE.DOCUMENT_DATE   TEMPORARY_DOC_DATE," +
+            "       FD_PRM_CLOSE.DOCUMENT_NUMBER PERMANENT_DOC_NUMBER," +
+            "       FD_PRM_CLOSE.DOCUMENT_DATE   PERMANENT_DOC_DATE," +
+            "       LS.ID                        LEDGER_PERIOD_STATUS_ID," +
+            "       LS.DESCRIPTION               LEDGER_PERIOD_STATUS_DES" +
+            "  FROM FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD FP" +
+            "    ON FP.ID = LP.FINANCIAL_PERIOD_ID" +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD_STATUS LS" +
+            "    ON LS.ID = LP.FIN_LEDGER_PERIOD_STAT_ID" +
+            "  LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT FD_OPENING" +
+            "    ON FD_OPENING.ID = LP.FINANCIAL_DOCUMENT_OPENING_ID" +
+            "  LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT FD_TMP_CLOSE" +
+            "    ON FD_TMP_CLOSE.ID = LP.FINANCIAL_DOCUMENT_TEMPRORY_ID" +
+            "  LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT FD_PRM_CLOSE" +
+            "    ON FD_PRM_CLOSE.ID = LP.FINANCIAL_DOCUMENT_PERMANENT_ID" +
+            " WHERE LP.ID = :financialLedgerPeriodId "
+            , nativeQuery = true)
+    Page<Object[]>  getFinancialLedgerPeriodByPeriodIdGet(Long financialLedgerPeriodId, Pageable pageable);
 }
