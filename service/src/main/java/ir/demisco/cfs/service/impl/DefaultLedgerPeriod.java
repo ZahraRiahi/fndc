@@ -766,19 +766,19 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         Page<Object[]> list = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodIdGet(paramSearch.getFinancialLedgerPeriodId(), pageable);
         List<GetLedgerPeriodOutputResponse> financialLedgerPeriodDtoList = list.stream().map(item ->
                 GetLedgerPeriodOutputResponse.builder()
-                        .financialLedgerPeriodId(item[0] == null ? null : (Long.parseLong(item[0].toString())))
-                        .financialPeriodId(item[1] == null ? null : (Long.parseLong(item[1].toString())))
+                        .financialLedgerPeriodId(getItemForLong(item, 0))
+                        .financialPeriodId(getItemForLong(item, 1))
                         .periodStartDate(item[2] == null ? null : ((Date) item[2]))
                         .periodEndDate(item[3] == null ? null : ((Date) item[3]))
-                        .periodDescription(item[4] == null ? null : item[4].toString())
-                        .openingDocNumber(item[5] == null ? null : (Long.parseLong(item[5].toString())))
+                        .periodDescription(getItemForString(item, 4))
+                        .openingDocNumber(getItemForLong(item, 5))
                         .openingDocDate(item[6] == null ? null : ((Date) item[6]))
-                        .temporaryDocNumber(item[7] == null ? null : (Long.parseLong(item[7].toString())))
+                        .temporaryDocNumber(getItemForLong(item, 7))
                         .temporaryDocDate(item[8] == null ? null : ((Date) item[8]))
-                        .permanentDocNumber(item[9] == null ? null : (Long.parseLong(item[9].toString())))
+                        .permanentDocNumber(getItemForLong(item, 9))
                         .permanentDocDate(item[10] == null ? null : ((Date) item[10]))
-                        .ledgerPeriodStatusId(item[11] == null ? null : (Long.parseLong(item[11].toString())))
-                        .ledgerPeriodStatusDesc(item[12] == null ? null : item[12].toString())
+                        .ledgerPeriodStatusId(getItemForLong(item, 11))
+                        .ledgerPeriodStatusDesc(getItemForString(item, 12))
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialLedgerPeriodDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
