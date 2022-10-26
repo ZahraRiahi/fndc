@@ -337,12 +337,12 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(financialDocumentSave.getId()));
             financialDocumentItemSave.setSequenceNumber(financialLedgerClosingTempOutputResponse.getSequence());
             financialDocumentItemSave.setFinancialAccount(financialAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getFinancialAccountId()));
-            financialDocumentItemSave.setCentricAccountId1(centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId1()));
-            financialDocumentItemSave.setCentricAccountId2(centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId2()));
-            financialDocumentItemSave.setCentricAccountId3(centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId3()));
-            financialDocumentItemSave.setCentricAccountId4(centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId4()));
-            financialDocumentItemSave.setCentricAccountId5(centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId5()));
-            financialDocumentItemSave.setCentricAccountId6(centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId6()));
+            financialDocumentItemSave.setCentricAccountId1(financialLedgerClosingTempOutputResponse.getCentricAccountId1() == 0L ? null : centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId1()));
+            financialDocumentItemSave.setCentricAccountId2(financialLedgerClosingTempOutputResponse.getCentricAccountId2() == 0L ? null : centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId2()));
+            financialDocumentItemSave.setCentricAccountId3(financialLedgerClosingTempOutputResponse.getCentricAccountId3() == 0L ? null : centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId3()));
+            financialDocumentItemSave.setCentricAccountId4(financialLedgerClosingTempOutputResponse.getCentricAccountId4() == 0L ? null : centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId4()));
+            financialDocumentItemSave.setCentricAccountId5(financialLedgerClosingTempOutputResponse.getCentricAccountId5() == 0L ? null : centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId5()));
+            financialDocumentItemSave.setCentricAccountId6(financialLedgerClosingTempOutputResponse.getCentricAccountId6() == 0L ? null : centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId6()));
             financialDocumentItemSave.setCreditAmount(financialLedgerClosingTempOutputResponse.getRemDebit().doubleValue());
             financialDocumentItemSave.setDebitAmount(financialLedgerClosingTempOutputResponse.getRemCredit().doubleValue());
             financialDocumentItemSave.setDescription(financialLedgerClosingTempOutputResponse.getDocItemDes());
