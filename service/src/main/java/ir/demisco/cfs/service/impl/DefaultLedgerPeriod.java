@@ -5,10 +5,12 @@ import ir.demisco.cfs.model.dto.request.FinancialLedgerCloseMonthInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerClosingTempInputRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerClosingTempRequest;
 import ir.demisco.cfs.model.dto.request.GetDocumentItemsForLedgerInputRequest;
+import ir.demisco.cfs.model.dto.request.GetLedgerPeriodInputRequest;
 import ir.demisco.cfs.model.dto.request.GetLedgerPeriodMonthStatusRequest;
 import ir.demisco.cfs.model.dto.request.InsertLedgerPeriodInputRequest;
 import ir.demisco.cfs.model.dto.response.FinancialDocumentNumberDto;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerClosingTempOutputResponse;
+import ir.demisco.cfs.model.dto.response.GetLedgerPeriodOutputResponse;
 import ir.demisco.cfs.model.dto.response.InsertLedgerPeriodMonthListOutputResponse;
 import ir.demisco.cfs.model.entity.FinancialDocument;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
@@ -43,12 +45,14 @@ import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.persistence.EntityManager;
 import javax.transaction.Transactional;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Random;
@@ -459,7 +463,6 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 financialLedgerMonthRepository.save(financialLedgerMonth);
             });
         }
-
         return true;
     }
 
@@ -741,5 +744,83 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 .forEach(financialDocumentItemRepository::deleteById);
         financialDocumentRepository.deleteById(((BigDecimal) financialLedgerPeriod.get(0)[0]).longValue());
         return true;
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public DataSourceResult getLedgerPeriodList(DataSourceRequest dataSourceRequest) {
+        List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
+        GetLedgerPeriodInputRequest paramSearch = setParameterLedgerPeriod(filters);
+        List<Sort.Order> sorts = new ArrayList<>();
+        dataSourceRequest.getSort()
+                .forEach((DataSourceRequest.SortDescriptor sortDescriptor) ->
+                        {
+                            if (sortDescriptor.getDir().equals("asc")) {
+                                sorts.add(Sort.Order.asc(sortDescriptor.getField()));
+                            } else {
+                                sorts.add(Sort.Order.desc(sortDescriptor.getField()));
+                            }
+                        }
+                );
+        Pageable pageable = PageRequest.of((dataSourceRequest.getSkip() / dataSourceRequest.getTake()), dataSourceRequest.getTake(), Sort.by(sorts));
+        Page<Object[]> list = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodIdGet(paramSearch.getFinancialLedgerPeriodId(), pageable);
+        List<GetLedgerPeriodOutputResponse> financialLedgerPeriodDtoList = list.stream().map(item ->
+                GetLedgerPeriodOutputResponse.builder()
+                        .financialLedgerPeriodId(getItemForLong(item, 0))
+                        .financialPeriodId(getItemForLong(item, 1))
+                        .periodStartDate(item[2] == null ? null : ((Date) item[2]))
+                        .periodEndDate(item[3] == null ? null : ((Date) item[3]))
+                        .periodDescription(getItemForString(item, 4))
+                        .openingDocNumber(getItemForLong(item, 5))
+                        .openingDocDate(item[6] == null ? null : ((Date) item[6]))
+                        .temporaryDocNumber(getItemForLong(item, 7))
+                        .temporaryDocDate(item[8] == null ? null : ((Date) item[8]))
+                        .permanentDocNumber(getItemForLong(item, 9))
+                        .permanentDocDate(item[10] == null ? null : ((Date) item[10]))
+                        .ledgerPeriodStatusId(getItemForLong(item, 11))
+                        .ledgerPeriodStatusDesc(getItemForString(item, 12))
+                        .build()).collect(Collectors.toList());
+        DataSourceResult dataSourceResult = new DataSourceResult();
+        dataSourceResult.setData(financialLedgerPeriodDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
+        dataSourceResult.setData(financialLedgerPeriodDtoList);
+        dataSourceResult.setTotal(list.getTotalElements());
+        return dataSourceResult;
+    }
+
+    private GetLedgerPeriodInputRequest setParameterLedgerPeriod(List<DataSourceRequest.FilterDescriptor> filters) {
+        GetLedgerPeriodInputRequest getLedgerPeriodInputRequest = new GetLedgerPeriodInputRequest();
+        for (DataSourceRequest.FilterDescriptor item : filters) {
+            switch (item.getField()) {
+                case "financialLedgerPeriodId":
+                    getLedgerPeriodInputRequest.setFinancialLedgerPeriodId(Long.parseLong(item.getValue().toString()));
+                    break;
+                case "financialPeriodId":
+                    checkFinancialPeriodSet(getLedgerPeriodInputRequest, item);
+                    break;
+                case "financialLedgerTypeId":
+                    checkFinancialPeriodTypeIdSet(getLedgerPeriodInputRequest, item);
+                    break;
+                default:
+                    break;
+            }
+        }
+        return getLedgerPeriodInputRequest;
+    }
+
+
+    private void checkFinancialPeriodSet(GetLedgerPeriodInputRequest getLedgerPeriodInputRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            getLedgerPeriodInputRequest.setFinancialPeriodId(Long.parseLong(item.getValue().toString()));
+        } else {
+            getLedgerPeriodInputRequest.setFinancialPeriodId(null);
+        }
+    }
+
+    private void checkFinancialPeriodTypeIdSet(GetLedgerPeriodInputRequest getLedgerPeriodInputRequest, DataSourceRequest.FilterDescriptor item) {
+        if (item.getValue() != null) {
+            getLedgerPeriodInputRequest.setFinancialLedgerTypeId(Long.parseLong(item.getValue().toString()));
+        } else {
+            getLedgerPeriodInputRequest.setFinancialLedgerTypeId(null);
+        }
     }
 }

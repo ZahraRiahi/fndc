@@ -27,4 +27,6 @@ public interface LedgerPeriodService {
     Boolean openingDocument(FinancialLedgerClosingTempInputRequest financialLedgerClosingTempInputRequest);
 
     Boolean delOpeningDocument(FinancialLedgerClosingTempRequest financialLedgerClosingTempRequest);
+
+    DataSourceResult getLedgerPeriodList(DataSourceRequest dataSourceRequest);
 }

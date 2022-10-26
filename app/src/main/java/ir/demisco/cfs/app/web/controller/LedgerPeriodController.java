@@ -36,6 +36,7 @@ public class LedgerPeriodController {
         financialLedgerCloseMonthInputRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(ledgerPeriodService.openMonth(financialLedgerCloseMonthInputRequest));
     }
+
     @PostMapping("/ClosingTemp")
     public ResponseEntity<Boolean> closingTemp(@RequestBody FinancialLedgerClosingTempInputRequest financialLedgerClosingTempInputRequest) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
@@ -52,18 +53,21 @@ public class LedgerPeriodController {
     public ResponseEntity<Boolean> insertLedgerPeriod(@RequestBody InsertLedgerPeriodInputRequest insertLedgerPeriodInputRequest) {
         return ResponseEntity.ok(ledgerPeriodService.insertLedgerPeriod(insertLedgerPeriodInputRequest));
     }
+
     @PostMapping("/DelClosingTemp")
     public ResponseEntity<Boolean> delClosingTemp(@RequestBody FinancialLedgerClosingTempRequest financialLedgerClosingTempRequest) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         financialLedgerClosingTempRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(ledgerPeriodService.delClosingTemp(financialLedgerClosingTempRequest));
     }
+
     @PostMapping("/ClosingPermanent")
     public ResponseEntity<Boolean> closingPermanent(@RequestBody FinancialLedgerClosingTempInputRequest financialLedgerClosingTempInputRequest) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         financialLedgerClosingTempInputRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(ledgerPeriodService.closingPermanent(financialLedgerClosingTempInputRequest));
     }
+
     @PostMapping("/DelClosingPermanent")
     public ResponseEntity<Boolean> delClosingPermanent(@RequestBody FinancialLedgerClosingTempRequest financialLedgerClosingTempRequest) {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
@@ -83,5 +87,9 @@ public class LedgerPeriodController {
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
         financialLedgerClosingTempRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(ledgerPeriodService.delOpeningDocument(financialLedgerClosingTempRequest));
+    }
+    @PostMapping("/Get")
+    public ResponseEntity<DataSourceResult> ledgerPeriodList(@RequestBody DataSourceRequest dataSourceRequest) {
+        return ResponseEntity.ok(ledgerPeriodService.getLedgerPeriodList(dataSourceRequest));
     }
 }
