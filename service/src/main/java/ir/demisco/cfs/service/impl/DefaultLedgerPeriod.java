@@ -208,7 +208,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         getLedgerPeriodMonthStatusRequest.setFinancialLedgerPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId());
         Long ledgerPeriodMonthStatus = financialLedgerPeriodMonthStatusService.getLedgerPeriodMonthStatus(getLedgerPeriodMonthStatusRequest);
         if (ledgerPeriodMonthStatus == 2) {
-            throw new RuleException("وضعیت ماه قبل بسته است و امکان انجام عملیات وجود ندارد");
+            throw new RuleException("وضعیت ماه بعد بسته است و امکان انجام عملیات وجود ندارد");
         }
 
         financialDocumentNumberRepository.getFinancialDocumentNumberByOrgAndPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
