@@ -1730,4 +1730,28 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
 
     @Procedure(procedureName = "fndc.FRD_BFS_FNDC_TRANSFER_PKG.INSERT_DOCUMENT_DATA", outputParameterName = "P_ERR")
     String CopyDocFromOldSystem(@Param("P_DCHT_ID") Long P_DCHT_ID, @Param("P_DCHT_NUM") String P_DCHT_NUM);
+
+
+    @Query(value = " SELECT MIN(FD.PERMANENT_DOCUMENT_NUMBER)" +
+            "  FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM" +
+            "    ON LM.ID = :financialLedgerMonthId " +
+            "   AND LM.FINANCIAL_LEDGER_PERIOD_ID = :financialLedgerPeriodId " +
+            " INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "    ON FM.ID = LM.FINANCIAL_MONTH_ID" +
+            "   AND FM.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            " WHERE FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE" +
+            "   AND FD.ORGANIZATION_ID = :organizationId  "
+            , nativeQuery = true)
+    String findByDocumentIdAndLedgerMonth(Long financialLedgerMonthId, Long financialLedgerPeriodId,Long financialPeriodId,Long organizationId);
+
+
+    @Query(value = " SELECT FD.ID" +
+            "  FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            " WHERE FD.ORGANIZATION_ID = :organizationId " +
+            "   AND FD.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "   AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
+            "   AND FD.PERMANENT_DOCUMENT_NUMBER = :minDocNumber "
+            , nativeQuery = true)
+    Long findByDocumentIdAndLedgerMonthMinDocId(Long organizationId, Long financialPeriodId,Long financialLedgerTypeId,String minDocNumber);
 }
