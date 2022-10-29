@@ -66,7 +66,7 @@ public interface FinancialLedgerMonthRepository extends JpaRepository<FinancialL
     Long getOpenFinancialLedgerMonthByIdAndPeriodId(Long financialLedgerPeriodId, Long financialLedgerMonthId, Long financialPeriodId);
 
     @Query(" select 1 from FinancialLedgerMonth flm " +
-            " where flm.id = :financialLedgerPeriodId " +
+            " where flm.financialLedgerPeriod.id = :financialLedgerPeriodId " +
             " and flm.financialLedgerMonthStatus.id=1 ")
     Long getFinancialLedgerMonthByLedgerPeriodId(Long financialLedgerPeriodId);
 
