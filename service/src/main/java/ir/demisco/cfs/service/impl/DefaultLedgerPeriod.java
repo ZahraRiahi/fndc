@@ -588,7 +588,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             financialDocumentItemRepository.save(financialDocumentItemSave);
         });
         entityManager.createNativeQuery(" Update FNDC.FINANCIAL_LEDGER_PERIOD LP " +
-                "  SET LP.FINANCIAL_DOCUMENT_TEMPRORY_ID = :newDocId " +
+                "  SET LP.FINANCIAL_DOCUMENT_PERMANENT_ID  = :newDocId " +
                 " WHERE LP.ID = :financialLedgerPeriodId " +
                 "   AND LP.FINANCIAL_DOCUMENT_TEMPRORY_ID IS NULL ").setParameter("newDocId", financialDocumentSave.getId())
                 .setParameter("financialLedgerPeriodId", financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId())
