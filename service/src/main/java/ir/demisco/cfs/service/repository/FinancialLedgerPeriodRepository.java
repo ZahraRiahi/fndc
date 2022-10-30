@@ -155,7 +155,7 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             " INNER JOIN FNDC.FINANCIAL_LEDGER_TYPE LT_IN " +
             "    ON LT_IN.ORGANIZATION_ID = FA_IN.ORGANIZATION_ID " +
             "   AND LT_IN.ID = LP_IN.FINANCIAL_LEDGER_TYPE_ID " +
-            " WHERE FP_IN.END_DATE < :startDate " +
+            " WHERE FP_IN.END_DATE < trunc(:startDate) " +
             "   AND LP_IN.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId  "
             , nativeQuery = true)
     Date getFinancialLedgerPeriodByOrganAndStartDate(Long organizationId, Date startDate, Long financialLedgerTypeId);
@@ -170,7 +170,7 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             " INNER JOIN FNDC.FINANCIAL_LEDGER_TYPE LT " +
             "    ON LT.ORGANIZATION_ID = FA.ORGANIZATION_ID " +
             "   AND LT.ID = LP.FINANCIAL_LEDGER_TYPE_ID " +
-            " WHERE FP.END_DATE = :endDate " +
+            " WHERE trunc(FP.END_DATE) = trunc(:endDate) " +
             "   AND LP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId "
             , nativeQuery = true)
     List<Object[]> getFinancialLedgerPeriodByOrganAndEndDate(Long organizationId, Date endDate, Long financialLedgerTypeId);
