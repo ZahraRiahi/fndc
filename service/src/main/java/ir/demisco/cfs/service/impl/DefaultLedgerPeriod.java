@@ -724,11 +724,10 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         List<Object[]> financialLedgerEndDate =
                 financialLedgerPeriodRepository.getFinancialLedgerPeriodByOrganAndEndDate(SecurityHelper.getCurrentUser().getOrganizationId(),
                         endDate, financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
-        if (!financialLedgerEndDate.isEmpty()) {
-            if (financialLedgerEndDate.get(0)[1] == null) {
+        if (!financialLedgerEndDate.isEmpty() && financialLedgerEndDate.get(0)[1] == null) {
                 throw new RuleException("سند اختتامیه برای دوره قبل ایجاد نشده");
             }
-        }
+
         CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
         checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
         checkLedgerPermissionInputRequest.setLedgerTypeId(financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
@@ -802,10 +801,8 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         }
         List<Object[]> financialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdOpen(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
       Long  documentPermanent=((BigDecimal) financialLedgerPeriod.get(0)[0]).longValue();
-        if (!financialLedgerPeriod.isEmpty()) {
-            if (((BigDecimal) financialLedgerPeriod.get(0)[1]).longValue() == 2L) {
+        if (!financialLedgerPeriod.isEmpty() && ((BigDecimal) financialLedgerPeriod.get(0)[1]).longValue() == 2L) {
                 throw new RuleException(" وضعیت دوره برای دفتر مالی در حالت بسته میباشد ");
-            }
         }
         CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
         checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempRequest.getFinancialPeriodId());
