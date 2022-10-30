@@ -651,13 +651,14 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             FinancialDocumentItem financialDocumentItemSave = new FinancialDocumentItem();
             financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(financialDocumentSave.getId()));
             financialDocumentItemSave.setSequenceNumber(financialLedgerClosingTempOutputResponse.getSequence());
-            financialDocumentItemSave.setFinancialAccount(financialAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getFinancialAccountId()));
-            financialDocumentItemSave.setCentricAccountId1(centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId1()));
-            financialDocumentItemSave.setCentricAccountId2(centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId2()));
-            financialDocumentItemSave.setCentricAccountId3(centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId3()));
-            financialDocumentItemSave.setCentricAccountId4(centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId4()));
-            financialDocumentItemSave.setCentricAccountId5(centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId5()));
-            financialDocumentItemSave.setCentricAccountId6(centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId6()));
+            financialDocumentItemSave.setFinancialAccount(financialLedgerClosingTempOutputResponse.getFinancialAccountId() == 0L ? null : financialAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getFinancialAccountId()));
+            financialDocumentItemSave.setCentricAccountId1(financialLedgerClosingTempOutputResponse.getCentricAccountId1() == 0L ? null : centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId1()));
+            financialDocumentItemSave.setCentricAccountId2(financialLedgerClosingTempOutputResponse.getCentricAccountId2() == 0L ? null : centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId2()));
+            financialDocumentItemSave.setCentricAccountId3(financialLedgerClosingTempOutputResponse.getCentricAccountId3() == 0L ? null : centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId3()));
+            financialDocumentItemSave.setCentricAccountId4(financialLedgerClosingTempOutputResponse.getCentricAccountId4() == 0L ? null : centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId4()));
+            financialDocumentItemSave.setCentricAccountId5(financialLedgerClosingTempOutputResponse.getCentricAccountId5() == 0L ? null : centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId5()));
+            financialDocumentItemSave.setCentricAccountId6(financialLedgerClosingTempOutputResponse.getCentricAccountId6() == 0L ? null : centricAccountRepository.getOne(financialLedgerClosingTempOutputResponse.getCentricAccountId6()));
+
             financialDocumentItemSave.setCreditAmount(financialLedgerClosingTempOutputResponse.getRemDebit().doubleValue());
             financialDocumentItemSave.setDebitAmount(financialLedgerClosingTempOutputResponse.getRemCredit().doubleValue());
             financialDocumentItemSave.setDescription(financialLedgerClosingTempOutputResponse.getDocItemDes());
@@ -666,7 +667,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         entityManager.createNativeQuery(" Update FNDC.FINANCIAL_LEDGER_PERIOD LP " +
                 "  SET LP.FINANCIAL_DOCUMENT_PERMANENT_ID  = :newDocId " +
                 " WHERE LP.ID = :financialLedgerPeriodId " +
-                "   AND LP.FINANCIAL_DOCUMENT_TEMPRORY_ID IS NULL ").setParameter("newDocId", financialDocumentSave.getId())
+                "   AND LP.FINANCIAL_DOCUMENT_PERMANENT_ID  IS NULL ").setParameter("newDocId", financialDocumentSave.getId())
                 .setParameter("financialLedgerPeriodId", financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId())
                 .executeUpdate();
         return true;
@@ -717,15 +718,16 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         }
         List<Object[]> financialPeriodDStartDateAndEndDate =
                 financialPeriodRepository.getFinancialPeriodByStartDateAndEndDateAndDes(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
-        financialLedgerPeriodRepository.getFinancialLedgerPeriodByOrganAndStartDate(SecurityHelper.getCurrentUser().getOrganizationId(),
+        Date endDate = financialLedgerPeriodRepository.getFinancialLedgerPeriodByOrganAndStartDate(SecurityHelper.getCurrentUser().getOrganizationId(),
                 (Date) financialPeriodDStartDateAndEndDate.get(0)[0], financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
 
         List<Object[]> financialLedgerEndDate =
                 financialLedgerPeriodRepository.getFinancialLedgerPeriodByOrganAndEndDate(SecurityHelper.getCurrentUser().getOrganizationId(),
-                        (Date) financialPeriodDStartDateAndEndDate.get(0)[1], financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
-        if (financialLedgerEndDate.get(0)[1] == null) {
-            throw new RuleException("سند اختتامیه برای دوره قبل ایجاد نشده");
-        }
+                        endDate, financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
+        if (!financialLedgerEndDate.isEmpty() && financialLedgerEndDate.get(0)[1] == null) {
+                throw new RuleException("سند اختتامیه برای دوره قبل ایجاد نشده");
+            }
+
         CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
         checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
         checkLedgerPermissionInputRequest.setLedgerTypeId(financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
@@ -763,9 +765,8 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 .executeUpdate();
 
         FinancialDocumentItem financialDocumentItemSave = new FinancialDocumentItem();
-        List<Object[]> financialDocumentItem = financialDocumentItemRepository.getDocumentItemByDocumentIdAndDesc((Long) financialLedgerEndDate.get(0)[1]);
-
-        financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(financialDocumentSave.getId()));
+        List<Object[]> financialDocumentItem = financialDocumentItemRepository.getDocumentItemByDocumentIdAndDesc(((BigDecimal) financialLedgerEndDate.get(0)[1]).longValue());
+        financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(((BigDecimal) financialLedgerEndDate.get(0)[1]).longValue()));
         financialDocumentItemSave.setSequenceNumber((Long) financialDocumentItem.get(0)[1]);
         financialDocumentItemSave.setCreditAmount((Double) financialDocumentItem.get(0)[3]);
         financialDocumentItemSave.setDebitAmount((Double) financialDocumentItem.get(0)[2]);
@@ -799,8 +800,9 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             throw new RuleException(" وضعیت ماه عملیاتی در حالت بسته است");
         }
         List<Object[]> financialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdOpen(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
-        if (((BigDecimal) financialLedgerPeriod.get(0)[1]).longValue() == 2L) {
-            throw new RuleException(" وضعیت دوره برای دفتر مالی در حالت بسته میباشد ");
+      Long  documentPermanent=((BigDecimal) financialLedgerPeriod.get(0)[0]).longValue();
+        if (!financialLedgerPeriod.isEmpty() && ((BigDecimal) financialLedgerPeriod.get(0)[1]).longValue() == 2L) {
+                throw new RuleException(" وضعیت دوره برای دفتر مالی در حالت بسته میباشد ");
         }
         CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
         checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempRequest.getFinancialPeriodId());
@@ -814,11 +816,12 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 "    AND LP. FINANCIAL_DOCUMENT_OPENING_ID IS NOT NULL   ").setParameter("financialPeriodId", financialLedgerClosingTempRequest.getFinancialPeriodId())
                 .setParameter("financialLedgerTypeId", financialLedgerClosingTempRequest.getFinancialLedgerTypeId())
                 .executeUpdate();
-        financialDocumentNumberRepository.findByFinancialDocumentNumberAndFinancialDocumentId(((BigDecimal) financialLedgerPeriod.get(0)[0]).longValue())
+
+        financialDocumentNumberRepository.findByFinancialDocumentNumberAndFinancialDocumentId(documentPermanent)
                 .forEach(financialDocumentNumberRepository::delete);
-        financialDocumentItemRepository.findByFinancialDocumentIdByDocumentId(((BigDecimal) financialLedgerPeriod.get(0)[0]).longValue())
+        financialDocumentItemRepository.findByFinancialDocumentIdByDocumentId(documentPermanent)
                 .forEach(financialDocumentItemRepository::deleteById);
-        financialDocumentRepository.deleteById(((BigDecimal) financialLedgerPeriod.get(0)[0]).longValue());
+        financialDocumentRepository.deleteById(documentPermanent);
         return true;
     }
 
