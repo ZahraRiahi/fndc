@@ -725,7 +725,6 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 financialLedgerPeriodRepository.getFinancialLedgerPeriodByOrganAndEndDate(SecurityHelper.getCurrentUser().getOrganizationId(),
                         endDate, financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
         if (!financialLedgerEndDate.isEmpty()) {
-//        if ((Long)financialLedgerEndDate.get(0)[1] == null) {
             if (financialLedgerEndDate.get(0)[1] == null) {
                 throw new RuleException("سند اختتامیه برای دوره قبل ایجاد نشده");
             }
