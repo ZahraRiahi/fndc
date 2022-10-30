@@ -7,7 +7,7 @@ import org.springframework.data.jpa.repository.Query;
 import java.util.List;
 
 public interface FinancialLedgerPeriodDocItemsRepository extends JpaRepository<FinancialDocument, Long> {
-    @Query(value = " WITH QRY AS" +
+    @Query(value = " WITH QRY AS " +
             " (SELECT FINANCIAL_PERIOD_ID, " +
             "         FINANCIAL_LEDGER_TYPE_ID, " +
             "         NVL(FINANCIAL_ACCOUNT_CODE, '') || " +
@@ -20,8 +20,7 @@ public interface FinancialLedgerPeriodDocItemsRepository extends JpaRepository<F
             "         CENTRIC_ACCOUNT_ID_3," +
             "         CENTRIC_ACCOUNT_ID_4," +
             "         CENTRIC_ACCOUNT_ID_5," +
-            "         CENTRIC_ACCOUNT_ID_6," +
-            "         PERMANENT_DESCRIPTION" +
+            "         CENTRIC_ACCOUNT_ID_6" +
             "    FROM (SELECT FD.FINANCIAL_PERIOD_ID," +
             "                 FD.FINANCIAL_LEDGER_TYPE_ID," +
             "                 FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
@@ -35,8 +34,7 @@ public interface FinancialLedgerPeriodDocItemsRepository extends JpaRepository<F
             "                 FDI.CENTRIC_ACCOUNT_ID_3," +
             "                 FDI.CENTRIC_ACCOUNT_ID_4," +
             "                 FDI.CENTRIC_ACCOUNT_ID_5," +
-            "                 FDI.CENTRIC_ACCOUNT_ID_6," +
-            "                 APS.DESCRIPTION PERMANENT_DESCRIPTION" +
+            "                 FDI.CENTRIC_ACCOUNT_ID_6                " +
             "            FROM FNDC.FINANCIAL_DOCUMENT FD" +
             "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FDI" +
             "              ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID" +
@@ -52,15 +50,16 @@ public interface FinancialLedgerPeriodDocItemsRepository extends JpaRepository<F
             "             AND LT.ORGANIZATION_ID = FD.ORGANIZATION_ID" +
             "           INNER JOIN FNPR.FINANCIAL_PERIOD FP" +
             "              ON FP.ID = FD.FINANCIAL_PERIOD_ID" +
-            "           INNER JOIN FNAC.ACCOUNT_PERMANENT_STATUS APS" +
-            "              ON APS.ID = FA2.ACCOUNT_PERMANENT_STATUS_ID" +
-            "             AND APS.CODE = :permanentStatus " +
             "           WHERE FD.ORGANIZATION_ID = FD.ORGANIZATION_ID" +
-            "             AND FDS.CODE = 30" +
+            "             AND FDS.CODE = 30 " +
             "             AND FD.DOCUMENT_DATE BETWEEN FP.START_DATE AND FP.END_DATE" +
             "             AND FD.ORGANIZATION_ID = :organizationId " +
             "             AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
             "             AND FD.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "             AND ((:permanentStatus != 2 AND" +
+            "                 FA2.ACCOUNT_PERMANENT_STATUS_ID IN (1, 3)) OR" +
+            "                 (:permanentStatus = 2 AND" +
+            "                 FA2.ACCOUNT_PERMANENT_STATUS_ID = 2))" +
             "           GROUP BY FD.FINANCIAL_PERIOD_ID," +
             "                    FD.FINANCIAL_LEDGER_TYPE_ID," +
             "                    FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
@@ -72,12 +71,10 @@ public interface FinancialLedgerPeriodDocItemsRepository extends JpaRepository<F
             "                    CENTRIC_ACCOUNT_ID_3," +
             "                    CENTRIC_ACCOUNT_ID_4," +
             "                    CENTRIC_ACCOUNT_ID_5," +
-            "                    CENTRIC_ACCOUNT_ID_6," +
-            "                    APS.DESCRIPTION)" +
+            "                    CENTRIC_ACCOUNT_ID_6)" +
             "   WHERE (SUM_DEBIT - SUM_CREDIT) <> 0" +
             "   ORDER BY (SUM_DEBIT - SUM_CREDIT))" +
-            " SELECT " +
-            "       ROWNUM  SEQUENCE," +
+            " SELECT ROWNUM SEQUENCE," +
             "       FINANCIAL_ACCOUNT_ID," +
             "       CENTRIC_ACCOUNT_ID_1," +
             "       CENTRIC_ACCOUNT_ID_2," +
@@ -97,9 +94,13 @@ public interface FinancialLedgerPeriodDocItemsRepository extends JpaRepository<F
             "         ELSE" +
             "          0" +
             "       END REM_CREDIT," +
-            "       ' سند بستن حسابهای ' || PERMANENT_DESCRIPTION || ' ' || " +
-            "       :financialPeriodDes DOC_ITEM_DES " +
+            "       ' سند بستن حسابهای ' || CASE " +
+            "         WHEN :permanentStatus = 1 THEN" +
+            "          ' دائمی'" +
+            "         ELSE" +
+            "          'موقت '" +
+            "       END || ' ' || :financialPeriodDes DOC_ITEM_DES" +
             "  FROM QRY"
             , nativeQuery = true)
-    List<Object[]> findByFinancialDocumentItemByIdAndFinancialDocumentId(Long permanentStatus, Long organizationId, Long financialLedgerTypeId, Long financialPeriodId,String  financialPeriodDes);
+    List<Object[]> findByFinancialDocumentItemByIdAndFinancialDocumentId(Long organizationId, Long financialLedgerTypeId, Long financialPeriodId,Long permanentStatus,String  financialPeriodDes);
 }

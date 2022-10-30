@@ -22,10 +22,9 @@ public class DefaultFinancialLedgerPeriodDocItems implements FinancialLedgerPeri
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public List<FinancialLedgerClosingTempOutputResponse> getFinancialLedgerPeriodDocItems(GetDocumentItemsForLedgerInputRequest getDocumentItemsForLedgerInputRequest) {
-        List<Object[]> financialLedgerPeriodDocItems = financialLedgerPeriodDocItemsRepository.findByFinancialDocumentItemByIdAndFinancialDocumentId(getDocumentItemsForLedgerInputRequest.getPermanentStatus(),
+        List<Object[]> financialLedgerPeriodDocItems = financialLedgerPeriodDocItemsRepository.findByFinancialDocumentItemByIdAndFinancialDocumentId(
                 SecurityHelper.getCurrentUser().getOrganizationId(), getDocumentItemsForLedgerInputRequest.getFinancialLedgerTypeId(),
-                getDocumentItemsForLedgerInputRequest.getFinancialPeriodId(), getDocumentItemsForLedgerInputRequest.getFinancialPeriodDes());
-
+                getDocumentItemsForLedgerInputRequest.getFinancialPeriodId(), getDocumentItemsForLedgerInputRequest.getPermanentStatus(), getDocumentItemsForLedgerInputRequest.getFinancialPeriodDes());
         return financialLedgerPeriodDocItems.stream().map(objects -> FinancialLedgerClosingTempOutputResponse.builder().sequence(objects[0] == null ? 0 : Long.parseLong(objects[0].toString()))
                 .financialAccountId(objects[1] == null ? 0 : Long.parseLong(objects[1].toString()))
                 .centricAccountId1(objects[2] == null ? 0 : Long.parseLong(objects[2].toString()))
