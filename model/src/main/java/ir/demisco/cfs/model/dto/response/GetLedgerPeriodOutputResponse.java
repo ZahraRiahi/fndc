@@ -10,15 +10,18 @@ public class GetLedgerPeriodOutputResponse {
     private String periodDescription;
     private Long openingDocNumber;
     private Date openingDocDate;
+    private Long openingDocId;
     private Long temporaryDocNumber;
     private Date temporaryDocDate;
     private Long permanentDocNumber;
+    private Long permanentDocId;
     private Date permanentDocDate;
     private Long ledgerPeriodStatusId;
     private String ledgerPeriodStatusDesc;
     private Long tempClosedFlag;
     private Long hasOpeningFlag;
     private Long permanentCloseFlag;
+    private Long temporaryDocId;
 
     public Long getFinancialLedgerPeriodId() {
         return financialLedgerPeriodId;
@@ -148,6 +151,29 @@ public class GetLedgerPeriodOutputResponse {
         this.permanentCloseFlag = permanentCloseFlag;
     }
 
+    public Long getPermanentDocId() {
+        return permanentDocId;
+    }
+
+    public void setPermanentDocId(Long permanentDocId) {
+        this.permanentDocId = permanentDocId;
+    }
+
+    public Long getOpeningDocId() {
+        return openingDocId;
+    }
+
+    public void setOpeningDocId(Long openingDocId) {
+        this.openingDocId = openingDocId;
+    }
+
+    public Long getTemporaryDocId() {
+        return temporaryDocId;
+    }
+
+    public void setTemporaryDocId(Long temporaryDocId) {
+        this.temporaryDocId = temporaryDocId;
+    }
     public static GetLedgerPeriodOutputResponse.Builder builder() {
         return new GetLedgerPeriodOutputResponse.Builder();
     }
@@ -243,6 +269,20 @@ public class GetLedgerPeriodOutputResponse {
             return this;
         }
 
+        public Builder permanentDocId(Long permanentDocId) {
+            getLedgerPeriodOutputResponse.setPermanentDocId(permanentDocId);
+            return this;
+        }
+
+        public Builder openingDocId(Long openingDocId) {
+            getLedgerPeriodOutputResponse.setOpeningDocId(openingDocId);
+            return this;
+        }
+
+        public Builder temporaryDocId(Long temporaryDocId) {
+            getLedgerPeriodOutputResponse.setTemporaryDocId(temporaryDocId);
+            return this;
+        }
         public GetLedgerPeriodOutputResponse build() {
             return getLedgerPeriodOutputResponse;
         }

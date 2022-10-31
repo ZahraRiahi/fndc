@@ -51,6 +51,8 @@ public class LedgerPeriodController {
 
     @PostMapping("/InsertLedgerPeriod")
     public ResponseEntity<Boolean> insertLedgerPeriod(@RequestBody InsertLedgerPeriodInputRequest insertLedgerPeriodInputRequest) {
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        insertLedgerPeriodInputRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(ledgerPeriodService.insertLedgerPeriod(insertLedgerPeriodInputRequest));
     }
 

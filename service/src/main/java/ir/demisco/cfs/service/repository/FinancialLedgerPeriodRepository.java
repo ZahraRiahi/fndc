@@ -189,10 +189,13 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "       FP.DESCRIPTION               PERIOD_DESCRIPTION," +
             "       FD_OPENING.DOCUMENT_NUMBER   OPENING_DOC_NUMBER," +
             "       FD_OPENING.DOCUMENT_DATE     OPENING_DOC_DATE," +
+            "       FD_OPENING.ID                OPENING_DOC_ID," +
             "       FD_TMP_CLOSE.DOCUMENT_NUMBER TEMPORARY_DOC_NUMBER," +
             "       FD_TMP_CLOSE.DOCUMENT_DATE   TEMPORARY_DOC_DATE," +
+            "       FD_TMP_CLOSE.ID              TEMPORARY_DOC_ID," +
             "       FD_PRM_CLOSE.DOCUMENT_NUMBER PERMANENT_DOC_NUMBER," +
             "       FD_PRM_CLOSE.DOCUMENT_DATE   PERMANENT_DOC_DATE," +
+            "       FD_PRM_CLOSE.ID              PERMANENT_DOC_ID," +
             "       LS.ID                        LEDGER_PERIOD_STATUS_ID," +
             "       LS.DESCRIPTION               LEDGER_PERIOD_STATUS_DES" +
             "  FROM FNDC.FINANCIAL_LEDGER_PERIOD LP" +
@@ -206,7 +209,7 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "    ON FD_TMP_CLOSE.ID = LP.FINANCIAL_DOCUMENT_TEMPRORY_ID" +
             "  LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT FD_PRM_CLOSE" +
             "    ON FD_PRM_CLOSE.ID = LP.FINANCIAL_DOCUMENT_PERMANENT_ID" +
-            " WHERE LP.ID = :financialLedgerPeriodId "
+            " WHERE LP.ID = :financialLedgerPeriodId  "
             , nativeQuery = true)
     Page<Object[]>  getFinancialLedgerPeriodByPeriodIdGet(Long financialLedgerPeriodId, Pageable pageable);
 }

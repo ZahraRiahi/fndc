@@ -536,6 +536,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 financialLedgerMonth.setFinancialLedgerPeriod(ledgerPeriod);
                 financialLedgerMonthRepository.save(financialLedgerMonth);
             });
+
         }
         return true;
     }
@@ -853,12 +854,15 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                         .periodDescription(getItemForString(item, 4))
                         .openingDocNumber(getItemForLong(item, 5))
                         .openingDocDate(item[6] == null ? null : ((Date) item[6]))
-                        .temporaryDocNumber(getItemForLong(item, 7))
-                        .temporaryDocDate(item[8] == null ? null : ((Date) item[8]))
-                        .permanentDocNumber(getItemForLong(item, 9))
-                        .permanentDocDate(item[10] == null ? null : ((Date) item[10]))
-                        .ledgerPeriodStatusId(getItemForLong(item, 11))
-                        .ledgerPeriodStatusDesc(getItemForString(item, 12))
+                        .openingDocId(getItemForLong(item, 7))
+                        .temporaryDocNumber(getItemForLong(item, 8))
+                        .temporaryDocDate(item[9] == null ? null : ((Date) item[9]))
+                        .temporaryDocId(getItemForLong(item, 10))
+                        .permanentDocNumber(getItemForLong(item, 11))
+                        .permanentDocDate(item[12] == null ? null : ((Date) item[12]))
+                        .permanentDocId(getItemForLong(item, 13))
+                        .ledgerPeriodStatusId(getItemForLong(item, 14))
+                        .ledgerPeriodStatusDesc(getItemForString(item, 15))
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialLedgerPeriodDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
