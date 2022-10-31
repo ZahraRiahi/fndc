@@ -167,17 +167,18 @@ public interface FinancialLedgerMonthRepository extends JpaRepository<FinancialL
             "            ORDER BY FM.START_DATE "
             , nativeQuery = true)
     Page<Object[]> getFinancialLedgerMonthList(Long financialPeriodId, Long financialLedgerTypeId, Pageable pageable);
-    @Query(value = " SELECT 1" +
-            "  FROM FNDC.FINANCIAL_LEDGER_MONTH LM " +
-            " INNER JOIN FNPR.FINANCIAL_MONTH FM " +
-            "    ON LM.FINANCIAL_MONTH_ID = FM.ID " +
-            " INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP " +
-            "    ON LP.ID = :financialLedgerPeriodId  " +
-            "   AND LP.FINANCIAL_PERIOD_ID = FM.FINANCIAL_PERIOD_ID " +
-            " INNER JOIN FNPR.FINANCIAL_PERIOD FP " +
-            "    ON FP.ID = LP.FINANCIAL_PERIOD_ID " +
-            " WHERE FP.START_DATE = FM.START_DATE " +
+    @Query(value = " SELECT * " +
+            "  FROM FNDC.FINANCIAL_LEDGER_MONTH LM" +
+            " INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "    ON LM.FINANCIAL_MONTH_ID = FM.ID" +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            "    ON LP.ID = :financialLedgerPeriodId " +
+            "   AND LM.FINANCIAL_LEDGER_TYPE_ID = LP.FINANCIAL_LEDGER_TYPE_ID" +
+            "   AND LP.FINANCIAL_PERIOD_ID = FM.FINANCIAL_PERIOD_ID" +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD FP" +
+            "    ON FP.ID = LP.FINANCIAL_PERIOD_ID" +
+            " WHERE FP.START_DATE = FM.START_DATE" +
             "   AND LM.FIN_LEDGER_MONTH_STAT_ID = 2 "
             , nativeQuery = true)
-    List<Long> getFinancialLedgerMonth(Long financialLedgerPeriodId);
+    List<Object[]> getFinancialLedgerMonth(Long financialLedgerPeriodId);
 }
