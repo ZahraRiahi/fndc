@@ -33,8 +33,8 @@ public class DefaultFinancialLedgerPeriodDocItems implements FinancialLedgerPeri
                 .centricAccountId4(objects[5] == null ? 0 : Long.parseLong(objects[5].toString()))
                 .centricAccountId5(objects[6] == null ? 0 : Long.parseLong(objects[6].toString()))
                 .centricAccountId6(objects[7] == null ? 0 : Long.parseLong(objects[7].toString()))
-                .remDebit(objects[8] == null ? 0 : Long.parseLong(objects[8].toString()))
-                .remCredit(objects[9] == null ? 0 : Long.parseLong(objects[9].toString()))
+                .remDebit(objects[8] == null ? 0 : Double.parseDouble(objects[8].toString()))
+                .remCredit(objects[9] == null ? 0 : Double.parseDouble(objects[9].toString()))
                 .docItemDes(objects[10] == null ? null : objects[10].toString())
                 .build()).collect(Collectors.toList());
     }

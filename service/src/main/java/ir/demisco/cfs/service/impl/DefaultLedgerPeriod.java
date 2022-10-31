@@ -285,8 +285,6 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 .setParameter("organizationId", SecurityHelper.getCurrentUser().getOrganizationId())
                 .setParameter("minDocId", minDocId)
                 .executeUpdate();
-
-
         financialDocumentNumberRepository.getFinancialDocumentNumberByOrgAndPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
                 SecurityHelper.getCurrentUser().getOrganizationId(), financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId(),
                 financialLedgerCloseMonthInputRequest.getFinancialPeriodId())
@@ -768,7 +766,6 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
 
         financialDocumentItem.forEach((Object object) -> {
             FinancialDocumentItem financialDocumentItemSave = new FinancialDocumentItem();
-
             financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(financialDocumentSave.getId()));
             financialDocumentItemSave.setSequenceNumber(((BigDecimal) financialDocumentItem.get(0)[1]).longValue());
             financialDocumentItemSave.setCreditAmount(((BigDecimal) financialDocumentItem.get(0)[3]).doubleValue());
