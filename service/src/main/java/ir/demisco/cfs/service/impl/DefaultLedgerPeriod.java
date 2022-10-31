@@ -536,7 +536,6 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 financialLedgerMonth.setFinancialLedgerPeriod(ledgerPeriod);
                 financialLedgerMonthRepository.save(financialLedgerMonth);
             });
-
         }
         return true;
     }
@@ -797,8 +796,8 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         if (financialPeriod != null) {
             throw new RuleException("وضعیت دوره مالی در حالت بسته میباشد");
         }
-        List<Object[]> financialLedgerMonth = financialLedgerMonthRepository.getFinancialLedgerMonth(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
-        if (!financialLedgerMonth.isEmpty()) {
+        List<Long> financialLedgerMonth = financialLedgerMonthRepository.getFinancialLedgerMonth(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
+        if (!(financialLedgerMonth.isEmpty() && financialLedgerMonth == null)) {
             throw new RuleException(" وضعیت ماه عملیاتی در حالت بسته است");
         }
         List<Object[]> financialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdOpen(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
