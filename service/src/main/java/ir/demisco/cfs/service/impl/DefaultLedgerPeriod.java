@@ -725,8 +725,8 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 financialLedgerPeriodRepository.getFinancialLedgerPeriodByOrganAndEndDate(SecurityHelper.getCurrentUser().getOrganizationId(),
                         endDate, financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
         if (!financialLedgerEndDate.isEmpty() && financialLedgerEndDate.get(0)[1] == null) {
-                throw new RuleException("سند اختتامیه برای دوره قبل ایجاد نشده");
-            }
+            throw new RuleException("سند اختتامیه برای دوره قبل ایجاد نشده");
+        }
 
         CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
         checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
@@ -764,21 +764,25 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 .setParameter("newDocumentId", financialDocumentNumberDto.getFinancialDocumentId())
                 .executeUpdate();
 
-        FinancialDocumentItem financialDocumentItemSave = new FinancialDocumentItem();
         List<Object[]> financialDocumentItem = financialDocumentItemRepository.getDocumentItemByDocumentIdAndDesc(((BigDecimal) financialLedgerEndDate.get(0)[1]).longValue());
-        financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(((BigDecimal) financialLedgerEndDate.get(0)[1]).longValue()));
-        financialDocumentItemSave.setSequenceNumber((Long) financialDocumentItem.get(0)[1]);
-        financialDocumentItemSave.setCreditAmount((Double) financialDocumentItem.get(0)[3]);
-        financialDocumentItemSave.setDebitAmount((Double) financialDocumentItem.get(0)[2]);
-        financialDocumentItemSave.setDescription("سند افتتاحیه " + financialLedgerClosingTempInputRequest.getFinancialPeriodDes());
-        financialDocumentItemSave.setFinancialAccount(financialAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[4].toString())));
-        financialDocumentItemSave.setCentricAccountId1(centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[5].toString())));
-        financialDocumentItemSave.setCentricAccountId2(centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[6].toString())));
-        financialDocumentItemSave.setCentricAccountId3(centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[7].toString())));
-        financialDocumentItemSave.setCentricAccountId4(centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[8].toString())));
-        financialDocumentItemSave.setCentricAccountId5(centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[9].toString())));
-        financialDocumentItemSave.setCentricAccountId6(centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[10].toString())));
-        financialDocumentItemRepository.save(financialDocumentItemSave);
+
+        financialDocumentItem.forEach((Object object) -> {
+            FinancialDocumentItem financialDocumentItemSave = new FinancialDocumentItem();
+
+            financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(financialDocumentSave.getId()));
+            financialDocumentItemSave.setSequenceNumber(((BigDecimal) financialDocumentItem.get(0)[1]).longValue());
+            financialDocumentItemSave.setCreditAmount(((BigDecimal) financialDocumentItem.get(0)[3]).doubleValue());
+            financialDocumentItemSave.setDebitAmount(((BigDecimal) financialDocumentItem.get(0)[2]).doubleValue());
+            financialDocumentItemSave.setDescription("سند افتتاحیه " + financialLedgerClosingTempInputRequest.getFinancialPeriodDes());
+            financialDocumentItemSave.setFinancialAccount(getItemForLong(financialDocumentItem.get(0), 4) == null ? null : financialAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[4].toString())));
+            financialDocumentItemSave.setCentricAccountId1(getItemForLong(financialDocumentItem.get(0), 5) == null ? null : centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[5].toString())));
+            financialDocumentItemSave.setCentricAccountId2(getItemForLong(financialDocumentItem.get(0), 6) == null ? null : centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[6].toString())));
+            financialDocumentItemSave.setCentricAccountId3(getItemForLong(financialDocumentItem.get(0), 7) == null ? null : centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[7].toString())));
+            financialDocumentItemSave.setCentricAccountId4(getItemForLong(financialDocumentItem.get(0), 8) == null ? null : centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[8].toString())));
+            financialDocumentItemSave.setCentricAccountId5(getItemForLong(financialDocumentItem.get(0), 9) == null ? null : centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[9].toString())));
+            financialDocumentItemSave.setCentricAccountId6(getItemForLong(financialDocumentItem.get(0), 10) == null ? null : centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[10].toString())));
+            financialDocumentItemRepository.save(financialDocumentItemSave);
+        });
         entityManager.createNativeQuery(" Update FNDC.FINANCIAL_LEDGER_PERIOD LP " +
                 "   Set LP. FINANCIAL_DOCUMENT_OPENING_ID = :newDocumentId     " +
                 "  WHERE LP.ID = :financialLedgerPeriodId " +
@@ -800,9 +804,9 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             throw new RuleException(" وضعیت ماه عملیاتی در حالت بسته است");
         }
         List<Object[]> financialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdOpen(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
-      Long  documentPermanent=((BigDecimal) financialLedgerPeriod.get(0)[0]).longValue();
+        Long documentPermanent = ((BigDecimal) financialLedgerPeriod.get(0)[0]).longValue();
         if (!financialLedgerPeriod.isEmpty() && ((BigDecimal) financialLedgerPeriod.get(0)[1]).longValue() == 2L) {
-                throw new RuleException(" وضعیت دوره برای دفتر مالی در حالت بسته میباشد ");
+            throw new RuleException(" وضعیت دوره برای دفتر مالی در حالت بسته میباشد ");
         }
         CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
         checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempRequest.getFinancialPeriodId());
