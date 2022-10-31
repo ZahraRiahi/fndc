@@ -9,8 +9,8 @@ public class FinancialLedgerClosingTempOutputResponse {
     private Long centricAccountId4;
     private Long centricAccountId5;
     private Long centricAccountId6;
-    private Long remDebit;
-    private Long remCredit;
+    private Double remDebit;
+    private Double remCredit;
     private String docItemDes;
 
     public Long getSequence() {
@@ -77,19 +77,19 @@ public class FinancialLedgerClosingTempOutputResponse {
         this.centricAccountId6 = centricAccountId6;
     }
 
-    public Long getRemDebit() {
+    public Double getRemDebit() {
         return remDebit;
     }
 
-    public void setRemDebit(Long remDebit) {
+    public void setRemDebit(Double remDebit) {
         this.remDebit = remDebit;
     }
 
-    public Long getRemCredit() {
+    public Double getRemCredit() {
         return remCredit;
     }
 
-    public void setRemCredit(Long remCredit) {
+    public void setRemCredit(Double remCredit) {
         this.remCredit = remCredit;
     }
 
@@ -154,12 +154,12 @@ public class FinancialLedgerClosingTempOutputResponse {
             return this;
         }
 
-        public Builder remDebit(Long remDebit) {
+        public Builder remDebit(Double remDebit) {
             financialLedgerClosingTempOutputResponse.setRemDebit(remDebit);
             return this;
         }
 
-        public Builder remCredit(Long remCredit) {
+        public Builder remCredit(Double remCredit) {
             financialLedgerClosingTempOutputResponse.setRemCredit(remCredit);
             return this;
         }
