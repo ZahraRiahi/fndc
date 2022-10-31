@@ -799,8 +799,8 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         if (financialPeriod != null) {
             throw new RuleException("وضعیت دوره مالی در حالت بسته میباشد");
         }
-        Long financialLedgerMonth = financialLedgerMonthRepository.getFinancialLedgerMonth(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
-        if (financialLedgerMonth != null) {
+        List<Long> financialLedgerMonth = financialLedgerMonthRepository.getFinancialLedgerMonth(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
+        if (!financialLedgerMonth.isEmpty()) {
             throw new RuleException(" وضعیت ماه عملیاتی در حالت بسته است");
         }
         List<Object[]> financialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdOpen(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
