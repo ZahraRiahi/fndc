@@ -197,7 +197,26 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "       FD_PRM_CLOSE.DOCUMENT_DATE   PERMANENT_DOC_DATE," +
             "       FD_PRM_CLOSE.ID              PERMANENT_DOC_ID," +
             "       LS.ID                        LEDGER_PERIOD_STATUS_ID," +
-            "       LS.DESCRIPTION               LEDGER_PERIOD_STATUS_DES" +
+            "       LS.DESCRIPTION               LEDGER_PERIOD_STATUS_DES, " +
+            " CASE" +
+            "         WHEN (LP.FINANCIAL_DOCUMENT_TEMPRORY_ID IS NOT NULL) THEN" +
+            "          1" +
+            "         ELSE" +
+            "          0" +
+            "       END AS TEMP_CLOSED_FLAG," +
+            "       CASE" +
+            "         WHEN (LP.FINANCIAL_DOCUMENT_OPENING_ID IS NOT NULL) THEN" +
+            "          1" +
+            "         ELSE" +
+            "          0" +
+            "       END AS HAS_OPENING_FLAG," +
+            "       " +
+            "       CASE" +
+            "         WHEN (LP.FINANCIAL_DOCUMENT_PERMANENT_ID IS NOT NULL) THEN" +
+            "          1" +
+            "         ELSE" +
+            "          0" +
+            "       END AS PERMANENT_CLOSED_FLAG" +
             "  FROM FNDC.FINANCIAL_LEDGER_PERIOD LP" +
             " INNER JOIN FNPR.FINANCIAL_PERIOD FP" +
             "    ON FP.ID = LP.FINANCIAL_PERIOD_ID" +
