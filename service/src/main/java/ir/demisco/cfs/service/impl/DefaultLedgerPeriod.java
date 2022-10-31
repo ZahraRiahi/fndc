@@ -863,6 +863,9 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                         .permanentDocId(getItemForLong(item, 13))
                         .ledgerPeriodStatusId(getItemForLong(item, 14))
                         .ledgerPeriodStatusDesc(getItemForString(item, 15))
+                        .tempClosedFlag(getItemForLong(item, 16))
+                        .hasOpeningFlag(getItemForLong(item, 17))
+                        .permanentCloseFlag(getItemForLong(item, 18))
                         .build()).collect(Collectors.toList());
         DataSourceResult dataSourceResult = new DataSourceResult();
         dataSourceResult.setData(financialLedgerPeriodDtoList.stream().limit(dataSourceRequest.getTake() + dataSourceRequest.getSkip()).skip(dataSourceRequest.getSkip()).collect(Collectors.toList()));
