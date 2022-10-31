@@ -167,7 +167,7 @@ public interface FinancialLedgerMonthRepository extends JpaRepository<FinancialL
             "            ORDER BY FM.START_DATE "
             , nativeQuery = true)
     Page<Object[]> getFinancialLedgerMonthList(Long financialPeriodId, Long financialLedgerTypeId, Pageable pageable);
-    @Query(value = " SELECT * " +
+    @Query(value = " SELECT 1 " +
             "  FROM FNDC.FINANCIAL_LEDGER_MONTH LM" +
             " INNER JOIN FNPR.FINANCIAL_MONTH FM" +
             "    ON LM.FINANCIAL_MONTH_ID = FM.ID" +
@@ -180,5 +180,5 @@ public interface FinancialLedgerMonthRepository extends JpaRepository<FinancialL
             " WHERE FP.START_DATE = FM.START_DATE" +
             "   AND LM.FIN_LEDGER_MONTH_STAT_ID = 2 "
             , nativeQuery = true)
-    List<Object[]> getFinancialLedgerMonth(Long financialLedgerPeriodId);
+    List<Long> getFinancialLedgerMonth(Long financialLedgerPeriodId);
 }
