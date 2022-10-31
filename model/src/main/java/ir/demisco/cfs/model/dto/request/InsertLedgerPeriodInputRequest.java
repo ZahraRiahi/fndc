@@ -6,6 +6,7 @@ public class InsertLedgerPeriodInputRequest {
     private Long financialLedgerTypeId;
     private List<Long> financialPeriodId;
     private Long id;
+    private Long organizationId;
 
     public Long getFinancialLedgerTypeId() {
         return financialLedgerTypeId;
@@ -29,5 +30,13 @@ public class InsertLedgerPeriodInputRequest {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getOrganizationId() {
+        return organizationId;
+    }
+
+    public void setOrganizationId(Long organizationId) {
+        this.organizationId = organizationId;
     }
 }
