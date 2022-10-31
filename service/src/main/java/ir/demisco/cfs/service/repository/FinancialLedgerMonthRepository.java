@@ -6,6 +6,8 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.List;
+
 public interface FinancialLedgerMonthRepository extends JpaRepository<FinancialLedgerMonth, Long> {
     @Query(value = " select count(flm.id)" +
             "  from fndc.financial_ledger_month flm" +
@@ -177,5 +179,5 @@ public interface FinancialLedgerMonthRepository extends JpaRepository<FinancialL
             " WHERE FP.START_DATE = FM.START_DATE " +
             "   AND LM.FIN_LEDGER_MONTH_STAT_ID = 2 "
             , nativeQuery = true)
-    Long getFinancialLedgerMonth(Long financialLedgerPeriodId);
+    List<Long> getFinancialLedgerMonth(Long financialLedgerPeriodId);
 }
