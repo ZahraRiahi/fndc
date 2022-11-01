@@ -37,6 +37,7 @@ import ir.demisco.cfs.service.repository.FinancialLedgerPeriodStatusRepository;
 import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
 import ir.demisco.cfs.service.repository.FinancialMonthRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
+import ir.demisco.cfs.service.repository.FinancialPeriodTypeAssignRepository;
 import ir.demisco.cfs.service.repository.OrganizationRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
@@ -83,8 +84,9 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
     private final FinancialLedgerPeriodStatusRepository financialLedgerPeriodStatusRepository;
     private final FinancialMonthRepository financialMonthRepository;
     private final FinancialLedgerMonthStatusRepository financialLedgerMonthStatusRepository;
+    private final FinancialPeriodTypeAssignRepository financialPeriodTypeAssignRepository;
 
-    public DefaultLedgerPeriod(FinancialPeriodRepository financialPeriodRepository, FinancialLedgerMonthRepository financialLedgerMonthRepository, FinancialLedgerPeriodSecurityService financialLedgerPeriodSecurityService, FinancialLedgerPeriodMonthStatusService financialLedgerPeriodMonthStatusService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentService financialDocumentService, EntityManager entityManager, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, DepartmentRepository departmentRepository, FinancialDepartmentRepository financialDepartmentRepository, FinancialLedgerPeriodDocItemsService financialLedgerPeriodDocItemsService, FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialLedgerPeriodStatusRepository financialLedgerPeriodStatusRepository, FinancialMonthRepository financialMonthRepository, FinancialLedgerMonthStatusRepository financialLedgerMonthStatusRepository) {
+    public DefaultLedgerPeriod(FinancialPeriodRepository financialPeriodRepository, FinancialLedgerMonthRepository financialLedgerMonthRepository, FinancialLedgerPeriodSecurityService financialLedgerPeriodSecurityService, FinancialLedgerPeriodMonthStatusService financialLedgerPeriodMonthStatusService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentService financialDocumentService, EntityManager entityManager, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, DepartmentRepository departmentRepository, FinancialDepartmentRepository financialDepartmentRepository, FinancialLedgerPeriodDocItemsService financialLedgerPeriodDocItemsService, FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialLedgerPeriodStatusRepository financialLedgerPeriodStatusRepository, FinancialMonthRepository financialMonthRepository, FinancialLedgerMonthStatusRepository financialLedgerMonthStatusRepository, FinancialPeriodTypeAssignRepository financialPeriodTypeAssignRepository) {
         this.financialPeriodRepository = financialPeriodRepository;
         this.financialLedgerMonthRepository = financialLedgerMonthRepository;
         this.financialLedgerPeriodSecurityService = financialLedgerPeriodSecurityService;
@@ -107,6 +109,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         this.financialLedgerPeriodStatusRepository = financialLedgerPeriodStatusRepository;
         this.financialMonthRepository = financialMonthRepository;
         this.financialLedgerMonthStatusRepository = financialLedgerMonthStatusRepository;
+        this.financialPeriodTypeAssignRepository = financialPeriodTypeAssignRepository;
     }
 
     @Override
@@ -797,7 +800,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             throw new RuleException("وضعیت دوره مالی در حالت بسته میباشد");
         }
         List<Long> financialLedgerMonth = financialLedgerMonthRepository.getFinancialLedgerMonth(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
-        if (!(financialLedgerMonth.isEmpty() && financialLedgerMonth == null)) {
+        if (!(financialLedgerMonth.isEmpty() && financialLedgerMonth != null)) {
             throw new RuleException(" وضعیت ماه عملیاتی در حالت بسته است");
         }
         List<Object[]> financialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdOpen(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
