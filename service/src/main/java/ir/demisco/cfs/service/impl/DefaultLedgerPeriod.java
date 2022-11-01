@@ -84,7 +84,6 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
     private final FinancialLedgerPeriodStatusRepository financialLedgerPeriodStatusRepository;
     private final FinancialMonthRepository financialMonthRepository;
     private final FinancialLedgerMonthStatusRepository financialLedgerMonthStatusRepository;
-    private final FinancialPeriodTypeAssignRepository financialPeriodTypeAssignRepository;
 
     public DefaultLedgerPeriod(FinancialPeriodRepository financialPeriodRepository, FinancialLedgerMonthRepository financialLedgerMonthRepository, FinancialLedgerPeriodSecurityService financialLedgerPeriodSecurityService, FinancialLedgerPeriodMonthStatusService financialLedgerPeriodMonthStatusService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentService financialDocumentService, EntityManager entityManager, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, DepartmentRepository departmentRepository, FinancialDepartmentRepository financialDepartmentRepository, FinancialLedgerPeriodDocItemsService financialLedgerPeriodDocItemsService, FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialLedgerPeriodStatusRepository financialLedgerPeriodStatusRepository, FinancialMonthRepository financialMonthRepository, FinancialLedgerMonthStatusRepository financialLedgerMonthStatusRepository, FinancialPeriodTypeAssignRepository financialPeriodTypeAssignRepository) {
         this.financialPeriodRepository = financialPeriodRepository;
@@ -109,7 +108,6 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         this.financialLedgerPeriodStatusRepository = financialLedgerPeriodStatusRepository;
         this.financialMonthRepository = financialMonthRepository;
         this.financialLedgerMonthStatusRepository = financialLedgerMonthStatusRepository;
-        this.financialPeriodTypeAssignRepository = financialPeriodTypeAssignRepository;
     }
 
     @Override
