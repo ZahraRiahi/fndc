@@ -139,6 +139,31 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             , nativeQuery = true)
     Long getFinancialLedgerPeriodByPeriodIdOpenning(Long financialLedgerPeriodId);
 
+    @Query(value = " SELECT 1 " +
+            "  FROM FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD FP" +
+            "    ON LP.FINANCIAL_PERIOD_ID = FP.ID" +
+            " WHERE LP.FINANCIAL_DOCUMENT_OPENING_ID IS NOT NULL" +
+            "   AND LP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
+            "   AND FP.START_DATE =" +
+            "       (SELECT MIN(FP_IN.START_DATE)" +
+            "          FROM FNDC.FINANCIAL_LEDGER_PERIOD LP_IN" +
+            "         INNER JOIN FNPR.FINANCIAL_PERIOD FP_IN" +
+            "            ON LP_IN.FINANCIAL_PERIOD_ID = FP_IN.ID" +
+            "         INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FA_IN" +
+            "            ON FA_IN.FINANCIAL_PERIOD_ID = FP_IN.ID" +
+            "           AND FA_IN.ORGANIZATION_ID = :organizationId " +
+            "         INNER JOIN FNDC.FINANCIAL_LEDGER_TYPE LT_IN" +
+            "            ON LT_IN.ORGANIZATION_ID = FA_IN.ORGANIZATION_ID" +
+            "           AND LT_IN.ID = LP_IN.FINANCIAL_LEDGER_TYPE_ID" +
+            "         WHERE FP_IN.START_DATE >" +
+            "               (SELECT FP_IN2.END_DATE" +
+            "                  FROM FNPR.FINANCIAL_PERIOD FP_IN2" +
+            "                 WHERE FP_IN2.ID = :financialPeriodId)" +
+            "           AND LP_IN.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId) "
+            , nativeQuery = true)
+    Long getFinancialLedgerPeriodByTypeLedgerAndOrgan(Long financialLedgerTypeId,Long organizationId,Long financialPeriodId);
+
     @Query(value = " SELECT LP.FINANCIAL_DOCUMENT_PERMANENT_ID " +
             "              FROM FNDC.FINANCIAL_LEDGER_PERIOD LP " +
             "             WHERE LP.ID = :financialLedgerPeriodId  "

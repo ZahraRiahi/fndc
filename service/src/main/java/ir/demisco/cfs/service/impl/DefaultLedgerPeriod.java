@@ -681,9 +681,10 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         checkLedgerPermissionInputRequest.setActivityCode("FINANCIAL_LEG_PERMANENT");
         financialLedgerPeriodSecurityService.checkFinancialLedgerPeriodSecurity(checkLedgerPermissionInputRequest);
 
-        Long financialPeriodOpen = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodIdOpenning(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
+        Long financialPeriodOpen = financialLedgerPeriodRepository.getFinancialLedgerPeriodByTypeLedgerAndOrgan(financialLedgerClosingTempRequest.getFinancialLedgerTypeId(),
+                SecurityHelper.getCurrentUser().getOrganizationId(), financialLedgerClosingTempRequest.getFinancialPeriodId());
         if (financialPeriodOpen != null) {
-            throw new RuleException("امکان انجام عملیات به دلیل وجود سند افتتاحیه وجود ندارد");
+            throw new RuleException("امکان انجام عملیات به دلیل وجود سند افتتاحیه دوره بعد وجود ندارد");
         }
         Long financialPeriodPermanent = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodIdPermanent(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
         if (financialPeriodPermanent == null) {
@@ -701,6 +702,11 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         financialDocumentItemRepository.findByFinancialDocumentIdByDocumentId(financialPeriodPermanent)
                 .forEach(financialDocumentItemRepository::deleteById);
         financialDocumentRepository.deleteById(financialPeriodPermanent);
+        entityManager.createNativeQuery(" UPDATE FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+                "   SET LP.FIN_LEDGER_PERIOD_STAT_ID = 3 " +
+                " WHERE LP.ID = :financialLedgerPeriodId   ")
+                .setParameter("financialLedgerPeriodId", financialLedgerClosingTempRequest.getFinancialLedgerPeriodId())
+                .executeUpdate();
         return true;
     }
 
