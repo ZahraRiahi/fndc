@@ -37,6 +37,7 @@ import ir.demisco.cfs.service.repository.FinancialLedgerPeriodStatusRepository;
 import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
 import ir.demisco.cfs.service.repository.FinancialMonthRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
+import ir.demisco.cfs.service.repository.FinancialPeriodTypeAssignRepository;
 import ir.demisco.cfs.service.repository.OrganizationRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
@@ -797,7 +798,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             throw new RuleException("وضعیت دوره مالی در حالت بسته میباشد");
         }
         List<Long> financialLedgerMonth = financialLedgerMonthRepository.getFinancialLedgerMonth(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
-        if (!(financialLedgerMonth.isEmpty() && financialLedgerMonth == null)) {
+        if (!(financialLedgerMonth.isEmpty() && financialLedgerMonth != null)) {
             throw new RuleException(" وضعیت ماه عملیاتی در حالت بسته است");
         }
         List<Object[]> financialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdOpen(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
