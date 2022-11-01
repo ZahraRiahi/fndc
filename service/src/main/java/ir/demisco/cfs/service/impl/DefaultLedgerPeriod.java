@@ -536,6 +536,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 financialLedgerMonth.setFinancialLedgerPeriod(ledgerPeriod);
                 financialLedgerMonthRepository.save(financialLedgerMonth);
             });
+
         }
         return true;
     }
@@ -735,7 +736,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         Random rand = new Random(System.currentTimeMillis());
         FinancialDocument financialDocumentSave = new FinancialDocument();
         financialDocumentSave.setDocumentDate(financialPeriodDStartDateAndEndDate.get(0)[0] == null ? null : ((Timestamp) financialPeriodDStartDateAndEndDate.get(0)[0]).toLocalDateTime());
-        financialDocumentSave.setDescription(" سند افتتاحیه " + financialLedgerClosingTempInputRequest.getFinancialPeriodDes());
+        financialDocumentSave.setDescription(" سند افتتاحیه " + financialPeriodDStartDateAndEndDate.get(0)[2]);
         financialDocumentSave.setFinancialDocumentStatus(financialDocumentStatusRepository.getOne(3L));
         financialDocumentSave.setPermanentDocumentNumber(null);
         financialDocumentSave.setAutomaticFlag(true);
@@ -769,7 +770,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             financialDocumentItemSave.setSequenceNumber(object.getSequenceNumber());
             financialDocumentItemSave.setCreditAmount(object.getDebitAmount());
             financialDocumentItemSave.setDebitAmount(object.getCreditAmount());
-            financialDocumentItemSave.setDescription("سند افتتاحیه " + object.getDescription());
+            financialDocumentItemSave.setDescription("سند افتتاحیه " + financialPeriodDStartDateAndEndDate.get(0)[2]);
             financialDocumentItemSave.setFinancialAccount(object.getFinancialAccount());
             financialDocumentItemSave.setCentricAccountId1(object.getCentricAccountId1());
             financialDocumentItemSave.setCentricAccountId2(object.getCentricAccountId2());
