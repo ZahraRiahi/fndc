@@ -520,18 +520,7 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " and fdi.deletedDate is null")
     List<FinancialDocumentItem> getFinancialDocumentItemByDocumentId(Long financialDocumentItemId);
 
-    @Query(value=" select FDI.id , " +
-            "         FDI.SEQUENCE_NUMBER, " +
-            "         FDI.CREDIT_AMOUNT, " +
-            "         FDI.DEBIT_AMOUNT, " +
-            "         FDI.FINANCIAL_ACCOUNT_ID, " +
-            "         FDI.CENTRIC_ACCOUNT_ID_1, " +
-            "         FDI.CENTRIC_ACCOUNT_ID_2, " +
-            "         FDI.CENTRIC_ACCOUNT_ID_3, " +
-            "         FDI.CENTRIC_ACCOUNT_ID_4, " +
-            "         FDI.CENTRIC_ACCOUNT_ID_5, " +
-            "         FDI.CENTRIC_ACCOUNT_ID_6 " +
-            "    FROM FNDC.FINANCIAL_DOCUMENT_ITEM FDI " +
-            "   WHERE FDI.FINANCIAL_DOCUMENT_ID = :prevDocumentPermanentId  ",nativeQuery = true)
-    List<Object[]>  getDocumentItemByDocumentIdAndDesc(Long prevDocumentPermanentId);
+    @Query("select FDI from FinancialDocumentItem FDI where  FDI.financialDocument.id=:prevDocumentPermanentId ")
+    List<FinancialDocumentItem>  getDocumentItemByDocumentIdAndDesc(Long prevDocumentPermanentId);
+
 }

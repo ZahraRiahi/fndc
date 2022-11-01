@@ -37,7 +37,6 @@ import ir.demisco.cfs.service.repository.FinancialLedgerPeriodStatusRepository;
 import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
 import ir.demisco.cfs.service.repository.FinancialMonthRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
-import ir.demisco.cfs.service.repository.FinancialPeriodTypeAssignRepository;
 import ir.demisco.cfs.service.repository.OrganizationRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
@@ -763,22 +762,21 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 .setParameter("newDocumentId", financialDocumentNumberDto.getFinancialDocumentId())
                 .executeUpdate();
 
-        List<Object[]> financialDocumentItem = financialDocumentItemRepository.getDocumentItemByDocumentIdAndDesc(((BigDecimal) financialLedgerEndDate.get(0)[1]).longValue());
-
-        financialDocumentItem.forEach((Object object) -> {
+        List<FinancialDocumentItem> financialDocumentItem = financialDocumentItemRepository.getDocumentItemByDocumentIdAndDesc(((BigDecimal) financialLedgerEndDate.get(0)[1]).longValue());
+        financialDocumentItem.forEach((FinancialDocumentItem object) -> {
             FinancialDocumentItem financialDocumentItemSave = new FinancialDocumentItem();
             financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(financialDocumentSave.getId()));
-            financialDocumentItemSave.setSequenceNumber(((BigDecimal) financialDocumentItem.get(0)[1]).longValue());
-            financialDocumentItemSave.setCreditAmount(((BigDecimal) financialDocumentItem.get(0)[3]).doubleValue());
-            financialDocumentItemSave.setDebitAmount(((BigDecimal) financialDocumentItem.get(0)[2]).doubleValue());
-            financialDocumentItemSave.setDescription("سند افتتاحیه " + financialLedgerClosingTempInputRequest.getFinancialPeriodDes());
-            financialDocumentItemSave.setFinancialAccount(getItemForLong(financialDocumentItem.get(0), 4) == null ? null : financialAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[4].toString())));
-            financialDocumentItemSave.setCentricAccountId1(getItemForLong(financialDocumentItem.get(0), 5) == null ? null : centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[5].toString())));
-            financialDocumentItemSave.setCentricAccountId2(getItemForLong(financialDocumentItem.get(0), 6) == null ? null : centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[6].toString())));
-            financialDocumentItemSave.setCentricAccountId3(getItemForLong(financialDocumentItem.get(0), 7) == null ? null : centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[7].toString())));
-            financialDocumentItemSave.setCentricAccountId4(getItemForLong(financialDocumentItem.get(0), 8) == null ? null : centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[8].toString())));
-            financialDocumentItemSave.setCentricAccountId5(getItemForLong(financialDocumentItem.get(0), 9) == null ? null : centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[9].toString())));
-            financialDocumentItemSave.setCentricAccountId6(getItemForLong(financialDocumentItem.get(0), 10) == null ? null : centricAccountRepository.getOne(Long.parseLong(financialDocumentItem.get(0)[10].toString())));
+            financialDocumentItemSave.setSequenceNumber(object.getSequenceNumber());
+            financialDocumentItemSave.setCreditAmount(object.getDebitAmount());
+            financialDocumentItemSave.setDebitAmount(object.getCreditAmount());
+            financialDocumentItemSave.setDescription("سند افتتاحیه " + object.getDescription());
+            financialDocumentItemSave.setFinancialAccount(object.getFinancialAccount());
+            financialDocumentItemSave.setCentricAccountId1(object.getCentricAccountId1());
+            financialDocumentItemSave.setCentricAccountId2(object.getCentricAccountId2());
+            financialDocumentItemSave.setCentricAccountId3(object.getCentricAccountId3());
+            financialDocumentItemSave.setCentricAccountId4(object.getCentricAccountId4());
+            financialDocumentItemSave.setCentricAccountId5(object.getCentricAccountId5());
+            financialDocumentItemSave.setCentricAccountId6(object.getCentricAccountId6());
             financialDocumentItemRepository.save(financialDocumentItemSave);
         });
         entityManager.createNativeQuery(" Update FNDC.FINANCIAL_LEDGER_PERIOD LP " +
