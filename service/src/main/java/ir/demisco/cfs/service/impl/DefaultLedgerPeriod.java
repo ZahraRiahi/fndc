@@ -343,10 +343,11 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         if (financialLedgerMonthPeriodId != null) {
             throw new RuleException("تمامی ماه های عملیاتی این دوره میبایست در وضعیت بسته باشد");
         }
-        Long financialLedgerPeriodId = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdClosingTemp(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
+        List<Long> financialLedgerPeriodId = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdClosingTemp(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
         if (financialLedgerPeriodId != null) {
-            throw new RuleException("سند بستن حسابهای موقت قبلا روی این دوره از دفتر مالی ثبت شده است");
+            throw new RuleException("سند بستن حسابهای موقت قبلا روی این دوره از دفتر مالی ثبت شده است / عدم هماهنگی وضعیت دفتر");
         }
+
         CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
         checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
         checkLedgerPermissionInputRequest.setLedgerTypeId(financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
@@ -425,7 +426,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
 
         entityManager.createNativeQuery(" Update FNDC.FINANCIAL_LEDGER_PERIOD LP " +
                 "  SET LP.FINANCIAL_DOCUMENT_TEMPRORY_ID = :newDocId " +
-                " WHERE LP.ID = :financialLedgerPeriodId " +
+                " WHERE LP.ID = :financialLedgerPeriodId , LP.FIN_LEDGER_PERIOD_STAT_ID = 3 " +
                 "   AND LP.FINANCIAL_DOCUMENT_TEMPRORY_ID IS NULL ").setParameter("newDocId", financialDocumentSave.getId())
                 .setParameter("financialLedgerPeriodId", financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId())
                 .executeUpdate();
