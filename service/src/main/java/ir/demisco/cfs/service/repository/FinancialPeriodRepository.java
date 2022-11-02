@@ -2182,4 +2182,5 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " WHERE FP.ID = :financialPeriodId "
             , nativeQuery = true)
     List<Object[]> getFinancialPeriodByStartDateAndEndDateAndDes(Long financialPeriodId);
+
 }
