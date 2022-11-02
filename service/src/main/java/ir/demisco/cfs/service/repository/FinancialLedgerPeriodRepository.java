@@ -170,7 +170,7 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "                 WHERE FP_IN2.ID = :financialPeriodId)" +
             "           AND LP_IN.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId) "
             , nativeQuery = true)
-    Long getFinancialLedgerPeriodByTypeLedgerAndOrgan(Long financialLedgerTypeId,Long organizationId,Long financialPeriodId);
+    Long getFinancialLedgerPeriodByTypeLedgerAndOrgan(Long financialLedgerTypeId, Long organizationId, Long financialPeriodId);
 
     @Query(value = " SELECT LP.FINANCIAL_DOCUMENT_PERMANENT_ID " +
             "              FROM FNDC.FINANCIAL_LEDGER_PERIOD LP " +
@@ -207,7 +207,6 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "   AND LP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId "
             , nativeQuery = true)
     List<Object[]> getFinancialLedgerPeriodByOrganAndEndDate(Long organizationId, Date endDate, Long financialLedgerTypeId);
-
 
     @Query(value = " SELECT LP.FINANCIAL_DOCUMENT_OPENING_ID, LP.FIN_LEDGER_PERIOD_STAT_ID " +
             "  FROM FNDC.FINANCIAL_LEDGER_PERIOD LP " +
@@ -263,5 +262,31 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "    ON FD_PRM_CLOSE.ID = LP.FINANCIAL_DOCUMENT_PERMANENT_ID" +
             " WHERE LP.ID = :financialLedgerPeriodId  "
             , nativeQuery = true)
-    Page<Object[]>  getFinancialLedgerPeriodByPeriodIdGet(Long financialLedgerPeriodId, Pageable pageable);
+    Page<Object[]> getFinancialLedgerPeriodByPeriodIdGet(Long financialLedgerPeriodId, Pageable pageable);
+
+    @Query(value = " SELECT 1 " +
+            "              FROM FNDC.FINANCIAL_LEDGER_PERIOD T " +
+            "             inner join FNDC.FINANCIAL_LEDGER_MONTH LM " +
+            "                ON LM.FINANCIAL_LEDGER_PERIOD_ID = T.ID " +
+            "             INNER JOIN FNPR.FINANCIAL_PERIOD FP " +
+            "                ON FP.ID = T.FINANCIAL_PERIOD_ID " +
+            "             INNER JOIN FNPR.FINANCIAL_MONTH FM " +
+            "                ON FM.ID = LM.FINANCIAL_MONTH_ID " +
+            "               AND FM.FINANCIAL_PERIOD_ID = T.FINANCIAL_PERIOD_ID " +
+            "               AND FM.START_DATE = FP.START_DATE " +
+            "             WHERE T.ID = :financialLedgerPeriodId " +
+            "             AND T.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "               AND LM.FIN_LEDGER_MONTH_STAT_ID != 1 "
+            , nativeQuery = true)
+    Long getFinancialLedgerPeriodByPeriodId(Long financialLedgerPeriodId, Long financialPeriodId);
+
+    @Query(value = " SELECT 1 " +
+            "              FROM FNDC.FINANCIAL_LEDGER_PERIOD T        " +
+            "             WHERE T.ID = :financialLedgerPeriodId  " +
+            "               AND t.FIN_LEDGER_PERIOD_STAT_ID != 1  "
+            , nativeQuery = true)
+    Long getFinancialLedgerPeriod(Long financialLedgerPeriodId);
 }
+
+
+

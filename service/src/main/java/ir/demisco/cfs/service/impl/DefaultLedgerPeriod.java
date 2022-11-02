@@ -717,11 +717,20 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
     public Boolean openingDocument(FinancialLedgerClosingTempInputRequest financialLedgerClosingTempInputRequest) {
         Long financialPeriod = financialPeriodRepository.getFinancialPeriodByIdAndStatus(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
         if (financialPeriod != null) {
-            throw new RuleException("وضعیت دوره مالی مربوط به دفتر در حالت بسته میباشد");
+            throw new RuleException("وضعیت دوره مالی در حالت بسته میباشد");
         }
         Long financialPeriodOpen = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodIdOpenning(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
         if (financialPeriodOpen != null) {
             throw new RuleException("سند افتتاحیه قبلا برای این دوره ایجاد شده است");
+        }
+        Long financialPeriodOpenPeriodId = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodId(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId()
+                , financialLedgerClosingTempInputRequest.getFinancialPeriodId());
+        if (financialPeriodOpenPeriodId != null) {
+            throw new RuleException("وضعیت ماه اول عملیاتی ، بسته است");
+        }
+        Long financialPeriodId = financialLedgerPeriodRepository.getFinancialLedgerPeriod(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
+        if (financialPeriodId != null) {
+            throw new RuleException("وضعیت دفتر مالی برای این دوره در حالت بسته میباشد");
         }
         List<Object[]> financialPeriodDStartDateAndEndDate =
                 financialPeriodRepository.getFinancialPeriodByStartDateAndEndDateAndDes(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
