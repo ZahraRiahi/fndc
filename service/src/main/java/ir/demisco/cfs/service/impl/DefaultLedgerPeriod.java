@@ -150,7 +150,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             financialDocumentNumberDto.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
             financialDocumentNumberDto.setFinancialDocumentId(e.longValue());
             financialDocumentNumberDto.setNumberingType(3L);
-            String newNumber = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+            String newNumber = financialDocumentService.creatDocumentNumberUpdate(financialDocumentNumberDto);
 
             entityManager.createNativeQuery(" update fndc.financial_document T" +
                     "   set   T.PERMANENT_DOCUMENT_NUMBER = :newNumber " +
@@ -377,7 +377,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         financialDocumentNumberDto.setFinancialDocumentId(financialDocumentSave.getId());
         financialDocumentNumberDto.setNumberingType(1L);
         String documentNumberNew;
-        documentNumberNew = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+        documentNumberNew = financialDocumentService.creatDocumentNumberUpdate(financialDocumentNumberDto);
         if (documentNumberNew == null) {
             throw new RuleException("اشکال در ایجاد شماره عطف");
         }
@@ -386,8 +386,8 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 " Where id = :newDocumentId ").setParameter("newNumber", documentNumberNew)
                 .setParameter("newDocumentId", financialDocumentNumberDto.getFinancialDocumentId())
                 .executeUpdate();
-        financialDocumentNumberDto.setNumberingType(1L);
-        documentNumberNew = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+        financialDocumentNumberDto.setNumberingType(3L);
+        documentNumberNew = financialDocumentService.creatDocumentNumberUpdate(financialDocumentNumberDto);
         if (documentNumberNew == null) {
             throw new RuleException("اشکال در ایجاد شماره دائم");
         }
@@ -589,7 +589,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         }
         Long financialPeriodId = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodId(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
         if (financialPeriodId != null) {
-            throw new RuleException("سند بستن حسابهای دائم / اختتامیه قبلا روی این دوره از دفتر مالی ثبت شده است");
+            throw new RuleException("وضعیت دفتر میبایست در حالت بستن سند های موقت باشد.");
         }
         CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
         checkLedgerPermissionInputRequest.setPeriodId(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
@@ -619,7 +619,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         financialDocumentNumberDto.setFinancialDocumentId(financialDocumentSave.getId());
         financialDocumentNumberDto.setNumberingType(1L);
         String documentNumberNew;
-        documentNumberNew = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+        documentNumberNew = financialDocumentService.creatDocumentNumberUpdate(financialDocumentNumberDto);
         if (documentNumberNew == null) {
             throw new RuleException("اشکال در ایجاد شماره عطف");
         }
@@ -628,8 +628,8 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 " Where id = :newDocumentId ").setParameter("newNumber", documentNumberNew)
                 .setParameter("newDocumentId", financialDocumentNumberDto.getFinancialDocumentId())
                 .executeUpdate();
-        financialDocumentNumberDto.setNumberingType(1L);
-        documentNumberNew = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+        financialDocumentNumberDto.setNumberingType(3L);
+        documentNumberNew = financialDocumentService.creatDocumentNumberUpdate(financialDocumentNumberDto);
         if (documentNumberNew == null) {
             throw new RuleException("اشکال در ایجاد شماره دائم");
         }
@@ -665,7 +665,8 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             financialDocumentItemRepository.save(financialDocumentItemSave);
         });
         entityManager.createNativeQuery(" Update FNDC.FINANCIAL_LEDGER_PERIOD LP " +
-                "  SET LP.FINANCIAL_DOCUMENT_PERMANENT_ID  = :newDocId " +
+                "  SET LP.FINANCIAL_DOCUMENT_PERMANENT_ID  = :newDocId , " +
+                "      LP.FIN_LEDGER_PERIOD_STAT_ID = 4  " +
                 " WHERE LP.ID = :financialLedgerPeriodId " +
                 "   AND LP.FINANCIAL_DOCUMENT_PERMANENT_ID  IS NULL ").setParameter("newDocId", financialDocumentSave.getId())
                 .setParameter("financialLedgerPeriodId", financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId())
@@ -760,7 +761,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         financialDocumentNumberDto.setFinancialDocumentId(financialDocumentSave.getId());
         financialDocumentNumberDto.setNumberingType(1L);
         String documentNumberNew;
-        documentNumberNew = financialDocumentService.creatDocumentNumber(financialDocumentNumberDto);
+        documentNumberNew = financialDocumentService.creatDocumentNumberUpdate(financialDocumentNumberDto);
         if (documentNumberNew == null) {
             throw new RuleException("اشکال در ایجاد شماره عطف");
         }
