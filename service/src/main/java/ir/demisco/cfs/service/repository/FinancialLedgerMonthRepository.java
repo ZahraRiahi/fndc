@@ -114,7 +114,7 @@ public interface FinancialLedgerMonthRepository extends JpaRepository<FinancialL
             " INNER JOIN FNPR.FINANCIAL_MONTH FM" +
             "    ON FM.FINANCIAL_PERIOD_ID = LP.FINANCIAL_PERIOD_ID" +
             "   AND FM.ID = LM.FINANCIAL_MONTH_ID" +
-            " INNER JOIN FNDC.FINANCIAL_DOCUMENT FD" +
+            " LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT FD" +
             "    ON FD.FINANCIAL_PERIOD_ID = LP.FINANCIAL_PERIOD_ID" +
             "   AND FD.FINANCIAL_LEDGER_TYPE_ID = LP.FINANCIAL_LEDGER_TYPE_ID" +
             "   AND FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE " +
@@ -144,7 +144,7 @@ public interface FinancialLedgerMonthRepository extends JpaRepository<FinancialL
             "            INNER JOIN FNPR.FINANCIAL_MONTH FM "  +
             "               ON FM.FINANCIAL_PERIOD_ID = LP.FINANCIAL_PERIOD_ID " +
             "              AND FM.ID = LM.FINANCIAL_MONTH_ID " +
-            "            INNER JOIN FNDC.FINANCIAL_DOCUMENT FD " +
+            "            LEFT OUTER JOIN  FNDC.FINANCIAL_DOCUMENT FD " +
             "               ON FD.FINANCIAL_PERIOD_ID = LP.FINANCIAL_PERIOD_ID " +
             "              AND FD.FINANCIAL_LEDGER_TYPE_ID = LP.FINANCIAL_LEDGER_TYPE_ID " +
             "              AND FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE " +
