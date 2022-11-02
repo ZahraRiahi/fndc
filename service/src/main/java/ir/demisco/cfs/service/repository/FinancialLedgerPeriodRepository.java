@@ -122,7 +122,8 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
     @Query(value = " SELECT 1 " +
             "              FROM FNDC.FINANCIAL_LEDGER_PERIOD LP " +
             "             WHERE LP.ID = :financialLedgerPeriodId " +
-            "               AND LP.FINANCIAL_DOCUMENT_PERMANENT_ID IS NOT NULL "
+            "               AND (LP.FINANCIAL_DOCUMENT_PERMANENT_ID IS NOT NULL OR " +
+            "       LP.FIN_LEDGER_PERIOD_STAT_ID != 3)  "
             , nativeQuery = true)
     Long getFinancialLedgerPeriodByPeriodId(Long financialLedgerPeriodId);
 
