@@ -181,4 +181,20 @@ public interface FinancialLedgerMonthRepository extends JpaRepository<FinancialL
             "   AND LM.FIN_LEDGER_MONTH_STAT_ID = 2 "
             , nativeQuery = true)
     List<Long> getFinancialLedgerMonth(Long financialLedgerPeriodId);
+
+    @Query(value = " SELECT CASE " +
+            "         WHEN MT.MONTH_NUMBER <= FP.OPEN_MONTH_COUNT THEN " +
+            "          1 " +
+            "         ELSE " +
+            "          2 " +
+            "       END, " +
+            "       T.ID " +
+            "  FROM FNPR.FINANCIAL_MONTH T " +
+            " INNER JOIN FNPR.FINANCIAL_MONTH_TYPE MT " +
+            "    ON MT.ID = T.FINANCIAL_MONTH_TYPE_ID " +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD FP " +
+            "    ON FP.ID = T.FINANCIAL_PERIOD_ID " +
+            " WHERE T.FINANCIAL_PERIOD_ID = :financialPeriodId  ", nativeQuery = true)
+    List<Object[]> findByFinancialPeriodId(Long financialPeriodId);
+
 }

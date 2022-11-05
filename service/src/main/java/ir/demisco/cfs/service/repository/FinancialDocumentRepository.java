@@ -427,9 +427,10 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       AND FD.ORGANIZATION_ID = :organizationId" +
             "       AND DN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
             "       AND DN.DOCUMENT_NUMBER = NVL(:fromNumber, DN.DOCUMENT_NUMBER) " +
-            "       AND DN.DELETED_DATE IS NULL "
+            "       AND DN.DELETED_DATE IS NULL" +
+            "        AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId "
             , nativeQuery = true)
-    LocalDateTime findByFinancialDocumentByNumberingTypeAndFromNumber(Long documentNumberingTypeId, String fromNumber, Long organizationId);
+    LocalDateTime findByFinancialDocumentByNumberingTypeAndFromNumber(Long documentNumberingTypeId, String fromNumber, Long organizationId,Long ledgerTypeId);
 
     @Query(value = " SELECT max(FD.DOCUMENT_DATE) " +
             "      FROM FNDC.FINANCIAL_DOCUMENT FD " +
@@ -439,9 +440,10 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       AND FD.ORGANIZATION_ID = :organizationId" +
             "       AND DN.FINANCIAL_NUMBERING_TYPE_ID = :documentNumberingTypeId " +
             "       AND DN.DOCUMENT_NUMBER = NVL(:toNumber, DN.DOCUMENT_NUMBER) " +
-            "       AND DN.DELETED_DATE IS NULL "
+            "       AND DN.DELETED_DATE IS NULL " +
+            "  AND FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId "
             , nativeQuery = true)
-    LocalDateTime findByFinancialDocumentByNumberingAndToNumber(Long documentNumberingTypeId, String toNumber, Long organizationId);
+    LocalDateTime findByFinancialDocumentByNumberingAndToNumber(Long documentNumberingTypeId, String toNumber, Long organizationId,Long ledgerTypeId);
 
     @Query(value = " SELECT MIN(DN.DOCUMENT_NUMBER) " +
             "      FROM FNDC.FINANCIAL_DOCUMENT FD " +
@@ -451,9 +453,10 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       AND DN.DELETED_DATE IS NULL " +
             "     WHERE FD.DELETED_DATE IS NULL " +
             "       AND FD.DOCUMENT_DATE >= NVL(:fromDate, FD.DOCUMENT_DATE) " +
-            "       AND FD.ORGANIZATION_ID = :organizationId "
+            "       AND FD.ORGANIZATION_ID = :organizationId" +
+            " AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId  "
             , nativeQuery = true)
-    String findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(Long documentNumberingTypeId, LocalDateTime fromDate, Long organizationId);
+    String findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(Long documentNumberingTypeId, LocalDateTime fromDate, Long organizationId,Long financialLedgerTypeId);
 
 
     @Query(value = " SELECT MAX(DN.DOCUMENT_NUMBER) " +
@@ -464,9 +467,10 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       AND DN.DELETED_DATE IS NULL " +
             "     WHERE FD.DELETED_DATE IS NULL " +
             "       AND FD.DOCUMENT_DATE <= NVL(:toDate, FD.DOCUMENT_DATE) " +
-            "       AND FD.ORGANIZATION_ID = :organizationId "
+            "       AND FD.ORGANIZATION_ID = :organizationId " +
+            " AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId "
             , nativeQuery = true)
-    String findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long documentNumberingTypeId, LocalDateTime toDate, Long organizationId);
+    String findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long documentNumberingTypeId, LocalDateTime toDate, Long organizationId,Long financialLedgerTypeId);
 
     @Query(value = " SELECT FND.id  FROM FNDC.FINANCIAL_DOCUMENT FND " +
             " INNER JOIN FNDC.FINANCIAL_DEPARTMENT FNDP " +

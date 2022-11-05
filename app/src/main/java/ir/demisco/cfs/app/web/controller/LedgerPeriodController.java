@@ -90,6 +90,7 @@ public class LedgerPeriodController {
         financialLedgerClosingTempRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(ledgerPeriodService.delOpeningDocument(financialLedgerClosingTempRequest));
     }
+
     @PostMapping("/Get")
     public ResponseEntity<DataSourceResult> ledgerPeriodList(@RequestBody DataSourceRequest dataSourceRequest) {
         return ResponseEntity.ok(ledgerPeriodService.getLedgerPeriodList(dataSourceRequest));
