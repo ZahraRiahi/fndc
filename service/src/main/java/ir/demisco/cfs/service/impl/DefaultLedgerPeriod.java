@@ -528,15 +528,16 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             ledgerPeriod.setFinancialDocumentTemprory(null);
             ledgerPeriod.setFinancialDocumentPermanent(null);
             financialLedgerPeriodRepository.save(ledgerPeriod);
-            List<Long> financialMonth = financialMonthRepository.findByFinancialMonth(e.longValue());
-            if (financialMonth.size() == 0) {
-                throw new RuleException("به ازای این دوره مالی ماه عملیاتی یافت نشد");
+
+            List<Object[]> financialLedgerMonthPeriodId = financialLedgerMonthRepository.findByFinancialPeriodId(e.longValue());
+            if (financialLedgerMonthPeriodId.size() == 0) {
+                throw new RuleException("هیچ ماهی برای این دوره ی مالی تعریف نشده");
             }
-            financialMonth.forEach((Long e1) -> {
+            financialLedgerMonthPeriodId.forEach(object -> {
                 FinancialLedgerMonth financialLedgerMonth = new FinancialLedgerMonth();
-                financialLedgerMonth.setFinancialLedgerMonthStatus(financialLedgerMonthStatusRepository.getOne(2L));
+                financialLedgerMonth.setFinancialLedgerMonthStatus(financialLedgerMonthStatusRepository.getOne((Long) object[0]));
                 financialLedgerMonth.setFinancialLedgerType(financialLedgerTypeRepository.getOne(insertLedgerPeriodInputRequest.getFinancialLedgerTypeId()));
-                financialLedgerMonth.setFinancialMonth(financialMonthRepository.getOne(e1));
+                financialLedgerMonth.setFinancialMonth(financialMonthRepository.getOne((Long) object[1]));
                 financialLedgerMonth.setFinancialLedgerPeriod(ledgerPeriod);
                 financialLedgerMonthRepository.save(financialLedgerMonth);
             });
@@ -547,7 +548,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 financialPeriodTypeAssign.setFinancialPeriod(financialPeriodRepository.getOne(e));
                 financialPeriodTypeAssign.setOrganization(organizationRepository.getById((SecurityHelper.getCurrentUser().getOrganizationId())));
                 financialPeriodTypeAssign.setActiveFlag(1L);
-                financialPeriodTypeAssign.setStartDate( ((Timestamp) object[1]).toLocalDateTime());
+                financialPeriodTypeAssign.setStartDate(((Timestamp) object[1]).toLocalDateTime());
                 financialPeriodTypeAssignRepository.save(financialPeriodTypeAssign);
             });
 
