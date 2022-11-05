@@ -2152,7 +2152,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "       SUM(REM_DEBIT)REM_DEBIT," +
             "        SUM(REM_CREDIT)REM_CREDIT," +
             "       NULL CENTRIC_ACCOUNT_DES," +
-            "      SUM(SUM_DEBIT) - SUM(SUM_CREDIT) SUMMERIZE_AMOUNT," +
+            "    (SUM(SUM_DEBIT) + SUM (BEF_DEBIT)) -   (SUM(SUM_CREDIT) + SUM(BEF_CREDIT)) SUMMERIZE_AMOUNT," +
             "       3 AS RECORD_TYPE " +
             "  FROM QRY "
             , nativeQuery = true)
