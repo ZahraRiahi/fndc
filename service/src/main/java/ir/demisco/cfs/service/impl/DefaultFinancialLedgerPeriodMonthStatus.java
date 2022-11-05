@@ -29,17 +29,19 @@ public class DefaultFinancialLedgerPeriodMonthStatus implements FinancialLedgerP
         List<Object[]> list = financialLedgerPeriodMonthStatusRepository.getFinancialLedgerPeriodMonthStatusList(getLedgerPeriodMonthStatusRequest.getFinancialLedgerMonthId()
                 , getLedgerPeriodMonthStatusRequest.getFinancialLedgerPeriodId());
         Long statusId = null;
-        if ((getLedgerPeriodMonthStatusRequest.getCheckOtherPeriods() == 1 && (Long.parseLong(list.get(0)[0].toString()) == 1 && getLedgerPeriodMonthStatusRequest.getNextPrevMonth() == -1))
-                || (Long.parseLong(list.get(0)[0].toString()) == 12) && getLedgerPeriodMonthStatusRequest.getNextPrevMonth() == 1) {
-            statusId = financialLedgerPeriodRepository.getFinancialLedgerPeriodByLedgerAndNextAndDate(Long.parseLong(list.get(0)[3].toString()),
-                    getLedgerPeriodMonthStatusRequest.getNextPrevMonth(), (Date) list.get(0)[1], (Date) list.get(0)[2]);
+        if (!list.isEmpty()) {
+            if ((getLedgerPeriodMonthStatusRequest.getCheckOtherPeriods() == 1 && (Long.parseLong(list.get(0)[0].toString()) == 1 && getLedgerPeriodMonthStatusRequest.getNextPrevMonth() == -1))
+                    || (Long.parseLong(list.get(0)[0].toString()) == 12) && getLedgerPeriodMonthStatusRequest.getNextPrevMonth() == 1) {
+                statusId = financialLedgerPeriodRepository.getFinancialLedgerPeriodByLedgerAndNextAndDate(Long.parseLong(list.get(0)[3].toString()),
+                        getLedgerPeriodMonthStatusRequest.getNextPrevMonth(), (Date) list.get(0)[1], (Date) list.get(0)[2]);
 
-        }
-        if (((Long.parseLong(list.get(0)[0].toString()) > 1 && Long.parseLong(list.get(0)[0].toString()) < 12) || getLedgerPeriodMonthStatusRequest.getCheckOtherPeriods() == 0)
-                || ((getLedgerPeriodMonthStatusRequest.getCheckOtherPeriods() == 1 && (Long.parseLong(list.get(0)[0].toString()) == 1 && getLedgerPeriodMonthStatusRequest.getNextPrevMonth() == 1))
-                || (Long.parseLong(list.get(0)[0].toString()) == 12) && getLedgerPeriodMonthStatusRequest.getNextPrevMonth() == -1)) {
-            statusId = financialLedgerMonthRepository.getLedgerMonthByLedgerPeriodAndPrevMonth(getLedgerPeriodMonthStatusRequest.getFinancialLedgerPeriodId(),
-                    getLedgerPeriodMonthStatusRequest.getNextPrevMonth(), getLedgerPeriodMonthStatusRequest.getFinancialLedgerMonthId());
+            }
+            if (((Long.parseLong(list.get(0)[0].toString()) > 1 && Long.parseLong(list.get(0)[0].toString()) < 12) || getLedgerPeriodMonthStatusRequest.getCheckOtherPeriods() == 0)
+                    || ((getLedgerPeriodMonthStatusRequest.getCheckOtherPeriods() == 1 && (Long.parseLong(list.get(0)[0].toString()) == 1 && getLedgerPeriodMonthStatusRequest.getNextPrevMonth() == 1))
+                    || (Long.parseLong(list.get(0)[0].toString()) == 12) && getLedgerPeriodMonthStatusRequest.getNextPrevMonth() == -1)) {
+                statusId = financialLedgerMonthRepository.getLedgerMonthByLedgerPeriodAndPrevMonth(getLedgerPeriodMonthStatusRequest.getFinancialLedgerPeriodId(),
+                        getLedgerPeriodMonthStatusRequest.getNextPrevMonth(), getLedgerPeriodMonthStatusRequest.getFinancialLedgerMonthId());
+            }
         }
         if (statusId != null) {
             return statusId;

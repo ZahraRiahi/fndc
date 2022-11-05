@@ -21,7 +21,7 @@ public class FinancialPeriodTypeAssign extends AuditModel<Long> {
 
     private Long id;
     private Organization organization;
-    private FinancialPeriodType financialPeriodType;
+    private FinancialPeriod financialPeriod;
     private Long activeFlag;
     private LocalDateTime startDate;
     private LocalDateTime deletedDat;
@@ -38,13 +38,13 @@ public class FinancialPeriodTypeAssign extends AuditModel<Long> {
     }
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "FINANCIAL_PERIOD_TYPE_ID")
-    public FinancialPeriodType getFinancialPeriodType() {
-        return financialPeriodType;
+    @JoinColumn(name = "FINANCIAL_PERIOD_ID")
+    public FinancialPeriod getFinancialPeriod() {
+        return financialPeriod;
     }
 
-    public void setFinancialPeriodType(FinancialPeriodType financialPeriodType) {
-        this.financialPeriodType = financialPeriodType;
+    public void setFinancialPeriod(FinancialPeriod financialPeriod) {
+        this.financialPeriod = financialPeriod;
     }
 
     @ManyToOne(fetch = FetchType.LAZY)

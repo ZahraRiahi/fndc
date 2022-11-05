@@ -1,12 +1,15 @@
 package ir.demisco.cfs.app.web.controller;
 
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodFilterModelRequest;
+import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodModelRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodRequest;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodLedgerGetResponse;
+import ir.demisco.cfs.model.dto.response.FinancialPeriodOutResponse;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodOutputResponse;
 import ir.demisco.cfs.service.api.FinancialLedgerPeriodService;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
+import ir.demisco.cloud.core.security.util.SecurityHelper;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -46,7 +49,12 @@ public class FinancialLedgerPeriodController {
     public ResponseEntity<List<FinancialPeriodOutputResponse>>  responseEntityFinancialLedgerType(@PathVariable Long financialLedgerTypeId) {
         return ResponseEntity.ok(financialLedgerPeriodService.getFinancialGetByLedgerType(financialLedgerTypeId));
     }
-
+    @PostMapping("/GetNotAssignedLedger")
+    public ResponseEntity<List<FinancialPeriodOutResponse>>  financialLedgerType(@RequestBody FinancialLedgerPeriodModelRequest financialLedgerPeriodModelRequest) {
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        financialLedgerPeriodModelRequest.setOrganizationId(organizationId);
+        return ResponseEntity.ok(financialLedgerPeriodService.getNotAssignLedger(financialLedgerPeriodModelRequest));
+    }
     @PostMapping("/DELETE")
     public ResponseEntity<Boolean> deleteFinancialLedgerPeriod(@RequestBody FinancialLedgerPeriodFilterModelRequest financialLedgerPeriodFilterModelRequest) {
         boolean result;
