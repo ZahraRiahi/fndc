@@ -16,6 +16,7 @@ import ir.demisco.cfs.model.entity.FinancialDocument;
 import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import ir.demisco.cfs.model.entity.FinancialLedgerMonth;
 import ir.demisco.cfs.model.entity.FinancialLedgerPeriod;
+import ir.demisco.cfs.model.entity.FinancialPeriodTypeAssign;
 import ir.demisco.cfs.service.api.FinancialDocumentService;
 import ir.demisco.cfs.service.api.FinancialLedgerPeriodDocItemsService;
 import ir.demisco.cfs.service.api.FinancialLedgerPeriodMonthStatusService;
@@ -37,6 +38,7 @@ import ir.demisco.cfs.service.repository.FinancialLedgerPeriodStatusRepository;
 import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
 import ir.demisco.cfs.service.repository.FinancialMonthRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
+import ir.demisco.cfs.service.repository.FinancialPeriodTypeAssignRepository;
 import ir.demisco.cfs.service.repository.OrganizationRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
@@ -83,8 +85,9 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
     private final FinancialLedgerPeriodStatusRepository financialLedgerPeriodStatusRepository;
     private final FinancialMonthRepository financialMonthRepository;
     private final FinancialLedgerMonthStatusRepository financialLedgerMonthStatusRepository;
+    private final FinancialPeriodTypeAssignRepository financialPeriodTypeAssignRepository;
 
-    public DefaultLedgerPeriod(FinancialPeriodRepository financialPeriodRepository, FinancialLedgerMonthRepository financialLedgerMonthRepository, FinancialLedgerPeriodSecurityService financialLedgerPeriodSecurityService, FinancialLedgerPeriodMonthStatusService financialLedgerPeriodMonthStatusService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentService financialDocumentService, EntityManager entityManager, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, DepartmentRepository departmentRepository, FinancialDepartmentRepository financialDepartmentRepository, FinancialLedgerPeriodDocItemsService financialLedgerPeriodDocItemsService, FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialLedgerPeriodStatusRepository financialLedgerPeriodStatusRepository, FinancialMonthRepository financialMonthRepository, FinancialLedgerMonthStatusRepository financialLedgerMonthStatusRepository) {
+    public DefaultLedgerPeriod(FinancialPeriodRepository financialPeriodRepository, FinancialLedgerMonthRepository financialLedgerMonthRepository, FinancialLedgerPeriodSecurityService financialLedgerPeriodSecurityService, FinancialLedgerPeriodMonthStatusService financialLedgerPeriodMonthStatusService, FinancialDocumentRepository financialDocumentRepository, FinancialDocumentService financialDocumentService, EntityManager entityManager, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialDocumentStatusRepository financialDocumentStatusRepository, OrganizationRepository organizationRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository, DepartmentRepository departmentRepository, FinancialDepartmentRepository financialDepartmentRepository, FinancialLedgerPeriodDocItemsService financialLedgerPeriodDocItemsService, FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository, FinancialDocumentItemRepository financialDocumentItemRepository, FinancialLedgerPeriodStatusRepository financialLedgerPeriodStatusRepository, FinancialMonthRepository financialMonthRepository, FinancialLedgerMonthStatusRepository financialLedgerMonthStatusRepository, FinancialPeriodTypeAssignRepository financialPeriodTypeAssignRepository) {
         this.financialPeriodRepository = financialPeriodRepository;
         this.financialLedgerMonthRepository = financialLedgerMonthRepository;
         this.financialLedgerPeriodSecurityService = financialLedgerPeriodSecurityService;
@@ -107,6 +110,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         this.financialLedgerPeriodStatusRepository = financialLedgerPeriodStatusRepository;
         this.financialMonthRepository = financialMonthRepository;
         this.financialLedgerMonthStatusRepository = financialLedgerMonthStatusRepository;
+        this.financialPeriodTypeAssignRepository = financialPeriodTypeAssignRepository;
     }
 
     @Override
@@ -210,111 +214,110 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         if (ledgerPeriodMonthStatus == 2) {
             throw new RuleException("وضعیت ماه بعد بسته است و امکان انجام عملیات وجود ندارد");
         }
-
-
         String minDocNumber = financialDocumentRepository.findByDocumentIdAndLedgerMonth(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
                 financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId(),
                 SecurityHelper.getCurrentUser().getOrganizationId());
-
         Long minDocId = financialDocumentRepository.findByDocumentIdAndLedgerMonthMinDocId(SecurityHelper.getCurrentUser().getOrganizationId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId()
                 , financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId(), minDocNumber);
+        if (minDocId != null) {
 
-        entityManager.createNativeQuery(" UPDATE FNDC.NUMBERING_FORMAT_SERIAL NFS " +
-                "      SET NFS.LAST_SERIAL = REPLACE((:minDocNumber)," +
-                " NFS.SERIAL_RESETER, " +
-                "               '') - 1  " +
-                "  WHERE ID IN" +
-                "       (SELECT NFS.ID" +
-                "          FROM fndc.FINANCIAL_DOCUMENT FD" +
-                "         INNER JOIN fndc.LEDGER_NUMBERING_TYPE LNT" +
-                "            ON LNT.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID" +
-                "           AND LNT.DELETED_DATE IS NULL" +
-                "         INNER JOIN fndc.FINANCIAL_NUMBERING_TYPE NT" +
-                "            ON NT.ID = LNT.FINANCIAL_NUMBERING_TYPE_ID" +
-                "           AND NT.TYPE_STATUS = 3" +
-                "           AND NT.DELETED_DATE IS NULL" +
-                "         INNER JOIN fndc.FINANCIAL_NUMBERING_FORMAT NF" +
-                "            ON NF.FINANCIAL_NUMBERING_TYPE_ID = NT.ID" +
-                "           AND NF.ORGANIZATION_ID = :organizationId " +
-                "           AND NF.DELETED_DATE IS NULL" +
-                "         INNER JOIN fndc.FINANCIAL_NUMBERING_FORMAT_TYPE NFT" +
-                "            ON NFT.ID = NF.NUMBERING_FORMAT_TYPE_ID" +
-                "           AND NFT.DELETED_DATE IS NULL" +
-                "          LEFT OUTER JOIN fndc.NUMBERING_FORMAT_SERIAL NFS" +
-                "            ON NFS.NUMBERING_FORMAT_ID = NF.ID" +
-                "           AND NFS.DELETED_DATE IS NULL" +
-                "         WHERE FD.ID = :minDocId " +
-                "           AND FD.DELETED_DATE IS NULL" +
-                "           AND SERIAL_RESETER =" +
-                "               REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(" +
-                "                                                               " +
-                "                                                               REPLACE(NFT.CODE," +
-                "                                                                       '$SRL'," +
-                "                                                                       '')" +
-                "                                                              ," +
-                "                                                               '$DAT6'," +
-                "                                                               TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE," +
-                "                                                                                       'mm/dd/yyyy')," +
-                "                                                                               'mm/dd/yyyy')," +
-                "                                                                       'yymmdd'," +
-                "                                                                       'NLS_CALENDAR=persian'))," +
-                "                                                       '$DAT'," +
-                "                                                       TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE," +
-                "                                                                               'mm/dd/yyyy')," +
-                "                                                                       'mm/dd/yyyy')," +
-                "                                                               'yyyymmdd'," +
-                "                                                               'NLS_CALENDAR=persian'))," +
-                "                                               '$LEG'," +
-                "                                               (SELECT LT.CODE" +
-                "                                                  FROM fndc.FINANCIAL_LEDGER_TYPE LT" +
-                "                                                 WHERE LT.ID =" +
-                "                                                       FD.FINANCIAL_LEDGER_TYPE_ID))," +
-                "                                       '$DEP'," +
-                "                                       (SELECT DP.CODE" +
-                "                                          FROM ORG.DEPARTMENT DP" +
-                "                                         WHERE DP.ID = FD.DEPARTMENT_ID))," +
-                "                               '$ORG'," +
-                "                               (SELECT OG.CODE" +
-                "                                  FROM FNDC.FINANCIAL_ORGANIZATION OG" +
-                "                                 WHERE OG.ORGANIZATION_ID = :organizationId))," +
-                "                       '$PRI'," +
-                "                       (SELECT PR.CODE" +
-                "                          FROM FNPR.FINANCIAL_PERIOD PR" +
-                "                         WHERE PR.ID = FD.FINANCIAL_PERIOD_ID))) "
-        ).setParameter("minDocNumber", minDocNumber)
-                .setParameter("organizationId", SecurityHelper.getCurrentUser().getOrganizationId())
-                .setParameter("minDocId", minDocId)
-                .executeUpdate();
-        financialDocumentNumberRepository.getFinancialDocumentNumberByOrgAndPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
-                SecurityHelper.getCurrentUser().getOrganizationId(), financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId(),
-                financialLedgerCloseMonthInputRequest.getFinancialPeriodId())
-                .forEach(financialDocumentNumberRepository::delete);
+            entityManager.createNativeQuery(" UPDATE FNDC.NUMBERING_FORMAT_SERIAL NFS " +
+                    "      SET NFS.LAST_SERIAL = REPLACE((:minDocNumber)," +
+                    " NFS.SERIAL_RESETER, " +
+                    "               '') - 1  " +
+                    "  WHERE ID IN" +
+                    "       (SELECT NFS.ID" +
+                    "          FROM fndc.FINANCIAL_DOCUMENT FD" +
+                    "         INNER JOIN fndc.LEDGER_NUMBERING_TYPE LNT" +
+                    "            ON LNT.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID" +
+                    "           AND LNT.DELETED_DATE IS NULL" +
+                    "         INNER JOIN fndc.FINANCIAL_NUMBERING_TYPE NT" +
+                    "            ON NT.ID = LNT.FINANCIAL_NUMBERING_TYPE_ID" +
+                    "           AND NT.TYPE_STATUS = 3" +
+                    "           AND NT.DELETED_DATE IS NULL" +
+                    "         INNER JOIN fndc.FINANCIAL_NUMBERING_FORMAT NF" +
+                    "            ON NF.FINANCIAL_NUMBERING_TYPE_ID = NT.ID" +
+                    "           AND NF.ORGANIZATION_ID = :organizationId " +
+                    "           AND NF.DELETED_DATE IS NULL" +
+                    "         INNER JOIN fndc.FINANCIAL_NUMBERING_FORMAT_TYPE NFT" +
+                    "            ON NFT.ID = NF.NUMBERING_FORMAT_TYPE_ID" +
+                    "           AND NFT.DELETED_DATE IS NULL" +
+                    "          LEFT OUTER JOIN fndc.NUMBERING_FORMAT_SERIAL NFS" +
+                    "            ON NFS.NUMBERING_FORMAT_ID = NF.ID" +
+                    "           AND NFS.DELETED_DATE IS NULL" +
+                    "         WHERE FD.ID = :minDocId " +
+                    "           AND FD.DELETED_DATE IS NULL" +
+                    "           AND SERIAL_RESETER =" +
+                    "               REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(" +
+                    "                                                               " +
+                    "                                                               REPLACE(NFT.CODE," +
+                    "                                                                       '$SRL'," +
+                    "                                                                       '')" +
+                    "                                                              ," +
+                    "                                                               '$DAT6'," +
+                    "                                                               TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE," +
+                    "                                                                                       'mm/dd/yyyy')," +
+                    "                                                                               'mm/dd/yyyy')," +
+                    "                                                                       'yymmdd'," +
+                    "                                                                       'NLS_CALENDAR=persian'))," +
+                    "                                                       '$DAT'," +
+                    "                                                       TO_CHAR(TO_DATE(TO_CHAR(FD.DOCUMENT_DATE," +
+                    "                                                                               'mm/dd/yyyy')," +
+                    "                                                                       'mm/dd/yyyy')," +
+                    "                                                               'yyyymmdd'," +
+                    "                                                               'NLS_CALENDAR=persian'))," +
+                    "                                               '$LEG'," +
+                    "                                               (SELECT LT.CODE" +
+                    "                                                  FROM fndc.FINANCIAL_LEDGER_TYPE LT" +
+                    "                                                 WHERE LT.ID =" +
+                    "                                                       FD.FINANCIAL_LEDGER_TYPE_ID))," +
+                    "                                       '$DEP'," +
+                    "                                       (SELECT DP.CODE" +
+                    "                                          FROM ORG.DEPARTMENT DP" +
+                    "                                         WHERE DP.ID = FD.DEPARTMENT_ID))," +
+                    "                               '$ORG'," +
+                    "                               (SELECT OG.CODE" +
+                    "                                  FROM FNDC.FINANCIAL_ORGANIZATION OG" +
+                    "                                 WHERE OG.ORGANIZATION_ID = :organizationId))," +
+                    "                       '$PRI'," +
+                    "                       (SELECT PR.CODE" +
+                    "                          FROM FNPR.FINANCIAL_PERIOD PR" +
+                    "                         WHERE PR.ID = FD.FINANCIAL_PERIOD_ID))) "
+            ).setParameter("minDocNumber", minDocNumber)
+                    .setParameter("organizationId", SecurityHelper.getCurrentUser().getOrganizationId())
+                    .setParameter("minDocId", minDocId)
+                    .executeUpdate();
+            financialDocumentNumberRepository.getFinancialDocumentNumberByOrgAndPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
+                    SecurityHelper.getCurrentUser().getOrganizationId(), financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId(),
+                    financialLedgerCloseMonthInputRequest.getFinancialPeriodId())
+                    .forEach(financialDocumentNumberRepository::delete);
 
-        entityManager.createNativeQuery(" UPDATE FNDC.FINANCIAL_DOCUMENT DOC " +
-                "   SET DOC.PERMANENT_DOCUMENT_NUMBER = NULL " +
-                " WHERE DOC.ID IN " +
-                "       (SELECT FD.ID " +
-                "          FROM FNDC.FINANCIAL_DOCUMENT FD " +
-                "         INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM " +
-                "            ON LM.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
-                "           AND LM.ID = :financialLedgerMonthId " +
-                "         INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP " +
-                "            ON LP.ID = LM.FINANCIAL_LEDGER_PERIOD_ID " +
-                "           AND LP.FINANCIAL_PERIOD_ID = FD.FINANCIAL_PERIOD_ID " +
-                "           AND LP.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
-                "         INNER JOIN FNDC.FINANCIAL_LEDGER_TYPE LT " +
-                "            ON LT.ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
-                "           AND LT.ORGANIZATION_ID = :organizationId " +
-                "         INNER JOIN FNPR.FINANCIAL_MONTH FM " +
-                "            ON FM.ID = LM.FINANCIAL_MONTH_ID " +
-                "         WHERE FD.ORGANIZATION_ID = LT.ORGANIZATION_ID " +
-                "           AND FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE " +
-                "           AND FD.FINANCIAL_LEDGER_TYPE_ID =:financialLedgerTypeId " +
-                "           AND FD.FINANCIAL_PERIOD_ID = :financialPeriodId) ").setParameter("financialLedgerMonthId", financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId())
-                .setParameter("organizationId", SecurityHelper.getCurrentUser().getOrganizationId())
-                .setParameter("financialLedgerTypeId", financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId())
-                .setParameter("financialPeriodId", financialLedgerCloseMonthInputRequest.getFinancialPeriodId())
-                .executeUpdate();
+            entityManager.createNativeQuery(" UPDATE FNDC.FINANCIAL_DOCUMENT DOC " +
+                    "   SET DOC.PERMANENT_DOCUMENT_NUMBER = NULL " +
+                    " WHERE DOC.ID IN " +
+                    "       (SELECT FD.ID " +
+                    "          FROM FNDC.FINANCIAL_DOCUMENT FD " +
+                    "         INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM " +
+                    "            ON LM.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
+                    "           AND LM.ID = :financialLedgerMonthId " +
+                    "         INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+                    "            ON LP.ID = LM.FINANCIAL_LEDGER_PERIOD_ID " +
+                    "           AND LP.FINANCIAL_PERIOD_ID = FD.FINANCIAL_PERIOD_ID " +
+                    "           AND LP.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
+                    "         INNER JOIN FNDC.FINANCIAL_LEDGER_TYPE LT " +
+                    "            ON LT.ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
+                    "           AND LT.ORGANIZATION_ID = :organizationId " +
+                    "         INNER JOIN FNPR.FINANCIAL_MONTH FM " +
+                    "            ON FM.ID = LM.FINANCIAL_MONTH_ID " +
+                    "         WHERE FD.ORGANIZATION_ID = LT.ORGANIZATION_ID " +
+                    "           AND FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE " +
+                    "           AND FD.FINANCIAL_LEDGER_TYPE_ID =:financialLedgerTypeId " +
+                    "           AND FD.FINANCIAL_PERIOD_ID = :financialPeriodId) ").setParameter("financialLedgerMonthId", financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId())
+                    .setParameter("organizationId", SecurityHelper.getCurrentUser().getOrganizationId())
+                    .setParameter("financialLedgerTypeId", financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId())
+                    .setParameter("financialPeriodId", financialLedgerCloseMonthInputRequest.getFinancialPeriodId())
+                    .executeUpdate();
+        }
         entityManager.createNativeQuery(" UPDATE FNDC.FINANCIAL_LEDGER_PERIOD FP " +
                 "   SET FP.FIN_LEDGER_PERIOD_STAT_ID = 1 " +
                 " WHERE FP.ID = :financialLedgerPeriodId " +
@@ -520,7 +523,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             }
             ledgerPeriod.setFinancialLedgerPeriodStatus(financialLedgerPeriodStatusRepository.getOne(1L));
             ledgerPeriod.setFinancialPeriod(financialPeriodRepository.getOne(e));
-            ledgerPeriod.setFinancialLedgerType(financialLedgerTypeRepository.getOne(insertLedgerPeriodInputRequest.getFinancialLedgerTypeId()));
+            ledgerPeriod.setFinancialLedgerType(financialLedgerTypeRepository.getById(insertLedgerPeriodInputRequest.getFinancialLedgerTypeId()));
             ledgerPeriod.setFinancialDocumentOpening(null);
             ledgerPeriod.setFinancialDocumentTemprory(null);
             ledgerPeriod.setFinancialDocumentPermanent(null);
@@ -536,6 +539,16 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 financialLedgerMonth.setFinancialMonth(financialMonthRepository.getOne(e1));
                 financialLedgerMonth.setFinancialLedgerPeriod(ledgerPeriod);
                 financialLedgerMonthRepository.save(financialLedgerMonth);
+            });
+            List<Object[]> financialPeriod = financialPeriodRepository.getFinancialPeriodByOrgAndId(e, SecurityHelper.getCurrentUser().getOrganizationId());
+
+            financialPeriod.forEach(object -> {
+                FinancialPeriodTypeAssign financialPeriodTypeAssign = new FinancialPeriodTypeAssign();
+                financialPeriodTypeAssign.setFinancialPeriod(financialPeriodRepository.getOne(e));
+                financialPeriodTypeAssign.setOrganization(organizationRepository.getById((SecurityHelper.getCurrentUser().getOrganizationId())));
+                financialPeriodTypeAssign.setActiveFlag(1L);
+                financialPeriodTypeAssign.setStartDate( ((Timestamp) object[1]).toLocalDateTime());
+                financialPeriodTypeAssignRepository.save(financialPeriodTypeAssign);
             });
 
         }

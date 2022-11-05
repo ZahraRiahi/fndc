@@ -93,5 +93,13 @@ public interface FinancialLedgerTypeRepository extends JpaRepository<FinancialLe
             " and t.deleted_date is null", nativeQuery = true)
     String findFinancialLedgerTypeCodeByOrganizationId(Long organizationId);
 
-
+    @Query(value = " SELECT FNLT.ID          AS FINANCIAL_LEDGER_TYPE_ID," +
+            "       FNLT.DESCRIPTION AS FINANCIAL_LEDGER_TYPE_DESC " +
+            "  FROM FNDC.FINANCIAL_LEDGER_TYPE FNLT " +
+            " WHERE NOT EXISTS (SELECT 1 " +
+            "          FROM FNDC.FINANCIAL_LEDGER_PERIOD T" +
+            "         WHERE T.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "           AND T.FINANCIAL_LEDGER_TYPE_ID = FNLT.ID)" +
+            "   AND FNLT.ORGANIZATION_ID = :organizationId ", nativeQuery = true)
+    List<Object[]> findFinancialLedgerTypeByPeriodIdAndOrganizationId(Long financialPeriodId,Long organizationId);
 }

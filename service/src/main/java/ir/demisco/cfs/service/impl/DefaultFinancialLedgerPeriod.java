@@ -2,9 +2,11 @@ package ir.demisco.cfs.service.impl;
 
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodFilterModelRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodFilterRequest;
+import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodModelRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodRequest;
 import ir.demisco.cfs.model.dto.response.FinancialLedgerPeriodOutputResponse;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodLedgerGetResponse;
+import ir.demisco.cfs.model.dto.response.FinancialPeriodOutResponse;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodOutputResponse;
 import ir.demisco.cfs.model.entity.FinancialLedgerMonth;
 import ir.demisco.cfs.model.entity.FinancialLedgerPeriod;
@@ -178,6 +180,20 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
             throw new RuleException("این رکورد موجود نیست");
         }
         return true;
+    }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public List<FinancialPeriodOutResponse> getNotAssignLedger(FinancialLedgerPeriodModelRequest financialLedgerPeriodModelRequest) {
+        if (financialLedgerPeriodModelRequest.getFinancialPeriodId() == null) {
+            throw new RuleException("دوره مالی را مشخص نمایید");
+        }
+        List<Object[]> financialPeriodList = financialLedgerTypeRepository.findFinancialLedgerTypeByPeriodIdAndOrganizationId(financialLedgerPeriodModelRequest.getFinancialPeriodId(),
+                SecurityHelper.getCurrentUser().getOrganizationId());
+
+        return financialPeriodList.stream().map(objects -> FinancialPeriodOutResponse.builder().financialLedgerTypeId(Long.parseLong(objects[0].toString()))
+                .financialLedgerTypeDescription(objects[1] == null ? null : objects[1].toString())
+                .build()).collect(Collectors.toList());
     }
 
     private FinancialLedgerPeriodFilterRequest setParameter(List<DataSourceRequest.FilterDescriptor> filters) {

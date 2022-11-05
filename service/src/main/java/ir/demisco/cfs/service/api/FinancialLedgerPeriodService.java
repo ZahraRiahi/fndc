@@ -1,8 +1,10 @@
 package ir.demisco.cfs.service.api;
 
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodFilterModelRequest;
+import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodModelRequest;
 import ir.demisco.cfs.model.dto.request.FinancialLedgerPeriodRequest;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodLedgerGetResponse;
+import ir.demisco.cfs.model.dto.response.FinancialPeriodOutResponse;
 import ir.demisco.cfs.model.dto.response.FinancialPeriodOutputResponse;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
@@ -19,4 +21,6 @@ public interface FinancialLedgerPeriodService {
     List<FinancialPeriodOutputResponse> getFinancialGetByLedgerType(Long financialLedgerTypeId);
 
     Boolean deleteFinancialLedgerPeriod(FinancialLedgerPeriodFilterModelRequest financialLedgerPeriodFilterModelRequest);
+
+    List<FinancialPeriodOutResponse> getNotAssignLedger(FinancialLedgerPeriodModelRequest financialLedgerPeriodModelRequest);
 }
