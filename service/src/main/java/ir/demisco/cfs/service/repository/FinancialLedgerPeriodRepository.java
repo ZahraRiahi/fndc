@@ -27,13 +27,19 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "       FNP.OPEN_MONTH_COUNT," +
             "       FNP.DESCRIPTION," +
             "       FNPS.NAME," +
-            " FNLP.id as financialLedgerPeriodId" +
-            "  FROM FNDC.FINANCIAL_LEDGER_PERIOD FNLP" +
-            " INNER JOIN FNPR.FINANCIAL_PERIOD FNP" +
-            "    ON FNLP.FINANCIAL_PERIOD_ID = FNP.ID" +
-            " INNER JOIN FNPR.FINANCIAL_PERIOD_STATUS FNPS" +
-            "    ON FNPS.ID = FNP.FINANCIAL_PERIOD_STATUS_ID" +
-            " WHERE FNLP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ", nativeQuery = true)
+            "       FNPS.CODE PERIOD_STATUS_CODE," +
+            "       LPS.CODE LEDGER_PERIOD_STATUS_CODE," +
+            "       LPS.DESCRIPTION LEDGER_PERIOD_STATUS_DES," +
+            "       FNLP.ID as FINANCIAL_LEDGER_PERIOD_ID, " +
+            "       FNLP.id as financialLedgerPeriodId " +
+            "  FROM FNDC.FINANCIAL_LEDGER_PERIOD FNLP " +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD FNP " +
+            "    ON FNLP.FINANCIAL_PERIOD_ID = FNP.ID " +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD_STATUS FNPS " +
+            "    ON FNPS.ID = FNP.FINANCIAL_PERIOD_STATUS_ID " +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD_STATUS LPS " +
+            "    ON LPS.ID = FNLP.FIN_LEDGER_PERIOD_STAT_ID " +
+            " WHERE FNLP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " , nativeQuery = true)
     Page<Object[]> findByFinancialLedgerTypeIdAndId(Long financialLedgerTypeId, Pageable pageable);
 
     @Query(value = " SELECT FNLP.ID    AS FINANCIAL_LEDGER_PERIOD_ID," +
