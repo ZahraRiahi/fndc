@@ -10,6 +10,9 @@ public class FinancialLedgerPeriodOutputResponse {
     private String description;
     private String name;
     private Long financialLedgerPeriodId;
+    private String periodStatusCode;
+    private String ledgerPeriodStatusDes;
+    private String ledgerPeriodStatusCode;
 
     public Long getId() {
         return id;
@@ -67,6 +70,30 @@ public class FinancialLedgerPeriodOutputResponse {
         this.financialLedgerPeriodId = financialLedgerPeriodId;
     }
 
+    public String getPeriodStatusCode() {
+        return periodStatusCode;
+    }
+
+    public void setPeriodStatusCode(String periodStatusCode) {
+        this.periodStatusCode = periodStatusCode;
+    }
+
+    public String getLedgerPeriodStatusDes() {
+        return ledgerPeriodStatusDes;
+    }
+
+    public void setLedgerPeriodStatusDes(String ledgerPeriodStatusDes) {
+        this.ledgerPeriodStatusDes = ledgerPeriodStatusDes;
+    }
+
+    public String getLedgerPeriodStatusCode() {
+        return ledgerPeriodStatusCode;
+    }
+
+    public void setLedgerPeriodStatusCode(String ledgerPeriodStatusCode) {
+        this.ledgerPeriodStatusCode = ledgerPeriodStatusCode;
+    }
+
     public static FinancialLedgerPeriodOutputResponse.Builder builder() {
         return new FinancialLedgerPeriodOutputResponse.Builder();
     }
@@ -115,6 +142,20 @@ public class FinancialLedgerPeriodOutputResponse {
             financialLedgerPeriodOutputResponse.setFinancialLedgerPeriodId(financialLedgerPeriodId);
             return this;
         }
+
+        public Builder periodStatusCode(String periodStatusCode) {
+            financialLedgerPeriodOutputResponse.setPeriodStatusCode(periodStatusCode);
+            return this;
+        }
+        public Builder ledgerPeriodStatusDes(String ledgerPeriodStatusDes) {
+            financialLedgerPeriodOutputResponse.setLedgerPeriodStatusDes(ledgerPeriodStatusDes);
+            return this;
+        }
+        public Builder ledgerPeriodStatusCode(String ledgerPeriodStatusCode) {
+            financialLedgerPeriodOutputResponse.setLedgerPeriodStatusCode(ledgerPeriodStatusCode);
+            return this;
+        }
+
         public FinancialLedgerPeriodOutputResponse build() {
             return financialLedgerPeriodOutputResponse;
         }
