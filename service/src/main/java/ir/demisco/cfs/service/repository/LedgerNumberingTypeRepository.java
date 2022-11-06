@@ -28,4 +28,9 @@ public interface LedgerNumberingTypeRepository extends JpaRepository<LedgerNumbe
     @Query("select lgnt.id from LedgerNumberingType lgnt where lgnt.financialLedgerType.id=:financialLedgerTypeId" +
             " and lgnt.deletedDate is null")
     List<Long> getLegerNumberingTypeByFinancialLedgerTypeId(Long financialLedgerTypeId);
+
+
+    @Query("select 1 from LedgerNumberingType lnt where lnt.financialLedgerType.id=:financialLedgerTypeId " +
+            "  and lnt.financialNumberingType.id=2 ")
+    Long ledgerNumberingTypeByLedgerTypeId(Long financialLedgerTypeId);
 }
