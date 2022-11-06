@@ -10,4 +10,7 @@ public interface FinancialNumberingFormatRepository extends JpaRepository<Financ
             "and fn.financialNumberingType.id=:numberingTypeId and fn.deletedDate is null ")
     FinancialNumberingFormat getFormatByType(Long organizationId, Long numberingTypeId);
 
+    @Query("select 1 from FinancialNumberingFormat fn where fn.organization.id=:organizationId " +
+            "  and fn.financialNumberingType.id=2 ")
+    Long financialNumberingFormatByOrg(Long organizationId);
 }

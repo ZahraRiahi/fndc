@@ -34,7 +34,9 @@ import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentStatusRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentTypeRepository;
 import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
+import ir.demisco.cfs.service.repository.FinancialNumberingFormatRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
+import ir.demisco.cfs.service.repository.LedgerNumberingTypeRepository;
 import ir.demisco.cfs.service.repository.MoneyPrisingReferenceRepository;
 import ir.demisco.cfs.service.repository.MoneyTypeRepository;
 import ir.demisco.cfs.service.repository.OrganizationRepository;
@@ -77,6 +79,8 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
     private final EntityManager entityManager;
     private final DepartmentRepository departmentRepository;
+    private final FinancialNumberingFormatRepository financialNumberingFormatRepository;
+    private final LedgerNumberingTypeRepository ledgerNumberingTypeRepository;
     public Boolean flag = true;
 
     public DefaultSaveFinancialDocument(FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository,
@@ -86,7 +90,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                                         FinancialPeriodRepository financialPeriodRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository,
                                         FinancialDepartmentRepository financialDepartmentRepository, MoneyPrisingReferenceRepository prisingReferenceRepository,
                                         FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialDocumentStatusRepository documentStatusRepository,
-                                        FinancialDocumentService financialDocumentService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, EntityManager entityManager, DepartmentRepository departmentRepository) {
+                                        FinancialDocumentService financialDocumentService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, EntityManager entityManager, DepartmentRepository departmentRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository) {
         this.financialAccountRepository = financialAccountRepository;
         this.centricAccountRepository = centricAccountRepository;
         this.financialDocumentRepository = financialDocumentRepository;
@@ -106,6 +110,8 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         this.financialDocumentSecurityService = financialDocumentSecurityService;
         this.entityManager = entityManager;
         this.departmentRepository = departmentRepository;
+        this.financialNumberingFormatRepository = financialNumberingFormatRepository;
+        this.ledgerNumberingTypeRepository = ledgerNumberingTypeRepository;
     }
 
     @Override
@@ -155,6 +161,15 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
             throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
         }
+        Long financialNumberingFormatOrg = financialNumberingFormatRepository.financialNumberingFormatByOrg(SecurityHelper.getCurrentUser().getOrganizationId());
+        if (financialNumberingFormatOrg == null) {
+            throw new RuleException("فرمت شماره گذاری نوع عطف برای این سازمان مشخص نشده است");
+        }
+        Long ledgerNumberingTypeLedgerId = ledgerNumberingTypeRepository.ledgerNumberingTypeByLedgerTypeId(requestFinancialDocumentSaveDto.getFinancialLedgerTypeId());
+        if (ledgerNumberingTypeLedgerId == null) {
+            throw new RuleException("فرمت شماره گذاری نوع عطف برای این دفتر مشخص نشده است");
+        }
+
         String documentNumber;
         FinancialDocument financialDocument = saveFinancialDocument(requestFinancialDocumentSaveDto);
         financialDocumentNumberDto.setOrganizationId(financialDocument.getOrganization().getId());
