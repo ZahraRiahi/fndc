@@ -535,9 +535,9 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             }
             financialLedgerMonthPeriodId.forEach(object -> {
                 FinancialLedgerMonth financialLedgerMonth = new FinancialLedgerMonth();
-                financialLedgerMonth.setFinancialLedgerMonthStatus(financialLedgerMonthStatusRepository.getOne((Long) object[0]));
+                financialLedgerMonth.setFinancialLedgerMonthStatus(financialLedgerMonthStatusRepository.getOne(((BigDecimal) object[0]).longValue()));
                 financialLedgerMonth.setFinancialLedgerType(financialLedgerTypeRepository.getOne(insertLedgerPeriodInputRequest.getFinancialLedgerTypeId()));
-                financialLedgerMonth.setFinancialMonth(financialMonthRepository.getOne((Long) object[1]));
+                financialLedgerMonth.setFinancialMonth(financialMonthRepository.getOne(((BigDecimal) object[1]).longValue()));
                 financialLedgerMonth.setFinancialLedgerPeriod(ledgerPeriod);
                 financialLedgerMonthRepository.save(financialLedgerMonth);
             });
