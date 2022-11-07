@@ -1502,8 +1502,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         return financialPeriodRepository.findByFinancialPeriodByCentricBalanceReport(financialDocumentCentricBalanceReportRequest.getFromDate(),
                 financialDocumentCentricBalanceReportRequest.getToDate(), financialDocumentCentricBalanceReportRequest.getFromNumber(),
                 financialDocumentCentricBalanceReportRequest.getToNumber(), financialDocumentCentricBalanceReportRequest.getDocumentNumberingTypeId(),
-                financialDocumentCentricBalanceReportRequest.getLedgerTypeId(),
-                financialDocumentCentricBalanceReportRequest.getPeriodStartDate(), length
+                financialDocumentCentricBalanceReportRequest.getLedgerTypeId(), financialDocumentCentricBalanceReportRequest.getPeriodStartDate(),
+                length
                 , financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode(), financialDocumentCentricBalanceReportRequest.getToFinancialAccountCode()
                 , SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentCentricBalanceReportRequest.getCnacIdObj1(), financialDocumentCentricBalanceReportRequest.getCnacId1(), financialDocumentCentricBalanceReportRequest.getCnacIdObj2(), financialDocumentCentricBalanceReportRequest.getCnacId2()
                 , financialDocumentCentricBalanceReportRequest.getCnatIdObj1(), financialDocumentCentricBalanceReportRequest.getCnatId1(),
