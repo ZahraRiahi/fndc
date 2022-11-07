@@ -25,7 +25,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " WHERE LP.FIN_LEDGER_PERIOD_STAT_ID = 1 AND" +
             "       FP.FINANCIAL_PERIOD_STATUS_ID = 1 "
             , nativeQuery = true)
-    LocalDateTime findByFinancialPeriodByOrganization(Long organizationId,Long ledgerTypeId);
+    LocalDateTime findByFinancialPeriodByOrganization(Long organizationId, Long ledgerTypeId);
 
 
     @Query(value = " SELECT  MAX(FP.START_DATE)  " +
@@ -41,7 +41,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "    AND LP.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  " +
             "    WHERE  trunc(:startDate) > = FP.START_DATE "
             , nativeQuery = true)
-    LocalDateTime findByFinancialPeriodByOrganizationStartDate(Long organizationId,Long ledgerTypeId ,LocalDateTime startDate);
+    LocalDateTime findByFinancialPeriodByOrganizationStartDate(Long organizationId, Long ledgerTypeId, LocalDateTime startDate);
 
     @Query(value = " WITH MAIN_QRY AS " +
             " (SELECT DOCUMENT_DATE, " +
@@ -2005,19 +2005,22 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                        0" +
             "                     END) SUM_CREDIT," +
             "                 SUM(CASE" +
-            "                       WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND" +
+            "                       when FD.DOCUMENT_DATE BETWEEN TRUNC(:periodStartDate) AND" +
+            "                            TRUNC(:fromDate) AND" +
             "                            FDN.DOCUMENT_NUMBER < :fromNumber THEN" +
             "                        FDI.DEBIT_AMOUNT" +
             "                       ELSE" +
             "                        0" +
             "                     END) BEF_DEBIT," +
             "                 SUM(CASE" +
-            "                       WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND" +
+            "                       WHEN FD.DOCUMENT_DATE BETWEEN TRUNC(:periodStartDate) AND" +
+            "                            TRUNC(:fromDate) AND" +
             "                            FDN.DOCUMENT_NUMBER < :fromNumber THEN" +
             "                        FDI.CREDIT_AMOUNT" +
             "                       ELSE" +
             "                        0" +
             "                     END) BEF_CREDIT," +
+
             "                 CNAC1.CODE CODE_CNAC1," +
             "                 CNAC2.CODE CODE_CNAC2," +
             "                 CNAC3.CODE CODE_CNAC3," +
