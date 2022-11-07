@@ -16,14 +16,16 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT" +
             "    ON FP.ID = FPT.FINANCIAL_PERIOD_ID" +
             "   AND FPT.ORGANIZATION_ID = :organizationId" +
-            "   AND FPT.DELETED_DATE IS NULL" +
-            "   AND FPT.ACTIVE_FLAG = 1" +
+            "   AND FPT.ACTIVE_FLAG = 1 " +
             " INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY" +
             "    ON FP.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID" +
-            " WHERE FP.FINANCIAL_PERIOD_STATUS_ID = 1" +
-            "   AND FP.DELETED_DATE IS NULL "
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            "    ON LP.FINANCIAL_PERIOD_ID = FP.ID " +
+            "   AND LP.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
+            " WHERE LP.FIN_LEDGER_PERIOD_STAT_ID = 1 AND" +
+            "       FP.FINANCIAL_PERIOD_STATUS_ID = 1 "
             , nativeQuery = true)
-    LocalDateTime findByFinancialPeriodByOrganization(Long organizationId);
+    LocalDateTime findByFinancialPeriodByOrganization(Long organizationId,Long ledgerTypeId);
 
 
     @Query(value = " SELECT  MAX(FP.START_DATE)  " +
@@ -33,11 +35,13 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "    AND FPT.ORGANIZATION_ID = :organizationId  " +
             "    AND FPT.ACTIVE_FLAG = 1  " +
             "    INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY  " +
-            "    ON FP.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID  " +
-            "    WHERE FP.DELETED_DATE IS NULL  " +
-            "    AND trunc(:startDate) > = FP.START_DATE "
+            "    ON FP.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID" +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            "     ON LP.FINANCIAL_PERIOD_ID = FP.ID" +
+            "    AND LP.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  " +
+            "    WHERE  trunc(:startDate) > = FP.START_DATE "
             , nativeQuery = true)
-    LocalDateTime findByFinancialPeriodByOrganizationStartDate(Long organizationId, LocalDateTime startDate);
+    LocalDateTime findByFinancialPeriodByOrganizationStartDate(Long organizationId,Long ledgerTypeId ,LocalDateTime startDate);
 
     @Query(value = " WITH MAIN_QRY AS " +
             " (SELECT DOCUMENT_DATE, " +
