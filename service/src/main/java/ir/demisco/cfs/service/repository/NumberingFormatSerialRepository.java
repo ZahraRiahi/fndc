@@ -28,6 +28,7 @@ public interface NumberingFormatSerialRepository extends JpaRepository<Numbering
             "   AND NFS.DELETED_DATE IS NULL" +
             " WHERE FD.ID = :financialDocumentId " +
             "   AND FD.DELETED_DATE IS NULL" +
+            "            and NFS.SERIAL_LENGTH = nf.serial_length " +
             "   and serial_reseter =" +
             "       REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(" +
             "                                                       " +

@@ -414,6 +414,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "              ON NFS.NUMBERING_FORMAT_ID = NF.ID " +
             "             AND NFS.DELETED_DATE IS NULL " +
             "           WHERE FD.ID = :financialDocumentId " +
+            " and NFS.SERIAL_LENGTH = nf.serial_length " +
             "             AND FD.DELETED_DATE IS NULL) " +
             " WHERE SERIAL_RESETER = REPLACE(GENERATED_COD,'$SRL','') "
             , nativeQuery = true)
