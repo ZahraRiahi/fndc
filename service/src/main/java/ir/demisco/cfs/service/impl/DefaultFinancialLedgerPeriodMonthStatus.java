@@ -43,10 +43,15 @@ public class DefaultFinancialLedgerPeriodMonthStatus implements FinancialLedgerP
                         getLedgerPeriodMonthStatusRequest.getNextPrevMonth(), getLedgerPeriodMonthStatusRequest.getFinancialLedgerMonthId());
             }
         }
-        if (statusId != null) {
-            return statusId;
+        if (statusId == null) {
+            if (getLedgerPeriodMonthStatusRequest.getNextPrevMonth() == 1) {
+                return 1L;
+            } else {
+                return 2L;
+            }
         } else {
-            return 1L;
+            return statusId;
         }
     }
 }
+
