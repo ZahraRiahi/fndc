@@ -29,4 +29,6 @@ public interface LedgerPeriodService {
     Boolean delOpeningDocument(FinancialLedgerClosingTempRequest financialLedgerClosingTempRequest);
 
     DataSourceResult getLedgerPeriodList(DataSourceRequest dataSourceRequest);
+
+    Boolean openingMonth(FinancialLedgerCloseMonthInputRequest financialLedgerCloseMonthInputRequest);
 }

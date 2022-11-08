@@ -940,4 +940,66 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             getLedgerPeriodInputRequest.setFinancialLedgerTypeId(null);
         }
     }
+
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean openingMonth(FinancialLedgerCloseMonthInputRequest financialLedgerCloseMonthInputRequest) {
+        CheckLedgerPermissionInputRequest checkLedgerPermissionInputRequest = new CheckLedgerPermissionInputRequest();
+        checkLedgerPermissionInputRequest.setPeriodId(financialLedgerCloseMonthInputRequest.getFinancialPeriodId());
+        checkLedgerPermissionInputRequest.setLedgerTypeId(financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId());
+        checkLedgerPermissionInputRequest.setActivityCode("FINANCIAL_LEG_MONTH");
+        financialLedgerPeriodSecurityService.checkFinancialLedgerPeriodSecurity(checkLedgerPermissionInputRequest);
+        Long financialPeriod = financialPeriodRepository.getFinancialPeriodByIdAndStatus(financialLedgerCloseMonthInputRequest.getFinancialPeriodId());
+        if (financialPeriod != null) {
+            throw new RuleException("وضعیت دوره مالی در حالت بسته میباشد");
+        }
+        Long financialLedgerMonth = financialLedgerMonthRepository.getOpenFinancialLedgerMonthById(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId());
+        if (financialLedgerMonth != null) {
+            throw new RuleException("وضعیت ماه انتخاب شده در  حال حاضر باز است");
+        }
+        Long openFinancialLedgerMonth = financialLedgerMonthRepository.getOpenFinancialLedgerMonthByIdAndPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(),
+                financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId());
+        if (openFinancialLedgerMonth != null) {
+            throw new RuleException("تعداد ماه باز نمیتواند از حداکثر تعداد ماه باز دوره بیشتر باشد.امکان انجام عملیات وجود ندارد");
+        }
+        Long financialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodById(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId());
+        if (financialLedgerPeriod != null) {
+            throw new RuleException("سند بستن حسابهای موقت / دائم ثبت شده است");
+        }
+        Long documentPeriodOrgId = financialDocumentRepository.findByDocumentByPeriodIdAndOrgId(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
+                financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId(),
+                SecurityHelper.getCurrentUser().getOrganizationId(),financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId());
+        if (documentPeriodOrgId != null) {
+            throw new RuleException("در این ماه سند مالی ثبت شده است. امکان انجام عملیات وجود ندارد");
+        }
+        Long statusId = null;
+        List<Object[]> list = financialLedgerMonthRepository.findByFinancialLedgerMonthByPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
+                financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId());
+        if (list.get(0).equals(1)) {
+            statusId = financialLedgerPeriodRepository.getFinancialLedgerPeriodByLedgerAndStartDateAndOrg(financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId(),
+                    (Date) list.get(0)[1], financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(), financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId(),
+                    SecurityHelper.getCurrentUser().getOrganizationId());
+        } else {
+            statusId = financialLedgerPeriodRepository.getFinancialLedgerPeriodByLedgerAndSOrg(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(),
+                    financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
+                    financialLedgerCloseMonthInputRequest.getFinancialPeriodId(),
+                    SecurityHelper.getCurrentUser().getOrganizationId(),financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId());
+        }
+        if (statusId != null) {
+            throw new RuleException(" ماه عملیاتی قبل از این ماه ، هنوز افتتاح نشده است");
+        }
+        entityManager.createNativeQuery(" UPDATE fndc.FINANCIAL_LEDGER_PERIOD FP " +
+                "   SET FP.FIN_LEDGER_PERIOD_STAT_ID = 1 " +
+                "  WHERE FP.ID = :financialLedgerPeriodId " +
+                "   AND FP.FIN_LEDGER_PERIOD_STAT_ID = 2  ").setParameter("financialLedgerPeriodId", financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId())
+                .executeUpdate();
+
+        entityManager.createNativeQuery(" UPDATE FNDC.FINANCIAL_LEDGER_MONTH LM " +
+                "  SET LM.FIN_LEDGER_MONTH_STAT_ID = 1 " +
+                "   WHERE LM.ID = :financialLedgerMonthId ").setParameter("financialLedgerMonthId", financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId())
+                .executeUpdate();
+        return true;
+
+    }
+
 }

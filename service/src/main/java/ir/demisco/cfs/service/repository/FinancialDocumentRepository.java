@@ -1765,4 +1765,18 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "   AND FD.PERMANENT_DOCUMENT_NUMBER = :minDocNumber "
             , nativeQuery = true)
     Long findByDocumentIdAndLedgerMonthMinDocId(Long organizationId, Long financialPeriodId, Long financialLedgerTypeId, String minDocNumber);
+
+    @Query(value = " SELECT distinct 1 " +
+            "                  FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            "                 INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM" +
+            "                    ON LM.ID = :financialLedgerMonthId" +
+            "                   AND LM.FINANCIAL_LEDGER_PERIOD_ID = :financialLedgerPeriodId" +
+            "                 INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "                    ON FM.ID = LM.FINANCIAL_MONTH_ID" +
+            "                   AND FM.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "                 WHERE FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE" +
+            "                   AND FD.ORGANIZATION_ID = :organizationId " +
+            " AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId "
+            , nativeQuery = true)
+    Long findByDocumentByPeriodIdAndOrgId(Long financialLedgerMonthId, Long financialLedgerPeriodId,Long financialPeriodId,Long organizationId,Long financialLedgerTypeId);
 }
