@@ -110,14 +110,6 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
     List<Long> getFinancialLedgerPeriodByIdClosingTemp(Long financialLedgerPeriodId);
 
     @Query(value = " SELECT 1 " +
-            "      FROM FNDC.FINANCIAL_LEDGER_PERIOD LP " +
-            "     WHERE LP.ID = :financialLedgerPeriodId " +
-            "       AND LP.FINANCIAL_DOCUMENT_OPENING_ID IS NULL  "
-            , nativeQuery = true)
-    Long getFinancialLedgerPeriodByIdDocumentOpen(Long financialLedgerPeriodId);
-
-
-    @Query(value = " SELECT 1 " +
             "                  FROM fndc.FINANCIAL_LEDGER_PERIOD FP " +
             "                 WHERE FP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
             "                   AND FP.FINANCIAL_PERIOD_ID = :financialPeriodId  "
@@ -291,6 +283,75 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "               AND t.FIN_LEDGER_PERIOD_STAT_ID != 1  "
             , nativeQuery = true)
     Long getFinancialLedgerPeriod(Long financialLedgerPeriodId);
+
+    @Query(value = "     SELECT LM.FIN_LEDGER_MONTH_STAT_ID " +
+            "        FROM FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            "       INNER JOIN FNPR.FINANCIAL_PERIOD FP" +
+            "          ON FP.ID = LP.FINANCIAL_PERIOD_ID" +
+            "       INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM" +
+            "          ON LM.FINANCIAL_LEDGER_PERIOD_ID = LP.ID" +
+            "       INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "          ON FM.ID = LM.FINANCIAL_MONTH_ID" +
+            "       WHERE LP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
+            "         AND LM.FIN_LEDGER_MONTH_STAT_ID = 2" +
+            "         AND FM.END_DATE =(select MAX(FM.END_DATE)         " +
+            "                FROM FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            "               INNER JOIN FNPR.FINANCIAL_PERIOD FP" +
+            "                  ON FP.ID = LP.FINANCIAL_PERIOD_ID" +
+            "               INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM" +
+            "                  ON LM.FINANCIAL_LEDGER_PERIOD_ID = LP.ID" +
+            "               INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "                  ON FM.ID = LM.FINANCIAL_MONTH_ID" +
+            "                 AND FM.END_DATE < :startDate  " +
+            "               WHERE LP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )" +
+            "               AND NOT EXISTS (SELECT 1" +
+            "                  FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            "                 INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM" +
+            "                    ON LM.ID = :financialLedgerMonthId" +
+            "                   AND LM.FINANCIAL_LEDGER_PERIOD_ID = :financialLedgerPeriodId " +
+            "                 INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "                    ON FM.ID = LM.FINANCIAL_MONTH_ID" +
+            "                   AND FM.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "                 WHERE FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE" +
+            "                   AND FD.ORGANIZATION_ID = :organizationId " +
+            " AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId )"
+            , nativeQuery = true)
+    Long getFinancialLedgerPeriodByLedgerAndStartDateAndOrg(Long financialLedgerTypeId, Date startDate,Long financialLedgerMonthId,Long financialLedgerPeriodId,Long financialPeriodId,Long organizationId);
+
+    @Query(value = "     SELECT LM.FIN_LEDGER_MONTH_STAT_ID" +
+            "  FROM FNDC.FINANCIAL_LEDGER_MONTH LM" +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            "    ON LP.ID = LM.FINANCIAL_LEDGER_PERIOD_ID" +
+            " INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "    ON FM.ID = LM.FINANCIAL_MONTH_ID" +
+            " INNER JOIN FNPR.FINANCIAL_MONTH_TYPE MT" +
+            "    ON MT.ID = FM.FINANCIAL_MONTH_TYPE_ID" +
+            "   AND LM.FINANCIAL_LEDGER_PERIOD_ID = :financialLedgerPeriodId" +
+            "   AND MT.MONTH_NUMBER =" +
+            "       (SELECT MT.MONTH_NUMBER - 1" +
+            "          FROM FNDC.FINANCIAL_LEDGER_MONTH LM" +
+            "         INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            "            ON LP.ID = LM.FINANCIAL_LEDGER_PERIOD_ID" +
+            "         INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "            ON FM.ID = LM.FINANCIAL_MONTH_ID" +
+            "         INNER JOIN FNPR.FINANCIAL_MONTH_TYPE MT" +
+            "            ON MT.ID = FM.FINANCIAL_MONTH_TYPE_ID" +
+            "         WHERE LM.ID = :financialLedgerMonthId)" +
+            "   AND LM.FIN_LEDGER_MONTH_STAT_ID = 2" +
+            "   AND NOT EXISTS" +
+            " (SELECT 1" +
+            "          FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            "         INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM" +
+            "            ON LM.ID = :financialLedgerMonthId " +
+            "           AND LM.FINANCIAL_LEDGER_PERIOD_ID = :financialLedgerPeriodId " +
+            "         INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "            ON FM.ID = LM.FINANCIAL_MONTH_ID" +
+            "           AND FM.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "         WHERE FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE" +
+            "           AND FD.ORGANIZATION_ID = :organizationId " +
+            " AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) "
+            , nativeQuery = true)
+    Long getFinancialLedgerPeriodByLedgerAndSOrg(Long financialLedgerPeriodId,Long financialLedgerMonthId, Long financialPeriodId,Long organizationId,Long financialLedgerTypeId);
 }
 
 
