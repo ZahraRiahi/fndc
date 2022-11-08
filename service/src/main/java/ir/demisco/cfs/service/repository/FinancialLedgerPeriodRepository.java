@@ -21,17 +21,16 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             , nativeQuery = true)
     Long getCountByFinancialLedgerPeriodByPeriodIdAndLedgerTypeId(Long financialPeriodId, Long financialLedgerTypeId);
 
-    @Query(value = " SELECT FNP.ID," +
-            "       FNP.START_DATE," +
-            "       FNP.END_DATE," +
-            "       FNP.OPEN_MONTH_COUNT," +
+    @Query(value = " SELECT FNP.ID as id," +
+            "       FNP.START_DATE as startDate," +
+            "       FNP.END_DATE as endDate," +
+            "       FNP.OPEN_MONTH_COUNT as openMonthCount," +
             "       FNP.DESCRIPTION as description," +
-            "       FNPS.NAME," +
-            "       FNPS.CODE PERIOD_STATUS_CODE," +
-            "       LPS.CODE LEDGER_PERIOD_STATUS_CODE," +
-            "       LPS.DESCRIPTION LEDGER_PERIOD_STATUS_DES," +
-            "       FNLP.ID as FINANCIAL_LEDGER_PERIOD_ID, " +
-            "       FNLP.id as financialLedgerPeriodId " +
+            "       FNPS.NAME as name ," +
+            "       FNPS.CODE as  periodStatusCode," +
+            "       LPS.CODE as ledgerPeriodStatusCode," +
+            "       LPS.DESCRIPTION as ledgerPeriodStatusDes," +
+            "       FNLP.ID as financialLedgerPeriodId " +
             "  FROM FNDC.FINANCIAL_LEDGER_PERIOD FNLP " +
             " INNER JOIN FNPR.FINANCIAL_PERIOD FNP " +
             "    ON FNLP.FINANCIAL_PERIOD_ID = FNP.ID " +
