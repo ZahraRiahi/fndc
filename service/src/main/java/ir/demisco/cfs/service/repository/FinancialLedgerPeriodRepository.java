@@ -25,7 +25,7 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             "       FNP.START_DATE," +
             "       FNP.END_DATE," +
             "       FNP.OPEN_MONTH_COUNT," +
-            "       FNP.DESCRIPTION," +
+            "       FNP.DESCRIPTION as description," +
             "       FNPS.NAME," +
             "       FNPS.CODE PERIOD_STATUS_CODE," +
             "       LPS.CODE LEDGER_PERIOD_STATUS_CODE," +
