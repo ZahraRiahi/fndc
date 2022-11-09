@@ -968,7 +968,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         }
         Long documentPeriodOrgId = financialDocumentRepository.findByDocumentByPeriodIdAndOrgId(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
                 financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId(),
-                SecurityHelper.getCurrentUser().getOrganizationId(),financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId());
+                SecurityHelper.getCurrentUser().getOrganizationId(), financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId());
         if (documentPeriodOrgId != null) {
             throw new RuleException("در این ماه سند مالی ثبت شده است. امکان انجام عملیات وجود ندارد");
         }
@@ -977,13 +977,12 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId());
         if (list.get(0).equals(1)) {
             statusId = financialLedgerPeriodRepository.getFinancialLedgerPeriodByLedgerAndStartDateAndOrg(financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId(),
-                    (Date) list.get(0)[1], financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(), financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId(),
+                    (Date) list.get(0)[1], financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(), financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(),
                     SecurityHelper.getCurrentUser().getOrganizationId());
         } else {
             statusId = financialLedgerPeriodRepository.getFinancialLedgerPeriodByLedgerAndSOrg(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(),
                     financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
-                    financialLedgerCloseMonthInputRequest.getFinancialPeriodId(),
-                    SecurityHelper.getCurrentUser().getOrganizationId(),financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId());
+                    SecurityHelper.getCurrentUser().getOrganizationId(), financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId());
         }
         if (statusId != null) {
             throw new RuleException(" ماه عملیاتی قبل از این ماه ، هنوز افتتاح نشده است");
