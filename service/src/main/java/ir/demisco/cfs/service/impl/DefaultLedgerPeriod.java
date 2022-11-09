@@ -247,7 +247,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                     "           AND NFS.DELETED_DATE IS NULL" +
                     "         WHERE FD.ID = :minDocId " +
                     "           AND FD.DELETED_DATE IS NULL " +
-                    " AND NFS.SERIAL_LENGTH = NF_SERIAL_LENGTH  " +
+                    " AND NFS.SERIAL_LENGTH = NF.SERIAL_LENGTH  " +
                     "           AND SERIAL_RESETER =" +
                     "               REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(" +
                     "                                                               " +
