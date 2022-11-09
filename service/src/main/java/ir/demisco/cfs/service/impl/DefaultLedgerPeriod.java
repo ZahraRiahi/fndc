@@ -216,7 +216,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         }
         String minDocNumber = financialDocumentRepository.findByDocumentIdAndLedgerMonth(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
                 financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId(),
-                SecurityHelper.getCurrentUser().getOrganizationId());
+                SecurityHelper.getCurrentUser().getOrganizationId(),financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId());
         Long minDocId = financialDocumentRepository.findByDocumentIdAndLedgerMonthMinDocId(SecurityHelper.getCurrentUser().getOrganizationId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId()
                 , financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId(), minDocNumber);
         if (minDocId != null) {
@@ -246,7 +246,8 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                     "            ON NFS.NUMBERING_FORMAT_ID = NF.ID" +
                     "           AND NFS.DELETED_DATE IS NULL" +
                     "         WHERE FD.ID = :minDocId " +
-                    "           AND FD.DELETED_DATE IS NULL" +
+                    "           AND FD.DELETED_DATE IS NULL " +
+                    " AND NFS.SERIAL_LENGTH = NF_SERIAL_LENGTH  " +
                     "           AND SERIAL_RESETER =" +
                     "               REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(REPLACE(" +
                     "                                                               " +

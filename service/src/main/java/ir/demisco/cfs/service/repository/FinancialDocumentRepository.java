@@ -1752,9 +1752,10 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "    ON FM.ID = LM.FINANCIAL_MONTH_ID" +
             "   AND FM.FINANCIAL_PERIOD_ID = :financialPeriodId " +
             " WHERE FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE" +
-            "   AND FD.ORGANIZATION_ID = :organizationId  "
+            "   AND FD.ORGANIZATION_ID = :organizationId  " +
+            " AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId "
             , nativeQuery = true)
-    String findByDocumentIdAndLedgerMonth(Long financialLedgerMonthId, Long financialLedgerPeriodId, Long financialPeriodId, Long organizationId);
+    String findByDocumentIdAndLedgerMonth(Long financialLedgerMonthId, Long financialLedgerPeriodId, Long financialPeriodId, Long organizationId,Long financialLedgerTypeId);
 
 
     @Query(value = " SELECT FD.ID" +
