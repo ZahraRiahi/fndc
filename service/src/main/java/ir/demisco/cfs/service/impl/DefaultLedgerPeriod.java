@@ -216,7 +216,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         }
         String minDocNumber = financialDocumentRepository.findByDocumentIdAndLedgerMonth(financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(),
                 financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId(),
-                SecurityHelper.getCurrentUser().getOrganizationId(),financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId());
+                SecurityHelper.getCurrentUser().getOrganizationId(), financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId());
         Long minDocId = financialDocumentRepository.findByDocumentIdAndLedgerMonthMinDocId(SecurityHelper.getCurrentUser().getOrganizationId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId()
                 , financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId(), minDocNumber);
         if (minDocId != null) {
@@ -411,6 +411,9 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         getDocumentItemsForLedgerInputRequest.setFinancialPeriodDes(financialLedgerClosingTempInputRequest.getFinancialPeriodDes());
 
         List<FinancialLedgerClosingTempOutputResponse> getDocumentItemsForLedgerOutput = financialLedgerPeriodDocItemsService.getFinancialLedgerPeriodDocItems(getDocumentItemsForLedgerInputRequest);
+        if (getDocumentItemsForLedgerOutput.isEmpty()) {
+            throw new RuleException("هیچ ردیفی برای ثبت در سند وجود ندارد.");
+        }
         getDocumentItemsForLedgerOutput.forEach((FinancialLedgerClosingTempOutputResponse financialLedgerClosingTempOutputResponse) -> {
             FinancialDocumentItem financialDocumentItemSave = new FinancialDocumentItem();
             financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(financialDocumentSave.getId()));
@@ -662,6 +665,9 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         getDocumentItemsForLedgerInputRequest.setPermanentStatus(1L);
         getDocumentItemsForLedgerInputRequest.setFinancialPeriodDes(financialLedgerClosingTempInputRequest.getFinancialPeriodDes());
         List<FinancialLedgerClosingTempOutputResponse> getDocumentItemsForLedgerOutput = financialLedgerPeriodDocItemsService.getFinancialLedgerPeriodDocItems(getDocumentItemsForLedgerInputRequest);
+        if (getDocumentItemsForLedgerOutput.isEmpty()) {
+            throw new RuleException("هیچ ردیفی برای ثبت در سند وجود ندارد.");
+        }
         getDocumentItemsForLedgerOutput.forEach((FinancialLedgerClosingTempOutputResponse financialLedgerClosingTempOutputResponse) -> {
             FinancialDocumentItem financialDocumentItemSave = new FinancialDocumentItem();
             financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(financialDocumentSave.getId()));
@@ -751,7 +757,9 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 financialPeriodRepository.getFinancialPeriodByStartDateAndEndDateAndDes(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
         Date endDate = financialLedgerPeriodRepository.getFinancialLedgerPeriodByOrganAndStartDate(SecurityHelper.getCurrentUser().getOrganizationId(),
                 (Date) financialPeriodDStartDateAndEndDate.get(0)[0], financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
-
+        if (endDate == null) {
+            throw new RuleException("امکان ثبت سند افتتاحیه در اولین دوره ی مالی دفتر، وجود ندارد");
+        }
         List<Object[]> financialLedgerEndDate =
                 financialLedgerPeriodRepository.getFinancialLedgerPeriodByOrganAndEndDate(SecurityHelper.getCurrentUser().getOrganizationId(),
                         endDate, financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
