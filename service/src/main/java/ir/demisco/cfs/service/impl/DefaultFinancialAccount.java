@@ -163,7 +163,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         LocalDateTime startDate = financialDocumentReportRequest.getFromDate();
         LocalDateTime periodStartDate;
         periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganization(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentReportRequest.getLedgerTypeId());
-        if (periodStartDate != null && startDate.isBefore(periodStartDate)) {
+        if (periodStartDate == null || startDate.isBefore(periodStartDate)) {
                periodStartDate = financialPeriodRepository.findByFinancialPeriodByOrganizationStartDate(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentReportRequest.getLedgerTypeId(), startDate);
             }
 
