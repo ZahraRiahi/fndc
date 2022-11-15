@@ -9,40 +9,6 @@ import java.util.Date;
 import java.util.List;
 
 public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod, Long> {
-
-    @Query(value = " SELECT " +
-            " MIN(FP.START_DATE)" +
-            "  FROM FNPR.FINANCIAL_PERIOD FP" +
-            " INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT" +
-            "    ON FP.ID = FPT.FINANCIAL_PERIOD_ID" +
-            "   AND FPT.ORGANIZATION_ID = :organizationId" +
-            "   AND FPT.ACTIVE_FLAG = 1 " +
-            " INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY" +
-            "    ON FP.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID" +
-            " INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
-            "    ON LP.FINANCIAL_PERIOD_ID = FP.ID " +
-            "   AND LP.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
-            " WHERE LP.FIN_LEDGER_PERIOD_STAT_ID = 1 AND" +
-            "       FP.FINANCIAL_PERIOD_STATUS_ID = 1 "
-            , nativeQuery = true)
-    LocalDateTime findByFinancialPeriodByOrganization(Long organizationId, Long ledgerTypeId);
-
-
-    @Query(value = " SELECT  MAX(FP.START_DATE)  " +
-            "    FROM FNPR.FINANCIAL_PERIOD FP  " +
-            "    INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT  " +
-            "    ON FP.id = FPT.FINANCIAL_PERIOD_ID  " +
-            "    AND FPT.ORGANIZATION_ID = :organizationId  " +
-            "    AND FPT.ACTIVE_FLAG = 1  " +
-            "    INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY  " +
-            "    ON FP.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID" +
-            " INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
-            "     ON LP.FINANCIAL_PERIOD_ID = FP.ID" +
-            "    AND LP.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId  " +
-            "    WHERE  trunc(:startDate) > = FP.START_DATE "
-            , nativeQuery = true)
-    LocalDateTime findByFinancialPeriodByOrganizationStartDate(Long organizationId, Long ledgerTypeId, LocalDateTime startDate);
-
     @Query(value = " WITH MAIN_QRY AS " +
             " (SELECT DOCUMENT_DATE, " +
             "         DOCUMENT_SEQUENCE, " +
@@ -2200,5 +2166,32 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "             AND TA.FINANCIAL_PERIOD_ID = FP.ID) "
             , nativeQuery = true)
     List<Object[]> getFinancialPeriodByOrgAndId(Long financialPeriodId, Long organizationId);
+
+    @Query(value = "   SELECT MIN(PR.START_DATE)" +
+            "    FROM FNPR.FINANCIAL_PERIOD PR " +
+            "    INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            "    ON LP.FINANCIAL_PERIOD_ID = PR.ID" +
+            "    AND LP.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
+            "    AND NOT EXISTS " +
+            "            (SELECT 1" +
+            "                    FROM FNDC.FINANCIAL_DOCUMENT FD " +
+            "                    WHERE FD.FINANCIAL_DOCUMENT_TYPE_ID = 72 " +
+            "                    AND FD.ORGANIZATION_ID = :organizationId " +
+            "                    AND FD.FINANCIAL_LEDGER_TYPE_ID = LP.FINANCIAL_LEDGER_TYPE_ID " +
+            "                    AND FD.FINANCIAL_PERIOD_ID = PR.ID) "
+            , nativeQuery = true)
+    LocalDateTime getFinancialPeriodByLedgerTypeId(Long ledgerTypeId, Long organizationId);
+
+    @Query(value = "         SELECT PR.START_DATE" +
+            "          FROM FNPR.FINANCIAL_PERIOD PR " +
+            "         INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+            "            ON LP.FINANCIAL_PERIOD_ID = PR.ID" +
+            "           AND LP.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
+            "         INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN TA" +
+            "            ON TA.FINANCIAL_PERIOD_ID = PR.ID " +
+            "           AND TA.ORGANIZATION_ID = :organizationId " +
+            "         WHERE trunc(:startDate) BETWEEN trunc(PR.START_DATE) AND TRUNC(PR.END_DATE) "
+            , nativeQuery = true)
+    LocalDateTime getFinancialPeriodByLedgerTypeAndFromDate(Long ledgerTypeId, Long organizationId,LocalDateTime startDate);
 
 }
