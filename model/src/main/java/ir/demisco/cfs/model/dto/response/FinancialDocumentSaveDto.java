@@ -25,7 +25,6 @@ public class FinancialDocumentSaveDto {
     private Boolean automaticFlag;
     private Long financialDepartmentId;
     private List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList;
-//    private List<Long> financialDocumentItemIdList;
 
     public Long getFinancialDocumentId() {
         return financialDocumentId;
