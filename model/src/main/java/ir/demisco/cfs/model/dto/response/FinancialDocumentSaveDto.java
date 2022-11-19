@@ -26,7 +26,6 @@ public class FinancialDocumentSaveDto {
     private Long financialDepartmentId;
     private List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList;
 
-
     public Long getFinancialDocumentId() {
         return financialDocumentId;
     }
@@ -243,10 +242,12 @@ public class FinancialDocumentSaveDto {
             financialDocumentSaveDto.setFinancialDocumentStatusCode(financialDocumentStatusCode);
             return this;
         }
+
         public Builder financialDocumentStatusDescription(String financialDocumentStatusDescription) {
             financialDocumentSaveDto.setFinancialDocumentStatusDescription(financialDocumentStatusDescription);
             return this;
         }
+
         public Builder description(String description) {
             financialDocumentSaveDto.setDescription(description);
             return this;
@@ -296,6 +297,7 @@ public class FinancialDocumentSaveDto {
             financialDocumentSaveDto.setFinancialDocumentItemDtoList(financialDocumentItemDtoList);
             return this;
         }
+
         public Builder financialDepartmentId(Long financialDepartmentId) {
             financialDocumentSaveDto.setFinancialDepartmentId(financialDepartmentId);
             return this;
