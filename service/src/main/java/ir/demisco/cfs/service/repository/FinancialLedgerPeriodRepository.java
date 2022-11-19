@@ -6,6 +6,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -346,6 +347,68 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             " AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId ) "
             , nativeQuery = true)
     Long getFinancialLedgerPeriodByLedgerAndSOrg(Long financialLedgerPeriodId, Long financialLedgerMonthId, Long organizationId, Long financialLedgerTypeId);
+
+    @Query(value = " SELECT 1 " +
+            "  FROM FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+            " WHERE LP.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "   and lp.financial_ledger_type_id = :financialLedgerTypeId " +
+            "   and (LP.FIN_LEDGER_PERIOD_STAT_ID != 3 OR" +
+            "       LP.FINANCIAL_DOCUMENT_TEMPRORY_ID = NULL OR" +
+            "       LP.FINANCIAL_DOCUMENT_PERMANENT_ID IS NOT NULL OR NOT EXISTS" +
+            "        (SELECT 1" +
+            "           FROM FNDC.FINANCIAL_DOCUMENT T" +
+            "          WHERE T.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "            AND T.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
+            "            AND T.ORGANIZATION_ID = :organizationId " +
+            "            AND (T.FINANCIAL_DOCUMENT_TYPE_ID = 71)) OR EXISTS" +
+            "        (SELECT 1" +
+            "           FROM FNDC.FINANCIAL_DOCUMENT T" +
+            "          WHERE T.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "            AND T.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
+            "            AND T.ORGANIZATION_ID = :organizationId " +
+            "            AND (T.FINANCIAL_DOCUMENT_TYPE_ID = 72)))  "
+            , nativeQuery = true)
+    Long getFinancialLedgerPeriodByIdAndPeriodAndOrg(Long financialPeriodId, Long financialLedgerTypeId, Long organizationId);
+
+    @Query(value = " SELECT 1" +
+            "  FROM FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD FP" +
+            "    ON FP.ID = LP.FINANCIAL_PERIOD_ID" +
+            " INNER JOIN FNDC.FINANCIAL_LEDGER_TYPE LT" +
+            "    ON LT.ID = LP.FINANCIAL_LEDGER_TYPE_ID" +
+            " INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE PT" +
+            "    ON PT.ID = FP.FINANCIAL_PERIOD_TYPE_ID" +
+            " INNER JOIN FNPR.FINANCIAL_MONTH_TYPE MT" +
+            "    ON MT.FINANCIAL_PERIOD_TYPE_ID = PT.ID" +
+            " INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "    ON FM.FINANCIAL_PERIOD_ID = FP.ID" +
+            "   AND FP.FINANCIAL_PERIOD_TYPE_ID = PT.ID" +
+            "   AND MT.ID = FM.FINANCIAL_MONTH_TYPE_ID" +
+            "   AND trunc(:documentDate) BETWEEN trunc(FM.START_DATE) AND" +
+            "       trunc(FM.END_DATE)" +
+            " WHERE LP.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "   AND LP.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId" +
+            "   AND MT.MONTH_NUMBER !=" +
+            "       (SELECT MAX(MT1.MONTH_NUMBER)" +
+            "          FROM FNDC.FINANCIAL_LEDGER_PERIOD LP1" +
+            "         INNER JOIN FNPR.FINANCIAL_PERIOD FP1" +
+            "            ON FP1.ID = LP1.FINANCIAL_PERIOD_ID" +
+            "         INNER JOIN FNDC.FINANCIAL_LEDGER_TYPE LT1" +
+            "            ON LT1.ID = LP1.FINANCIAL_LEDGER_TYPE_ID" +
+            "         INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE PT1" +
+            "            ON PT1.ID = FP1.FINANCIAL_PERIOD_TYPE_ID" +
+            "         INNER JOIN FNPR.FINANCIAL_MONTH_TYPE MT1" +
+            "            ON MT1.FINANCIAL_PERIOD_TYPE_ID = PT1.ID" +
+            "         INNER JOIN FNPR.FINANCIAL_MONTH FM1" +
+            "            ON FM1.FINANCIAL_PERIOD_ID = FP1.ID" +
+            "           AND FP1.FINANCIAL_PERIOD_TYPE_ID = PT1.ID " +
+            "           AND MT1.ID = FM1.FINANCIAL_MONTH_TYPE_ID " +
+            "         WHERE LP1.FINANCIAL_PERIOD_ID = LP.FINANCIAL_PERIOD_ID" +
+            "           AND LP1.FINANCIAL_LEDGER_TYPE_ID = LP.FINANCIAL_LEDGER_TYPE_ID)  "
+            , nativeQuery = true)
+    Long getFinancialLedgerPeriodByIdAndPeriodAndDocumentDate(LocalDateTime documentDate, Long financialPeriodId, Long financialLedgerTypeId);
+
+
 }
 
 

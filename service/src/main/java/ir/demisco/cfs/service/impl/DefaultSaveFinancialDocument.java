@@ -33,6 +33,7 @@ import ir.demisco.cfs.service.repository.FinancialDocumentReferenceRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentStatusRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentTypeRepository;
+import ir.demisco.cfs.service.repository.FinancialLedgerPeriodRepository;
 import ir.demisco.cfs.service.repository.FinancialLedgerTypeRepository;
 import ir.demisco.cfs.service.repository.FinancialNumberingFormatRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
@@ -82,6 +83,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
     private final FinancialNumberingFormatRepository financialNumberingFormatRepository;
     private final LedgerNumberingTypeRepository ledgerNumberingTypeRepository;
     public Boolean flag = true;
+    private final FinancialLedgerPeriodRepository financialLedgerPeriodRepository;
 
     public DefaultSaveFinancialDocument(FinancialAccountRepository financialAccountRepository, CentricAccountRepository centricAccountRepository,
                                         FinancialDocumentRepository financialDocumentRepository, FinancialDocumentItemRepository financialDocumentItemRepository,
@@ -90,7 +92,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
                                         FinancialPeriodRepository financialPeriodRepository, FinancialLedgerTypeRepository financialLedgerTypeRepository,
                                         FinancialDepartmentRepository financialDepartmentRepository, MoneyPrisingReferenceRepository prisingReferenceRepository,
                                         FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialDocumentStatusRepository documentStatusRepository,
-                                        FinancialDocumentService financialDocumentService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, EntityManager entityManager, DepartmentRepository departmentRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository) {
+                                        FinancialDocumentService financialDocumentService, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, EntityManager entityManager, DepartmentRepository departmentRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository, FinancialLedgerPeriodRepository financialLedgerPeriodRepository) {
         this.financialAccountRepository = financialAccountRepository;
         this.centricAccountRepository = centricAccountRepository;
         this.financialDocumentRepository = financialDocumentRepository;
@@ -112,6 +114,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         this.departmentRepository = departmentRepository;
         this.financialNumberingFormatRepository = financialNumberingFormatRepository;
         this.ledgerNumberingTypeRepository = ledgerNumberingTypeRepository;
+        this.financialLedgerPeriodRepository = financialLedgerPeriodRepository;
     }
 
     @Override
@@ -159,7 +162,29 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         financialPeriodLedgerStatusRequest.setFinancialLedgerTypeId(requestFinancialDocumentSaveDto.getFinancialLedgerTypeId());
         FinancialPeriodStatusResponse financialPeriodStatusResponse = financialDocumentService.getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
         if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
-            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+            if (requestFinancialDocumentSaveDto.getFinancialDocumentTypeId() != 73) {
+                throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+            }
+
+        }
+
+        if (requestFinancialDocumentSaveDto.getFinancialDocumentTypeId() == 73) {
+            Long countFinancialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdAndPeriodAndOrg(requestFinancialDocumentSaveDto.getFinancialPeriodId(),
+                    requestFinancialDocumentSaveDto.getFinancialLedgerTypeId(), SecurityHelper.getCurrentUser().getOrganizationId());
+            if (countFinancialLedgerPeriod != null) {
+                throw new RuleException("برای ذخیره این نوع سند ، وضعیت دفتر میبایست در حالت بستن حسابهای موقت باشد");
+            }
+            Long countFinancialLedgerDocumentDate = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdAndPeriodAndDocumentDate(requestFinancialDocumentSaveDto.getDocumentDate()
+                    , requestFinancialDocumentSaveDto.getFinancialPeriodId(), requestFinancialDocumentSaveDto.getFinancialLedgerTypeId());
+            if (countFinancialLedgerDocumentDate != null) {
+                throw new RuleException("این نوع سند فقط در ماه آخر دوره میتواند ایجاد و ذخیره گردد");
+            }
+            List<Long> financialAccountItem = financialAccountRepository
+                    .getFinancialAccountList(requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().stream().map(e -> e.getFinancialAccountId()).collect(Collectors.toList()));
+            if (financialAccountItem.size() != 0) {
+                throw new RuleException("تنها حسابهای از نوع دائم میتوانند در این نوع سند ذخیره شوند");
+            }
+
         }
         Long financialNumberingFormatOrg = financialNumberingFormatRepository.financialNumberingFormatByOrg(SecurityHelper.getCurrentUser().getOrganizationId());
         if (financialNumberingFormatOrg == null) {

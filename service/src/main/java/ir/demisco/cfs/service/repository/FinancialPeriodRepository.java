@@ -2190,7 +2190,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN TA" +
             "            ON TA.FINANCIAL_PERIOD_ID = PR.ID " +
             "           AND TA.ORGANIZATION_ID = :organizationId " +
-            "         WHERE trunc(:startDate) BETWEEN trunc(PR.START_DATE) AND TRUNC(PR.END_DATE) "
+            "         WHERE trunc(:startDate) BETWEEN trunc(PR.START_DATE) AND trunc(PR.END_DATE) "
             , nativeQuery = true)
     LocalDateTime getFinancialPeriodByLedgerTypeAndFromDate(Long ledgerTypeId, Long organizationId,LocalDateTime startDate);
 
