@@ -155,7 +155,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                 paramSearch.getPriceType(), paramSearch.getFromPrice(),
                 paramSearch.getFromPriceAmount(), paramSearch.getToPrice(),
                 paramSearch.getToPriceAmount(), paramSearch.getTolerance(),
-                paramSearch.getFinancialDocumentType(), paramSearch.getFinancialDocumentTypeId(), paramSearch.getFlgCreationMod(),pageable);
+                paramSearch.getFinancialDocumentType(), paramSearch.getFinancialDocumentTypeId(), paramSearch.getFlgCreationMod(), pageable);
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
@@ -1308,10 +1308,14 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
 
         FinancialPeriodStatusResponse financialPeriodStatusResponses = new FinancialPeriodStatusResponse();
         Long periodStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerType(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId());
-        if(periodStatus==null){
+        if (periodStatus == null) {
             throw new RuleException("دوره مالی به دفتر مالی انتخاب شده ، تخصیص داده نشده است");
         }
         Long monthStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerTypeAndDate(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId(), financialPeriodLedgerStatusRequest.getDate(), DateUtil.convertStringToDate(financialPeriodLedgerStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))));
+        if (periodStatus != 1L)
+            periodStatus = 0L;
+        if (monthStatus != 1L)
+            monthStatus = 0L;
 
         financialPeriodStatusResponses.setPeriodStatus(periodStatus);
         financialPeriodStatusResponses.setMonthStatus(monthStatus);
