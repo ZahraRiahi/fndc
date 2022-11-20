@@ -323,16 +323,82 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         List<ResponseFinancialDocumentItemDto> updateFinancialDocumentItemDto = new ArrayList<>();
         List<ResponseFinancialDocumentItemDto> financialDocumentItemDtoList = new ArrayList<>();
         final List<FinancialDocumentReferenceDto>[] newDocumentReferenceList = new List[]{new ArrayList<>()};
-        List<FinancialDocumentReferenceDto> documentReferenceList = new ArrayList<>();
-        List<ResponseFinancialDocumentItemDto> newFinancialDocumentItem = new ArrayList<>();
         List<FinancialDocumentItemCurrencyDto> newResponseDocumentItemCurrencyList = new ArrayList<>();
+        List<ResponseFinancialDocumentItemDto> newFinancialDocumentItem = new ArrayList<>();
+        List<FinancialDocumentReferenceDto> documentReferenceList = new ArrayList<>();
         List<FinancialDocumentItemCurrencyDto> responseDocumentItemCurrencyList = new ArrayList<>();
         String activityCode = "FNDC_DOCUMENT_UPDATE";
+        SecurityModelRequest securityModelRequest = new SecurityModelRequest();
         FinancialDocumentSecurityInputRequest financialDocumentSecurityInputRequest = new FinancialDocumentSecurityInputRequest();
         financialDocumentSecurityInputRequest.setActivityCode(activityCode);
         financialDocumentSecurityInputRequest.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
         financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
+        securityModelRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        securityModelRequest.setUserId(SecurityHelper.getCurrentUser().getUserId());
+        securityModelRequest.setDepartmentId(requestFinancialDocumentSaveDto.getDepartmentId());
+        securityModelRequest.setFinancialDepartmentId(requestFinancialDocumentSaveDto.getFinancialDepartmentId());
+        securityModelRequest.setFinancialLedgerId(requestFinancialDocumentSaveDto.getFinancialLedgerTypeId());
+        securityModelRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
+        securityModelRequest.setDocumentTypeId(requestFinancialDocumentSaveDto.getFinancialDocumentTypeId());
+        securityModelRequest.setSubjectId(null);
+        securityModelRequest.setActivityCode(financialDocumentSecurityInputRequest.getActivityCode());
+        securityModelRequest.setInputFromConfigFlag(false);
+        securityModelRequest.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
+        financialDocumentSecurityInputRequest.setSecurityModelRequest(securityModelRequest);
         financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
+        Long periodDate = financialPeriodRepository.findFinancialPeriodByFinancialPeriodIdAndDocumentDate
+                (requestFinancialDocumentSaveDto.getFinancialPeriodId(), requestFinancialDocumentSaveDto.getDocumentDate());
+        if (periodDate == null) {
+            throw new RuleException(" تاریخ وارد شده در محدوده دوره مالی پیش فرض نمیباشد");
+        }
+        FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
+        financialPeriodStatusRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        financialPeriodStatusRequest.setDate(requestFinancialDocumentSaveDto.getDocumentDate());
+        financialPeriodStatusRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
+        financialPeriodStatusRequest.setFinancialDocumentId(requestFinancialDocumentSaveDto.getFinancialDocumentId());
+        FinancialPeriodStatusResponse financialPeriodStatus = financialPeriodService.getFinancialPeriodStatus(financialPeriodStatusRequest);
+        if (financialPeriodStatus.getPeriodStatus() == 0L || financialPeriodStatus.getMonthStatus() == 0L) {
+            throw new RuleException("دوره مالی و ماه عملیاتی سند مقصد میبایست در وضعیت باز باشند");
+        }
+        FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
+        financialPeriodLedgerStatusRequest.setDate(requestFinancialDocumentSaveDto.getDocumentDate());
+        financialPeriodLedgerStatusRequest.setFinancialPeriodId(requestFinancialDocumentSaveDto.getFinancialPeriodId());
+        financialPeriodLedgerStatusRequest.setFinancialLedgerTypeId(requestFinancialDocumentSaveDto.getFinancialLedgerTypeId());
+        FinancialPeriodStatusResponse financialPeriodStatusResponse = financialDocumentService.getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
+            if (requestFinancialDocumentSaveDto.getFinancialDocumentTypeId() != 73) {
+                throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+            }
+
+        }
+
+        if (requestFinancialDocumentSaveDto.getFinancialDocumentTypeId() == 73) {
+            Long countFinancialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdAndPeriodAndOrg(requestFinancialDocumentSaveDto.getFinancialPeriodId(),
+                    requestFinancialDocumentSaveDto.getFinancialLedgerTypeId(), SecurityHelper.getCurrentUser().getOrganizationId());
+            if (countFinancialLedgerPeriod != null) {
+                throw new RuleException("برای ذخیره این نوع سند ، وضعیت دفتر میبایست در حالت بستن حسابهای موقت باشد");
+            }
+            Long countFinancialLedgerDocumentDate = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdAndPeriodAndDocumentDate(requestFinancialDocumentSaveDto.getDocumentDate()
+                    , requestFinancialDocumentSaveDto.getFinancialPeriodId(), requestFinancialDocumentSaveDto.getFinancialLedgerTypeId());
+            if (countFinancialLedgerDocumentDate != null) {
+                throw new RuleException("این نوع سند فقط در ماه آخر دوره میتواند ایجاد و ذخیره گردد");
+            }
+            List<Long> financialAccountItem = financialAccountRepository
+                    .getFinancialAccountList(requestFinancialDocumentSaveDto.getFinancialDocumentItemDtoList().stream().map(e -> e.getFinancialAccountId()).collect(Collectors.toList()));
+            if (financialAccountItem.size() != 0) {
+                throw new RuleException("تنها حسابهای از نوع دائم میتوانند در این نوع سند ذخیره شوند");
+            }
+
+        }
+        Long financialNumberingFormatOrg = financialNumberingFormatRepository.financialNumberingFormatByOrg(SecurityHelper.getCurrentUser().getOrganizationId());
+        if (financialNumberingFormatOrg == null) {
+            throw new RuleException("فرمت شماره گذاری نوع عطف برای این سازمان مشخص نشده است");
+        }
+        Long ledgerNumberingTypeLedgerId = ledgerNumberingTypeRepository.ledgerNumberingTypeByLedgerTypeId(requestFinancialDocumentSaveDto.getFinancialLedgerTypeId());
+        if (ledgerNumberingTypeLedgerId == null) {
+            throw new RuleException("فرمت شماره گذاری نوع عطف برای این دفتر مشخص نشده است");
+        }
+
 
         FinancialDocument updateFinancialDocument = updateFinancialDocument(requestFinancialDocumentSaveDto);
         responseDocumentSaveDto = convertDocumentToDto(updateFinancialDocument);
