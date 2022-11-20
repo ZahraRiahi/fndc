@@ -346,11 +346,6 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         securityModelRequest.setCreatorUserId(SecurityHelper.getCurrentUser().getUserId());
         financialDocumentSecurityInputRequest.setSecurityModelRequest(securityModelRequest);
         financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
-        Long periodDate = financialPeriodRepository.findFinancialPeriodByFinancialPeriodIdAndDocumentDate
-                (requestFinancialDocumentSaveDto.getFinancialPeriodId(), requestFinancialDocumentSaveDto.getDocumentDate());
-        if (periodDate == null) {
-            throw new RuleException(" تاریخ وارد شده در محدوده دوره مالی پیش فرض نمیباشد");
-        }
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
         financialPeriodStatusRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         financialPeriodStatusRequest.setDate(requestFinancialDocumentSaveDto.getDocumentDate());
