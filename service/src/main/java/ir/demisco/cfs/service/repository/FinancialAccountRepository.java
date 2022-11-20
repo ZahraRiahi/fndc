@@ -17,7 +17,7 @@ public interface FinancialAccountRepository extends JpaRepository<FinancialAccou
             "                FROM FNAC.FINANCIAL_ACCOUNT T " +
             "               WHERE T.ID IN " +
             "                     (:financialAccountListId) " +
-            "              And  T.ACCOUNT_PERMANENT_STATUS_ID = 2;  "
+            "              And  T.ACCOUNT_PERMANENT_STATUS_ID = 2  "
             , nativeQuery = true)
     List<Long> getFinancialAccountList(List<Long> financialAccountListId);
 }
