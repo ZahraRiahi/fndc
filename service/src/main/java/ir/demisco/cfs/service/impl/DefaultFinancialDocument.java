@@ -104,7 +104,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
     private final FinancialPeriodRepository financialPeriodRepository;
     private final FinancialDocumentTypeRepository financialDocumentTypeRepository;
-    //    private final FinancialDocumentService financialDocumentService;
     private final FinancialLedgerPeriodRepository financialLedgerPeriodRepository;
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
