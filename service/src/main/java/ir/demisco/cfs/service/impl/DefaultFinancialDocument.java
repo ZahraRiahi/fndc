@@ -44,6 +44,8 @@ import ir.demisco.cfs.service.repository.FinancialDocumentNumberRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentReferenceRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentRepository;
 import ir.demisco.cfs.service.repository.FinancialDocumentStatusRepository;
+import ir.demisco.cfs.service.repository.FinancialDocumentTypeRepository;
+import ir.demisco.cfs.service.repository.FinancialLedgerPeriodRepository;
 import ir.demisco.cfs.service.repository.FinancialNumberingFormatRepository;
 import ir.demisco.cfs.service.repository.FinancialNumberingTypeRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
@@ -101,12 +103,15 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialPeriodService financialPeriodService;
     private final FinancialDocumentSecurityService financialDocumentSecurityService;
     private final FinancialPeriodRepository financialPeriodRepository;
+    private final FinancialDocumentTypeRepository financialDocumentTypeRepository;
+    //    private final FinancialDocumentService financialDocumentService;
+    private final FinancialLedgerPeriodRepository financialLedgerPeriodRepository;
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
                                     FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                     FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
-                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialPeriodRepository financialPeriodRepository) {
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialPeriodRepository financialPeriodRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerPeriodRepository financialLedgerPeriodRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -123,7 +128,8 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.financialPeriodService = financialPeriodService;
         this.financialDocumentSecurityService = financialDocumentSecurityService;
         this.financialPeriodRepository = financialPeriodRepository;
-
+        this.financialDocumentTypeRepository = financialDocumentTypeRepository;
+        this.financialLedgerPeriodRepository = financialLedgerPeriodRepository;
     }
 
 
@@ -502,7 +508,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         financialDocumentSecurityInputRequest.setFinancialDocumentId(responseFinancialDocumentStatusDto.getId());
         financialDocumentSecurityInputRequest.setFinancialDocumentItemId(null);
         financialDocumentSecurityService.getFinancialDocumentSecurity(financialDocumentSecurityInputRequest);
-
+        Long financialDocumentTypeId = financialDocumentTypeRepository.findByFinancialDocumentTypeAndfinancialDocumentId(responseFinancialDocumentStatusDto.getId());
         ResponseFinancialDocumentSetStatusDto responseFinancialDocumentSetStatusDto = new ResponseFinancialDocumentSetStatusDto();
         FinancialPeriodStatusRequest financialPeriodStatusRequest = new FinancialPeriodStatusRequest();
         financialPeriodStatusRequest.setFinancialDocumentId(responseFinancialDocumentStatusDto.getId());
@@ -514,33 +520,53 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         financialPeriodLedgerStatusRequest.setFinancialDocumentId(responseFinancialDocumentStatusDto.getId());
         FinancialPeriodStatusResponse financialPeriodStatusResponse = getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
         if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
-            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+            if (financialDocumentTypeId != 73) {
+                throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+            }
         }
+        if (financialDocumentTypeId == 73) {
 
+            Long countFinancialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByIdAndPeriodAndOrg(financialPeriodLedgerStatusRequest.getFinancialPeriodId(),
+                    financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId(), SecurityHelper.getCurrentUser().getOrganizationId());
+            if (countFinancialLedgerPeriod != null) {
+                throw new RuleException("برای تایید این نوع سند ، وضعیت دفتر میبایست در حالت بستن حسابهای موقت باشد");
+            }
+        }
         FinancialDocument financialDocument = financialDocumentRepository.findById(responseFinancialDocumentStatusDto.getId()).orElseThrow(() -> new RuleException("fin.financialDocument.notExistDocument"));
         FinancialDocumentStatus financialDocumentStatus =
                 documentStatusRepository.findFinancialDocumentStatusByCode(responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode());
         if (responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode().equals("20") ||
                 responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode().equals("30")) {
             List<FinancialDocumentErrorDto> financialDocumentErrorDtoList = validationSetStatus(financialDocument);
-            if (financialDocumentErrorDtoList.isEmpty()) {
-                financialDocument.setFinancialDocumentStatus(financialDocumentStatus);
-                financialDocumentRepository.save(financialDocument);
-                responseFinancialDocumentSetStatusDto = convertFinancialDocumentToDto(financialDocument);
-                return ResponseEntity.ok(responseFinancialDocumentSetStatusDto);
-            } else {
+            if (!financialDocumentErrorDtoList.isEmpty()) {
                 responseFinancialDocumentSetStatusDto.setFinancialDocumentErrorDtoList(financialDocumentErrorDtoList);
                 responseFinancialDocumentSetStatusDto.setErrorFoundFlag(true);
                 return ResponseEntity.status(HttpStatus.CONFLICT).body(responseFinancialDocumentSetStatusDto);
+
+            } else {
+                if (financialDocumentTypeId == 73) {
+                    FinancialDocumentNumberDto financialDocumentNumberDto = new FinancialDocumentNumberDto();
+                    financialDocumentNumberDto.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+                    financialDocumentNumberDto.setFinancialDocumentId(responseFinancialDocumentStatusDto.getId());
+                    financialDocumentNumberDto.setNumberingType(3L);
+                    String newNumber = creatDocumentNumberUpdate(financialDocumentNumberDto);
+                    if (newNumber == null) {
+                        throw new RuleException("اشکال در تخصیص شماره دائم به سند.");
+                    }
+                    responseFinancialDocumentStatusDto.setFinancialDocumentStatusCode("30");
+                }
             }
         } else {
+            if (responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode().equals("10") && financialDocumentTypeId == 73) {
+                financialDocumentNumberRepository.findByFinancialDocumentNumberByDocumentId(responseFinancialDocumentStatusDto.getId())
+                        .forEach(financialDocumentNumberRepository::delete);
+            }
 
-            financialDocument.setFinancialDocumentStatus(financialDocumentStatus);
-            financialDocumentRepository.save(financialDocument);
-            responseFinancialDocumentSetStatusDto = convertFinancialDocumentToDto(financialDocument);
-            return ResponseEntity.ok(responseFinancialDocumentSetStatusDto);
         }
-
+        financialDocument.setFinancialDocumentStatus(financialDocumentStatus);
+        financialDocumentRepository.save(financialDocument);
+        responseFinancialDocumentSetStatusDto = convertFinancialDocumentToDto(financialDocument);
+        return ResponseEntity.ok(responseFinancialDocumentSetStatusDto);
     }
 
     private List<FinancialDocumentErrorDto> validationSetStatus(FinancialDocument financialDocument) {

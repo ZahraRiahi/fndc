@@ -77,4 +77,11 @@ public interface FinancialDocumentTypeRepository extends JpaRepository<Financial
             " and (:idObject is null or FNDT.id =:id )"
             , nativeQuery = true)
     Page<Object[]> financialDocumentType(Object financialSystem, Long financialSystemId, Long organizationId, Object idObject, Long id, Pageable pageable);
+
+
+    @Query(value = " SELECT T.FINANCIAL_DOCUMENT_TYPE_ID " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT T " +
+            " WHERE T.ID = :financialDocumentId "
+            , nativeQuery = true)
+    Long findByFinancialDocumentTypeAndfinancialDocumentId(Long financialDocumentId);
 }
