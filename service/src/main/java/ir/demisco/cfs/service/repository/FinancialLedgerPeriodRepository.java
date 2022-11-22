@@ -408,6 +408,21 @@ public interface FinancialLedgerPeriodRepository extends JpaRepository<Financial
             , nativeQuery = true)
     Long getFinancialLedgerPeriodByIdAndPeriodAndDocumentDate(LocalDateTime documentDate, Long financialPeriodId, Long financialLedgerTypeId);
 
+    @Query(value = " SELECT 1 " +
+            "  FROM FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+            " WHERE LP.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "   and lp.financial_ledger_type_id = :financialLedgerTypeId " +
+            "   and (LP.FIN_LEDGER_PERIOD_STAT_ID = 4 OR" +
+            "       LP.FINANCIAL_DOCUMENT_TEMPRORY_ID = NULL OR" +
+            "       LP.FINANCIAL_DOCUMENT_PERMANENT_ID IS NOT NULL OR  EXISTS" +
+            "        (SELECT 1" +
+            "           FROM FNDC.FINANCIAL_DOCUMENT T" +
+            "          WHERE T.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "            AND T.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
+            "            AND T.ORGANIZATION_ID = :organizationId " +
+            "            AND (T.FINANCIAL_DOCUMENT_TYPE_ID = 72))) "
+            , nativeQuery = true)
+    Long getFinancialLedgerPeriodByOrgAndPeriodId(Long financialPeriodId, Long financialLedgerTypeId, Long organizationId);
 
 }
 
