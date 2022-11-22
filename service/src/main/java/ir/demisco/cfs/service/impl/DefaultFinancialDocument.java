@@ -931,9 +931,26 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         FinancialPeriodLedgerStatusRequest financialPeriodLedgerStatusRequest = new FinancialPeriodLedgerStatusRequest();
         financialPeriodLedgerStatusRequest.setFinancialDocumentId(financialDocumentId);
         FinancialPeriodStatusResponse financialPeriodStatusResponse = getFinancialPeriodStatus(financialPeriodLedgerStatusRequest);
+        Long financialDocumentTypeId = financialDocumentTypeRepository.findByFinancialDocumentTypeAndfinancialDocumentId(financialDocumentId);
+        Long documentStatus = financialDocumentRepository.findByFinancialDocumentStatusByDocumentId(financialDocumentId);
+
         if (financialPeriodStatusResponse.getPeriodStatus() == 0L || financialPeriodStatusResponse.getMonthStatus() == 0L) {
-            throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+            if (financialDocumentTypeId != 73) {
+                throw new RuleException("دوره مالی و ماه مربوط به دفتر مالی میبایست در وضعیت باز باشند");
+            }
         }
+        if (financialDocumentTypeId == 73) {
+            Long countFinancialLedgerPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByOrgAndPeriodId(financialPeriodLedgerStatusRequest.getFinancialPeriodId(),
+                    financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId(), SecurityHelper.getCurrentUser().getOrganizationId());
+            if (countFinancialLedgerPeriod != null) {
+                throw new RuleException("برای حذف این نوع سند ، وضعیت دفتر میبایست در حالت بستن حسابهای موقت یا قبل از آن باشد");
+            }
+
+        }
+        if (documentStatus != 10 && documentStatus != 20) {
+            throw new RuleException("در این وضعیت ، امکان حذف سند وجود ندارد");
+        }
+
         if (financialDocument == null) {
             throw new RuleException("fin.financialDocument.openStatusPeriod");
 
