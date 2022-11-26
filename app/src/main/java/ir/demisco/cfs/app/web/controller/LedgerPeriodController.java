@@ -102,4 +102,11 @@ public class LedgerPeriodController {
         financialLedgerCloseMonthInputRequest.setOrganizationId(organizationId);
         return ResponseEntity.ok(ledgerPeriodService.openingMonth(financialLedgerCloseMonthInputRequest));
     }
+
+    @PostMapping("/permanentCheck")
+    public ResponseEntity<Boolean> permanentCheck(@RequestBody FinancialLedgerCloseMonthInputRequest financialLedgerCloseMonthInputRequest) {
+        Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
+        financialLedgerCloseMonthInputRequest.setOrganizationId(organizationId);
+        return ResponseEntity.ok(ledgerPeriodService.permanentCheck(financialLedgerCloseMonthInputRequest));
+    }
 }

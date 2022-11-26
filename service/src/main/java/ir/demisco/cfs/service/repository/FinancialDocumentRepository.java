@@ -1780,4 +1780,31 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId "
             , nativeQuery = true)
     Long findByDocumentByPeriodIdAndOrgId(Long financialLedgerMonthId, Long financialLedgerPeriodId,Long financialPeriodId,Long organizationId,Long financialLedgerTypeId);
+
+    @Query(value = " SELECT 1 " +
+            "              FROM FNDC.FINANCIAL_DOCUMENT FD " +
+            "             INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP " +
+            "                ON LP.FINANCIAL_PERIOD_ID = FD.FINANCIAL_PERIOD_ID " +
+            "               AND LP.FINANCIAL_LEDGER_TYPE_ID = FD.FINANCIAL_LEDGER_TYPE_ID " +
+            "               AND LP.ID = :financialLedgerPeriodId " +
+            "             INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM " +
+            "                ON LM.FINANCIAL_LEDGER_PERIOD_ID = LP.ID" +
+            "               AND LM.ID = NVL(:financialLedgerMonthId , LM.ID)" +
+            "             INNER JOIN FNPR.FINANCIAL_PERIOD FP" +
+            "                ON FP.ID = FD.FINANCIAL_PERIOD_ID" +
+            "             INNER JOIN FNPR.FINANCIAL_MONTH FM" +
+            "                ON FM.FINANCIAL_PERIOD_ID = FD.FINANCIAL_PERIOD_ID" +
+            "               AND FM.ID = LM.FINANCIAL_MONTH_ID" +
+            "              LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER FDN" +
+            "                ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID" +
+            "               AND FDN.FINANCIAL_NUMBERING_TYPE_ID = 3" +
+            "             WHERE (FDN.ID IS NULL OR FD.PERMANENT_DOCUMENT_NUMBER IS NULL)" +
+            "               AND FD.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "               AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
+            "               AND FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE" +
+            "               AND FD.ORGANIZATION_ID = :organizationId  "
+            , nativeQuery = true)
+    Long findByDocumentByPeriodIdAndOrgIdAndLedgerType(Long financialLedgerPeriodId, Long financialLedgerMonthId,Long financialPeriodId,Long financialLedgerTypeId,Long organizationId);
+
+
 }
