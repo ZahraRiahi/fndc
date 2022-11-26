@@ -1010,4 +1010,15 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
 
     }
 
+    @Override
+    @Transactional(rollbackOn = Throwable.class)
+    public Boolean permanentCheck(FinancialLedgerCloseMonthInputRequest financialLedgerCloseMonthInputRequest) {
+        Long countPermanentCheck = financialDocumentRepository.findByDocumentByPeriodIdAndOrgIdAndLedgerType(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(),
+                financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId(),
+                financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId(), SecurityHelper.getCurrentUser().getOrganizationId());
+        if (countPermanentCheck != null) {
+            return false;
+        }
+        return true;
+    }
 }
