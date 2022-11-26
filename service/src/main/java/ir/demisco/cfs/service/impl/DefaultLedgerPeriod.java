@@ -1018,9 +1018,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
                 financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId(), SecurityHelper.getCurrentUser().getOrganizationId());
         if (countPermanentCheck != null) {
             return false;
-        } else {
-            return true;
         }
-
+        return true;
     }
 }
