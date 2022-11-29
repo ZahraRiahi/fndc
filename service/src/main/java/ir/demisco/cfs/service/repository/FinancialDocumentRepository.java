@@ -1781,7 +1781,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             , nativeQuery = true)
     Long findByDocumentByPeriodIdAndOrgId(Long financialLedgerMonthId, Long financialLedgerPeriodId,Long financialPeriodId,Long organizationId,Long financialLedgerTypeId);
 
-    @Query(value = " SELECT 1 " +
+    @Query(value = " SELECT distinct 1 " +
             "              FROM FNDC.FINANCIAL_DOCUMENT FD " +
             "             INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP " +
             "                ON LP.FINANCIAL_PERIOD_ID = FD.FINANCIAL_PERIOD_ID " +
