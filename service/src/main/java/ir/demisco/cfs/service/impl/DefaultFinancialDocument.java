@@ -557,7 +557,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     entityManager.createNativeQuery(" update  FNDC.FINANCIAL_DOCUMENT FD " +
                             "  SET FD.PERMANENT_DOCUMENT_NUMBER = :newNumber  " +
                             "   WHERE FD.ID = :financialDocumentId ").setParameter("newNumber", newNumber)
-                            .setParameter("financialDocumentItemId", responseFinancialDocumentStatusDto.getId()).executeUpdate();
+                            .setParameter("financialDocumentId", responseFinancialDocumentStatusDto.getId()).executeUpdate();
                     responseFinancialDocumentStatusDto.setFinancialDocumentStatusCode("30");
                 }
             }
@@ -812,7 +812,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public String creatDocumentNumberUpdate(FinancialDocumentNumberDto financialDocumentNumberDto) {
-
         List<FinancialNumberingRecordDto> financialNumberingRecordDtoList = new ArrayList<>();
         AtomicReference<String> documentNumber = new AtomicReference<>("");
         List<Object[]> list = financialDocumentRepository.getSerialNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
