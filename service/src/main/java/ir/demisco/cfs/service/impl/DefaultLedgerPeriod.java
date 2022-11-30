@@ -586,8 +586,11 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         checkLedgerPermissionInputRequest.setLedgerTypeId(financialLedgerClosingTempRequest.getFinancialLedgerTypeId());
         checkLedgerPermissionInputRequest.setActivityCode("FINANCIAL_LEG_TEMPORARY");
         financialLedgerPeriodSecurityService.checkFinancialLedgerPeriodSecurity(checkLedgerPermissionInputRequest);
-
-        Long financialPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodIdDel(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
+        Long periodId = financialPeriodRepository.getFinancialPeriodById(financialLedgerClosingTempRequest.getFinancialPeriodId());
+        if (periodId != null){
+            throw new RuleException("وضعیت دوره مالی مربوط به دفتر در حالت بسته میباشد");
+        }
+            Long financialPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodIdDel(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
         if (financialPeriod != null) {
             throw new RuleException("امکان انجام عملیات به دلیل وجود سند اختتامیه وجود ندارد");
         }
@@ -721,6 +724,11 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         checkLedgerPermissionInputRequest.setLedgerTypeId(financialLedgerClosingTempRequest.getFinancialLedgerTypeId());
         checkLedgerPermissionInputRequest.setActivityCode("FINANCIAL_LEG_PERMANENT");
         financialLedgerPeriodSecurityService.checkFinancialLedgerPeriodSecurity(checkLedgerPermissionInputRequest);
+
+        Long periodId = financialPeriodRepository.getFinancialPeriodById(financialLedgerClosingTempRequest.getFinancialPeriodId());
+        if (periodId != null){
+            throw new RuleException("وضعیت دوره مالی مربوط به دفتر در حالت بسته میباشد");
+        }
 
         Long financialPeriodOpen = financialLedgerPeriodRepository.getFinancialLedgerPeriodByTypeLedgerAndOrgan(financialLedgerClosingTempRequest.getFinancialLedgerTypeId(),
                 SecurityHelper.getCurrentUser().getOrganizationId(), financialLedgerClosingTempRequest.getFinancialPeriodId());
