@@ -33,4 +33,18 @@ public interface LedgerNumberingTypeRepository extends JpaRepository<LedgerNumbe
     @Query("select 1 from LedgerNumberingType lnt where lnt.financialLedgerType.id=:financialLedgerTypeId " +
             "  and lnt.financialNumberingType.id=2 ")
     Long ledgerNumberingTypeByLedgerTypeId(Long financialLedgerTypeId);
+
+    @Query(value = " SELECT 1 " +
+            "                    FROM FNDC.LEDGER_NUMBERING_TYPE NT" +
+            "                   WHERE NT.FINANCIAL_NUMBERING_TYPE_ID = CASE" +
+            "                           WHEN :numberingTypeId = 1 THEN" +
+            "                            2" +
+            "                           WHEN :numberingTypeId = 3 THEN" +
+            "                            3" +
+            "                         END" +
+            "                     AND NT.FINANCIAL_LEDGER_TYPE_ID = " +
+            "                         (SELECT FINANCIAL_LEDGER_TYPE_ID" +
+            "                            FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            "                           WHERE FD.ID = :financialDocumentId )", nativeQuery = true)
+    Long getLedgerNumberingTypeByDocumentId(Long numberingTypeId, Long financialDocumentId);
 }
