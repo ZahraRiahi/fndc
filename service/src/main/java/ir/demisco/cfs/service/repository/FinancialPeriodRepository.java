@@ -2130,7 +2130,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "  FROM QRY "
             , nativeQuery = true)
     List<Object[]> findByFinancialPeriodByCentricBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId
-           ,LocalDateTime periodStartDate, int length, String fromFinancialAccountCode,
+            , LocalDateTime periodStartDate, int length, String fromFinancialAccountCode,
                                                                String toFinancialAccountCode, Long organizationId, Object cnacIdObj1, Long cnacId1, Object cnacIdObj2, Long cnacId2, Object cnatIdObj1, Long cnatId1, Object cnatIdObj2, Long cnatId2, Long remainOption);
 
     @Query(value = " SELECT T.FINANCIAL_PERIOD_ID, T.DOCUMENT_DATE, T.financial_ledger_type_id " +
@@ -2192,6 +2192,11 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           AND TA.ORGANIZATION_ID = :organizationId " +
             "         WHERE trunc(:startDate) BETWEEN trunc(PR.START_DATE) AND trunc(PR.END_DATE) "
             , nativeQuery = true)
-    LocalDateTime getFinancialPeriodByLedgerTypeAndFromDate(Long ledgerTypeId, Long organizationId,LocalDateTime startDate);
+    LocalDateTime getFinancialPeriodByLedgerTypeAndFromDate(Long ledgerTypeId, Long organizationId, LocalDateTime startDate);
 
+    @Query(" SELECT 1" +
+            "      FROM FNPR.FINANCIAL_PERIOD T "  +
+            "     WHERE T.ID = :financialPeriodId " +
+            "       AND T.FINANCIAL_PERIOD_STATUS_ID = 2 ")
+    Long getFinancialPeriodById(Long financialPeriodId);
 }
