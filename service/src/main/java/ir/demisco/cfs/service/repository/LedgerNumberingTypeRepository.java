@@ -6,7 +6,6 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.util.List;
 
-
 public interface LedgerNumberingTypeRepository extends JpaRepository<LedgerNumberingType, Long> {
 
     @Query(value = "select fnnt.id," +
@@ -47,4 +46,10 @@ public interface LedgerNumberingTypeRepository extends JpaRepository<LedgerNumbe
             "                            FROM FNDC.FINANCIAL_DOCUMENT FD" +
             "                           WHERE FD.ID = :financialDocumentId )", nativeQuery = true)
     Long getLedgerNumberingTypeByDocumentId(Long numberingTypeId, Long financialDocumentId);
+
+
+    @Query(value = " SELECT NT.DESCRIPTION " +
+            "                               FROM FNDC.FINANCIAL_NUMBERING_TYPE NT " +
+            "                              WHERE NT.ID = :numberingTypeId  )", nativeQuery = true)
+    String getLedgerNumberingTypeByNumberingTypeId(Long numberingTypeId);
 }
