@@ -2194,9 +2194,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             , nativeQuery = true)
     LocalDateTime getFinancialPeriodByLedgerTypeAndFromDate(Long ledgerTypeId, Long organizationId, LocalDateTime startDate);
 
-    @Query(" SELECT 1" +
-            "      FROM FNPR.FINANCIAL_PERIOD T "  +
-            "     WHERE T.ID = :financialPeriodId " +
-            "       AND T.FINANCIAL_PERIOD_STATUS_ID = 2 ")
+    @Query(" select 1 from FinancialPeriod T " +
+            " where T.id = :financialPeriodId " +
+            " and T.financialPeriodStatus.id=2 ")
     Long getFinancialPeriodById(Long financialPeriodId);
 }
