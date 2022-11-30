@@ -1789,7 +1789,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "               AND LP.ID = :financialLedgerPeriodId " +
             "             INNER JOIN FNDC.FINANCIAL_LEDGER_MONTH LM " +
             "                ON LM.FINANCIAL_LEDGER_PERIOD_ID = LP.ID" +
-            "               AND LM.ID = NVL(:financialLedgerMonthId , LM.ID)" +
+            "   AND (:financialLedgerMonth is null or LM.ID =:financialLedgerMonthId )" +
             "             INNER JOIN FNPR.FINANCIAL_PERIOD FP" +
             "                ON FP.ID = FD.FINANCIAL_PERIOD_ID" +
             "             INNER JOIN FNPR.FINANCIAL_MONTH FM" +
@@ -1804,7 +1804,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "               AND FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE" +
             "               AND FD.ORGANIZATION_ID = :organizationId  "
             , nativeQuery = true)
-    Long findByDocumentByPeriodIdAndOrgIdAndLedgerType(Long financialLedgerPeriodId, Long financialLedgerMonthId,Long financialPeriodId,Long financialLedgerTypeId,Long organizationId);
+    Long findByDocumentByPeriodIdAndOrgIdAndLedgerType(Long financialLedgerPeriodId,Object financialLedgerMonth ,Long financialLedgerMonthId,Long financialPeriodId,Long financialLedgerTypeId,Long organizationId);
 
 
 }

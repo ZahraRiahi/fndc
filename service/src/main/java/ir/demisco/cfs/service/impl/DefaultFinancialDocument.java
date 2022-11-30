@@ -812,6 +812,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public String creatDocumentNumberUpdate(FinancialDocumentNumberDto financialDocumentNumberDto) {
+
         List<FinancialNumberingRecordDto> financialNumberingRecordDtoList = new ArrayList<>();
         AtomicReference<String> documentNumber = new AtomicReference<>("");
         List<Object[]> list = financialDocumentRepository.getSerialNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());

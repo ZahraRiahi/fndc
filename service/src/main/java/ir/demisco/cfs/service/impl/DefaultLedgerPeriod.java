@@ -369,9 +369,9 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         FinancialLedgerCloseMonthInputRequest financialLedgerCloseMonthInputRequest = new FinancialLedgerCloseMonthInputRequest();
         financialLedgerCloseMonthInputRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         financialLedgerCloseMonthInputRequest.setFinancialLedgerMonthId(null);
-        financialLedgerCloseMonthInputRequest.setFinancialLedgerPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId());
-        financialLedgerCloseMonthInputRequest.setFinancialPeriodId(financialLedgerCloseMonthInputRequest.getFinancialPeriodId());
-        financialLedgerCloseMonthInputRequest.setFinancialLedgerTypeId(financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId());
+        financialLedgerCloseMonthInputRequest.setFinancialLedgerPeriodId(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
+        financialLedgerCloseMonthInputRequest.setFinancialPeriodId(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
+        financialLedgerCloseMonthInputRequest.setFinancialLedgerTypeId(financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
         Boolean permanentCheck = permanentCheck(financialLedgerCloseMonthInputRequest);
         if (permanentCheck.equals(false)) {
             throw new RuleException("شماره دائم برای تمامی اسناد میبایست ثبت شده باشد");
@@ -587,10 +587,10 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         checkLedgerPermissionInputRequest.setActivityCode("FINANCIAL_LEG_TEMPORARY");
         financialLedgerPeriodSecurityService.checkFinancialLedgerPeriodSecurity(checkLedgerPermissionInputRequest);
         Long periodId = financialPeriodRepository.getFinancialPeriodById(financialLedgerClosingTempRequest.getFinancialPeriodId());
-        if (periodId != null){
+        if (periodId != null) {
             throw new RuleException("وضعیت دوره مالی مربوط به دفتر در حالت بسته میباشد");
         }
-            Long financialPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodIdDel(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
+        Long financialPeriod = financialLedgerPeriodRepository.getFinancialLedgerPeriodByPeriodIdDel(financialLedgerClosingTempRequest.getFinancialLedgerPeriodId());
         if (financialPeriod != null) {
             throw new RuleException("امکان انجام عملیات به دلیل وجود سند اختتامیه وجود ندارد");
         }
@@ -726,7 +726,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         financialLedgerPeriodSecurityService.checkFinancialLedgerPeriodSecurity(checkLedgerPermissionInputRequest);
 
         Long periodId = financialPeriodRepository.getFinancialPeriodById(financialLedgerClosingTempRequest.getFinancialPeriodId());
-        if (periodId != null){
+        if (periodId != null) {
             throw new RuleException("وضعیت دوره مالی مربوط به دفتر در حالت بسته میباشد");
         }
 
@@ -1050,8 +1050,14 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
     @Override
     @Transactional(rollbackOn = Throwable.class)
     public Boolean permanentCheck(FinancialLedgerCloseMonthInputRequest financialLedgerCloseMonthInputRequest) {
+        Object financialLedgerMonthId = null;
+        if (financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId() != null) {
+            financialLedgerMonthId = "financialLedgerMonthId";
+        } else {
+            financialLedgerCloseMonthInputRequest.setFinancialLedgerMonthId(0L);
+        }
         Long countPermanentCheck = financialDocumentRepository.findByDocumentByPeriodIdAndOrgIdAndLedgerType(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId(),
-                financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId(),
+                financialLedgerMonthId, financialLedgerCloseMonthInputRequest.getFinancialLedgerMonthId(), financialLedgerCloseMonthInputRequest.getFinancialPeriodId(),
                 financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId(), SecurityHelper.getCurrentUser().getOrganizationId());
         if (countPermanentCheck != null) {
             return false;
