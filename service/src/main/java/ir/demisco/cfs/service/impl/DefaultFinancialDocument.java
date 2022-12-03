@@ -106,14 +106,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialPeriodRepository financialPeriodRepository;
     private final FinancialDocumentTypeRepository financialDocumentTypeRepository;
     private final FinancialLedgerPeriodRepository financialLedgerPeriodRepository;
-    private final FinancialDocumentStatusRepository financialDocumentStatusRepository;
     private final LedgerNumberingTypeRepository ledgerNumberingTypeRepository;
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
                                     FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                     FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
-                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialPeriodRepository financialPeriodRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialDocumentStatusRepository financialDocumentStatusRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository) {
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialPeriodRepository financialPeriodRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -132,7 +131,6 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.financialPeriodRepository = financialPeriodRepository;
         this.financialDocumentTypeRepository = financialDocumentTypeRepository;
         this.financialLedgerPeriodRepository = financialLedgerPeriodRepository;
-        this.financialDocumentStatusRepository = financialDocumentStatusRepository;
         this.ledgerNumberingTypeRepository = ledgerNumberingTypeRepository;
     }
 
@@ -557,10 +555,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
                     if (newNumber == null) {
                         throw new RuleException("اشکال در تخصیص شماره دائم به سند.");
                     }
-                    entityManager.createNativeQuery(" update  FNDC.FINANCIAL_DOCUMENT FD " +
-                            "  SET FD.PERMANENT_DOCUMENT_NUMBER = :newNumber  " +
-                            "   WHERE FD.ID = :financialDocumentId ").setParameter("newNumber", newNumber)
-                            .setParameter("financialDocumentId", responseFinancialDocumentStatusDto.getId()).executeUpdate();
+                    financialDocument.setPermanentDocumentNumber(newNumber);
                     responseFinancialDocumentStatusDto.setFinancialDocumentStatusCode("30");
                 }
             }
@@ -568,15 +563,11 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             if (responseFinancialDocumentStatusDto.getFinancialDocumentStatusCode().equals("10") && financialDocumentTypeId == 73) {
                 financialDocumentNumberRepository.findByFinancialDocumentNumberByDocumentId(responseFinancialDocumentStatusDto.getId())
                         .forEach(financialDocumentNumberRepository::delete);
-                entityManager.createNativeQuery(" update  FNDC.FINANCIAL_DOCUMENT FD " +
-                        "  SET FD.PERMANENT_DOCUMENT_NUMBER = null  " +
-                        "   WHERE FD.ID = :financialDocumentId ")
-                        .setParameter("financialDocumentItemId", responseFinancialDocumentStatusDto.getId()).executeUpdate();
+                financialDocument.setPermanentDocumentNumber(null);
             }
 
         }
         financialDocument.setFinancialDocumentStatus(financialDocumentStatus);
-        financialDocument.setFinancialDocumentStatus(financialDocumentStatusRepository.getOne(3L));
         financialDocumentRepository.save(financialDocument);
         responseFinancialDocumentSetStatusDto = convertFinancialDocumentToDto(financialDocument);
         return ResponseEntity.ok(responseFinancialDocumentSetStatusDto);
