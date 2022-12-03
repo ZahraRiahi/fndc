@@ -2172,6 +2172,12 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "    INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
             "    ON LP.FINANCIAL_PERIOD_ID = PR.ID" +
             "    AND LP.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
+            " AND EXISTS (SELECT 1 " +
+            "          FROM FNDC.FINANCIAL_DOCUMENT FD_OUTER" +
+            "         WHERE FD_OUTER.FINANCIAL_PERIOD_ID = PR.ID" +
+            "           AND FD_OUTER.ORGANIZATION_ID = :organizationId " +
+            "           AND FD_OUTER.FINANCIAL_LEDGER_TYPE_ID =" +
+            "               LP.FINANCIAL_LEDGER_TYPE_ID)" +
             "    AND NOT EXISTS " +
             "            (SELECT 1" +
             "                    FROM FNDC.FINANCIAL_DOCUMENT FD " +
