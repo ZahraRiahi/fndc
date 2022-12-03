@@ -50,6 +50,6 @@ public interface LedgerNumberingTypeRepository extends JpaRepository<LedgerNumbe
 
     @Query(value = " SELECT NT.DESCRIPTION " +
             "                               FROM FNDC.FINANCIAL_NUMBERING_TYPE NT " +
-            "                              WHERE NT.ID = :numberingTypeId  )", nativeQuery = true)
+            "                              WHERE NT.ID = :numberingTypeId  ", nativeQuery = true)
     String getLedgerNumberingTypeByNumberingTypeId(Long numberingTypeId);
 }

@@ -49,6 +49,7 @@ import ir.demisco.cfs.service.repository.FinancialLedgerPeriodRepository;
 import ir.demisco.cfs.service.repository.FinancialNumberingFormatRepository;
 import ir.demisco.cfs.service.repository.FinancialNumberingTypeRepository;
 import ir.demisco.cfs.service.repository.FinancialPeriodRepository;
+import ir.demisco.cfs.service.repository.LedgerNumberingTypeRepository;
 import ir.demisco.cfs.service.repository.NumberingFormatSerialRepository;
 import ir.demisco.cloud.core.middle.exception.RuleException;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
@@ -106,12 +107,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     private final FinancialDocumentTypeRepository financialDocumentTypeRepository;
     private final FinancialLedgerPeriodRepository financialLedgerPeriodRepository;
     private final FinancialDocumentStatusRepository financialDocumentStatusRepository;
+    private final LedgerNumberingTypeRepository ledgerNumberingTypeRepository;
 
     public DefaultFinancialDocument(FinancialDocumentRepository financialDocumentRepository, FinancialDocumentStatusRepository documentStatusRepository,
                                     FinancialDocumentItemRepository financialDocumentItemRepository,
                                     FinancialDocumentReferenceRepository financialDocumentReferenceRepository,
                                     FinancialDocumentItemCurrencyRepository documentItemCurrencyRepository, FinancialAccountRepository financialAccountRepository,
-                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialPeriodRepository financialPeriodRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialDocumentStatusRepository financialDocumentStatusRepository) {
+                                    EntityManager entityManager, CentricAccountRepository centricAccountRepository, FinancialNumberingFormatRepository financialNumberingFormatRepository, NumberingFormatSerialRepository numberingFormatSerialRepository, FinancialDocumentNumberRepository financialDocumentNumberRepository, FinancialNumberingTypeRepository financialNumberingTypeRepository, FinancialDocumentItemCurrencyRepository financialDocumentItemCurrencyRepository, FinancialPeriodService financialPeriodService, FinancialDocumentSecurityService financialDocumentSecurityService, FinancialPeriodRepository financialPeriodRepository, FinancialDocumentTypeRepository financialDocumentTypeRepository, FinancialLedgerPeriodRepository financialLedgerPeriodRepository, FinancialDocumentStatusRepository financialDocumentStatusRepository, LedgerNumberingTypeRepository ledgerNumberingTypeRepository) {
         this.financialDocumentRepository = financialDocumentRepository;
         this.documentStatusRepository = documentStatusRepository;
         this.financialDocumentItemRepository = financialDocumentItemRepository;
@@ -131,6 +133,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         this.financialDocumentTypeRepository = financialDocumentTypeRepository;
         this.financialLedgerPeriodRepository = financialLedgerPeriodRepository;
         this.financialDocumentStatusRepository = financialDocumentStatusRepository;
+        this.ledgerNumberingTypeRepository = ledgerNumberingTypeRepository;
     }
 
 
@@ -812,6 +815,13 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public String creatDocumentNumberUpdate(FinancialDocumentNumberDto financialDocumentNumberDto) {
+        Long LedgerNumberingTypeDocumentId = ledgerNumberingTypeRepository.getLedgerNumberingTypeByDocumentId(financialDocumentNumberDto.getNumberingType(), financialDocumentNumberDto.getFinancialDocumentId());
+        if (LedgerNumberingTypeDocumentId == null) {
+            String numberingTypeDescription = ledgerNumberingTypeRepository.getLedgerNumberingTypeByNumberingTypeId(financialDocumentNumberDto.getNumberingType());
+
+            throw new RuleException( "فرمت شماره گذاری ".concat(numberingTypeDescription.concat(" برای این دفتر مشخص نشده است ")));
+
+        }
         List<FinancialNumberingRecordDto> financialNumberingRecordDtoList = new ArrayList<>();
         AtomicReference<String> documentNumber = new AtomicReference<>("");
         List<Object[]> list = financialDocumentRepository.getSerialNumber(SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentNumberDto.getFinancialDocumentId(), financialDocumentNumberDto.getNumberingType());
