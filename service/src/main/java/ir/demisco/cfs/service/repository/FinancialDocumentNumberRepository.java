@@ -52,7 +52,7 @@ public interface FinancialDocumentNumberRepository extends JpaRepository<Financi
             "           AND FD.FINANCIAL_PERIOD_ID = :financialPeriodId) ", nativeQuery = true)
     List<FinancialDocumentNumber> getFinancialDocumentNumberByOrgAndPeriodId(Long financialLedgerMonthId, Long organizationId, Long financialLedgerTypeId,Long financialPeriodId);
 
-    @Query(value = "   select T  FROM FNDC.FINANCIAL_DOCUMENT_NUMBER T " +
+    @Query(value = "   select T.*  FROM FNDC.FINANCIAL_DOCUMENT_NUMBER T " +
             " WHERE EXISTS (SELECT 1 " +
             "          FROM FNDC.FINANCIAL_NUMBERING_TYPE TT " +
             "         WHERE TT.TYPE_STATUS = 3 " +
