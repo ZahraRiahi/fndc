@@ -1949,7 +1949,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         NVL2(CODE_CNAC3, '-' || CODE_CNAC3, '') || NVL(NAME_CNAC3, '') ||" +
             "         NVL2(CODE_CNAC4, '-' || CODE_CNAC4, '') || NVL(NAME_CNAC4, '') ||" +
             "         NVL2(CODE_CNAC5, '-' || CODE_CNAC5, '') || NVL(NAME_CNAC5, '') ||" +
-            "         NVL2(CODE_CNAC6, '-' || CODE_CNAC6, '') || NVL(NAME_CNAC6, '') CENTRIC_ACCOUNT_DES" +
+            "         NVL2(CODE_CNAC6, '-' || CODE_CNAC6, '') || NVL(NAME_CNAC6, '') CENTRIC_ACCOUNT_DES , " +
+            " CNAC1_ID, " +
+            "     CNAC2_ID " +
             "    FROM (SELECT FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
             "                 FA2.ID                          FINANCIAL_ACCOUNT_ID," +
             "                 FA2.CODE                        FINANCIAL_ACCOUNT_CODE," +
@@ -1985,8 +1987,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                        FDI.CREDIT_AMOUNT" +
             "                       ELSE" +
             "                        0" +
-            "                     END) BEF_CREDIT," +
-
+            "                     END) BEF_CREDIT, " +
+            " CNAC1.ID CNAC1_ID, " +
+            "                 CNAC2.ID CNAC2_ID, " +
             "                 CNAC1.CODE CODE_CNAC1," +
             "                 CNAC2.CODE CODE_CNAC2," +
             "                 CNAC3.CODE CODE_CNAC3," +
@@ -2062,7 +2065,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 :cnacId1 = CNAC3.ID OR :cnacId1 = CNAC4.ID OR" +
             "                 :cnacId1 = CNAC5.ID OR :cnacId1 = CNAC6.ID))" +
             "                 OR (:cnacIdObj1 IS NULL AND :cnacIdObj2 IS NULL)) " +
-
             "             AND ((:cnatIdObj1 IS NOT NULL AND :cnatIdObj2 IS NOT NULL AND" +
             "                 ((:cnatId1 = CNAT1.ID AND CNAT2.ID = :cnatId2) OR" +
             "                 (:cnatId1 = CNAT2.ID AND CNAT3.ID = :cnatId2) OR" +
@@ -2075,7 +2077,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                 :cnatId1 = CNAT3.ID OR :cnatId1 = CNAT4.ID OR" +
             "                 :cnatId1 = CNAT5.ID OR :cnatId1 = CNAT6.ID))" +
             "                 OR (:cnatIdObj1 IS NULL AND :cnatIdObj2 IS NULL))" +
-
             "           GROUP BY FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
             "                    FA2.ID," +
             "                    FA2.CODE," +
