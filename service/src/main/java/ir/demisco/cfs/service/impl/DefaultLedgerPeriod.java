@@ -635,6 +635,17 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         checkLedgerPermissionInputRequest.setLedgerTypeId(financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
         checkLedgerPermissionInputRequest.setActivityCode("FINANCIAL_LEG_PERMANENT");
         financialLedgerPeriodSecurityService.checkFinancialLedgerPeriodSecurity(checkLedgerPermissionInputRequest);
+
+        FinancialLedgerCloseMonthInputRequest financialLedgerCloseMonthInputRequest = new FinancialLedgerCloseMonthInputRequest();
+        financialLedgerCloseMonthInputRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
+        financialLedgerCloseMonthInputRequest.setFinancialLedgerMonthId(null);
+        financialLedgerCloseMonthInputRequest.setFinancialLedgerPeriodId(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
+        financialLedgerCloseMonthInputRequest.setFinancialPeriodId(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
+        financialLedgerCloseMonthInputRequest.setFinancialLedgerTypeId(financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
+        Boolean permanentCheck = permanentCheck(financialLedgerCloseMonthInputRequest);
+        if (permanentCheck.equals(false)) {
+            throw new RuleException("شماره دائم برای تمامی اسناد میبایست ثبت شده باشد");
+        }
         List<Object[]> financialPeriodDateAndDes =
                 financialPeriodRepository.getFinancialPeriodByDateAndDes(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
 
