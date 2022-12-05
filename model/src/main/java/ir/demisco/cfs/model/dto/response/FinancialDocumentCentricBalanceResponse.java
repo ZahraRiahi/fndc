@@ -11,6 +11,8 @@ public class FinancialDocumentCentricBalanceResponse {
     private String remCredit;
     private String centricAccountDescription;
     private Long recordType;
+    private Long cnacId1;
+    private Long cnacId2;
     private FinancialAccountTurnOverSummarizeResponse financialAccountTurnOverSummarizeModel;
 
     public String getFinancialAccountDescription() {
@@ -93,6 +95,22 @@ public class FinancialDocumentCentricBalanceResponse {
         this.recordType = recordType;
     }
 
+    public Long getCnacId1() {
+        return cnacId1;
+    }
+
+    public void setCnacId1(Long cnacId1) {
+        this.cnacId1 = cnacId1;
+    }
+
+    public Long getCnacId2() {
+        return cnacId2;
+    }
+
+    public void setCnacId2(Long cnacId2) {
+        this.cnacId2 = cnacId2;
+    }
+
     public FinancialAccountTurnOverSummarizeResponse getFinancialAccountTurnOverSummarizeModel() {
         return financialAccountTurnOverSummarizeModel;
     }
@@ -104,6 +122,7 @@ public class FinancialDocumentCentricBalanceResponse {
     public static FinancialDocumentCentricBalanceResponse.Builder builder() {
         return new FinancialDocumentCentricBalanceResponse.Builder();
     }
+
     public static final class Builder {
         private FinancialDocumentCentricBalanceResponse financialDocumentCentricBalanceResponse;
 
@@ -119,10 +138,12 @@ public class FinancialDocumentCentricBalanceResponse {
             financialDocumentCentricBalanceResponse.setFinancialAccountDescription(financialAccountDescription);
             return this;
         }
+
         public Builder financialAccountId(Long financialAccountId) {
             financialDocumentCentricBalanceResponse.setFinancialAccountId(financialAccountId);
             return this;
         }
+
         public Builder sumDebit(String sumDebit) {
             financialDocumentCentricBalanceResponse.setSumDebit(sumDebit);
             return this;
@@ -160,6 +181,16 @@ public class FinancialDocumentCentricBalanceResponse {
 
         public Builder recordType(Long recordType) {
             financialDocumentCentricBalanceResponse.setRecordType(recordType);
+            return this;
+        }
+
+        public Builder cnacId1(Long cnacId1) {
+            financialDocumentCentricBalanceResponse.setCnacId1(cnacId1);
+            return this;
+        }
+
+        public Builder cnacId2(Long cnacId2) {
+            financialDocumentCentricBalanceResponse.setCnacId2(cnacId2);
             return this;
         }
 
