@@ -1755,7 +1755,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "   AND FD.ORGANIZATION_ID = :organizationId  " +
             " AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId "
             , nativeQuery = true)
-    String findByDocumentIdAndLedgerMonth(Long financialLedgerMonthId, Long financialLedgerPeriodId, Long financialPeriodId, Long organizationId,Long financialLedgerTypeId);
+    String findByDocumentIdAndLedgerMonth(Long financialLedgerMonthId, Long financialLedgerPeriodId, Long financialPeriodId, Long organizationId, Long financialLedgerTypeId);
 
 
     @Query(value = " SELECT FD.ID" +
@@ -1779,7 +1779,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "                   AND FD.ORGANIZATION_ID = :organizationId " +
             " AND FD.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId "
             , nativeQuery = true)
-    Long findByDocumentByPeriodIdAndOrgId(Long financialLedgerMonthId, Long financialLedgerPeriodId,Long financialPeriodId,Long organizationId,Long financialLedgerTypeId);
+    Long findByDocumentByPeriodIdAndOrgId(Long financialLedgerMonthId, Long financialLedgerPeriodId, Long financialPeriodId, Long organizationId, Long financialLedgerTypeId);
 
     @Query(value = " SELECT distinct 1 " +
             "              FROM FNDC.FINANCIAL_DOCUMENT FD " +
@@ -1804,7 +1804,15 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "               AND FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE" +
             "               AND FD.ORGANIZATION_ID = :organizationId  "
             , nativeQuery = true)
-    Long findByDocumentByPeriodIdAndOrgIdAndLedgerType(Long financialLedgerPeriodId,Object financialLedgerMonth ,Long financialLedgerMonthId,Long financialPeriodId,Long financialLedgerTypeId,Long organizationId);
+    Long findByDocumentByPeriodIdAndOrgIdAndLedgerType(Long financialLedgerPeriodId, Object financialLedgerMonth, Long financialLedgerMonthId, Long financialPeriodId, Long financialLedgerTypeId, Long organizationId);
 
+    @Query(value = " SELECT 1 " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT T " +
+            " WHERE T.FINANCIAL_DOCUMENT_TYPE_ID = 73 " +
+            "   AND T.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
+            "   AND T.FINANCIAL_PERIOD_ID = :financialPeriodId " +
+            "   AND T.ORGANIZATION_ID = :organizationId "
+            , nativeQuery = true)
+    Long getFinancialDocumentByPeriodId(Long financialLedgerTypeId,Long financialPeriodId,Long organizationId);
 
 }
