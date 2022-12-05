@@ -11,6 +11,8 @@ public class FinancialAccountTurnOverSummarizeResponse {
     private String befDebit;
     private String befCredit;
     private Long recordType;
+    private Long cnacId1;
+    private Long cnacId2;
     private String centricAccountDescription;
 
     public Long getSumDebit() {
@@ -72,6 +74,7 @@ public class FinancialAccountTurnOverSummarizeResponse {
     public void setRemainCredit(String remainCredit) {
         this.remainCredit = remainCredit;
     }
+
     public String getBefDebit() {
         return befDebit;
     }
@@ -79,6 +82,7 @@ public class FinancialAccountTurnOverSummarizeResponse {
     public void setBefDebit(String befDebit) {
         this.befDebit = befDebit;
     }
+
     public String getBefCredit() {
         return befCredit;
     }
@@ -86,6 +90,7 @@ public class FinancialAccountTurnOverSummarizeResponse {
     public void setBefCredit(String befCredit) {
         this.befCredit = befCredit;
     }
+
     public String getCentricAccountDescription() {
         return centricAccountDescription;
     }
@@ -93,12 +98,31 @@ public class FinancialAccountTurnOverSummarizeResponse {
     public void setCentricAccountDescription(String centricAccountDescription) {
         this.centricAccountDescription = centricAccountDescription;
     }
+
     public void setRecordType(Long recordType) {
         this.recordType = recordType;
     }
+
+    public Long getCnacId1() {
+        return cnacId1;
+    }
+
+    public void setCnacId1(Long cnacId1) {
+        this.cnacId1 = cnacId1;
+    }
+
+    public Long getCnacId2() {
+        return cnacId2;
+    }
+
+    public void setCnacId2(Long cnacId2) {
+        this.cnacId2 = cnacId2;
+    }
+
     public static FinancialAccountTurnOverSummarizeResponse.Builder builder() {
         return new FinancialAccountTurnOverSummarizeResponse.Builder();
     }
+
     public static final class Builder {
         private FinancialAccountTurnOverSummarizeResponse financialAccountTurnOverSummarizeResponse;
 
@@ -139,24 +163,37 @@ public class FinancialAccountTurnOverSummarizeResponse {
             financialAccountTurnOverSummarizeResponse.setRecordType(recordType);
             return this;
         }
+
         public Builder remainDebit(String remainDebit) {
             financialAccountTurnOverSummarizeResponse.setRemainDebit(remainDebit);
             return this;
         }
+
         public Builder remainCredit(String remainCredit) {
             financialAccountTurnOverSummarizeResponse.setRemainCredit(remainCredit);
             return this;
         }
+
         public Builder befDebit(String befDebit) {
             financialAccountTurnOverSummarizeResponse.setBefDebit(befDebit);
             return this;
         }
+
         public Builder befCredit(String befCredit) {
             financialAccountTurnOverSummarizeResponse.setBefCredit(befCredit);
             return this;
         }
+
         public Builder centricAccountDescription(String centricAccountDescription) {
             financialAccountTurnOverSummarizeResponse.setCentricAccountDescription(centricAccountDescription);
+            return this;
+        }
+        public Builder cnacId1(Long cnacId1) {
+            financialAccountTurnOverSummarizeResponse.setCnacId1(cnacId1);
+            return this;
+        }
+        public Builder cnacId2(Long cnacId2) {
+            financialAccountTurnOverSummarizeResponse.setCnacId2(cnacId2);
             return this;
         }
         public FinancialAccountTurnOverSummarizeResponse build() {

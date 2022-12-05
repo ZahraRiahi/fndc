@@ -1176,11 +1176,10 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         FinancialAccountCentricBalanceResponse response = new FinancialAccountCentricBalanceResponse();
         list.forEach((Object[] item) -> {
 
-            if (item[10] != null && (Long.parseLong(item[10].toString()) == 1 || Long.parseLong(item[10].toString()) == 2)) {
+            if (item[12] != null && (Long.parseLong(item[12].toString()) == 1 || Long.parseLong(item[12].toString()) == 2)) {
                 FinancialDocumentCentricBalanceResponse recordsResponse = new FinancialDocumentCentricBalanceResponse();
                 recordsResponse.setFinancialAccountDescription(getItemForString(item, 0));
                 recordsResponse.setFinancialAccountId(getItemForLong(item, 1));
-
                 recordsResponse.setSumDebit(getItemForString(item, 2));
                 recordsResponse.setSumCredit(getItemForString(item, 3));
                 recordsResponse.setBefDebit(getItemForString(item, 4));
@@ -1188,7 +1187,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 recordsResponse.setRemDebit(getItemForString(item, 6));
                 recordsResponse.setRemCredit(getItemForString(item, 7));
                 recordsResponse.setCentricAccountDescription(getItemForString(item, 8));
-                recordsResponse.setRecordType(getItemForLong(item, 10));
+                recordsResponse.setCnacId1(getItemForLong(item, 10));
+                recordsResponse.setCnacId2(getItemForLong(item, 11));
+                recordsResponse.setRecordType(getItemForLong(item, 12));
                 recordsResponseList.add(recordsResponse);
                 response.setFinancialAccountCentricBalanceRecordsModel(recordsResponseList);
             } else {
@@ -1202,7 +1203,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 accountTurnOverSummarizeResponse.setRemainCredit(getItemForString(item, 7));
                 accountTurnOverSummarizeResponse.setCentricAccountDescription(getItemForString(item, 8));
                 accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForString(item, 9));
-                accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 10));
+                accountTurnOverSummarizeResponse.setCnacId1(getItemForLong(item, 10));
+                accountTurnOverSummarizeResponse.setCnacId2(getItemForLong(item, 11));
+                accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 12));
                 outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
                 response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
             }

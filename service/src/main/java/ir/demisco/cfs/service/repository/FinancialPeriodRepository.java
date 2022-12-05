@@ -1949,9 +1949,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         NVL2(CODE_CNAC3, '-' || CODE_CNAC3, '') || NVL(NAME_CNAC3, '') ||" +
             "         NVL2(CODE_CNAC4, '-' || CODE_CNAC4, '') || NVL(NAME_CNAC4, '') ||" +
             "         NVL2(CODE_CNAC5, '-' || CODE_CNAC5, '') || NVL(NAME_CNAC5, '') ||" +
-            "         NVL2(CODE_CNAC6, '-' || CODE_CNAC6, '') || NVL(NAME_CNAC6, '') CENTRIC_ACCOUNT_DES , " +
+            "         NVL2(CODE_CNAC6, '-' || CODE_CNAC6, '') || NVL(NAME_CNAC6, '') CENTRIC_ACCOUNT_DES ," +
             " CNAC1_ID, " +
-            "     CNAC2_ID " +
+            "     CNAC2_ID  " +
             "    FROM (SELECT FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
             "                 FA2.ID                          FINANCIAL_ACCOUNT_ID," +
             "                 FA2.CODE                        FINANCIAL_ACCOUNT_CODE," +
@@ -1987,8 +1987,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                        FDI.CREDIT_AMOUNT" +
             "                       ELSE" +
             "                        0" +
-            "                     END) BEF_CREDIT, " +
-            " CNAC1.ID CNAC1_ID, " +
+            "                     END) BEF_CREDIT," +
+            " CNAC1.ID CNAC1_ID," +
             "                 CNAC2.ID CNAC2_ID, " +
             "                 CNAC1.CODE CODE_CNAC1," +
             "                 CNAC2.CODE CODE_CNAC2," +
@@ -2081,7 +2081,9 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                    FA2.ID," +
             "                    FA2.CODE," +
             "                    FA2.DESCRIPTION," +
-            "                    FAS.SEQUENCE," +
+            "                    FAS.SEQUENCE, " +
+            " CNAC1.ID, " +
+            "                    CNAC2.ID, " +
             "                    CNAC1.CODE," +
             "                    CNAC2.CODE," +
             "                    CNAC3.CODE," +
@@ -2114,6 +2116,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "       REM_CREDIT," +
             "       CENTRIC_ACCOUNT_DES," +
             "       0                      SUMMERIZE_AMOUNT," +
+            "       CNAC1_ID, " +
+            "       CNAC2_ID, " +
             "       1                      AS RECORD_TYPE" +
             "  FROM QRY " +
             " UNION " +
@@ -2127,6 +2131,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "        SUM(REM_CREDIT)REM_CREDIT," +
             "       NULL CENTRIC_ACCOUNT_DES," +
             "    (SUM(SUM_DEBIT) + SUM (BEF_DEBIT)) -   (SUM(SUM_CREDIT) + SUM(BEF_CREDIT)) SUMMERIZE_AMOUNT," +
+            " NULL CNAC1_ID, " +
+            "       NULL CNAC2_ID, " +
             "       3 AS RECORD_TYPE " +
             "  FROM QRY "
             , nativeQuery = true)
