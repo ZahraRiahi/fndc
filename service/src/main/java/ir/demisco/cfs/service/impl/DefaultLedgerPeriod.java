@@ -430,7 +430,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
 
         List<FinancialLedgerClosingTempOutputResponse> getDocumentItemsForLedgerOutput = financialLedgerPeriodDocItemsService.getFinancialLedgerPeriodDocItems(getDocumentItemsForLedgerInputRequest);
         if (getDocumentItemsForLedgerOutput.isEmpty()) {
-            throw new RuleException("هیچ ردیفی برای ثبت در سند وجود ندارد.");
+            throw new RuleException("اشکال در محاسبه ردیفهای سند بستن حسابهای موقت ");
         }
         getDocumentItemsForLedgerOutput.forEach((FinancialLedgerClosingTempOutputResponse financialLedgerClosingTempOutputResponse) -> {
             FinancialDocumentItem financialDocumentItemSave = new FinancialDocumentItem();
@@ -599,6 +599,13 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         if (financialPeriodTemprory == null) {
             throw new RuleException("سند بستن حسابهای سود و زیانی پیدا نشد");
         }
+
+        Long financialDocumentPeriod = financialDocumentRepository.getFinancialDocumentByPeriodId(financialLedgerClosingTempRequest.getFinancialLedgerTypeId(), financialLedgerClosingTempRequest.getFinancialPeriodId(),
+                SecurityHelper.getCurrentUser().getOrganizationId());
+        if (financialDocumentPeriod != null) {
+            throw new RuleException(" ابتدا سند تعدیل ماهیت را حذف نمایید");
+        }
+
         financialDocumentNumberRepository.findByFinancialDocumentNumberAndFinancialDocumentId(financialPeriodTemprory)
                 .forEach(financialDocumentNumberRepository::delete);
 
@@ -698,7 +705,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         getDocumentItemsForLedgerInputRequest.setFinancialPeriodDes(financialLedgerClosingTempInputRequest.getFinancialPeriodDes());
         List<FinancialLedgerClosingTempOutputResponse> getDocumentItemsForLedgerOutput = financialLedgerPeriodDocItemsService.getFinancialLedgerPeriodDocItems(getDocumentItemsForLedgerInputRequest);
         if (getDocumentItemsForLedgerOutput.isEmpty()) {
-            throw new RuleException("هیچ ردیفی برای ثبت در سند وجود ندارد.");
+            throw new RuleException("اشکال در محاسبه ردیفهای سند بستن حسابهای دائم");
         }
         getDocumentItemsForLedgerOutput.forEach((FinancialLedgerClosingTempOutputResponse financialLedgerClosingTempOutputResponse) -> {
             FinancialDocumentItem financialDocumentItemSave = new FinancialDocumentItem();
