@@ -948,7 +948,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
             }
 
         }
-        if (documentStatus != 10 && documentStatus != 20) {
+        if (documentStatus != 1 && documentStatus != 2) {
             throw new RuleException("در این وضعیت ، امکان حذف سند وجود ندارد");
         }
 
