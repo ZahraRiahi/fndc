@@ -257,7 +257,6 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             " and not exists (select 1 from FinancialAccount fa2 where fa2.financialAccountParent.id=fa.id and fa2.deletedDate is null) " +
             " and fs.flagShowInAcc=1 " +
             " and fa.disableDate is null"
-
     )
     Long getFinancialAccount(Long financialDocumentId);
 
@@ -521,6 +520,11 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
     List<FinancialDocumentItem> getFinancialDocumentItemByDocumentId(Long financialDocumentItemId);
 
     @Query("select FDI from FinancialDocumentItem FDI where  FDI.financialDocument.id=:prevDocumentPermanentId ")
-    List<FinancialDocumentItem>  getDocumentItemByDocumentIdAndDesc(Long prevDocumentPermanentId);
+    List<FinancialDocumentItem> getDocumentItemByDocumentIdAndDesc(Long prevDocumentPermanentId);
 
+    @Query(value = " SELECT SUM(FI.DEBIT_AMOUNT) - SUM(FI.CREDIT_AMOUNT) " +
+            "  FROM FNDC.FINANCIAL_DOCUMENT_ITEM FI " +
+            " WHERE FI.FINANCIAL_DOCUMENT_ID = :newDocId "
+            , nativeQuery = true)
+    Long getDocumentItemByIdByNewDocId(Long newDocId);
 }
