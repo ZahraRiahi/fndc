@@ -449,6 +449,8 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             financialDocumentItemRepository.save(financialDocumentItemSave);
         });
 
+        financialDocumentItemRepository.getDocumentItemByIdByNewDocId(financialDocumentNumberDto.getFinancialDocumentId());
+
         entityManager.createNativeQuery(" Update FNDC.FINANCIAL_LEDGER_PERIOD LP " +
                 "  SET LP.FINANCIAL_DOCUMENT_TEMPRORY_ID = :newDocId , LP.FIN_LEDGER_PERIOD_STAT_ID = 3  " +
                 " WHERE LP.ID = :financialLedgerPeriodId " +
@@ -820,9 +822,9 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         FinancialLedgerCloseMonthInputRequest financialLedgerCloseMonthInputRequest = new FinancialLedgerCloseMonthInputRequest();
         financialLedgerCloseMonthInputRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
         financialLedgerCloseMonthInputRequest.setFinancialLedgerMonthId(null);
-        financialLedgerCloseMonthInputRequest.setFinancialLedgerPeriodId(financialLedgerCloseMonthInputRequest.getFinancialLedgerPeriodId());
-        financialLedgerCloseMonthInputRequest.setFinancialPeriodId(financialLedgerCloseMonthInputRequest.getFinancialPeriodId());
-        financialLedgerCloseMonthInputRequest.setFinancialLedgerTypeId(financialLedgerCloseMonthInputRequest.getFinancialLedgerTypeId());
+        financialLedgerCloseMonthInputRequest.setFinancialLedgerPeriodId(financialLedgerClosingTempInputRequest.getFinancialLedgerPeriodId());
+        financialLedgerCloseMonthInputRequest.setFinancialPeriodId(financialLedgerClosingTempInputRequest.getFinancialPeriodId());
+        financialLedgerCloseMonthInputRequest.setFinancialLedgerTypeId(financialLedgerClosingTempInputRequest.getFinancialLedgerTypeId());
         Boolean permanentCheck = permanentCheck(financialLedgerCloseMonthInputRequest);
         if (permanentCheck.equals(false)) {
             throw new RuleException("شماره دائم برای تمامی اسناد میبایست ثبت شده باشد");
