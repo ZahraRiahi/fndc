@@ -526,5 +526,11 @@ public interface FinancialDocumentItemRepository extends JpaRepository<Financial
             "  FROM FNDC.FINANCIAL_DOCUMENT_ITEM FI " +
             " WHERE FI.FINANCIAL_DOCUMENT_ID = :newDocId "
             , nativeQuery = true)
-    Long getDocumentItemByIdByNewDocId(Long newDocId);
+    Double getDocumentItemByIdByNewDocId(Long newDocId);
+
+    @Query(value = " SELECT MAX(FI_IN.SEQUENCE_NUMBER) + 1 " +
+            "            FROM FNDC.FINANCIAL_DOCUMENT_ITEM FI_IN " +
+            "           WHERE FI_IN.FINANCIAL_DOCUMENT_ID = :newDocId "
+            , nativeQuery = true)
+    Long getDocumentItemByNewDocId(Long newDocId);
 }

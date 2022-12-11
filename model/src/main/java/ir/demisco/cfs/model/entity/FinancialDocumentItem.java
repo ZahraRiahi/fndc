@@ -30,6 +30,7 @@ public class FinancialDocumentItem extends AuditModel<Long> {
     private CentricAccount centricAccountId4;
     private CentricAccount centricAccountId5;
     private CentricAccount centricAccountId6;
+    private Long dcitId;
     private LocalDateTime deletedDate;
 
 
@@ -151,6 +152,15 @@ public class FinancialDocumentItem extends AuditModel<Long> {
 
     public void setCentricAccountId6(CentricAccount centricAccountId6) {
         this.centricAccountId6 = centricAccountId6;
+    }
+
+    @Column(name = "DCIT_ID")
+    public Long getDcitId() {
+        return dcitId;
+    }
+
+    public void setDcitId(Long dcitId) {
+        this.dcitId = dcitId;
     }
 
     @Column(name = "DELETED_DATE")

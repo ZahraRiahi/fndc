@@ -448,8 +448,31 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             financialDocumentItemSave.setDescription(financialLedgerClosingTempOutputResponse.getDocItemDes());
             financialDocumentItemRepository.save(financialDocumentItemSave);
         });
+        Double summerize = financialDocumentItemRepository.getDocumentItemByIdByNewDocId(financialDocumentNumberDto.getFinancialDocumentId());
 
-        financialDocumentItemRepository.getDocumentItemByIdByNewDocId(financialDocumentNumberDto.getFinancialDocumentId());
+        Long financialAccountId = financialAccountRepository.getFinancialAccountByOrgId(SecurityHelper.getCurrentUser().getOrganizationId());
+        if (financialAccountId == 0L) {
+            throw new RuleException("هیچ حسابی به عنوان سود و زیانی بر روی کدینگ این سازمان مشخص نشده است");
+        }
+
+        FinancialDocumentItem financialDocumentItemSave = new FinancialDocumentItem();
+        financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(financialDocumentSave.getId()));
+        financialDocumentItemSave.setSequenceNumber(financialDocumentItemRepository.getDocumentItemByNewDocId(financialDocumentNumberDto.getFinancialDocumentId()));
+        if (summerize < 0) {
+            financialDocumentItemSave.setDebitAmount(summerize * (-1));
+        } else {
+            financialDocumentItemSave.setCreditAmount(summerize);
+        }
+        financialDocumentItemSave.setDescription(" سند بستن حساب های موقت " + financialLedgerClosingTempInputRequest.getFinancialPeriodDes());
+        financialDocumentItemSave.setFinancialAccount(financialAccountRepository.getOne(financialAccountId));
+        financialDocumentItemSave.setCentricAccountId1(null);
+        financialDocumentItemSave.setCentricAccountId2(null);
+        financialDocumentItemSave.setCentricAccountId3(null);
+        financialDocumentItemSave.setCentricAccountId4(null);
+        financialDocumentItemSave.setCentricAccountId5(null);
+        financialDocumentItemSave.setCentricAccountId6(null);
+        financialDocumentItemSave.setDcitId(null);
+        financialDocumentItemRepository.save(financialDocumentItemSave);
 
         entityManager.createNativeQuery(" Update FNDC.FINANCIAL_LEDGER_PERIOD LP " +
                 "  SET LP.FINANCIAL_DOCUMENT_TEMPRORY_ID = :newDocId , LP.FIN_LEDGER_PERIOD_STAT_ID = 3  " +
@@ -602,9 +625,9 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
             throw new RuleException("سند بستن حسابهای سود و زیانی پیدا نشد");
         }
 
-        Long financialDocumentPeriod = financialDocumentRepository.getFinancialDocumentByPeriodId(financialLedgerClosingTempRequest.getFinancialLedgerTypeId(), financialLedgerClosingTempRequest.getFinancialPeriodId(),
+        List<Long> financialDocumentPeriod = financialDocumentRepository.getFinancialDocumentByPeriodId(financialLedgerClosingTempRequest.getFinancialLedgerTypeId(), financialLedgerClosingTempRequest.getFinancialPeriodId(),
                 SecurityHelper.getCurrentUser().getOrganizationId());
-        if (financialDocumentPeriod != null) {
+        if (!financialDocumentPeriod.isEmpty()) {
             throw new RuleException(" ابتدا سند تعدیل ماهیت را حذف نمایید");
         }
 

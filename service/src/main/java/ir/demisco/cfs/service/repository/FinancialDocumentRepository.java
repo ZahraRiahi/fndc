@@ -1813,6 +1813,6 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "   AND T.FINANCIAL_PERIOD_ID = :financialPeriodId " +
             "   AND T.ORGANIZATION_ID = :organizationId "
             , nativeQuery = true)
-    Long getFinancialDocumentByPeriodId(Long financialLedgerTypeId,Long financialPeriodId,Long organizationId);
+    List<Long> getFinancialDocumentByPeriodId(Long financialLedgerTypeId,Long financialPeriodId,Long organizationId);
 
 }
