@@ -459,9 +459,12 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         financialDocumentItemSave.setFinancialDocument(financialDocumentRepository.getOne(financialDocumentSave.getId()));
         financialDocumentItemSave.setSequenceNumber(financialDocumentItemRepository.getDocumentItemByNewDocId(financialDocumentNumberDto.getFinancialDocumentId()));
         if (summerize < 0) {
-            financialDocumentItemSave.setDebitAmount(summerize * (-1));
+            financialDocumentItemSave.setDebitAmount((Double) summerize * (-1));
+            financialDocumentItemSave.setCreditAmount(0D);
+
         } else {
-            financialDocumentItemSave.setCreditAmount(summerize);
+            financialDocumentItemSave.setCreditAmount((Double) summerize);
+            financialDocumentItemSave.setDebitAmount(0D);
         }
         financialDocumentItemSave.setDescription(" سند بستن حساب های موقت " + financialLedgerClosingTempInputRequest.getFinancialPeriodDes());
         financialDocumentItemSave.setFinancialAccount(financialAccountRepository.getOne(financialAccountId));
