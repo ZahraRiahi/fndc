@@ -7,7 +7,10 @@ import ir.demisco.cloud.core.middle.service.business.api.core.GridDataProvider;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import java.time.LocalDateTime;
 import java.util.List;
@@ -39,7 +42,6 @@ public class FinancialConfigListGridProvider implements GridDataProvider {
                 filterContext.getPath("financialPeriod.description"),
                 filterContext.getPath("financialDocumentType.description"),
                 filterContext.getPath("financialLedgerType.description"),
-                filterContext.getPath("financialLedgerType.financialCodingType.id"),
                 filterContext.getPath("department.id"),
                 filterContext.getPath("department.name")
         );
@@ -67,15 +69,29 @@ public class FinancialConfigListGridProvider implements GridDataProvider {
                     .financialPeriodDescription((String) array[12])
                     .financialDocumentTypeDescription((String) array[13])
                     .financialLedgerTypeDescription((String) array[14])
-                    .financialCodingTypeId((Long) array[15])
-                    .departmentId((Long) array[16])
-                    .departmentName((String) array[17])
+                    .departmentId((Long) array[15])
+                    .departmentName((String) array[16])
                     .build();
         }).collect(Collectors.toList());
     }
 
     @Override
     public Predicate getCustomRestriction(FilterContext filterContext) {
+        CriteriaBuilder criteriaBuilder = filterContext.getCriteriaBuilder();
+        Root<Object> root = filterContext.getRoot();
+        Join<Object, Object> financialPeriod = root.join("financialPeriod", JoinType.LEFT);
+        Join<Object, Object> financialLedgerType = root.join("financialLedgerType", JoinType.LEFT);
+        Join<Object, Object> financialDocumentType = root.join("financialDocumentType", JoinType.LEFT);
+        Join<Object, Object> organization = root.join("organization", JoinType.LEFT);
+        Join<Object, Object> user = root.join("user", JoinType.LEFT);
+        Join<Object, Object> financialDepartment = root.join("financialDepartment", JoinType.LEFT);
+        criteriaBuilder.equal(financialPeriod.get("id"), root.get("id"));
+        criteriaBuilder.equal(financialLedgerType.get("id"), root.get("id"));
+        criteriaBuilder.equal(financialDocumentType.get("id"), root.get("id"));
+        criteriaBuilder.equal(organization.get("id"), root.get("id"));
+        criteriaBuilder.equal(user.get("id"), root.get("id"));
+        criteriaBuilder.equal(financialDepartment.get("id"), root.get("id"));
+
         DataSourceRequest dataSourceRequest = filterContext.getDataSourceRequest();
         for (DataSourceRequest.FilterDescriptor filter : dataSourceRequest.getFilter().getFilters()) {
             String field = filter.getField();
@@ -85,5 +101,7 @@ public class FinancialConfigListGridProvider implements GridDataProvider {
         }
         return null;
     }
+
+
 
 }
