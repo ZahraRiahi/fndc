@@ -15,4 +15,6 @@ public interface FinancialConfigRepository extends JpaRepository<FinancialConfig
             "   WHERE T.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId "
             , nativeQuery = true)
     List<Long> findByFinancialConfigByFinancialDocumentTypeId(Long financialDocumentTypeId);
+
+
 }
