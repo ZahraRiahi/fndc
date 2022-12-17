@@ -56,11 +56,11 @@ public class DefaultFinancialConfig implements FinancialConfigService {
     @Override
     @Transactional(rollbackFor = Throwable.class)
     public Boolean saveOrUpdateFinancialConfig(FinancialConfigRequest financialConfigRequest) {
-        FinancialConfig financialConfig = financialConfigRepository.findById(financialConfigRequest.getId() == null ? 0 : financialConfigRequest.getId()).orElse(new FinancialConfig());
         Long organizationId = SecurityHelper.getCurrentUser().getOrganizationId();
-        if (financialConfig.getId() != null) {
+        if (financialConfigRequest.getId() != null) {
             financialConfigRepository.deleteById(financialConfigRequest.getId());
         }
+
         Long financialAccountStructureCount = financialConfigRepository.getCountByFinancialConfigAndOrganizationAndUser(organizationId, financialConfigRequest.getUserId());
         if (financialAccountStructureCount > 0) {
             throw new RuleException("fin.financialConfig.existAccountStructure");
@@ -87,7 +87,9 @@ public class DefaultFinancialConfig implements FinancialConfigService {
         if (financialConfigRequest.getDepartmentId() != null) {
             financialConfigNew.setDepartment(departmentRepository.getOne(financialConfigRequest.getDepartmentId()));
         }
+
         financialConfigRepository.save(financialConfigNew);
+
         return true;
     }
 

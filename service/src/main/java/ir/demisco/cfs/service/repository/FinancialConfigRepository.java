@@ -1,6 +1,7 @@
 package ir.demisco.cfs.service.repository;
 
 import ir.demisco.cfs.model.entity.FinancialConfig;
+import ir.demisco.cfs.model.entity.FinancialDocumentItem;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
@@ -15,4 +16,7 @@ public interface FinancialConfigRepository extends JpaRepository<FinancialConfig
             "   WHERE T.FINANCIAL_DOCUMENT_TYPE_ID =:financialDocumentTypeId "
             , nativeQuery = true)
     List<Long> findByFinancialConfigByFinancialDocumentTypeId(Long financialDocumentTypeId);
+
+//    List<FinancialConfig> findByFinancialConfig();
+
 }
