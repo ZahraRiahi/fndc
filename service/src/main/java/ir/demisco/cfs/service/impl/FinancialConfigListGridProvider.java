@@ -86,12 +86,14 @@ public class FinancialConfigListGridProvider implements GridDataProvider {
         Join<Object, Object> organization = root.join("organization", JoinType.LEFT);
         Join<Object, Object> user = root.join("user", JoinType.LEFT);
         Join<Object, Object> financialDepartment = root.join("financialDepartment", JoinType.LEFT);
+        Join<Object, Object> financialCodingType = financialLedgerType.join("financialCodingType", JoinType.LEFT);
         criteriaBuilder.equal(financialPeriod.get("id"), root.get("id"));
         criteriaBuilder.equal(financialLedgerType.get("id"), root.get("id"));
         criteriaBuilder.equal(financialDocumentType.get("id"), root.get("id"));
         criteriaBuilder.equal(organization.get("id"), root.get("id"));
         criteriaBuilder.equal(user.get("id"), root.get("id"));
         criteriaBuilder.equal(financialDepartment.get("id"), root.get("id"));
+        criteriaBuilder.equal(financialCodingType.get("id"), financialLedgerType.get("id"));
 
         DataSourceRequest dataSourceRequest = filterContext.getDataSourceRequest();
         for (DataSourceRequest.FilterDescriptor filter : dataSourceRequest.getFilter().getFilters()) {
