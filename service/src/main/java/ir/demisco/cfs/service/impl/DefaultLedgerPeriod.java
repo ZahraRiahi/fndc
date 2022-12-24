@@ -451,7 +451,7 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         Double summerize = financialDocumentItemRepository.getDocumentItemByIdByNewDocId(financialDocumentNumberDto.getFinancialDocumentId());
 
         Long financialAccountId = financialAccountRepository.getFinancialAccountByOrgId(SecurityHelper.getCurrentUser().getOrganizationId());
-        if (financialAccountId == 0L) {
+        if (financialAccountId == null) {
             throw new RuleException("هیچ حسابی به عنوان سود و زیانی بر روی کدینگ این سازمان مشخص نشده است");
         }
 
