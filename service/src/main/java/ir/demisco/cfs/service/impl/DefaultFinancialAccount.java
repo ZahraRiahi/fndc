@@ -971,10 +971,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         return item[i] == null ? null : convertDate(item[i].toString());
     }
 
-    private LocalDateTime getItemForLocalDateTime(Object[] item, int i) {
-        return (item[i] == null ? null : ((Timestamp) item[i]).toLocalDateTime());
-    }
-
     private FinancialAccountBalanceRequest setParameterBalanceReport
             (List<DataSourceRequest.FilterDescriptor> filters) {
         FinancialAccountBalanceRequest financialAccountBalanceRequest = new FinancialAccountBalanceRequest();
