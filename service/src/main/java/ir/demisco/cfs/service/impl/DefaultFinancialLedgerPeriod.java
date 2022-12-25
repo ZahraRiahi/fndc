@@ -29,8 +29,8 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.sql.Timestamp;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -124,8 +124,8 @@ public class DefaultFinancialLedgerPeriod implements FinancialLedgerPeriodServic
         List<FinancialLedgerPeriodOutputResponse> financialLedgerPeriodDtoList = list.stream().map(item ->
                 FinancialLedgerPeriodOutputResponse.builder()
                         .id(item[0] == null ? null : (Long.parseLong(item[0].toString())))
-                        .startDate(item[1] == null ? null : ((Date) item[1]))
-                        .endDate(item[2] == null ? null : ((Date) item[2]))
+                        .startDate(item[1] == null ? null : ((Timestamp) item[1]).toLocalDateTime())
+                        .endDate(item[2] == null ? null : ((Timestamp) item[2]).toLocalDateTime())
                         .openMonthCount(item[3] == null ? null : (Long.parseLong(item[3].toString())))
                         .description(item[4] == null ? null : item[4].toString())
                         .name(item[5] == null ? null : item[5].toString())

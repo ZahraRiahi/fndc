@@ -434,7 +434,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             if (item[30] != null && (Long.parseLong(item[30].toString()) == 1 || Long.parseLong(item[30].toString()) == 2)) {
                 FinancialAccountCentricTurnOverRecordsResponse recordsResponse = new FinancialAccountCentricTurnOverRecordsResponse();
                 recordsResponse.setDocumentNumber(getItemForLong(item, 0));
-                recordsResponse.setDocumentDate((Date) item[1]);
+                recordsResponse.setDocumentDate(getItemForDate(item, 1));
                 recordsResponse.setDocumentDescriptionItem(getItemForString(item, 2));
                 recordsResponse.setFinancialDocumentItemId(getItemForLong(item, 3));
                 recordsResponse.setFinancialDocumentId(getItemForLong(item, 4));
