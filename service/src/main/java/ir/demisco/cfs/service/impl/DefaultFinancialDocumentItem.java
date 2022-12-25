@@ -26,6 +26,7 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.text.ParsePosition;
 import java.time.LocalDateTime;
@@ -91,7 +92,7 @@ public class DefaultFinancialDocumentItem implements FinancialDocumentItemServic
         List<FinancialDocumentItemDto> documentItemDtoList = list.stream().map(item ->
                 FinancialDocumentItemDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
-                        .documentDate((Date) item[1])
+                        .documentDate(item[1] == null ? null : ((Timestamp) item[1]).toLocalDateTime())
                         .description(item[2] != null ? item[2].toString() : null)
                         .documentNumber(Long.parseLong(item[4].toString()))
                         .sequenceNumber(Long.parseLong(item[3].toString()))

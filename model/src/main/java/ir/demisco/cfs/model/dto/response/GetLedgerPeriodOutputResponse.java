@@ -1,21 +1,21 @@
 package ir.demisco.cfs.model.dto.response;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class GetLedgerPeriodOutputResponse {
     private Long financialLedgerPeriodId;
     private Long financialPeriodId;
-    private Date periodStartDate;
-    private Date periodEndDate;
+    private LocalDateTime periodStartDate;
+    private LocalDateTime periodEndDate;
     private String periodDescription;
     private Long openingDocNumber;
-    private Date openingDocDate;
+    private LocalDateTime openingDocDate;
     private Long openingDocId;
     private Long temporaryDocNumber;
-    private Date temporaryDocDate;
+    private LocalDateTime temporaryDocDate;
     private Long permanentDocNumber;
     private Long permanentDocId;
-    private Date permanentDocDate;
+    private LocalDateTime permanentDocDate;
     private Long ledgerPeriodStatusId;
     private String ledgerPeriodStatusDesc;
     private Long tempClosedFlag;
@@ -39,19 +39,19 @@ public class GetLedgerPeriodOutputResponse {
         this.financialPeriodId = financialPeriodId;
     }
 
-    public Date getPeriodStartDate() {
+    public LocalDateTime getPeriodStartDate() {
         return periodStartDate;
     }
 
-    public void setPeriodStartDate(Date periodStartDate) {
+    public void setPeriodStartDate(LocalDateTime periodStartDate) {
         this.periodStartDate = periodStartDate;
     }
 
-    public Date getPeriodEndDate() {
+    public LocalDateTime getPeriodEndDate() {
         return periodEndDate;
     }
 
-    public void setPeriodEndDate(Date periodEndDate) {
+    public void setPeriodEndDate(LocalDateTime periodEndDate) {
         this.periodEndDate = periodEndDate;
     }
 
@@ -71,11 +71,11 @@ public class GetLedgerPeriodOutputResponse {
         this.openingDocNumber = openingDocNumber;
     }
 
-    public Date getOpeningDocDate() {
+    public LocalDateTime getOpeningDocDate() {
         return openingDocDate;
     }
 
-    public void setOpeningDocDate(Date openingDocDate) {
+    public void setOpeningDocDate(LocalDateTime openingDocDate) {
         this.openingDocDate = openingDocDate;
     }
 
@@ -87,11 +87,11 @@ public class GetLedgerPeriodOutputResponse {
         this.temporaryDocNumber = temporaryDocNumber;
     }
 
-    public Date getTemporaryDocDate() {
+    public LocalDateTime getTemporaryDocDate() {
         return temporaryDocDate;
     }
 
-    public void setTemporaryDocDate(Date temporaryDocDate) {
+    public void setTemporaryDocDate(LocalDateTime temporaryDocDate) {
         this.temporaryDocDate = temporaryDocDate;
     }
 
@@ -103,11 +103,11 @@ public class GetLedgerPeriodOutputResponse {
         this.permanentDocNumber = permanentDocNumber;
     }
 
-    public Date getPermanentDocDate() {
+    public LocalDateTime getPermanentDocDate() {
         return permanentDocDate;
     }
 
-    public void setPermanentDocDate(Date permanentDocDate) {
+    public void setPermanentDocDate(LocalDateTime permanentDocDate) {
         this.permanentDocDate = permanentDocDate;
     }
 
@@ -199,12 +199,12 @@ public class GetLedgerPeriodOutputResponse {
             return this;
         }
 
-        public Builder periodStartDate(Date periodStartDate) {
+        public Builder periodStartDate(LocalDateTime periodStartDate) {
             getLedgerPeriodOutputResponse.setPeriodStartDate(periodStartDate);
             return this;
         }
 
-        public Builder periodEndDate(Date periodEndDate) {
+        public Builder periodEndDate(LocalDateTime periodEndDate) {
             getLedgerPeriodOutputResponse.setPeriodEndDate(periodEndDate);
             return this;
         }
@@ -219,7 +219,7 @@ public class GetLedgerPeriodOutputResponse {
             return this;
         }
 
-        public Builder openingDocDate(Date openingDocDate) {
+        public Builder openingDocDate(LocalDateTime openingDocDate) {
             getLedgerPeriodOutputResponse.setOpeningDocDate(openingDocDate);
             return this;
         }
@@ -229,7 +229,7 @@ public class GetLedgerPeriodOutputResponse {
             return this;
         }
 
-        public Builder temporaryDocDate(Date temporaryDocDate) {
+        public Builder temporaryDocDate(LocalDateTime temporaryDocDate) {
             getLedgerPeriodOutputResponse.setTemporaryDocDate(temporaryDocDate);
             return this;
         }
@@ -239,7 +239,7 @@ public class GetLedgerPeriodOutputResponse {
             return this;
         }
 
-        public Builder permanentDocDate(Date permanentDocDate) {
+        public Builder permanentDocDate(LocalDateTime permanentDocDate) {
             getLedgerPeriodOutputResponse.setPermanentDocDate(permanentDocDate);
             return this;
         }

@@ -25,6 +25,7 @@ import ir.demisco.core.utils.DateUtil;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.sql.Timestamp;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -434,7 +435,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             if (item[30] != null && (Long.parseLong(item[30].toString()) == 1 || Long.parseLong(item[30].toString()) == 2)) {
                 FinancialAccountCentricTurnOverRecordsResponse recordsResponse = new FinancialAccountCentricTurnOverRecordsResponse();
                 recordsResponse.setDocumentNumber(getItemForLong(item, 0));
-                recordsResponse.setDocumentDate((Date) item[1]);
+                recordsResponse.setDocumentDate(getItemForDate(item, 1));
                 recordsResponse.setDocumentDescriptionItem(getItemForString(item, 2));
                 recordsResponse.setFinancialDocumentItemId(getItemForLong(item, 3));
                 recordsResponse.setFinancialDocumentId(getItemForLong(item, 4));
@@ -968,6 +969,10 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     private Date getItemForDate(Object[] item, int i) {
         return item[i] == null ? null : convertDate(item[i].toString());
+    }
+
+    private LocalDateTime getItemForLocalDateTime(Object[] item, int i) {
+        return (item[i] == null ? null : ((Timestamp) item[i]).toLocalDateTime());
     }
 
     private FinancialAccountBalanceRequest setParameterBalanceReport

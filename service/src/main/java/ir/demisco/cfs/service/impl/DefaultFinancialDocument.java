@@ -167,7 +167,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         List<FinancialDocumentDto> documentDtoList = list.stream().map(item ->
                 FinancialDocumentDto.builder()
                         .id(((BigDecimal) item[0]).longValue())
-                        .documentDate((Date) item[1])
+                        .documentDate(item[1] == null ? null : ((Timestamp) item[1]).toLocalDateTime())
                         .description(item[2].toString())
                         .documentNumber(item[3].toString())
                         .financialDocumentTypeId(Long.parseLong(item[4].toString()))
