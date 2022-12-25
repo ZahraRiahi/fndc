@@ -1,6 +1,6 @@
 package ir.demisco.cfs.model.dto.response;
 
-import java.util.Date;
+import java.time.LocalDateTime;
 
 public class InsertLedgerPeriodMonthListOutputResponse {
     private Long minDocTmpNumber;
@@ -8,8 +8,8 @@ public class InsertLedgerPeriodMonthListOutputResponse {
     private Long financialPeriodId;
     private Long financialLedgerTypeId;
     private String monthDescription;
-    private Date monthStartDate;
-    private Date endDateMonthEndDate;
+    private LocalDateTime monthStartDate;
+    private LocalDateTime endDateMonthEndDate;
     private Long financialLedgerMonthId;
     private Long monthStatusId;
     private String monthStatusCode;
@@ -63,19 +63,19 @@ public class InsertLedgerPeriodMonthListOutputResponse {
         this.monthDescription = monthDescription;
     }
 
-    public Date getMonthStartDate() {
+    public LocalDateTime getMonthStartDate() {
         return monthStartDate;
     }
 
-    public void setMonthStartDate(Date monthStartDate) {
+    public void setMonthStartDate(LocalDateTime monthStartDate) {
         this.monthStartDate = monthStartDate;
     }
 
-    public Date getEndDateMonthEndDate() {
+    public LocalDateTime getEndDateMonthEndDate() {
         return endDateMonthEndDate;
     }
 
-    public void setEndDateMonthEndDate(Date endDateMonthEndDate) {
+    public void setEndDateMonthEndDate(LocalDateTime endDateMonthEndDate) {
         this.endDateMonthEndDate = endDateMonthEndDate;
     }
 
@@ -213,12 +213,12 @@ public class InsertLedgerPeriodMonthListOutputResponse {
             return this;
         }
 
-        public Builder monthStartDate(Date monthStartDate) {
+        public Builder monthStartDate(LocalDateTime monthStartDate) {
             insertLedgerPeriodMonthListOutputResponse.setMonthStartDate(monthStartDate);
             return this;
         }
 
-        public Builder endDateMonthEndDate(Date endDateMonthEndDate) {
+        public Builder endDateMonthEndDate(LocalDateTime endDateMonthEndDate) {
             insertLedgerPeriodMonthListOutputResponse.setEndDateMonthEndDate(endDateMonthEndDate);
             return this;
         }
