@@ -502,8 +502,6 @@ public class DefaultLedgerPeriod implements LedgerPeriodService {
         Pageable pageable = PageRequest.of((dataSourceRequest.getSkip() / dataSourceRequest.getTake()), dataSourceRequest.getTake());
         Page<Object[]> list = financialLedgerMonthRepository.getFinancialLedgerMonthList(paramSearch.getFinancialPeriodId(), paramSearch.getFinancialLedgerTypeId(),
                 pageable);
-//        SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
-
         List<InsertLedgerPeriodMonthListOutputResponse> documentDtoList = list.stream().map(item ->
                 InsertLedgerPeriodMonthListOutputResponse.builder()
                         .minDocTmpNumber(getItemForLong(item, 0))
