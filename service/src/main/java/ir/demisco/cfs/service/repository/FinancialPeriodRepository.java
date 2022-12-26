@@ -650,18 +650,6 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
                                                 Long referenceNumber, String toNumber, Long financialAccountId,
                                                 Long summarizingType, LocalDateTime toDate);
 
-    @Query(value = " SELECT  MIN(FP.START_DATE)  " +
-            "      FROM FNPR.FINANCIAL_PERIOD FP  " +
-            "     INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN FPT  " +
-            "       ON FP.ID = FPT.FINANCIAL_PERIOD_ID  " +
-            "       AND FPT.ORGANIZATION_ID = :organizationId  " +
-            "       AND FPT.ACTIVE_FLAG = 1  " +
-            "     INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE FPTY  " +
-            " ON FP.FINANCIAL_PERIOD_TYPE_ID = FPTY.ID " +
-            "     WHERE FP.DELETED_DATE IS NULL  "
-            , nativeQuery = true)
-    LocalDateTime findByFinancialPeriodByOrganization2(Long organizationId);
-
     @Query(value = " WITH MAIN_QRY AS " +
             " (SELECT DOCUMENT_NUMBER," +
             "         DOCUMENT_DATE," +
