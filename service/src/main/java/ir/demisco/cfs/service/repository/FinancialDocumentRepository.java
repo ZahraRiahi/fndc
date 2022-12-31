@@ -598,7 +598,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " INNER JOIN FNPR.FINANCIAL_MONTH FM " +
             "    ON FM.ID = LM.FINANCIAL_MONTH_ID" +
             " WHERE FD.ORGANIZATION_ID = LT.ORGANIZATION_ID " +
-            "   AND FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE "
+            "   AND FD.DOCUMENT_DATE BETWEEN FM.START_DATE AND FM.END_DATE " +
+            " ORDER BY FD.DOCUMENT_DATE ,FD.DOCUMENT_NUMBER, FD.ID "
             , nativeQuery = true)
     List<Long> findByListFinancialDocumentId(Long financialLedgerMonthId, Long organizationId);
 
