@@ -321,10 +321,11 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               SUM(MAIN_QRY.DEBIT_AMOUNT) - SUM(MAIN_QRY.CREDIT_AMOUNT) AS SUMMERIZE_AMOUNT, " +
             "               3 AS RECORD_TYP " +
             "          FROM MAIN_QRY) " +
-            " ORDER BY FINANCIAL_ACCOUNT_ID," +
+            " ORDER BY " +
             "          RECORD_TYP," +
             "          DOCUMENT_DATE," +
-            "          DOCUMENT_NUMBER," +
+            "          DOCUMENT_NUMBER, " +
+            " FINANCIAL_ACCOUNT_ID, " +
             "          FINANCIAL_DOCUMENT_ID," +
             "          FINANCIAL_DOCUMENT_ITEM_ID," +
             "          CREDIT_AMOUNT," +
@@ -1887,7 +1888,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "               ON FNMT.ID = FNMN.FINANCIAL_MONTH_TYPE_ID" +
             "            WHERE FNMN.FINANCIAL_PERIOD_ID = :financialPeriodId " +
             "              AND FNLM.FINANCIAL_LEDGER_TYPE_ID = :financialLedgerTypeId " +
-            "        and :dateBetween  BETWEEN FNP.START_DATE AND FNP.END_DATE  " +
+            "        and trunc(:dateBetween)  BETWEEN FNP.START_DATE AND FNP.END_DATE  " +
             "              AND (CASE CALENDAR_TYPE_ID" +
             "                    WHEN 2 THEN" +
             "                     EXTRACT(MONTH FROM TO_DATE(TO_CHAR(trunc(:date), 'mm/dd/yyyy')," +
