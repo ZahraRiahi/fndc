@@ -1891,10 +1891,10 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "        and trunc(:dateBetween)  BETWEEN FNP.START_DATE AND FNP.END_DATE  " +
             "              AND (CASE CALENDAR_TYPE_ID" +
             "                    WHEN 2 THEN" +
-            "                     EXTRACT(MONTH FROM TO_DATE(TO_CHAR(trunc(:date), 'mm/dd/yyyy')," +
+            "                     EXTRACT(MONTH FROM TO_DATE(TO_CHAR(trunc(:dateBetween), 'mm/dd/yyyy')," +
             "                                     'mm/dd/yyyy'))" +
             "                    WHEN 1 THEN" +
-            "                     TO_NUMBER(SUBSTR(TO_CHAR(TO_DATE(TO_CHAR(trunc(:date)," +
+            "                     TO_NUMBER(SUBSTR(TO_CHAR(TO_DATE(TO_CHAR(trunc(:dateBetween)," +
             "                                                              'mm/dd/yyyy')," +
             "                                                      'mm/dd/yyyy')," +
             "                                              'yyyy/mm/dd'," +
@@ -1915,7 +1915,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "           0) AS CODE " +
             "  FROM DUAL"
             , nativeQuery = true)
-    Long findFinancialPeriodByIdAndLedgerTypeAndDate(Long financialPeriodId, Long financialLedgerTypeId, LocalDateTime dateBetween, Date date);
+    Long findFinancialPeriodByIdAndLedgerTypeAndDate(Long financialPeriodId, Long financialLedgerTypeId, LocalDateTime dateBetween);
 
     @Query(value = " WITH QRY AS" +
             " (SELECT NVL(FINANCIAL_ACCOUNT_CODE, '') ||" +

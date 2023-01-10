@@ -1365,7 +1365,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (periodStatus == null) {
             throw new RuleException("دوره مالی به دفتر مالی انتخاب شده ، تخصیص داده نشده است");
         }
-        Long monthStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerTypeAndDate(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId(), financialPeriodLedgerStatusRequest.getDate(), DateUtil.convertStringToDate(financialPeriodLedgerStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))));
+        Long monthStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerTypeAndDate(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId(), financialPeriodLedgerStatusRequest.getDate());
         if (periodStatus != 1L)
             periodStatus = 0L;
         if (monthStatus != 1L)
