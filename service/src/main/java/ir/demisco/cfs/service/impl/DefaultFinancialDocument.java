@@ -72,7 +72,6 @@ import java.text.ParseException;
 import java.text.ParsePosition;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -1365,7 +1364,7 @@ public class DefaultFinancialDocument implements FinancialDocumentService {
         if (periodStatus == null) {
             throw new RuleException("دوره مالی به دفتر مالی انتخاب شده ، تخصیص داده نشده است");
         }
-        Long monthStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerTypeAndDate(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId(), financialPeriodLedgerStatusRequest.getDate(), DateUtil.convertStringToDate(financialPeriodLedgerStatusRequest.getDate().format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))));
+        Long monthStatus = financialPeriodRepository.findFinancialPeriodByIdAndLedgerTypeAndDate(financialPeriodLedgerStatusRequest.getFinancialPeriodId(), financialPeriodLedgerStatusRequest.getFinancialLedgerTypeId(), financialPeriodLedgerStatusRequest.getDate());
         if (periodStatus != 1L)
             periodStatus = 0L;
         if (monthStatus != 1L)
