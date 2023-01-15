@@ -4,7 +4,9 @@ import com.fasterxml.jackson.databind.util.StdDateFormat;
 import ir.demisco.cfs.model.dto.request.FinancialAccountBalanceRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentCentricBalanceReportRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentCentricTurnOverRequest;
+import ir.demisco.cfs.model.dto.request.FinancialDocumentReportDriverRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentReportRequest;
+import ir.demisco.cfs.model.dto.request.ReportDriverRequest;
 import ir.demisco.cfs.model.dto.response.FinancialAccountBalanceResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountCentricBalanceResponse;
 import ir.demisco.cfs.model.dto.response.FinancialAccountCentricTurnOverOutputResponse;
@@ -22,9 +24,13 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpEntity;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
+import org.springframework.web.client.RestTemplate;
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -35,15 +41,22 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 @Service
 public class DefaultFinancialAccount implements FinancialAccountService {
+    private final RestTemplate restTemplate;
     private final FinancialDocumentRepository financialDocumentRepository;
     private final FinancialPeriodRepository financialPeriodRepository;
 
+    @Value("${dms.bi-publisher.url}")
+    private String biPublisherUrl;
 
-    public DefaultFinancialAccount(FinancialDocumentRepository financialDocumentRepository, FinancialPeriodRepository financialPeriodRepository) {
+
+    public DefaultFinancialAccount(RestTemplate restTemplate, FinancialDocumentRepository financialDocumentRepository, FinancialPeriodRepository financialPeriodRepository) {
+        this.restTemplate = restTemplate;
         this.financialDocumentRepository = financialDocumentRepository;
         this.financialPeriodRepository = financialPeriodRepository;
+
     }
 
     private List<Object[]> getTurnOverReportList(FinancialDocumentReportRequest financialDocumentReportRequest) {
@@ -1501,6 +1514,71 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialDocumentCentricBalanceReportRequest.getCnatIdObj2(), financialDocumentCentricBalanceReportRequest.getCnatId2()
                 , financialDocumentCentricBalanceReportRequest.getRemainOption());
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public byte[] report(FinancialDocumentReportDriverRequest financialDocumentReportDriverRequest) {
+        FinancialDocumentReportRequest financialDocumentReportRequest = financialDocumentReportDriverRequest.getFinancialDocumentReportRequest();
+        LocalDateTime fromDate = null;
+        LocalDateTime toDate = null;
+        String fromNumber = null;
+        String toNumber = null;
+        financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID");
+        if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals("0")) {
+            fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID")).longValue()
+                    , financialDocumentReportRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId(), Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue());
+
+            toDate = financialDocumentRepository.findByFinancialDocumentByNumberingAndToNumber(Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID")).longValue()
+                    , financialDocumentReportRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId(), Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue());
+        }
+        if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals("1") || financialDocumentReportRequest.getFromNumber() == null) {
+            fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(
+                    Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString()),
+                    financialDocumentReportRequest.getFromDate()
+                    , SecurityHelper.getCurrentUser().getOrganizationId(), Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString()));
+        }
+        if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals("1") || financialDocumentReportRequest.getToNumber() == null) {
+            toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString()),
+                    financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId(), Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString()));
+        }
+        LocalDateTime startDate = fromDate;
+        LocalDateTime periodStartDate;
+        periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString()), SecurityHelper.getCurrentUser().getOrganizationId());
+        if (periodStartDate == null || startDate.isBefore(periodStartDate)) {
+            periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeAndFromDate(Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString())
+                    , SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentReportRequest.getFromDate());
+        }
+
+        ReportDriverRequest reportDriverRequest = financialDocumentReportDriverRequest.getReportDriverRequest();
+        Map<String, Object> map = new HashMap<String, Object>();
+        if (fromDate != null && toDate != null) {
+            map.put("FROM_DATE", fromDate.toString());
+            map.put("TO_DATE", toDate.toString());
+            map.put("FROM_NUMBER", financialDocumentReportRequest.getFromNumber());
+            map.put("TO_NUMBER", financialDocumentReportRequest.getToNumber());
+        } else {
+            map.put("FROM_DATE", financialDocumentReportRequest.getFromDate().toString());
+            map.put("TO_DATE", financialDocumentReportRequest.getToDate().toString());
+            map.put("FROM_NUMBER", fromNumber);
+            map.put("TO_NUMBER", toNumber);
+        }
+        map.put("periodStartDate", periodStartDate.toLocalDate().toString());
+        map.put("LEDGER_TYPE_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString());
+        map.put("DOCUMENT_NUMBERING_TYPE_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString());
+        map.put("FINANCIAL_ACCOUNT_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FINANCIAL_ACCOUNT_ID"));
+        map.put("SUMMARIZING_TYPE", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("SUMMARIZING_TYPE"));
+        map.put("FILTER_FLG", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG"));
+        map.put("ORGANIZATION_ID", SecurityHelper.getCurrentUser().getOrganizationId().toString());
+        reportDriverRequest.setParams(map);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + SecurityHelper.getCurrentUser().getAccessToken());
+        HttpEntity entity = new HttpEntity(financialDocumentReportDriverRequest.getReportDriverRequest(), headers);
+        return restTemplate.exchange(biPublisherUrl, HttpMethod.POST, entity, byte[].class).getBody();
+
+
+    }
+
 }
 
 
