@@ -1,5 +1,7 @@
 package ir.demisco.cfs.model.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -64,6 +66,7 @@ public class FinancialDocumentReportRequest {
         this.financialAccountId = financialAccountId;
     }
 
+    @JsonProperty("FROM_DATE")
     public LocalDateTime getFromDate() {
         return fromDate;
     }
@@ -72,6 +75,7 @@ public class FinancialDocumentReportRequest {
         this.fromDate = fromDate;
     }
 
+    @JsonProperty("TO_DATE")
     public LocalDateTime getToDate() {
         return toDate;
     }
@@ -112,6 +116,7 @@ public class FinancialDocumentReportRequest {
         this.referenceNumber = referenceNumber;
     }
 
+    @JsonProperty("FROM_NUMBER")
     public String getFromNumber() {
         return fromNumber;
     }
@@ -120,6 +125,7 @@ public class FinancialDocumentReportRequest {
         this.fromNumber = fromNumber;
     }
 
+    @JsonProperty("TO_NUMBER")
     public String getToNumber() {
         return toNumber;
     }
@@ -152,6 +158,7 @@ public class FinancialDocumentReportRequest {
         this.organizationId = organizationId;
     }
 
+    @JsonProperty("FILTER_FLG")
     public Long getDateFilterFlg() {
         return dateFilterFlg;
     }
@@ -167,9 +174,11 @@ public class FinancialDocumentReportRequest {
     public void setParamMap(Map<String, Object> paramMap) {
         this.paramMap = paramMap;
     }
+
     public static FinancialDocumentReportRequest.Builder builder() {
         return new FinancialDocumentReportRequest.Builder();
     }
+
     public static final class Builder {
         private FinancialDocumentReportRequest financialDocumentReportRequest;
 
