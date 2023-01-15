@@ -1547,7 +1547,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         if (fromDate != null && toDate != null) {
             startDate = fromDate;
         } else {
-            startDate=financialDocumentReportRequest.getFromDate();
+            startDate = financialDocumentReportRequest.getFromDate();
         }
         LocalDateTime periodStartDate;
         periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString()), SecurityHelper.getCurrentUser().getOrganizationId());
@@ -1569,12 +1569,24 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             map.put("FROM_NUMBER", fromNumber);
             map.put("TO_NUMBER", toNumber);
         }
-        map.put("periodStartDate", periodStartDate.toLocalDate().toString());
+        map.put("periodStartDate", periodStartDate.toString());
         map.put("LEDGER_TYPE_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString());
         map.put("DOCUMENT_NUMBERING_TYPE_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString());
         map.put("FINANCIAL_ACCOUNT_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FINANCIAL_ACCOUNT_ID"));
         map.put("SUMMARIZING_TYPE", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("SUMMARIZING_TYPE"));
         map.put("FILTER_FLG", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG"));
+        if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("CENTRIC_ACCOUNT_ID1") == null &&
+                financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("CENTRIC_ACCOUNT_ID2") == null) {
+            map.put("CENTRIC_ACCOUNT_ID1", " ");
+            map.put("CENTRIC_ACCOUNT_ID2", " ");
+        } else if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("CENTRIC_ACCOUNT_ID1") == null &&
+                !(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("CENTRIC_ACCOUNT_ID2") == null)) {
+            map.put("CENTRIC_ACCOUNT_ID2", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("CENTRIC_ACCOUNT_ID2"));
+            map.put("CENTRIC_ACCOUNT_ID1", " ");
+        } else {
+            map.put("CENTRIC_ACCOUNT_ID1", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("CENTRIC_ACCOUNT_ID1"));
+            map.put("CENTRIC_ACCOUNT_ID2", " ");
+        }
         map.put("ORGANIZATION_ID", SecurityHelper.getCurrentUser().getOrganizationId().toString());
         reportDriverRequest.setParams(map);
 
