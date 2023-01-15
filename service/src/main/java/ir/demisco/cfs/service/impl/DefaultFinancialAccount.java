@@ -31,6 +31,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -1523,6 +1524,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         LocalDateTime toDate = null;
         String fromNumber = null;
         String toNumber = null;
+        LocalDateTime startDate = null;
         financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID");
         if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals("0")) {
             fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID")).longValue()
@@ -1541,7 +1543,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString()),
                     financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId(), Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString()));
         }
-        LocalDateTime startDate = fromDate;
+
+        if (fromDate != null && toDate != null) {
+            startDate = fromDate;
+        } else {
+            startDate=financialDocumentReportRequest.getFromDate();
+        }
         LocalDateTime periodStartDate;
         periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString()), SecurityHelper.getCurrentUser().getOrganizationId());
         if (periodStartDate == null || startDate.isBefore(periodStartDate)) {
@@ -1575,7 +1582,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + SecurityHelper.getCurrentUser().getAccessToken());
         HttpEntity entity = new HttpEntity(financialDocumentReportDriverRequest.getReportDriverRequest(), headers);
         return restTemplate.exchange(biPublisherUrl, HttpMethod.POST, entity, byte[].class).getBody();
-
 
     }
 
