@@ -9,7 +9,6 @@ public class ReportDriverRequest {
     private String mainReportId;
     private String subReportId;
     private Map<String, Object> params;
-    private ReportProviderRequest reportProvider;
 
     public ReportDriverRequest() {
     }
@@ -66,14 +65,6 @@ public class ReportDriverRequest {
         this.subReportId = subReportId;
     }
 
-    public ReportProviderRequest getReportProvider() {
-        return reportProvider;
-    }
-
-    public void setReportProvider(ReportProviderRequest reportProvider) {
-        this.reportProvider = reportProvider;
-    }
-
     public static final class builder {
         private ReportDriverRequest reportDriverRequest;
 
@@ -108,11 +99,6 @@ public class ReportDriverRequest {
 
         public ReportDriverRequest.builder params(Map<String, Object> params) {
             this.reportDriverRequest.setParams(params);
-            return this;
-        }
-
-        public ReportDriverRequest.builder reportProvider(ReportProviderRequest reportProvider) {
-            this.reportDriverRequest.setReportProvider(reportProvider);
             return this;
         }
 

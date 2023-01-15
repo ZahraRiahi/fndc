@@ -24,12 +24,10 @@ import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceResult;
 import ir.demisco.cloud.core.security.util.SecurityHelper;
 import ir.demisco.core.utils.DateUtil;
-import org.apache.commons.codec.binary.Base64;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
@@ -39,7 +37,6 @@ import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -1518,34 +1515,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 , financialDocumentCentricBalanceReportRequest.getCnatIdObj1(), financialDocumentCentricBalanceReportRequest.getCnatId1(),
                 financialDocumentCentricBalanceReportRequest.getCnatIdObj2(), financialDocumentCentricBalanceReportRequest.getCnatId2()
                 , financialDocumentCentricBalanceReportRequest.getRemainOption());
-    }
-
-    private static HttpHeaders getAuthHeaders() {
-        String adminuserCredentials = "cli-ws:Ihio@1234";
-        String encodedCredentials =
-                new String(Base64.encodeBase64(adminuserCredentials.getBytes()));
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "Basic " + encodedCredentials);
-        httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        return httpHeaders;
-    }
-
-    private static HttpHeaders getHeaders(String token) {
-
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.add("Authorization", "Bearer " + token);
-        httpHeaders.setAccept(Arrays.asList(MediaType.APPLICATION_JSON));
-        return httpHeaders;
-    }
-
-    private HttpHeaders getAuthorizationHttpHeader() {
-        HttpHeaders httpHeaders = new HttpHeaders();
-        httpHeaders.setContentType(MediaType.MULTIPART_FORM_DATA);
-        String authStr = "cli-ws:Ihio@1234";
-        String base64Creds = java.util.Base64.getEncoder().encodeToString(authStr.getBytes());
-        httpHeaders.add("Authorization", "Basic " + base64Creds);
-        return httpHeaders;
     }
 
     @Override
