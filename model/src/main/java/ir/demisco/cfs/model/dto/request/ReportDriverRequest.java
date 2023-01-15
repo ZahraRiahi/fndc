@@ -10,9 +10,6 @@ public class ReportDriverRequest {
     private String subReportId;
     private Map<String, Object> params;
 
-    public ReportDriverRequest() {
-    }
-
     public static ReportDriverRequest.builder builder() {
         return new ReportDriverRequest.builder();
     }

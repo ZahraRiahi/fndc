@@ -54,7 +54,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     private String biPublisherUrl;
 
 
-    public DefaultFinancialAccount(RestTemplate restTemplate, FinancialDocumentRepository financialDocumentRepository, FinancialPeriodRepository financialPeriodRepository, EntityManager entityManager) {
+    public DefaultFinancialAccount(RestTemplate restTemplate, FinancialDocumentRepository financialDocumentRepository, FinancialPeriodRepository financialPeriodRepository) {
         this.restTemplate = restTemplate;
         this.financialDocumentRepository = financialDocumentRepository;
         this.financialPeriodRepository = financialPeriodRepository;
