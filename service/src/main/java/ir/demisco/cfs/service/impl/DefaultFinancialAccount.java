@@ -1507,7 +1507,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         LocalDateTime toDate = null;
         String fromNumber = null;
         String toNumber = null;
-        LocalDateTime startDate = null;
         financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID");
         if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals("0")) {
             fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID")).longValue()
