@@ -263,7 +263,7 @@ public class DefaultSaveFinancialDocument implements SaveFinancialDocumentServic
         }
         financialDocumentReference.setReferenceDate(documentReference.getReferenceDate());
         financialDocumentReference.setReferenceDescription(documentReference.getReferenceDescription());
-        financialDocumentReference = financialDocumentReferenceRepository.save(financialDocumentReference);
+    financialDocumentReference = financialDocumentReferenceRepository.save(financialDocumentReference);
         return financialDocumentReference;
 
     }

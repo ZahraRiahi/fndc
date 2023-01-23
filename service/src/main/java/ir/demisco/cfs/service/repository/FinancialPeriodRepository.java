@@ -2162,41 +2162,55 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             , nativeQuery = true)
     List<Object[]> getFinancialPeriodByOrgAndId(Long financialPeriodId, Long organizationId);
 
-    @Query(value = "   SELECT MIN(PR.START_DATE)" +
-            "    FROM FNPR.FINANCIAL_PERIOD PR " +
-            "    INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
-            "    ON LP.FINANCIAL_PERIOD_ID = PR.ID" +
-            "    AND LP.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
-            " AND EXISTS (SELECT 1 " +
-            "          FROM FNDC.FINANCIAL_DOCUMENT FD_OUTER" +
-            "         WHERE FD_OUTER.FINANCIAL_PERIOD_ID = PR.ID" +
-            "           AND FD_OUTER.ORGANIZATION_ID = :organizationId " +
-            "           AND FD_OUTER.FINANCIAL_LEDGER_TYPE_ID =" +
-            "               LP.FINANCIAL_LEDGER_TYPE_ID)" +
-            "    AND NOT EXISTS " +
-            "            (SELECT 1" +
-            "                    FROM FNDC.FINANCIAL_DOCUMENT FD " +
-            "                    WHERE FD.FINANCIAL_DOCUMENT_TYPE_ID = 72 " +
-            "                    AND FD.ORGANIZATION_ID = :organizationId " +
-            "                    AND FD.FINANCIAL_LEDGER_TYPE_ID = LP.FINANCIAL_LEDGER_TYPE_ID " +
-            "                    AND FD.FINANCIAL_PERIOD_ID = PR.ID) "
-            , nativeQuery = true)
-    LocalDateTime getFinancialPeriodByLedgerTypeId(Long ledgerTypeId, Long organizationId);
-
-    @Query(value = "         SELECT PR.START_DATE" +
-            "          FROM FNPR.FINANCIAL_PERIOD PR " +
-            "         INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP " +
-            "            ON LP.FINANCIAL_PERIOD_ID = PR.ID" +
-            "           AND LP.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
-            "         INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN TA" +
-            "            ON TA.FINANCIAL_PERIOD_ID = PR.ID " +
-            "           AND TA.ORGANIZATION_ID = :organizationId " +
-            "         WHERE trunc(:startDate) BETWEEN trunc(PR.START_DATE) AND trunc(PR.END_DATE) "
-            , nativeQuery = true)
-    LocalDateTime getFinancialPeriodByLedgerTypeAndFromDate(Long ledgerTypeId, Long organizationId, LocalDateTime startDate);
-
     @Query(" select 1 from FinancialPeriod T " +
             " where T.id = :financialPeriodId " +
             " and T.financialPeriodStatus.id=2 ")
     Long getFinancialPeriodById(Long financialPeriodId);
+
+    @Query(value = "   SELECT  case " +
+            "         WHEN QR1.PERIOD_START_DATE IS NOT NULL AND " +
+            "              TRUNC(:fromDate) >= TRUNC(QR1.PERIOD_START_DATE) THEN " +
+            "          QR1.PERIOD_START_DATE" +
+            "         ELSE " +
+            "          (SELECT PR.START_DATE " +
+            "             FROM FNPR.FINANCIAL_PERIOD PR " +
+            "            INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            "               ON LP.FINANCIAL_PERIOD_ID = PR.ID" +
+            "              AND LP.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
+            "            INNER JOIN FNPR.FINANCIAL_PERIOD_TYPE_ASSIGN TA" +
+            "               ON TA.FINANCIAL_PERIOD_ID = PR.ID" +
+            "              AND TA.ORGANIZATION_ID = :organizationId " +
+            "            WHERE TRUNC(:fromDate) BETWEEN TRUNC(PR.START_DATE) AND" +
+            "                  TRUNC(PR.END_DATE))" +
+            "       END PERIOD_START_DATE" +
+            "  FROM (SELECT MIN(PR.START_DATE) PERIOD_START_DATE" +
+            "          FROM FNPR.FINANCIAL_PERIOD PR" +
+            "         INNER JOIN FNDC.FINANCIAL_LEDGER_PERIOD LP" +
+            "            ON LP.FINANCIAL_PERIOD_ID = PR.ID" +
+            "           AND LP.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId " +
+            "           AND EXISTS" +
+            "         (SELECT 1" +
+            "                  FROM FNDC.FINANCIAL_DOCUMENT FD_OUTER" +
+            "                 WHERE FD_OUTER.FINANCIAL_PERIOD_ID = PR.ID" +
+            "                   AND FD_OUTER.ORGANIZATION_ID = :organizationId " +
+            "                   AND FD_OUTER.FINANCIAL_LEDGER_TYPE_ID =" +
+            "                       LP.FINANCIAL_LEDGER_TYPE_ID)" +
+            "           AND (PR.START_DATE >=" +
+            "               (SELECT MAX(OUTER_PR.START_DATE) PERIOD_START_DATE" +
+            "                   FROM FNPR.FINANCIAL_PERIOD OUTER_PR" +
+            "                  WHERE OUTER_PR.END_DATE <" +
+            "                        (SELECT OUTER_PR2.START_DATE" +
+            "                           FROM FNPR.FINANCIAL_PERIOD OUTER_PR2" +
+            "                          WHERE TRUNC(:fromDate) BETWEEN OUTER_PR2.START_DATE AND" +
+            "                                OUTER_PR2.END_DATE)))" +
+            "           AND (LP.FIN_LEDGER_PERIOD_STAT_ID != 4 OR NOT EXISTS" +
+            "                (SELECT 1" +
+            "                   FROM FNDC.FINANCIAL_DOCUMENT FD" +
+            "                  WHERE FD.FINANCIAL_DOCUMENT_TYPE_ID = 72" +
+            "                    AND FD.ORGANIZATION_ID = :organizationId" +
+            "                    AND FD.FINANCIAL_LEDGER_TYPE_ID =" +
+            "                        LP.FINANCIAL_LEDGER_TYPE_ID" +
+            "                    AND FD.FINANCIAL_PERIOD_ID = PR.ID))) QR1 "
+            , nativeQuery = true)
+    LocalDateTime getFinancialPeriodByLedgerTypeId(LocalDateTime fromDate, Long ledgerTypeId, Long organizationId);
 }
