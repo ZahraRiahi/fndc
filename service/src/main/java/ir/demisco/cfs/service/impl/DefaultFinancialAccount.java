@@ -174,13 +174,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             }
             financialDocumentReportRequest.setToNumber(toNumber);
         }
-        LocalDateTime startDate = financialDocumentReportRequest.getFromDate();
         LocalDateTime periodStartDate;
-        periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialDocumentReportRequest.getLedgerTypeId(), SecurityHelper.getCurrentUser().getOrganizationId());
-        if (periodStartDate == null || startDate.isBefore(periodStartDate)) {
-            periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeAndFromDate(financialDocumentReportRequest.getLedgerTypeId()
-                    , SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentReportRequest.getFromDate());
-        }
+        periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialDocumentReportRequest.getFromDate(), financialDocumentReportRequest.getLedgerTypeId()
+                , SecurityHelper.getCurrentUser().getOrganizationId());
         if (periodStartDate == null) {
             throw new RuleException("fin.financialAccount.notExistPeriod");
         }
@@ -841,13 +837,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             }
             financialDocumentCentricTurnOverRequest.setToNumber(toNumber);
         }
-        LocalDateTime startDate = financialDocumentCentricTurnOverRequest.getFromDate();
         LocalDateTime periodStartDate;
-        periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialDocumentCentricTurnOverRequest.getLedgerTypeId(), SecurityHelper.getCurrentUser().getOrganizationId());
-        if (periodStartDate == null || startDate.isBefore(periodStartDate)) {
-            periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeAndFromDate(financialDocumentCentricTurnOverRequest.getLedgerTypeId()
-                    , SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentCentricTurnOverRequest.getFromDate());
-        }
+        periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialDocumentCentricTurnOverRequest.getFromDate(), financialDocumentCentricTurnOverRequest.getLedgerTypeId()
+                , SecurityHelper.getCurrentUser().getOrganizationId());
         if (periodStartDate == null) {
             throw new RuleException("fin.financialAccount.notExistPeriod");
         }
@@ -1135,14 +1127,10 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             }
             financialAccountBalanceRequest.setToNumber(toNumber);
         }
-
-        LocalDateTime startDate = financialAccountBalanceRequest.getFromDate();
         LocalDateTime periodStartDate;
-        periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialAccountBalanceRequest.getLedgerTypeId(), SecurityHelper.getCurrentUser().getOrganizationId());
-        if (periodStartDate == null || startDate.isBefore(periodStartDate)) {
-            periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeAndFromDate(financialAccountBalanceRequest.getLedgerTypeId()
-                    , SecurityHelper.getCurrentUser().getOrganizationId(), financialAccountBalanceRequest.getFromDate());
-        }
+        periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialAccountBalanceRequest.getFromDate(), financialAccountBalanceRequest.getLedgerTypeId()
+                , SecurityHelper.getCurrentUser().getOrganizationId());
+
         if (periodStartDate == null) {
             throw new RuleException("fin.financialAccount.notExistPeriod");
         }
@@ -1473,14 +1461,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             }
             financialDocumentCentricBalanceReportRequest.setToNumber(toNumber);
         }
-
-        LocalDateTime startDate = financialDocumentCentricBalanceReportRequest.getFromDate();
         LocalDateTime periodStartDate;
-        periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialDocumentCentricBalanceReportRequest.getLedgerTypeId(), SecurityHelper.getCurrentUser().getOrganizationId());
-        if (periodStartDate == null || startDate.isBefore(periodStartDate)) {
-            periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeAndFromDate(financialDocumentCentricBalanceReportRequest.getLedgerTypeId()
-                    , SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentCentricBalanceReportRequest.getFromDate());
-        }
+        periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialDocumentCentricBalanceReportRequest.getFromDate(), financialDocumentCentricBalanceReportRequest.getLedgerTypeId()
+                , SecurityHelper.getCurrentUser().getOrganizationId());
         if (periodStartDate == null) {
             throw new RuleException("fin.financialAccount.notExistPeriod");
         }
@@ -1543,23 +1526,13 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString()),
                     financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId(), Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString()));
         }
-
-        if (fromDate != null && toDate != null) {
-            startDate = fromDate;
-        } else {
-            startDate = financialDocumentReportRequest.getFromDate();
-        }
         LocalDateTime periodStartDate;
-        periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString()), SecurityHelper.getCurrentUser().getOrganizationId());
-        if (periodStartDate == null || startDate.isBefore(periodStartDate)) {
-            periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeAndFromDate(Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString())
-                    , SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentReportRequest.getFromDate());
-        }
-
+        periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialDocumentReportRequest.getFromDate(), financialDocumentReportRequest.getLedgerTypeId()
+                , SecurityHelper.getCurrentUser().getOrganizationId());
         ReportDriverRequest reportDriverRequest = financialDocumentReportDriverRequest.getReportDriverRequest();
         Map<String, Object> map = new HashMap<String, Object>();
         if (fromDate != null && toDate != null) {
-            map.put("FROM_DATE", fromDate.toString());
+            map.put("FROM_DATE", fromDate.toString().split("T")[0]);
             map.put("TO_DATE", toDate.toString());
             map.put("FROM_NUMBER", financialDocumentReportRequest.getFromNumber());
             map.put("TO_NUMBER", financialDocumentReportRequest.getToNumber());
