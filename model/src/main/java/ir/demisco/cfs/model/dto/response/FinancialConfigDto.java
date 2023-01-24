@@ -1,6 +1,6 @@
 package ir.demisco.cfs.model.dto.response;
 
-import java.time.LocalDate;
+import java.time.LocalDateTime;
 
 public class FinancialConfigDto {
     private Long id;
@@ -13,8 +13,8 @@ public class FinancialConfigDto {
     private Long financialPeriodId;
     private String financialDepartmentCode;
     private String financialDepartmentName;
-    private LocalDate financialPeriodStartDate;
-    private LocalDate financialPeriodEndDate;
+    private LocalDateTime financialPeriodStartDate;
+    private LocalDateTime financialPeriodEndDate;
     private String financialPeriodDescription;
     private String financialDocumentTypeDescription;
     private String financialLedgerTypeDescription;
@@ -102,19 +102,19 @@ public class FinancialConfigDto {
         this.financialDepartmentName = financialDepartmentName;
     }
 
-    public LocalDate getFinancialPeriodStartDate() {
+    public LocalDateTime getFinancialPeriodStartDate() {
         return financialPeriodStartDate;
     }
 
-    public void setFinancialPeriodStartDate(LocalDate financialPeriodStartDate) {
+    public void setFinancialPeriodStartDate(LocalDateTime financialPeriodStartDate) {
         this.financialPeriodStartDate = financialPeriodStartDate;
     }
 
-    public LocalDate getFinancialPeriodEndDate() {
+    public LocalDateTime getFinancialPeriodEndDate() {
         return financialPeriodEndDate;
     }
 
-    public void setFinancialPeriodEndDate(LocalDate financialPeriodEndDate) {
+    public void setFinancialPeriodEndDate(LocalDateTime financialPeriodEndDate) {
         this.financialPeriodEndDate = financialPeriodEndDate;
     }
 
@@ -231,12 +231,12 @@ public class FinancialConfigDto {
             return this;
         }
 
-        public Builder financialPeriodStartDate(LocalDate financialPeriodStartDate) {
+        public Builder financialPeriodStartDate(LocalDateTime financialPeriodStartDate) {
             financialConfigDto.setFinancialPeriodStartDate(financialPeriodStartDate);
             return this;
         }
 
-        public Builder financialPeriodEndDate(LocalDate financialPeriodEndDate) {
+        public Builder financialPeriodEndDate(LocalDateTime financialPeriodEndDate) {
             financialConfigDto.setFinancialPeriodEndDate(financialPeriodEndDate);
             return this;
         }
@@ -255,18 +255,22 @@ public class FinancialConfigDto {
             financialConfigDto.setFinancialLedgerTypeDescription(financialLedgerTypeDescription);
             return this;
         }
+
         public Builder financialCodingTypeId(Long financialCodingTypeId) {
             financialConfigDto.setFinancialCodingTypeId(financialCodingTypeId);
             return this;
         }
+
         public Builder departmentId(Long departmentId) {
             financialConfigDto.setDepartmentId(departmentId);
             return this;
         }
+
         public Builder departmentName(String departmentName) {
             financialConfigDto.setDepartmentName(departmentName);
             return this;
         }
+
         public FinancialConfigDto build() {
             return financialConfigDto;
         }
