@@ -1,11 +1,9 @@
 package ir.demisco.cfs.service.impl;
 
-import com.fasterxml.jackson.databind.util.StdDateFormat;
 import ir.demisco.cfs.model.dto.response.FinancialConfigDto;
 import ir.demisco.cfs.model.entity.FinancialConfig;
 import ir.demisco.cloud.core.middle.model.dto.DataSourceRequest;
 import ir.demisco.cloud.core.middle.service.business.api.core.GridDataProvider;
-import ir.demisco.core.utils.DateUtil;
 import org.springframework.stereotype.Component;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -14,10 +12,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
-import java.text.ParseException;
 import java.time.LocalDateTime;
-import java.time.ZoneId;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,8 +65,8 @@ public class FinancialConfigListGridProvider implements GridDataProvider {
                     .financialPeriodId((Long) array[7])
                     .financialDepartmentCode((String) array[8])
                     .financialDepartmentName((String) array[9])
-                    .financialPeriodStartDate(parseStringToLocalDateTime(String.valueOf(array[10]), false))
-                    .financialPeriodEndDate(parseStringToLocalDateTime(String.valueOf(array[11]), false))
+                    .financialPeriodStartDate((LocalDateTime) array[10])
+                    .financialPeriodEndDate((LocalDateTime) array[11])
                     .financialPeriodDescription((String) array[12])
                     .financialDocumentTypeDescription((String) array[13])
                     .financialLedgerTypeDescription((String) array[14])
@@ -80,25 +75,6 @@ public class FinancialConfigListGridProvider implements GridDataProvider {
                     .departmentName((String) array[17])
                     .build();
         }).collect(Collectors.toList());
-    }
-
-    private LocalDateTime parseStringToLocalDateTime(Object input, boolean truncateDate) {
-        if (input instanceof String) {
-            try {
-                Date date = StdDateFormat.instance.parse((String) input);
-                return date.toInstant().atZone(ZoneId.systemDefault()).toLocalDateTime();
-            } catch (ParseException var4) {
-                if (((String) input).equalsIgnoreCase("current_date")) {
-                    return truncateDate ? DateUtil.truncate(LocalDateTime.now()) : LocalDateTime.now();
-                } else {
-                    return ((String) input).equalsIgnoreCase("current_timestamp") ? LocalDateTime.now() : LocalDateTime.parse((String) input);
-                }
-            }
-        } else if (input instanceof LocalDateTime) {
-            return truncateDate ? DateUtil.truncate((LocalDateTime) input) : (LocalDateTime) input;
-        } else {
-            throw new IllegalArgumentException("Filter for LocalDateTime has error :" + input + " with class" + input.getClass());
-        }
     }
 
     @Override
