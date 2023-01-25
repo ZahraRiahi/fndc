@@ -1526,8 +1526,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                     financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId(), Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString()));
         }
         LocalDateTime periodStartDate;
-        periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialDocumentReportRequest.getFromDate(), financialDocumentReportRequest.getLedgerTypeId()
-                , SecurityHelper.getCurrentUser().getOrganizationId());
         ReportDriverRequest reportDriverRequest = financialDocumentReportDriverRequest.getReportDriverRequest();
         Map<String, Object> map = new HashMap<String, Object>();
         if (fromDate != null && toDate != null) {
@@ -1535,11 +1533,15 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             map.put("TO_DATE", toDate.toString());
             map.put("FROM_NUMBER", financialDocumentReportRequest.getFromNumber());
             map.put("TO_NUMBER", financialDocumentReportRequest.getToNumber());
+            periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(fromDate, Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue()
+                    , SecurityHelper.getCurrentUser().getOrganizationId());
         } else {
             map.put("FROM_DATE", financialDocumentReportRequest.getFromDate().toString());
             map.put("TO_DATE", financialDocumentReportRequest.getToDate().toString());
             map.put("FROM_NUMBER", fromNumber);
             map.put("TO_NUMBER", toNumber);
+            periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialDocumentReportRequest.getFromDate(), Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue()
+                    , SecurityHelper.getCurrentUser().getOrganizationId());
         }
         map.put("periodStartDate", periodStartDate.toString());
         map.put("LEDGER_TYPE_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString());
