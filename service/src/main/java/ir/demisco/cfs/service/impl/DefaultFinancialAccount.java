@@ -1543,7 +1543,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialDocumentReportRequest.getFromDate(), Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue()
                     , SecurityHelper.getCurrentUser().getOrganizationId());
         }
-        map.put("periodStartDate", periodStartDate.toString());
+        map.put("PERIOD_START_DATE", periodStartDate.toString());
         map.put("LEDGER_TYPE_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString());
         map.put("DOCUMENT_NUMBERING_TYPE_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString());
         map.put("FINANCIAL_ACCOUNT_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FINANCIAL_ACCOUNT_ID"));
