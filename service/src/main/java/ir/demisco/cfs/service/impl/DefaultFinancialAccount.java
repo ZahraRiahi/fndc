@@ -1549,6 +1549,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         map.put("FINANCIAL_ACCOUNT_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FINANCIAL_ACCOUNT_ID"));
         map.put("SUMMARIZING_TYPE", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("SUMMARIZING_TYPE"));
         map.put("FILTER_FLG", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG"));
+        map.put("REFRENCE_NUMBER", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("REFRENCE_NUMBER") == null ? " " :
+                financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("REFRENCE_NUMBER"));
         if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("CENTRIC_ACCOUNT_ID1") == null &&
                 financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("CENTRIC_ACCOUNT_ID2") == null) {
             map.put("CENTRIC_ACCOUNT_ID1", " ");
