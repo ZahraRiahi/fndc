@@ -42,7 +42,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 @Service
 public class DefaultFinancialAccount implements FinancialAccountService {
     private final RestTemplate restTemplate;
@@ -1529,21 +1528,21 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         ReportDriverRequest reportDriverRequest = financialDocumentReportDriverRequest.getReportDriverRequest();
         Map<String, Object> map = new HashMap<String, Object>();
         if (fromDate != null && toDate != null) {
-            map.put("FROM_DATE", fromDate);
-            map.put("TO_DATE", toDate);
+            map.put("FROM_DATE", fromDate.toString().split("T")[0]);
+            map.put("TO_DATE", toDate.toString());
             map.put("FROM_NUMBER", financialDocumentReportRequest.getFromNumber());
             map.put("TO_NUMBER", financialDocumentReportRequest.getToNumber());
             periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(fromDate, Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue()
                     , SecurityHelper.getCurrentUser().getOrganizationId());
         } else {
-            map.put("FROM_DATE", financialDocumentReportRequest.getFromDate());
-            map.put("TO_DATE", financialDocumentReportRequest.getToDate());
+            map.put("FROM_DATE", financialDocumentReportRequest.getFromDate().toString());
+            map.put("TO_DATE", financialDocumentReportRequest.getToDate().toString());
             map.put("FROM_NUMBER", fromNumber);
             map.put("TO_NUMBER", toNumber);
             periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialDocumentReportRequest.getFromDate(), Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue()
                     , SecurityHelper.getCurrentUser().getOrganizationId());
         }
-        map.put("PERIOD_START_DATE", periodStartDate);
+        map.put("PERIOD_START_DATE", periodStartDate.toString());
         map.put("LEDGER_TYPE_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString());
         map.put("DOCUMENT_NUMBERING_TYPE_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString());
         map.put("FINANCIAL_ACCOUNT_ID", financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FINANCIAL_ACCOUNT_ID"));
