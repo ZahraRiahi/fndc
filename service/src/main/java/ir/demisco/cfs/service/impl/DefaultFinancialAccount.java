@@ -1520,7 +1520,7 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                     financialDocumentReportRequest.getFromDate()
                     , SecurityHelper.getCurrentUser().getOrganizationId(), Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString()));
         }
-        if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals("1") || financialDocumentReportRequest.getToNumber() == null) {
+        if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals(1) || financialDocumentReportRequest.getToNumber() == null) {
             toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString()),
                     financialDocumentReportRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId(), Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString()));
         }
