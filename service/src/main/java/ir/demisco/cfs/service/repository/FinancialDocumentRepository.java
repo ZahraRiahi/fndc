@@ -20,8 +20,8 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "       FIDC.FINANCIAL_DOCUMENT_TYPE_ID," +
             "       FNDT.DESCRIPTION AS FINANCIAL_DOCUMENT_TYPE_DESCRIPTION," +
             "       FIDC.DESCRIPTION AS FULL_DESCRIPTION," +
-            "       SUM(FNDI.DEBIT_AMOUNT) AS debitAmount," +
-            "       SUM(FNDI.CREDIT_AMOUNT) AS creditAmount," +
+            "       SUM( NVL(FNDI.DEBIT_AMOUNT,0)) AS debitAmount ," +
+            " SUM( NVL(FNDI.CREDIT_AMOUNT,0)) AS creditAmount, " +
             "       USR.ID AS USERID," +
             "       USR.NICK_NAME AS USERNAME," +
             "       FIDC.FINANCIAL_DOCUMENT_STATUS_ID," +
@@ -33,7 +33,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "  INNER JOIN FNDC.FINANCIAL_DOCUMENT_TYPE FNDT " +
             "    ON FIDC.FINANCIAL_DOCUMENT_TYPE_ID = FNDT.ID " +
             "   AND FNDT.DELETED_DATE IS NULL " +
-            "  INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FNDI " +
+            "  LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FNDI " +
             "    ON FIDC.ID = FNDI.FINANCIAL_DOCUMENT_ID " +
             "   AND FNDI.DELETED_DATE IS NULL  " +
             "  LEFT OUTER JOIN FNDC.FINANCIAL_DOCUMENT_NUMBER FNDN " +
