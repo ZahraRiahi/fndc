@@ -1507,14 +1507,14 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         String fromNumber = null;
         String toNumber = null;
         financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID");
-        if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals("0")) {
+        if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals(0)) {
             fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID")).longValue()
                     , financialDocumentReportRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId(), Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue());
 
             toDate = financialDocumentRepository.findByFinancialDocumentByNumberingAndToNumber(Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID")).longValue()
                     , financialDocumentReportRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId(), Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue());
         }
-        if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals("1") || financialDocumentReportRequest.getFromNumber() == null) {
+        if (financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals(1) || financialDocumentReportRequest.getFromNumber() == null) {
             fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(
                     Long.valueOf(financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString()),
                     financialDocumentReportRequest.getFromDate()
