@@ -67,7 +67,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "          NVL(FNDI.CREDIT_AMOUNT,0) " +
             "       END" +
             "   AND NVL(FNDI.DEBIT_AMOUNT,0) = CASE " +
-            "         WHEN &PRICETYPEID = 2 THEN " +
+            "         WHEN :priceTypeId = 2 THEN " +
             "          0 " +
             "         ELSE " +
             "          NVL(FNDI.DEBIT_AMOUNT,0) " +
@@ -163,7 +163,7 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             "          NVL(FNDI.CREDIT_AMOUNT,0) " +
             "       END" +
             "   AND NVL(FNDI.DEBIT_AMOUNT,0) = CASE " +
-            "         WHEN &PRICETYPEID = 2 THEN " +
+            "         WHEN :priceTypeId = 2 THEN " +
             "          0 " +
             "         ELSE " +
             "          NVL(FNDI.DEBIT_AMOUNT,0) " +
