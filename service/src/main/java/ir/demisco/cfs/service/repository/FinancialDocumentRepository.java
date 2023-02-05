@@ -60,17 +60,17 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " and FIDC.DEPARTMENT_ID= :departmentId  " +
             "   and FIDC.DOCUMENT_DATE >= trunc(:startDate) " +
             "   AND FIDC.DOCUMENT_DATE <= trunc(:endDate) " +
-            "   AND FNDI.CREDIT_AMOUNT = CASE" +
+            "   AND NVL(FNDI.CREDIT_AMOUNT,0) = CASE " +
             "         WHEN :priceTypeId = 1 THEN" +
             "          0" +
             "         ELSE" +
-            "          FNDI.CREDIT_AMOUNT" +
+            "          NVL(FNDI.CREDIT_AMOUNT,0) " +
             "       END" +
-            "   AND FNDI.DEBIT_AMOUNT = CASE" +
-            "         WHEN :priceTypeId = 2 THEN" +
-            "          0" +
-            "         ELSE" +
-            "          FNDI.DEBIT_AMOUNT" +
+            "   AND NVL(FNDI.DEBIT_AMOUNT,0) = CASE " +
+            "         WHEN &PRICETYPEID = 2 THEN " +
+            "          0 " +
+            "         ELSE " +
+            "          NVL(FNDI.DEBIT_AMOUNT,0) " +
             "       END" +
             "   AND FNDN.FINANCIAL_NUMBERING_TYPE_ID = :financialNumberingTypeId" +
             "   AND (FNDN.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL) " +
@@ -156,17 +156,17 @@ public interface FinancialDocumentRepository extends JpaRepository<FinancialDocu
             " and FIDC.DEPARTMENT_ID= :departmentId  " +
             "   and FIDC.DOCUMENT_DATE >= trunc(:startDate) " +
             "   AND FIDC.DOCUMENT_DATE <= trunc(:endDate) " +
-            "   AND FNDI.CREDIT_AMOUNT = CASE" +
+            "   AND NVL(FNDI.CREDIT_AMOUNT,0) = CASE " +
             "         WHEN :priceTypeId = 1 THEN" +
             "          0" +
             "         ELSE" +
-            "          FNDI.CREDIT_AMOUNT" +
+            "          NVL(FNDI.CREDIT_AMOUNT,0) " +
             "       END" +
-            "   AND FNDI.DEBIT_AMOUNT = CASE" +
-            "         WHEN :priceTypeId = 2 THEN" +
-            "          0" +
-            "         ELSE" +
-            "          FNDI.DEBIT_AMOUNT" +
+            "   AND NVL(FNDI.DEBIT_AMOUNT,0) = CASE " +
+            "         WHEN &PRICETYPEID = 2 THEN " +
+            "          0 " +
+            "         ELSE " +
+            "          NVL(FNDI.DEBIT_AMOUNT,0) " +
             "       END" +
             "   AND FNDN.FINANCIAL_NUMBERING_TYPE_ID = :financialNumberingTypeId" +
             "   AND (FNDN.DOCUMENT_NUMBER >= :fromNumberId OR :fromNumber IS NULL) " +
