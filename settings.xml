@@ -13,7 +13,7 @@
       <mirror>
           <id>dms-mvn-mirror</id>
           <name>dms-mvn-mirror</name>
-          <url>http://nexus:8081/repository/dms-mvn-group/</url>
+          <url>https://nexus.demisco.com/repository/dms-mvn-group/</url>
           <mirrorOf>*</mirrorOf>
       </mirror>
   </mirrors>
