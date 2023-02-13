@@ -19,4 +19,5 @@ public class FinancialDocumentReportDriverRequest {
     public void setReportDriverRequest(ReportDriverRequest reportDriverRequest) {
         this.reportDriverRequest = reportDriverRequest;
     }
+
 }

@@ -284,4 +284,28 @@ public class FinancialDocumentReportRequest {
             return financialDocumentReportRequest;
         }
     }
+
+    @Override
+    public String toString() {
+        return "FinancialDocumentReportRequest{" +
+                "financialAccountId=" + financialAccountId +
+                ", fromDate=" + fromDate +
+                ", toDate=" + toDate +
+                ", periodStartDate=" + periodStartDate +
+                ", documentNumberingTypeId=" + documentNumberingTypeId +
+                ", centricAccountId1=" + centricAccountId1 +
+                ", centricAccountId2=" + centricAccountId2 +
+                ", referenceNumber=" + referenceNumber +
+                ", fromNumber='" + fromNumber + '\'' +
+                ", toNumber='" + toNumber + '\'' +
+                ", summarizingType=" + summarizingType +
+                ", ledgerTypeId=" + ledgerTypeId +
+                ", organizationId=" + organizationId +
+                ", dateFilterFlg=" + dateFilterFlg +
+                ", centricAccount1=" + centricAccount1 +
+                ", centricAccount2=" + centricAccount2 +
+                ", referenceNumberObject=" + referenceNumberObject +
+                ", paramMap=" + paramMap +
+                '}';
+    }
 }

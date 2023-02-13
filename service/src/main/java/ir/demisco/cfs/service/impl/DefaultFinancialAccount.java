@@ -1565,9 +1565,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         map.put("ORGANIZATION_ID", SecurityHelper.getCurrentUser().getOrganizationId().toString());
         reportDriverRequest.setParams(map);
 
+
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + SecurityHelper.getCurrentUser().getAccessToken());
         HttpEntity entity = new HttpEntity(financialDocumentReportDriverRequest.getReportDriverRequest(), headers);
+        map.entrySet().forEach(System.out::println);
         return restTemplate.exchange(biPublisherUrl, HttpMethod.POST, entity, byte[].class).getBody();
 
     }
