@@ -941,7 +941,8 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                                                 int length) {
         return financialPeriodRepository.findByFinancialPeriodByBalanceReport(financialAccountBalanceRequest.getFromDate(),
                 financialAccountBalanceRequest.getToDate(), financialAccountBalanceRequest.getFromNumber(),
-                financialAccountBalanceRequest.getToNumber(), financialAccountBalanceRequest.getDocumentNumberingTypeId(),
+                financialAccountBalanceRequest.getToNumber(), financialAccountBalanceRequest.getFlgBef(),
+                financialAccountBalanceRequest.getDocumentNumberingTypeId(),
                 financialAccountBalanceRequest.getLedgerTypeId(),
                 financialAccountBalanceRequest.getStructureLevel(),
                 financialAccountBalanceRequest.getShowHigherLevels(),
@@ -993,6 +994,10 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 case "toNumber":
                     checkToNumberSet(financialAccountBalanceRequest, item);
                     break;
+                case "flgBef":
+                    checkFlgBefSet(financialAccountBalanceRequest, item);
+                    break;
+
                 case "documentNumberingTypeId":
                     checkDocumentNumberingTypeIdSet(financialAccountBalanceRequest, item);
                     break;
@@ -1091,6 +1096,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     private void checkStructureLevelIdSet(FinancialAccountBalanceRequest
                                                   financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
         financialAccountBalanceRequest.setStructureLevel(Long.parseLong(item.getValue().toString()));
+    }
+
+    private void checkFlgBefSet(FinancialAccountBalanceRequest
+                                        financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
+        financialAccountBalanceRequest.setFlgBef((Boolean) item.getValue());
     }
 
     private void checkHasRemainSet(FinancialAccountBalanceRequest

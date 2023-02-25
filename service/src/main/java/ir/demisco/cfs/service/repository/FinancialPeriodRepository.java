@@ -1610,22 +1610,22 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                        FDI.CREDIT_AMOUNT" +
             "                       ELSE" +
             "                        0" +
-            "                     END) SUM_CREDIT," +
-            "                 SUM(CASE" +
-            "                       WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND" +
-            "                            FDN.DOCUMENT_NUMBER < :fromNumber THEN" +
+            "                     END) SUM_CREDIT, " +
+            " SUM(CASE " +
+            "                       WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND " +
+            "                            FDN.DOCUMENT_NUMBER < :fromNumber AND :flgBef= 1 THEN" +
             "                        FDI.DEBIT_AMOUNT" +
             "                       ELSE" +
             "                        0" +
             "                     END) BEF_DEBIT," +
             "                 SUM(CASE" +
             "                       WHEN FD.DOCUMENT_DATE <= trunc(:fromDate) AND" +
-            "                            FDN.DOCUMENT_NUMBER < :fromNumber THEN" +
+            "                            FDN.DOCUMENT_NUMBER < :fromNumber AND :flgBef = 1 THEN" +
             "                        FDI.CREDIT_AMOUNT" +
             "                       ELSE" +
             "                        0" +
             "                     END) BEF_CREDIT," +
-            "                 FAS.Color" +
+            "                 FAS.Color " +
             "            FROM FNDC.FINANCIAL_DOCUMENT FD" +
             "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_ITEM FDI" +
             "              ON FDI.FINANCIAL_DOCUMENT_ID = FD.ID" +
@@ -1698,16 +1698,66 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         null FINANCIAL_ACCOUNT_LEVEL," +
             "         SUM(SUM_DEBIT) SUMMERIZE_DEBIT," +
             "         SUM(SUM_CREDIT) SUMMERIZE_CREDIT," +
-            " SUM(BEF_DEBIT) BEF_DEBIT, " +
-            " SUM(BEF_CREDIT) BEF_CREDIT, " +
-            " SUM(DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT)," +
-            "                1," +
-            "                SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT," +
-            "                0) )REM_DEBIT," +
-            "         SUM( DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT)," +
-            "                -1," +
-            "                ABS(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT)," +
-            "                0))REM_CREDIT," +
+            " CASE " +
+            "           WHEN :flgBef = 1 THEN" +
+            "            SUM(BEF_DEBIT)" +
+            "           ELSE" +
+            "            0" +
+            "         END BEF_DEBIT," +
+            "         CASE" +
+            "           WHEN :flgBef = 1 THEN" +
+            "            SUM(BEF_CREDIT)" +
+            "           ELSE" +
+            "            0" +
+            "         END BEF_CREDIT," +
+            "         SUM(DECODE(SIGN(SUM_DEBIT + (CASE" +
+            "                           WHEN :flgBef = 1 THEN" +
+            "                            BEF_DEBIT" +
+            "                           ELSE" +
+            "                            0" +
+            "                         END) - SUM_CREDIT - (CASE" +
+            "                           WHEN :flgBef = 1 THEN" +
+            "                            BEF_CREDIT" +
+            "                           ELSE" +
+            "                            0" +
+            "                         END))," +
+            "                    1," +
+            "                    SUM_DEBIT + (CASE" +
+            "                      WHEN :flgBef = 1 THEN" +
+            "                       BEF_DEBIT" +
+            "                      ELSE" +
+            "                       0" +
+            "                    END) - SUM_CREDIT - (CASE" +
+            "                      WHEN :flgBef = 1 THEN" +
+            "                       BEF_CREDIT" +
+            "                      ELSE" +
+            "                       0" +
+            "                    END)," +
+            "                    0)) REM_DEBIT," +
+            "         SUM(DECODE(SIGN(SUM_DEBIT + (CASE" +
+            "                           WHEN :flgBef = 1 THEN" +
+            "                            BEF_DEBIT" +
+            "                           ELSE" +
+            "                            0" +
+            "                         END) - SUM_CREDIT - (CASE" +
+            "                           WHEN :flgBef = 1 THEN" +
+            "                            BEF_CREDIT" +
+            "                           ELSE" +
+            "                            0" +
+            "                         END))," +
+            "                    -1," +
+            "                    ABS(SUM_DEBIT + (CASE" +
+            "                          WHEN :flgBef = 1 THEN" +
+            "                           BEF_DEBIT" +
+            "                          ELSE" +
+            "                           0" +
+            "                        END) - SUM_CREDIT - (CASE" +
+            "                          WHEN :flgBef = 1 THEN" +
+            "                           BEF_CREDIT" +
+            "                          ELSE" +
+            "                           0" +
+            "                        END))," +
+            "                    0)) REM_CREDIT, " +
             "         null color," +
             "         SUM(SUM_DEBIT) - SUM(SUM_CREDIT) SUMMERIZE_AMOUNT," +
             "         3 AS RECORD_TYP" +
@@ -1801,7 +1851,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                    FAS.COLOR))" +
             "SELECT * FROM QRY ORDER BY FINANCIAL_ACCOUNT_CODE "
             , nativeQuery = true)
-    List<Object[]> findByFinancialPeriodByBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId,
+    List<Object[]> findByFinancialPeriodByBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Boolean flgBef, Long documentNumberingTypeId, Long ledgerTypeId,
                                                         Long structureLevel, Boolean showHigherLevels, LocalDateTime periodStartDate, int length, String fromFinancialAccountCode,
                                                         String toFinancialAccountCode, Long organizationId, Boolean hasRemain);
 
