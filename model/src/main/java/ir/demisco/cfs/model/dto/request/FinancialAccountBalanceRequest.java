@@ -18,6 +18,7 @@ public class FinancialAccountBalanceRequest {
     private String toFinancialAccountCode;
     private Long dateFilterFlg;
     private LocalDateTime periodStartDate;
+    private Boolean flgBef;
     Map<String, Object> paramMap;
 
     public LocalDateTime getFromDate() {
@@ -138,5 +139,13 @@ public class FinancialAccountBalanceRequest {
 
     public void setParamMap(Map<String, Object> paramMap) {
         this.paramMap = paramMap;
+    }
+
+    public Boolean getFlgBef() {
+        return flgBef;
+    }
+
+    public void setFlgBef(Boolean flgBef) {
+        this.flgBef = flgBef;
     }
 }
