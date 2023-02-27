@@ -2,6 +2,7 @@ package ir.demisco.cfs.service.impl;
 
 import com.fasterxml.jackson.databind.util.StdDateFormat;
 import ir.demisco.cfs.model.dto.request.FinancialAccountBalanceRequest;
+import ir.demisco.cfs.model.dto.request.FinancialBalanceReportDriverRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentCentricBalanceReportRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentCentricTurnOverRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentReportDriverRequest;
@@ -1584,6 +1585,76 @@ public class DefaultFinancialAccount implements FinancialAccountService {
 
     }
 
+    @Override
+    @Transactional(readOnly = true)
+    public byte[] balanceReport(FinancialBalanceReportDriverRequest financialBalanceReportDriverRequest) {
+        FinancialAccountBalanceRequest financialAccountBalanceRequest = financialBalanceReportDriverRequest.getFinancialAccountBalanceRequest();
+        LocalDateTime fromDate = null;
+        LocalDateTime toDate = null;
+        String fromNumber = null;
+        String toNumber = null;
+        int length = 0;
+        financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID");
+        if (financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals(0)) {
+            fromDate = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromNumber(Integer.valueOf((Integer) financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID")).longValue()
+                    , financialAccountBalanceRequest.getFromNumber(), SecurityHelper.getCurrentUser().getOrganizationId(), Integer.valueOf((Integer) financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue());
+
+            toDate = financialDocumentRepository.findByFinancialDocumentByNumberingAndToNumber(Integer.valueOf((Integer) financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID")).longValue()
+                    , financialAccountBalanceRequest.getToNumber(), SecurityHelper.getCurrentUser().getOrganizationId(), Integer.valueOf((Integer) financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue());
+        }
+        if (financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals(1) || financialAccountBalanceRequest.getFromNumber() == null) {
+            fromNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndFromDateAndOrganization(
+                    Long.valueOf(financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString()),
+                    financialAccountBalanceRequest.getFromDate()
+                    , SecurityHelper.getCurrentUser().getOrganizationId(), Long.valueOf(financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString()));
+        }
+        if (financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG").equals(1) || financialAccountBalanceRequest.getToNumber() == null) {
+            toNumber = financialDocumentRepository.findByFinancialDocumentByNumberingTypeAndToDateAndOrganization(Long.valueOf(financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString()),
+                    financialAccountBalanceRequest.getToDate(), SecurityHelper.getCurrentUser().getOrganizationId(), Long.valueOf(financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString()));
+        }
+        LocalDateTime periodStartDate;
+        ReportDriverRequest reportDriverRequest = financialBalanceReportDriverRequest.getReportDriverRequest();
+        Map<String, Object> map = new HashMap<String, Object>();
+        if (fromDate != null && toDate != null) {
+            map.put("FROM_DATE", fromDate.toLocalDate().toString());
+            map.put("TO_DATE", toDate.toLocalDate().toString());
+            map.put("FROM_NUMBER", financialAccountBalanceRequest.getFromNumber());
+            map.put("TO_NUMBER", financialAccountBalanceRequest.getToNumber());
+            periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(fromDate, Integer.valueOf((Integer) financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue()
+                    , SecurityHelper.getCurrentUser().getOrganizationId());
+        } else {
+            map.put("FROM_DATE", financialAccountBalanceRequest.getFromDate().toLocalDate().toString());
+            map.put("TO_DATE", financialAccountBalanceRequest.getToDate().toLocalDate().toString());
+            map.put("FROM_NUMBER", fromNumber);
+            map.put("TO_NUMBER", toNumber);
+            periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialAccountBalanceRequest.getFromDate(), Integer.valueOf((Integer) financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue()
+                    , SecurityHelper.getCurrentUser().getOrganizationId());
+        }
+        map.put("PERIOD_START_DATE", periodStartDate.toLocalDate().toString());
+        map.put("LEDGER_TYPE_ID", financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID").toString());
+        map.put("DOCUMENT_NUMBERING_TYPE_ID", financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("DOCUMENT_NUMBERING_TYPE_ID").toString());
+        map.put("STRUCTURE_LEVEL", financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("STRUCTURE_LEVEL").toString());
+        map.put("HAS_REMAIN", financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("HAS_REMAIN").toString());
+        map.put("SHOW_HIGHER_LEVELS", financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("SHOW_HIGHER_LEVELS").toString());
+        map.put("FROM_FINANCIAL_ACCOUNT_CODE", financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("FROM_FINANCIAL_ACCOUNT_CODE") == null ? " " :
+                financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("FROM_FINANCIAL_ACCOUNT_CODE"));
+        map.put("TO_FINANCIAL_ACCOUNT_CODE", financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("TO_FINANCIAL_ACCOUNT_CODE") == null ? " " :
+                financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("TO_FINANCIAL_ACCOUNT_CODE"));
+        map.put("FLG_BEF", financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("FLG_BEF").toString());
+        map.put("FILTER_FLG", financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("FILTER_FLG"));
+        map.put("LENGHT", String.valueOf(length));
+
+        map.put("PRINT_MODE", financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("PRINT_MODE"));
+        map.put("ORGANIZATION_ID", SecurityHelper.getCurrentUser().getOrganizationId().toString());
+        reportDriverRequest.setParams(map);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + SecurityHelper.getCurrentUser().getAccessToken());
+        HttpEntity entity = new HttpEntity(financialBalanceReportDriverRequest.getReportDriverRequest(), headers);
+        map.entrySet().forEach(System.out::println);
+        return restTemplate.exchange(biPublisherUrl, HttpMethod.POST, entity, byte[].class).getBody();
+
+    }
 }
 
 

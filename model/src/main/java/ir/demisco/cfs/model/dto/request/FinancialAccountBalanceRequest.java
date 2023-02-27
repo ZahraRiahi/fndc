@@ -1,5 +1,7 @@
 package ir.demisco.cfs.model.dto.request;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
+
 import java.time.LocalDateTime;
 import java.util.Map;
 
@@ -19,8 +21,10 @@ public class FinancialAccountBalanceRequest {
     private Long dateFilterFlg;
     private LocalDateTime periodStartDate;
     private Boolean flgBef;
+    private String printMode;
     Map<String, Object> paramMap;
 
+    @JsonProperty("FROM_DATE")
     public LocalDateTime getFromDate() {
         return fromDate;
     }
@@ -29,6 +33,7 @@ public class FinancialAccountBalanceRequest {
         this.fromDate = fromDate;
     }
 
+    @JsonProperty("TO_DATE")
     public LocalDateTime getToDate() {
         return toDate;
     }
@@ -45,6 +50,7 @@ public class FinancialAccountBalanceRequest {
         this.documentNumberingTypeId = documentNumberingTypeId;
     }
 
+    @JsonProperty("FROM_NUMBER")
     public String getFromNumber() {
         return fromNumber;
     }
@@ -53,6 +59,7 @@ public class FinancialAccountBalanceRequest {
         this.fromNumber = fromNumber;
     }
 
+    @JsonProperty("TO_NUMBER")
     public String getToNumber() {
         return toNumber;
     }
@@ -77,6 +84,7 @@ public class FinancialAccountBalanceRequest {
         this.ledgerTypeId = ledgerTypeId;
     }
 
+    @JsonProperty("HAS_REMAIN")
     public Boolean getHasRemain() {
         return hasRemain;
     }
@@ -85,6 +93,7 @@ public class FinancialAccountBalanceRequest {
         this.hasRemain = hasRemain;
     }
 
+    @JsonProperty("SHOW_HIGHER_LEVELS")
     public Boolean getShowHigherLevels() {
         return showHigherLevels;
     }
@@ -101,6 +110,7 @@ public class FinancialAccountBalanceRequest {
         this.organizationId = organizationId;
     }
 
+    @JsonProperty("FROM_FINANCIAL_ACCOUNT_CODE")
     public String getFromFinancialAccountCode() {
         return fromFinancialAccountCode;
     }
@@ -109,6 +119,7 @@ public class FinancialAccountBalanceRequest {
         this.fromFinancialAccountCode = fromFinancialAccountCode;
     }
 
+    @JsonProperty("TO_FINANCIAL_ACCOUNT_CODE")
     public String getToFinancialAccountCode() {
         return toFinancialAccountCode;
     }
@@ -117,6 +128,7 @@ public class FinancialAccountBalanceRequest {
         this.toFinancialAccountCode = toFinancialAccountCode;
     }
 
+    @JsonProperty("FILTER_FLG")
     public Long getDateFilterFlg() {
         return dateFilterFlg;
     }
@@ -141,11 +153,43 @@ public class FinancialAccountBalanceRequest {
         this.paramMap = paramMap;
     }
 
+    @JsonProperty("FLG_BEF")
     public Boolean getFlgBef() {
         return flgBef;
     }
 
     public void setFlgBef(Boolean flgBef) {
         this.flgBef = flgBef;
+    }
+
+    @JsonProperty("PRINT_MODE")
+    public String getPrintMode() {
+        return printMode;
+    }
+
+    public void setPrintMode(String printMode) {
+        this.printMode = printMode;
+    }
+
+    @Override
+    public String toString() {
+        return "FinancialAccountBalanceRequest{" +
+                ", fromDate=" + fromDate +
+                ", toDate=" + toDate +
+                ", periodStartDate=" + periodStartDate +
+                ", documentNumberingTypeId=" + documentNumberingTypeId +
+                ", structureLevel=" + structureLevel +
+                ", hasRemain=" + hasRemain +
+                ", showHigherLevels=" + showHigherLevels +
+                ", fromNumber='" + fromNumber + '\'' +
+                ", toNumber='" + toNumber + '\'' +
+                ", ledgerTypeId=" + ledgerTypeId +
+                ", organizationId=" + organizationId +
+                ", dateFilterFlg=" + dateFilterFlg +
+                ", fromFinancialAccountCode=" + fromFinancialAccountCode +
+                ", toFinancialAccountCode=" + toFinancialAccountCode +
+                ", flgBef=" + flgBef +
+                ", paramMap=" + paramMap +
+                '}';
     }
 }
