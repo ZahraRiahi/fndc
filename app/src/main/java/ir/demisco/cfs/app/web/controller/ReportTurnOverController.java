@@ -1,5 +1,6 @@
 package ir.demisco.cfs.app.web.controller;
 
+import ir.demisco.cfs.model.dto.request.FinancialBalanceReportDriverRequest;
 import ir.demisco.cfs.model.dto.request.FinancialDocumentReportDriverRequest;
 import ir.demisco.cfs.service.api.FinancialAccountService;
 import org.springframework.http.ResponseEntity;
@@ -20,5 +21,10 @@ public class ReportTurnOverController {
     @PostMapping("/report")
     public ResponseEntity<byte[]> responseEntity(@RequestBody FinancialDocumentReportDriverRequest financialDocumentReportDriverRequest) {
         return ResponseEntity.ok(financialAccountService.report(financialDocumentReportDriverRequest));
+    }
+
+    @PostMapping("/balanceReport")
+    public ResponseEntity<byte[]> responseEntityBalanceReport(@RequestBody FinancialBalanceReportDriverRequest financialBalanceReportDriverRequest) {
+        return ResponseEntity.ok(financialAccountService.balanceReport(financialBalanceReportDriverRequest));
     }
 }
