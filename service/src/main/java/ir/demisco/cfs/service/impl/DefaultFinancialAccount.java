@@ -32,6 +32,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -1650,7 +1651,10 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         HttpHeaders headers = new HttpHeaders();
         headers.add(HttpHeaders.AUTHORIZATION, "Bearer " + SecurityHelper.getCurrentUser().getAccessToken());
         HttpEntity entity = new HttpEntity(financialBalanceReportDriverRequest.getReportDriverRequest(), headers);
-        map.entrySet().forEach(System.out::println);
+        Object body = entity.getBody();
+        ReportDriverRequest body1 = (ReportDriverRequest) body;
+        Map<String, Object> params = body1.getParams();
+        params.entrySet().forEach(System.out::println);
         return restTemplate.exchange(biPublisherUrl, HttpMethod.POST, entity, byte[].class).getBody();
 
     }
