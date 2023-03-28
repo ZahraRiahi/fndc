@@ -1539,15 +1539,15 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         ReportDriverRequest reportDriverRequest = financialDocumentReportDriverRequest.getReportDriverRequest();
         Map<String, Object> map = new HashMap<String, Object>();
         if (fromDate != null && toDate != null) {
-            map.put("FROM_DATE", fromDate.toLocalDate().toString());
-            map.put("TO_DATE", toDate.toLocalDate().toString());
+            map.put("fromDate", fromDate.toLocalDate().toString());
+            map.put("toDate", toDate.toLocalDate().toString());
             map.put("FROM_NUMBER", financialDocumentReportRequest.getFromNumber());
             map.put("TO_NUMBER", financialDocumentReportRequest.getToNumber());
             periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(fromDate, Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue()
                     , SecurityHelper.getCurrentUser().getOrganizationId());
         } else {
-            map.put("FROM_DATE", financialDocumentReportRequest.getFromDate().toLocalDate().toString());
-            map.put("TO_DATE", financialDocumentReportRequest.getToDate().toLocalDate().toString());
+            map.put("fromDate", financialDocumentReportRequest.getFromDate().toLocalDate().toString());
+            map.put("toDate", financialDocumentReportRequest.getToDate().toLocalDate().toString());
             map.put("FROM_NUMBER", fromNumber);
             map.put("TO_NUMBER", toNumber);
             periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialDocumentReportRequest.getFromDate(), Integer.valueOf((Integer) financialDocumentReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue()
@@ -1616,15 +1616,15 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         ReportDriverRequest reportDriverRequest = financialBalanceReportDriverRequest.getReportDriverRequest();
         Map<String, Object> map = new HashMap<String, Object>();
         if (fromDate != null && toDate != null) {
-            map.put("FROM_DATE", fromDate.toLocalDate().toString());
-            map.put("TO_DATE", toDate.toLocalDate().toString());
+            map.put("fromDate", fromDate.toLocalDate().toString());
+            map.put("toDate", toDate.toLocalDate().toString());
             map.put("FROM_NUMBER", financialAccountBalanceRequest.getFromNumber());
             map.put("TO_NUMBER", financialAccountBalanceRequest.getToNumber());
             periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(fromDate, Integer.valueOf((Integer) financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue()
                     , SecurityHelper.getCurrentUser().getOrganizationId());
         } else {
-            map.put("FROM_DATE", financialAccountBalanceRequest.getFromDate().toLocalDate().toString());
-            map.put("TO_DATE", financialAccountBalanceRequest.getToDate().toLocalDate().toString());
+            map.put("fromDate", financialAccountBalanceRequest.getFromDate().toLocalDate().toString());
+            map.put("toDate", financialAccountBalanceRequest.getToDate().toLocalDate().toString());
             map.put("FROM_NUMBER", fromNumber);
             map.put("TO_NUMBER", toNumber);
             periodStartDate = financialPeriodRepository.getFinancialPeriodByLedgerTypeId(financialAccountBalanceRequest.getFromDate(), Integer.valueOf((Integer) financialBalanceReportDriverRequest.getReportDriverRequest().getParams().get("LEDGER_TYPE_ID")).longValue()
