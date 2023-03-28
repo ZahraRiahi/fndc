@@ -66,7 +66,7 @@ public class FinancialDocumentReportRequest {
         this.financialAccountId = financialAccountId;
     }
 
-    @JsonProperty("FROM_DATE")
+    @JsonProperty("fromDate")
     public LocalDateTime getFromDate() {
         return fromDate;
     }
@@ -75,7 +75,7 @@ public class FinancialDocumentReportRequest {
         this.fromDate = fromDate;
     }
 
-    @JsonProperty("TO_DATE")
+    @JsonProperty("toDate")
     public LocalDateTime getToDate() {
         return toDate;
     }
