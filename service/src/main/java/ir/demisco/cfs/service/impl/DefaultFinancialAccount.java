@@ -945,12 +945,13 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 financialAccountBalanceRequest.getToNumber(), financialAccountBalanceRequest.getFlgBef(),
                 financialAccountBalanceRequest.getDocumentNumberingTypeId(),
                 financialAccountBalanceRequest.getLedgerTypeId(),
-                financialAccountBalanceRequest.getStructureLevel(),
+                financialAccountBalanceRequest.getHasRemain(),
                 financialAccountBalanceRequest.getShowHigherLevels(),
+                financialAccountBalanceRequest.getStructureLevel(),
                 financialAccountBalanceRequest.getPeriodStartDate(), length
                 , financialAccountBalanceRequest.getFromFinancialAccountCode(), financialAccountBalanceRequest.getToFinancialAccountCode()
                 , SecurityHelper.getCurrentUser().getOrganizationId()
-                , financialAccountBalanceRequest.getHasRemain());
+        );
     }
 
     private void checkFinancialAccountBalanceSet(FinancialAccountBalanceRequest financialAccountBalanceRequest) {
