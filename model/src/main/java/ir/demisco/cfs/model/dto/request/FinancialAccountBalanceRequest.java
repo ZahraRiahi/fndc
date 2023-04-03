@@ -24,7 +24,7 @@ public class FinancialAccountBalanceRequest {
     private String printMode;
     Map<String, Object> paramMap;
 
-    @JsonProperty("FROM_DATE")
+    @JsonProperty("fromDate")
     public LocalDateTime getFromDate() {
         return fromDate;
     }
@@ -33,7 +33,7 @@ public class FinancialAccountBalanceRequest {
         this.fromDate = fromDate;
     }
 
-    @JsonProperty("TO_DATE")
+    @JsonProperty("toDate")
     public LocalDateTime getToDate() {
         return toDate;
     }
