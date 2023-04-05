@@ -1449,9 +1449,6 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         if (financialDocumentCentricBalanceReportRequest.getToFinancialAccountCode() == null) {
             financialDocumentCentricBalanceReportRequest.setToFinancialAccountCode("fin.financialAccount.fromOrToFinancialAccountCode");
         }
-        if (financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode().length() != financialDocumentCentricBalanceReportRequest.getToFinancialAccountCode().length()) {
-            throw new RuleException("fin.financialAccount.financialAccountBalance");
-        }
     }
 
     private void getFinancialDocumentByNumberingTypeAndFromNumberCentricBalance
