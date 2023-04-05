@@ -24,6 +24,7 @@ public class FinancialDocumentCentricBalanceReportRequest {
     private Object cnacIdObj2;
     private Object cnatIdObj1;
     private Object cnatIdObj2;
+    private Boolean flgBef;
     Map<String, Object> paramMap;
 
     public LocalDateTime getFromDate() {
@@ -184,6 +185,14 @@ public class FinancialDocumentCentricBalanceReportRequest {
 
     public void setCnatIdObj2(Object cnatIdObj2) {
         this.cnatIdObj2 = cnatIdObj2;
+    }
+
+    public Boolean getFlgBef() {
+        return flgBef;
+    }
+
+    public void setFlgBef(Boolean flgBef) {
+        this.flgBef = flgBef;
     }
 
     public Map<String, Object> getParamMap() {

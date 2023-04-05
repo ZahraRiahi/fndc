@@ -1977,15 +1977,15 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             , nativeQuery = true)
     Long findFinancialPeriodByIdAndLedgerTypeAndDate(Long financialPeriodId, Long financialLedgerTypeId, LocalDateTime dateBetween);
 
-    @Query(value = " WITH QRY AS" +
-            " (SELECT NVL(FINANCIAL_ACCOUNT_CODE, '') ||" +
+    @Query(value = "WITH QRY AS " +
+            " (SELECT NVL(FINANCIAL_ACCOUNT_CODE, '') || " +
             "         NVL(FINANCIAL_ACCOUNT_DESCRIPTION, '') FINANCIAL_ACCOUNT_DESC," +
-            "         FINANCIAL_ACCOUNT_ID, " +
+            "         FINANCIAL_ACCOUNT_ID," +
             "         SUM_DEBIT," +
             "         SUM_CREDIT," +
             "         BEF_DEBIT," +
             "         BEF_CREDIT," +
-            " BEF_DEBIT - BEF_CREDIT total_bef, " +
+            "         BEF_DEBIT - BEF_CREDIT total_bef," +
             "         DECODE(SIGN(SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT)," +
             "                1," +
             "                SUM_DEBIT + BEF_DEBIT - SUM_CREDIT - BEF_CREDIT," +
@@ -1999,47 +1999,47 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "         NVL2(CODE_CNAC3, '-' || CODE_CNAC3, '') || NVL(NAME_CNAC3, '') ||" +
             "         NVL2(CODE_CNAC4, '-' || CODE_CNAC4, '') || NVL(NAME_CNAC4, '') ||" +
             "         NVL2(CODE_CNAC5, '-' || CODE_CNAC5, '') || NVL(NAME_CNAC5, '') ||" +
-            "         NVL2(CODE_CNAC6, '-' || CODE_CNAC6, '') || NVL(NAME_CNAC6, '') CENTRIC_ACCOUNT_DES ," +
-            " CNAC1_ID, " +
-            "     CNAC2_ID  " +
+            "         NVL2(CODE_CNAC6, '-' || CODE_CNAC6, '') || NVL(NAME_CNAC6, '') CENTRIC_ACCOUNT_DES," +
+            "     CNAC1_ID," +
+            "     CNAC2_ID" +
             "    FROM (SELECT FA2.FINANCIAL_ACCOUNT_PARENT_ID," +
             "                 FA2.ID                          FINANCIAL_ACCOUNT_ID," +
             "                 FA2.CODE                        FINANCIAL_ACCOUNT_CODE," +
             "                 FA2.DESCRIPTION                 FINANCIAL_ACCOUNT_DESCRIPTION," +
             "                 SUM(CASE" +
-            "                       WHEN (FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)) AND" +
-            "                            (FDN.DOCUMENT_NUMBER BETWEEN to_number(:fromNumber) AND" +
-            "                            to_number(:toNumber)) THEN" +
+            "                       WHEN (FD.DOCUMENT_DATE BETWEEN TRUNC(:fromDate) AND" +
+            "                            TRUNC(:toDate)) AND (FDN.DOCUMENT_NUMBER BETWEEN" +
+            "                            to_number(:fromNumber) AND to_number(:toNumber)) THEN" +
             "                        FDI.DEBIT_AMOUNT" +
             "                       ELSE" +
             "                        0" +
             "                     END) SUM_DEBIT," +
             "                 SUM(CASE" +
-            "                       WHEN (FD.DOCUMENT_DATE BETWEEN trunc(:fromDate) AND trunc(:toDate)) AND" +
-            "                            (FDN.DOCUMENT_NUMBER BETWEEN to_number(:fromNumber) AND" +
-            "                            to_number(:toNumber)) THEN" +
+            "                       WHEN (FD.DOCUMENT_DATE BETWEEN TRUNC(:fromDate) AND" +
+            "                            TRUNC(:toDate)) AND (FDN.DOCUMENT_NUMBER BETWEEN" +
+            "                            to_number(:fromNumber) AND to_number(:toNumber)) THEN" +
             "                        FDI.CREDIT_AMOUNT" +
             "                       ELSE" +
             "                        0" +
             "                     END) SUM_CREDIT," +
-            "                 SUM(CASE" +
-            "                       when FD.DOCUMENT_DATE BETWEEN trunc(:periodStartDate) AND" +
-            "                            trunc(:fromDate) AND" +
-            "                            FDN.DOCUMENT_NUMBER < to_number(:fromNumber) AND :flgBef = 1  THEN" +
+            "                 SUM(CASE " +
+            "                       when FD.DOCUMENT_DATE BETWEEN TRUNC(:periodStartDate) AND" +
+            "                            TRUNC(:fromDate) AND" +
+            "                            FDN.DOCUMENT_NUMBER < to_number(:fromNumber)  AND :flgBef = 1 THEN" +
             "                        FDI.DEBIT_AMOUNT" +
-            "                       ELSE" +
+            "                       ELSE " +
             "                        0" +
             "                     END) BEF_DEBIT," +
-            "                 SUM(CASE" +
-            "                       WHEN FD.DOCUMENT_DATE BETWEEN trunc(:periodStartDate) AND" +
-            "                            trunc(:fromDate) AND" +
-            "                            FDN.DOCUMENT_NUMBER < to_number(:fromNumber) :flgBef = 1 THEN" +
+            "                 SUM(CASE " +
+            "                       WHEN FD.DOCUMENT_DATE BETWEEN TRUNC(:periodStartDate) AND" +
+            "                            TRUNC(:fromDate) AND" +
+            "                            FDN.DOCUMENT_NUMBER < to_number(:fromNumber) AND :flgBef = 1  THEN" +
             "                        FDI.CREDIT_AMOUNT" +
-            "                       ELSE" +
+            "                       ELSE " +
             "                        0" +
             "                     END) BEF_CREDIT," +
-            " CNAC1.ID CNAC1_ID," +
-            "                 CNAC2.ID CNAC2_ID, " +
+            "                 CNAC1.ID CNAC1_ID," +
+            "                 CNAC2.ID CNAC2_ID," +
             "                 CNAC1.CODE CODE_CNAC1," +
             "                 CNAC2.CODE CODE_CNAC2," +
             "                 CNAC3.CODE CODE_CNAC3," +
@@ -2062,7 +2062,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "              ON FDN.FINANCIAL_DOCUMENT_ID = FD.ID" +
             "             AND FDN.DELETED_DATE IS NULL" +
             "             AND FDN.FINANCIAL_NUMBERING_TYPE_ID =" +
-            "                 :documentNumberingTypeId " +
+            "                 :documentNumberingTypeId" +
             "           INNER JOIN FNAC.FINANCIAL_ACCOUNT_STRUCTURE FAS" +
             "              ON FA2.FINANCIAL_ACCOUNT_STRUCTURE_ID = FAS.ID" +
             "           INNER JOIN FNDC.FINANCIAL_DOCUMENT_STATUS FDS" +
@@ -2079,25 +2079,25 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC5" +
             "              ON CNAC5.ID = FDI.CENTRIC_ACCOUNT_ID_5" +
             "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT CNAC6" +
-            "              ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6 " +
-            " LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT1" +
+            "              ON CNAC6.ID = FDI.CENTRIC_ACCOUNT_ID_6" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT1" +
             "              ON CNAC1.CENTRIC_ACCOUNT_TYPE_ID = CNAT1.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT2" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT2" +
             "              ON CNAC2.CENTRIC_ACCOUNT_TYPE_ID = CNAT2.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT3" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT3" +
             "              ON CNAC3.CENTRIC_ACCOUNT_TYPE_ID = CNAT3.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT4" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT4" +
             "              ON CNAC4.CENTRIC_ACCOUNT_TYPE_ID = CNAT4.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT5" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT5" +
             "              ON CNAC5.CENTRIC_ACCOUNT_TYPE_ID = CNAT5.ID" +
-            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE  CNAT6" +
+            "            LEFT OUTER JOIN FNAC.CENTRIC_ACCOUNT_TYPE CNAT6" +
             "              ON CNAC6.CENTRIC_ACCOUNT_TYPE_ID = CNAT6.ID" +
-            "          WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId" +
+            "           WHERE FD.FINANCIAL_LEDGER_TYPE_ID = :ledgerTypeId" +
             "             AND FD.DOCUMENT_DATE BETWEEN TRUNC(:periodStartDate) AND" +
             "                 TRUNC(:toDate)" +
-            "             AND (FDN.DOCUMENT_NUMBER <= to_number(:toNumber) OR" +
-            "                 to_number(:toNumber) IS NULL)" +
-            "             AND (" +
+            "             AND (FDN.DOCUMENT_NUMBER <= to_number(:toNumber) OR to_number(:toNumber) IS NULL)" +
+            "                AND" +
+            "(" +
             "                  ((" +
             "                   :toFinancialAccountCode IS NULL OR" +
             "                   :fromFinancialAccountCode IS NULL OR" +
@@ -2124,18 +2124,16 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             "                   :fromFinancialAccountCode" +
             "                   AND" +
             "                   SUBSTR(FA2.CODE, 1, length(:fromFinancialAccountCode)) <=" +
-            "                   SUBSTR(:toFinancialAccountCode," +
-            "                             1," +
-            "                             length(:toFinancialAccountCode))" +
-            "                   ))" +
-            "                  OR" +
+            "                    SUBSTR(:toFinancialAccountCode,1,length(:toFinancialAccountCode))" +
+            "                   )) " +
+            "                   OR" +
             "                  (" +
             "                   length(:fromFinancialAccountCode) >" +
             "                   length(:toFinancialAccountCode) AND" +
-            "                   (SUBSTR(FA2.CODE, 1, length(:toFinancialAccountCode)) >=" +
-            "                   SUBSTR(:fromFinancialAccountCode," +
+            "                   (SUBSTR(FA2.CODE," +
             "                             1," +
-            "                             length(:toFinancialAccountCode)) AND" +
+            "                             length(:toFinancialAccountCode)) >=" +
+            "                             SUBSTR(:fromFinancialAccountCode,1,length(:toFinancialAccountCode)) AND" +
             "                   SUBSTR(FA2.CODE, 1, length(:toFinancialAccountCode)) <=" +
             "                   :toFinancialAccountCode))" +
             "                  ))" +
@@ -2209,7 +2207,7 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             " total_bef, " +
             "       CNAC1_ID, " +
             "       CNAC2_ID, " +
-            "       1                      AS RECORD_TYPE" +
+            "       1                      AS RECORD_TYPE " +
             "  FROM QRY " +
             " UNION " +
             " SELECT NULL FINANCIAL_ACCOUNT_DESC," +
@@ -2287,7 +2285,8 @@ public interface FinancialPeriodRepository extends JpaRepository<FinancialPeriod
             , nativeQuery = true)
     List<Object[]> findByFinancialPeriodByCentricBalanceReport(LocalDateTime fromDate, LocalDateTime toDate, String fromNumber, String toNumber, Long documentNumberingTypeId, Long ledgerTypeId
             , LocalDateTime periodStartDate, int lenght, String fromFinancialAccountCode,
-                                                               String toFinancialAccountCode, Long organizationId, Object cnacIdObj1, Long cnacId1, Object cnacIdObj2, Long cnacId2, Object cnatIdObj1, Long cnatId1, Object cnatIdObj2, Long cnatId2, Long remainOption);
+                                                               String toFinancialAccountCode, Long organizationId, Object cnacIdObj1, Long cnacId1, Object cnacIdObj2, Long cnacId2,
+                                                               Object cnatIdObj1, Long cnatId1, Object cnatIdObj2, Long cnatId2, Long remainOption, Boolean flgBef);
 
     @Query(value = " SELECT T.FINANCIAL_PERIOD_ID, T.DOCUMENT_DATE, T.financial_ledger_type_id " +
             "  FROM FNDC.FINANCIAL_DOCUMENT T " +

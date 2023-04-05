@@ -32,6 +32,7 @@ import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.client.RestTemplate;
+
 import java.text.ParseException;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
@@ -1104,6 +1105,11 @@ public class DefaultFinancialAccount implements FinancialAccountService {
         financialAccountBalanceRequest.setFlgBef((Boolean) item.getValue());
     }
 
+    private void checkFlgBefSetCentricBalance(FinancialDocumentCentricBalanceReportRequest
+                                                      financialDocumentCentricBalanceReportRequest, DataSourceRequest.FilterDescriptor item) {
+        financialDocumentCentricBalanceReportRequest.setFlgBef((Boolean) item.getValue());
+    }
+
     private void checkHasRemainSet(FinancialAccountBalanceRequest
                                            financialAccountBalanceRequest, DataSourceRequest.FilterDescriptor item) {
         financialAccountBalanceRequest.setHasRemain((Boolean) item.getValue());
@@ -1166,12 +1172,12 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     @Override
     @Transactional(readOnly = true)
     public DataSourceResult getFinancialDocumentCentricBalanceReport(DataSourceRequest dataSourceRequest) {
-        int length = 0;
+        int lenght = 0;
         List<DataSourceRequest.FilterDescriptor> filters = dataSourceRequest.getFilter().getFilters();
         FinancialDocumentCentricBalanceReportRequest financialDocumentCentricBalanceReportRequest = setParameterCentricBalanceReport(filters);
         if (financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode() != null || financialDocumentCentricBalanceReportRequest.getToFinancialAccountCode() != null) {
             checkFinancialAccountCentricBalanceSet(financialDocumentCentricBalanceReportRequest);
-            length = financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode().length();
+            lenght = financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode().length();
         }
         getFinancialDocumentByNumberingTypeAndFromNumberCentricBalance(financialDocumentCentricBalanceReportRequest);
         if (financialDocumentCentricBalanceReportRequest.getDocumentNumberingTypeId() == null) {
@@ -1182,13 +1188,13 @@ public class DefaultFinancialAccount implements FinancialAccountService {
             throw new RuleException("fin.financialAccount.selectDateFilterFlg");
         }
         financialDocumentCentricBalanceReportRequest.setOrganizationId(SecurityHelper.getCurrentUser().getOrganizationId());
-        List<Object[]> list = getCentricBalanceReportList(financialDocumentCentricBalanceReportRequest, length);
+        List<Object[]> list = getCentricBalanceReportList(financialDocumentCentricBalanceReportRequest, lenght);
         List<FinancialAccountCentricBalanceResponse> financialAccountCentricBalanceResponses = new ArrayList<>();
         List<FinancialDocumentCentricBalanceResponse> recordsResponseList = new ArrayList<>();
         FinancialAccountCentricBalanceResponse response = new FinancialAccountCentricBalanceResponse();
         list.forEach((Object[] item) -> {
 
-            if (item[12] != null && (Long.parseLong(item[12].toString()) == 1 || Long.parseLong(item[12].toString()) == 2)) {
+            if (item[13] != null && (Long.parseLong(item[13].toString()) == 1 || Long.parseLong(item[13].toString()) == 2)) {
                 FinancialDocumentCentricBalanceResponse recordsResponse = new FinancialDocumentCentricBalanceResponse();
                 recordsResponse.setFinancialAccountDescription(getItemForString(item, 0));
                 recordsResponse.setFinancialAccountId(getItemForLong(item, 1));
@@ -1199,9 +1205,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 recordsResponse.setRemDebit(getItemForString(item, 6));
                 recordsResponse.setRemCredit(getItemForString(item, 7));
                 recordsResponse.setCentricAccountDescription(getItemForString(item, 8));
-                recordsResponse.setCnacId1(getItemForLong(item, 10));
-                recordsResponse.setCnacId2(getItemForLong(item, 11));
-                recordsResponse.setRecordType(getItemForLong(item, 12));
+                recordsResponse.setCnacId1(getItemForLong(item, 11));
+                recordsResponse.setCnacId2(getItemForLong(item, 12));
+                recordsResponse.setRecordType(getItemForLong(item, 13));
                 recordsResponseList.add(recordsResponse);
                 response.setFinancialAccountCentricBalanceRecordsModel(recordsResponseList);
             } else {
@@ -1215,9 +1221,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 accountTurnOverSummarizeResponse.setRemainCredit(getItemForString(item, 7));
                 accountTurnOverSummarizeResponse.setCentricAccountDescription(getItemForString(item, 8));
                 accountTurnOverSummarizeResponse.setSummarizeAmount(getItemForString(item, 9));
-                accountTurnOverSummarizeResponse.setCnacId1(getItemForLong(item, 10));
-                accountTurnOverSummarizeResponse.setCnacId2(getItemForLong(item, 11));
-                accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 12));
+                accountTurnOverSummarizeResponse.setCnacId1(getItemForLong(item, 11));
+                accountTurnOverSummarizeResponse.setCnacId2(getItemForLong(item, 12));
+                accountTurnOverSummarizeResponse.setRecordType(getItemForLong(item, 13));
                 outputResponse.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
                 response.setFinancialAccountTurnOverSummarizeModel(accountTurnOverSummarizeResponse);
             }
@@ -1302,7 +1308,9 @@ public class DefaultFinancialAccount implements FinancialAccountService {
                 case "cnatId2":
                     checkCnacId2CentricBalanceSet(financialDocumentCentricBalanceReportRequest, item);
                     break;
-
+                case "flgBef":
+                    checkFlgBefSetCentricBalance(financialDocumentCentricBalanceReportRequest, item);
+                    break;
                 default:
                     break;
             }
@@ -1496,17 +1504,17 @@ public class DefaultFinancialAccount implements FinancialAccountService {
     }
 
     private List<Object[]> getCentricBalanceReportList(FinancialDocumentCentricBalanceReportRequest
-                                                               financialDocumentCentricBalanceReportRequest, int length) {
+                                                               financialDocumentCentricBalanceReportRequest, int lenght) {
         return financialPeriodRepository.findByFinancialPeriodByCentricBalanceReport(financialDocumentCentricBalanceReportRequest.getFromDate(),
                 financialDocumentCentricBalanceReportRequest.getToDate(), financialDocumentCentricBalanceReportRequest.getFromNumber(),
                 financialDocumentCentricBalanceReportRequest.getToNumber(), financialDocumentCentricBalanceReportRequest.getDocumentNumberingTypeId(),
                 financialDocumentCentricBalanceReportRequest.getLedgerTypeId(), financialDocumentCentricBalanceReportRequest.getPeriodStartDate(),
-                length
+                lenght
                 , financialDocumentCentricBalanceReportRequest.getFromFinancialAccountCode(), financialDocumentCentricBalanceReportRequest.getToFinancialAccountCode()
                 , SecurityHelper.getCurrentUser().getOrganizationId(), financialDocumentCentricBalanceReportRequest.getCnacIdObj1(), financialDocumentCentricBalanceReportRequest.getCnacId1(), financialDocumentCentricBalanceReportRequest.getCnacIdObj2(), financialDocumentCentricBalanceReportRequest.getCnacId2()
                 , financialDocumentCentricBalanceReportRequest.getCnatIdObj1(), financialDocumentCentricBalanceReportRequest.getCnatId1(),
                 financialDocumentCentricBalanceReportRequest.getCnatIdObj2(), financialDocumentCentricBalanceReportRequest.getCnatId2()
-                , financialDocumentCentricBalanceReportRequest.getRemainOption());
+                , financialDocumentCentricBalanceReportRequest.getRemainOption(), financialDocumentCentricBalanceReportRequest.getFlgBef());
     }
 
     @Override
